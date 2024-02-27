@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong Game</title>
+    <style>
+        /* Add your CSS styles here */
+        #game-board {
+            position: relative;
+            height: 600px;
+            width: 800px;
+            border: 1px solid black;
+        }
+        .paddle {
+            position: absolute;
+            height: 100px;
+            width: 15px;
+            background-color: black;
+        }
+        #paddle1 {
+            left: 0;
+        }
+        #paddle2 {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-board">
+        <div id="paddle1" class="paddle"></div>
+        <div id="paddle2" class="paddle"></div>
+    </div>
+
+    <button id="paddle1-up-button">Move Paddle 1 Up</button>
+    <button id="paddle1-down-button">Move Paddle 1 Down</button>
+    <button id="paddle2-up-button">Move Paddle 2 Up</button>
+    <button id="paddle2-down-button">Move Paddle 2 Down</button>
+
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/game/');
+
+        socket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            var paddle1_y = data.paddle1_y;
+            var paddle2_y = data.paddle2_y;
+
+            // Update the game display based on the new paddle positions
+            document.querySelector('#paddle1').style.top = (paddle1_y * 500) + 'px';
+            document.querySelector('#paddle2').style.top = (paddle2_y * 500) + 'px';
+        };
+
+        socket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#paddle1-up-button').onclick = function(e) {
+            var message = {
+                paddle: 1,
+                position: 0.5
+            };
+            socket.send(JSON.stringify(message));
+        };
+
+        // Do the same for the other buttons
+    </script>
+</body>
+</html>

@@ -1,9 +1,6 @@
-FROM alpine:3.7
+FROM python:3
 
-# Install Python and pip
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools
+# Install Python and pi
 
 WORKDIR /usr/src/app
 
@@ -16,7 +13,7 @@ RUN pip3 install --no-cache -r requirements.txt
 
 EXPOSE 8000
 
-COPY ./prova ./prova
+COPY ./mysite ./prova
 
 # Run the application
-# CMD ["python3", "prova/manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python3", "prova/manage.py", "runserver", "0.0.0.0:8000"]
