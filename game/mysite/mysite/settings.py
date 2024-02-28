@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+import requests
+from requests_oauthlib import OAuth2Session
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure--ai@5$zg6a%#udh!flmm=b!2d^usnchf(zk_3+8j3g@ygj_7sc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["172.18.18.251", "192.168.1.50"]
+ALLOWED_HOSTS = ["172.18.18.251", "192.168.1.50", '127.0.0.1']
 
 
 # Application definition
