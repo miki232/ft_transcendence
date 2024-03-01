@@ -6,4 +6,5 @@ urlpatterns = [
     path('callback/', views.callback, name='callback'),
     path('authorize/', views.redirect_to_42, name='authorize'),
     path("", views.room, name='room'),
+    path("index/", views.index, name="index")
 ]
