@@ -5,5 +5,5 @@ services:
     image: prova
     build: ./game
     ports:
-      - "8080:8080"
-    command: python3 prova/manage.py runserver 192.168.1.50:8080
+      - "127.0.0.1:8080:8080"
+    command: python3 prova/manage.py runserver 0.0.0.0:8080
