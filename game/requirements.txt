@@ -1,3 +1,5 @@
 Django>=3.2.24
 Channels>=3.0.4
 Daphne>=3.0.2
+requests>=2.31.0
+requests-oauthlib>=1.3.1
