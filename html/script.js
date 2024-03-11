@@ -1,5 +1,5 @@
 const content = document.getElementById('content');
-const navLinks = document.getElementsByClassName('link');
+// const navLinks = document.getElementsByClassName('link');
 
 // function loadContent() {
 // 	const hash = window.location.hash.substring(1);
@@ -30,27 +30,26 @@ function loadContent(page) {
 			var newContent = responseObject.title + responseObject.content;
 			content.innerHTML = newContent;
 		}
-		else {
-			console.log("ERROR: " + page);
-		}
 	};
 	xhr.send(null);
 	
 };
 
-navLinks.onclick = function(e) {
-	e.preventDefault();
-	var hash = this.href.lastIndexOf('#');
-	console.log(hash);
-	loadContent(hash);
-	history.pushState(null, null, hash);
+function loadPage(page) {
+	loadContent(page);
+	// history.replaceState(null, null, page);
 };
 
 window.onpopstate = function() {
-	var path = location.pathname;
+	var path = location.hash.substring(1);
 	loadContent(path);
 };
 
 window.onload = function() {
-	loadContent('home');
+	var path = location.hash.substring(1);
+	if (path) {
+		loadPage(path);
+	} else {
+		loadPage('home');
+	}
 };
