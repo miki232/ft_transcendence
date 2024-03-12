@@ -37,11 +37,16 @@ function loadContent(page) {
 
 function loadPage(page) {
 	loadContent(page);
-	// history.replaceState(null, null, page);
+	// history.pushState(null, "", "/" + page);
 };
 
 window.onpopstate = function() {
-	var path = location.hash.substring(1);
+	var path = window.location.hash.substring(1);
+	console.log(path);
+	if (!path) {
+		path = 'home';
+		window.location.hash = path;
+	}
 	loadContent(path);
 };
 
@@ -50,6 +55,7 @@ window.onload = function() {
 	if (path) {
 		loadPage(path);
 	} else {
+		window.location.hash = 'home';
 		loadPage('home');
 	}
 };
