@@ -1,0 +1,77 @@
+/**** GENERAL ****/
+
+:root {
+    --primary-color: #222831;
+    --secondary-color: #393E46;
+    --tertiary-color: #00ADB5;
+    --quaternary-color: #EEEEEE;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+a:visited {
+    color: var(--quaternary-color);
+    text-decoration: none;
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--quaternary-color);
+    line-height: 1.6;
+}
+
+/***************** HEADER *****************/
+
+nav {
+    background-color: var(--secondary-color);
+    height: 80px;
+}
+
+nav ul {
+    height: 100%;
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;;
+    padding: 0 25px;
+}
+
+nav ul li a{
+    color:var(--quaternary-color);
+    text-decoration: none;
+    padding: 0 10px;
+    font-size: 1.2em;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+nav ul li a:hover {
+    color: var(--tertiary-color);
+    font-weight: bold;
+}
+
+/**PORCATA!!!!**/
+nav ul li a:last-child:hover {
+    padding-left: 6px;
+}
+/**************/
+
+/***************** FOOTER *****************/
+
+footer {
+    background-color: var(--secondary-color);
+    color: var(--quaternary-color);
+    text-align: center;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
