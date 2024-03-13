@@ -14,5 +14,7 @@
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a> |
   <a href="{% url 'signup' %}">Sign Up</a>
-{% endif %}
+  <button onclick="location.href='{% url 'authorize' %}'">Authorize with 42</button>
+
+  {% endif %}
 {% endblock %}

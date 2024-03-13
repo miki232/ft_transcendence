@@ -194,7 +194,7 @@
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
             // +console.log('received message');
-            // console.log(data)
+            console.log(data.ball_speed_x)
             // Update the opponent's paddle position based on data received from the server
             if (data.paddle2_y !== undefined) {
                 opponentPaddleY = data.paddle2_y;
