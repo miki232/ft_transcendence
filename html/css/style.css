@@ -3,7 +3,7 @@
 :root {
     --primary-color: #222831;
     --secondary-color: #393E46;
-    --tertiary-color: #00ADB5;
+    --tertiary-color: #0079FF;
     --quaternary-color: #EEEEEE;
 }
 
@@ -22,6 +22,12 @@ a:visited {
 
 body {
     background-color: var(--primary-color);
+    background: 
+        linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+        url('../img/bg3.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center -100px;
     color: var(--quaternary-color);
     line-height: 1.6;
 }
@@ -29,7 +35,7 @@ body {
 /***************** HEADER *****************/
 
 nav {
-    background-color: var(--secondary-color);
+    /* background-color: var(--secondary-color); */
     height: 80px;
 }
 
@@ -39,13 +45,13 @@ nav ul {
     display: flex;
     justify-content: flex-end;
     align-items: center;;
-    padding: 0 25px;
+    padding: 0 45px;
 }
 
 nav ul li a{
-    color:var(--quaternary-color);
+    color: var(--quaternary-color);
     text-decoration: none;
-    padding: 0 10px;
+    padding: 0 20px;
     font-size: 1.2em;
 }
 
@@ -56,13 +62,19 @@ nav ul li:first-child {
 nav ul li a:hover {
     color: var(--tertiary-color);
     font-weight: bold;
+    cursor: pointer;
 }
 
-/**PORCATA!!!!**/
+nav ul li a.active {
+    color: var(--tertiary-color);
+    font-weight: bold;
+}
+
+/********PORCATA!!!!***********
 nav ul li a:last-child:hover {
     padding-left: 6px;
 }
-/**************/
+*******************************/
 
 /***************** FOOTER *****************/
 

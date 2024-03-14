@@ -36,6 +36,12 @@ function loadContent(page) {
 };
 
 function loadPage(page) {
+	const oldActive = document.querySelector('a.active');
+	if (oldActive) {
+		oldActive.classList.remove('active');
+	}
+	const newActive = document.querySelector('a[href="#' + page + '"]');
+	newActive.classList.add('active');
 	loadContent(page);
 	// history.pushState(null, "", "/" + page);
 };
