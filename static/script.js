@@ -234,5 +234,44 @@ window.onload = function() {
 };
 
 function loadDashboard() {
-	content.innerHTML = userDashboard;
+	csrftoken = getCookie('csrftoken')
+	fetch('accounts/user_info/', {
+		method: 'GET',
+		headers: {
+			'Content-Type' : 'application/json',
+			'X-CSRFToken': csrftoken
+		}
+	})
+		.then(response => response.json())
+		.then(data => {
+			content.innerHTML = `
+				<p>Username: ${data.username}</p>
+				<p>Email: ${data.email}</p>
+				<p>First Name: ${data.first_name}</p>
+				<p>Last Name: ${data.last_name}</p>
+			`;
+			console.log(data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
 };
+
+
+function logout(){
+	csrftoken = getCookie('csrftoken')
+	fetch('accounts/logout/', {
+		method: 'POST',
+		headers: {
+			'Content-Type' : 'application/json',
+			'X-CSRFToken': csrftoken
+		}
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+}
