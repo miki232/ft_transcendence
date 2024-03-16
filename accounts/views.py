@@ -10,6 +10,10 @@ import urllib
 
 from .forms import CustomUserCreationForm
 from .models import CustomUser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserSignupSerializer, LoginSerializer
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -64,3 +68,21 @@ def callback(request):
 
     # Redirect the user to a success page or any other appropriate page
     return redirect('home')
+
+class UserSignupView(APIView):
+    def post(self, request, format=None):
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            if user:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserLoginView(APIView):
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            login(request, user)
+            return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
