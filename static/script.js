@@ -167,7 +167,7 @@ function loadContent(response) {
 function requestContent(page) {
 	var xhr = new XMLHttpRequest();
 
-	xhr.open('GET', 'data/' + page + '.json', true);
+	xhr.open('GET', 'static/data/' + page + '.json', true);
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			responseObject = JSON.parse(xhr.responseText);
