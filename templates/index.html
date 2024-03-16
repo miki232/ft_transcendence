@@ -7,11 +7,11 @@
 	<meta name="description" content="Progetto ft_transcedence per la scuola 42 Roma Luiss">
 	<meta name="author" content="arecce mtoia">
 	
-	<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
-	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-	<link rel="manifest" href="img/site.webmanifest">
+	<link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}">
+	<link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+	<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+	<link rel="manifest" href="{% static 'img/site.webmanifest' %}">
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/normalize.css' %}">
 	<link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -24,8 +24,8 @@
 			<ul>
 				<li>Logo</li>
 				<li><a href="#home" class="active" onclick="loadPage('home')">Home</a></li>
-				<li><a href="#about"onclick="loadPage('about')">About</a></li>
-				<li><a href="#contact"onclick="loadPage('contact')">Contact</a></li>
+				<li><a href="#about" onclick="loadPage('about')">About</a></li>
+				<li><a href="#contact" onclick="loadPage('contact')">Contact</a></li>
 			</ul>
 		</nav>
 	</header>

@@ -54,6 +54,11 @@ const loginHTML = `
     </div>
   </div>
 `;
+
+const userDashboard = `
+<h1>User Dashboard</h1>
+<h2>Logged in as: 800A</h2>
+`;
 // const navLinks = document.getElementsByClassName('link');
 
 // function loadContent() {
@@ -95,11 +100,16 @@ function getCookie(name) {
 }
 
 function register(){
-	var username = document.getElementById('signup-user').value;
-	var password = document.getElementById('signup-pass').value;
+	var username = sanitizeInput(document.getElementById('signup-user').value);
+	var password = sanitizeInput(document.getElementById('signup-pass').value);
+	var re_pass = sanitizeInput(document.getElementById('re-pass').value);
 	var email = document.getElementById('email').value;
 	var csrftoken = getCookie('csrftoken');
 
+	if (password !== re_pass){
+		alert('Password and Repeat Password do not match');
+		return;
+	}
 
 	fetch('accounts/register/', {
 		method: 'POST',
@@ -120,8 +130,8 @@ function register(){
 }
 
 function login(){
-	var username = document.getElementById('login-user').value;
-	var password = document.getElementById('login-pass').value;
+	var username = sanitizeInput(document.getElementById('login-user').value);
+	var password = sanitizeInput(document.getElementById('login-pass').value);
 	var csrftoken = getCookie('csrftoken');
 
 
@@ -135,7 +145,15 @@ function login(){
 			username: username,
 			password: password
 		}),
-	}).then(response => response.json())
+	}).then(response => {
+		response.json();
+		console.log(response);
+		if (response.status === 200) {
+			loadDashboard();
+		} else {
+			alert('Wrong username or password');
+		}
+	})
 		.then(data => console.log(data))
 		.catch((error) => {
 			console.error('Error: ', error);
@@ -206,10 +224,15 @@ window.onpopstate = function() {
 
 window.onload = function() {
 	var path = location.hash.substring(1);
+	console.log(path);
 	if (path) {
 		loadPage(path);
 	} else {
 		window.location.hash = 'home';
 		loadPage('home');
 	}
+};
+
+function loadDashboard() {
+	content.innerHTML = userDashboard;
 };
