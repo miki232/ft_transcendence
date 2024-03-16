@@ -101,4 +101,4 @@ class UserInfoView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         logout(request)
-        return Response(status=status.HTTP_200_OK)
+        return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)

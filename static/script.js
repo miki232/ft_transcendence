@@ -267,7 +267,9 @@ function logout(){
 			'X-CSRFToken': csrftoken
 		}
 	})
-		.then(response => response.json())
+		.then(response => {
+			if (response.status !== 204)
+				response.json()})
 		.then(data => {
 			console.log(data);
 		})
