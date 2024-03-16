@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 import requests
@@ -11,9 +11,12 @@ import urllib
 from .forms import CustomUserCreationForm
 from .models import CustomUser
 from rest_framework.views import APIView
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSignupSerializer, LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -86,3 +89,16 @@ class UserLoginView(APIView):
             login(request, user)
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        serializer = UserInfoSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class LogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
