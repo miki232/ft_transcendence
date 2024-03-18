@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1"]
 
 INSTALLED_APPS = [
     'chat', # new
-    'home', #new
+    # 'home', #new
     'daphne', # new
     'django.contrib.admin',
     'django.contrib.auth',

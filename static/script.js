@@ -192,31 +192,31 @@ function requestContent(page) {
 	
 };
 
-function loadPage(page) {
-	const oldActive = document.querySelector('a.active');
-	if (oldActive) {
-		oldActive.classList.remove('active');
-	}
-	const newActive = document.querySelector('a[href="#' + page + '"]');
-	newActive.classList.add('active');
-	if (page === 'home') {
-		content.innerHTML = loginHTML;
-	}
-	else {
-		requestContent(page);
-	}
-	// history.pushState(null, "", "/" + page);
-};
+// function loadPage(page) {
+// 	const oldActive = document.querySelector('a.active');
+// 	if (oldActive) {
+// 		oldActive.classList.remove('active');
+// 	}
+// 	const newActive = document.querySelector('a[href="#' + page + '"]');
+// 	newActive.classList.add('active');
+// 	if (page === 'home') {
+// 		content.innerHTML = loginHTML;
+// 	}
+// 	else {
+// 		requestContent(page);
+// 	}
+// 	// history.pushState(null, "", "/" + page);
+// };
 
-window.onpopstate = function() {
-	var path = window.location.hash.substring(1);
-	console.log(path);
-	if (!path) {
-		path = 'home';
-		window.location.hash = path;
-	}
-	loadPage(path);
-};
+// window.onpopstate = function() {
+// 	var path = window.location.hash.substring(1);
+// 	console.log(path);
+// 	if (!path) {
+// 		path = 'home';
+// 		window.location.hash = path;
+// 	}
+// 	loadPage(path);
+// };
 
 // window.onload = function() {
 // 	var path = location.hash.substring(1);
@@ -274,18 +274,46 @@ function logout(){
 		});
 }
 
+function activeLink(page) {
+	let oldActive = document.querySelector('a.active');
+	if (oldActive) {
+		oldActive.classList.remove('active');
+	}
+	let newActive = document.querySelector(`a[name="${page}"]`);
+	newActive.classList.add('active');
+}
+
 function goToPage(page) {
-	fetch(page)
+	if (page === 'index') {
+		page = 'login';
+		// history.replaceState({ page: 'index' }, "", "/");
+	}
+	fetch(`static/data/${page}.html`)
 		.then(response => response.text())
 		.then(html => {
-			console.log(html);
+			activeLink(page);
 			document.getElementById('content').innerHTML = html;
+			// history.pushState({ page }, "", `/${page}`);
 		})
 		.catch((error) => {
 			console.error('Error:', error);
-		});
+	});
 };
 
+// window.onpopstate = function(event) {
+// 	if (event.state && event.state.page) {
+// 		console.log(event.state.page);
+// 		goToPage(event.state.page);
+// 	}
+// 	else {
+// 		goToPage('index');
+// 	}
+// };
+
 window.onload = function() {
-	goToPage('login');
-}
+	let page = document.querySelector('a.active');
+	console.log(page);
+	if (page) {
+		page.click();
+	}
+};
