@@ -287,5 +287,5 @@ function goToPage(page) {
 };
 
 window.onload = function() {
-	goToPage('index.html');
+	goToPage('login');
 }
