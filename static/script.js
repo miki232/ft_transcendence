@@ -55,10 +55,6 @@ const loginHTML = `
   </div>
 `;
 
-const userDashboard = `
-<h1>User Dashboard</h1>
-<h2>Logged in as: 800A</h2>
-`;
 // const navLinks = document.getElementsByClassName('link');
 
 // function loadContent() {
@@ -222,16 +218,16 @@ window.onpopstate = function() {
 	loadPage(path);
 };
 
-window.onload = function() {
-	var path = location.hash.substring(1);
-	console.log(path);
-	if (path) {
-		loadPage(path);
-	} else {
-		window.location.hash = 'home';
-		loadPage('home');
-	}
-};
+// window.onload = function() {
+// 	var path = location.hash.substring(1);
+// 	console.log(path);
+// 	if (path) {
+// 		loadPage(path);
+// 	} else {
+// 		window.location.hash = 'home';
+// 		loadPage('home');
+// 	}
+// };
 
 function loadDashboard() {
 	csrftoken = getCookie('csrftoken')
@@ -276,4 +272,20 @@ function logout(){
 		.catch((error) => {
 			console.error('Error:', error);
 		});
+}
+
+function goToPage(page) {
+	fetch(page)
+		.then(response => response.text())
+		.then(html => {
+			console.log(html);
+			document.getElementById('content').innerHTML = html;
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+};
+
+window.onload = function() {
+	goToPage('index.html');
 }
