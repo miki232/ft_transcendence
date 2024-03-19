@@ -308,6 +308,15 @@ function goToPage(page) {
 			}
 			return response.json();
 		})
+		.then(data => {
+			content.innerHTML = `
+				<p>Username: ${data.username}</p>
+				<p>Email: ${data.email}</p>
+				<p>First Name: ${data.first_name}</p>
+				<p>Last Name: ${data.last_name}</p>
+			`;
+			console.log(data);
+		})
 		.catch((error) => {
 			// console.error('Error:', error);
 		});
