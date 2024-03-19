@@ -282,11 +282,44 @@ function activeLink(page) {
 	let newActive = document.querySelector(`a[name="${page}"]`);
 	newActive.classList.add('active');
 }
+//Ho aggiunto che se la pagina richiesta è login, fa un fetch a userinfo
+//se ritorna uno stato differente a 200 vuol dire che l'utente
+// deve ancora fare il login, se è già loggato direttamente 
+// riporta le info e non richiede di fare il login. 
+// sicuramente c'è un metodo migliore ma era solo un test
 
 function goToPage(page) {
 	if (page === 'index') {
 		page = 'login';
 		// history.replaceState({ page: 'index' }, "", "/");
+	}
+	if (page === 'login')
+	{
+		csrftoken = getCookie('csrftoken')
+		fetch('accounts/user_info/', {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		}).then(response => {
+			if (response.status !== 200) {
+				throw new Error(`HTTP status ${response.status}`);
+			}
+			return response.json();
+		})
+		.then(data => {
+			content.innerHTML = `
+				<p>Username: ${data.username}</p>
+				<p>Email: ${data.email}</p>
+				<p>First Name: ${data.first_name}</p>
+				<p>Last Name: ${data.last_name}</p>
+			`;
+			console.log(data);
+		})
+		.catch((error) => {
+			// console.error('Error:', error);
+		});
 	}
 	fetch(`static/data/${page}.html`)
 		.then(response => response.text())
