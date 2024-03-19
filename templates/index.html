@@ -24,9 +24,14 @@
 			<ul>
 				<li>Logo</li>
 				<li><a onclick="logout()">logout</a></li>
-				<li><a href="#" onclick="goToPage('login')" name="login" class="active">Home</a></li>
-				<li><a href="#" onclick="goToPage('about')" name="about">About</a></li>
-				<li><a href="#" onclick="goToPage('contact')" name="contact">Contact</a></li>
+				<!-- <li><a href="#" onclick="goToPage('login')" name="login" class="active">Home</a></li> -->
+				<!-- <li><a href="#" onclick="goToPage('about')" name="about">About</a></li> -->
+				<!-- <li><a href="#" onclick="goToPage('contact')" name="contact">Contact</a></li> -->
+				<li><a href="/" class="active" data-link>Home</a></li>
+				<li><a href="/about" data-link>About</a></li>
+				<li><a href="/contact" data-link>Contact</a></li>
+				
+					
 			</ul>
 		</nav>
 	</header>
@@ -37,5 +42,6 @@
 		<p>© 2024 - 42 Roma Luiss</p>
 	</footer>
 	<script src="{% static 'script.js' %}"></script>
+	<script src="{% static 'index.js' %}" type="module"></script>
 </body>
 </html>
