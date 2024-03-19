@@ -1,8 +1,34 @@
 const canvas = document.getElementById('pongCanvas');
 const context = canvas.getContext('2d');
 
-const WS_ENDPOINT = 'ws://127.0.0.1:8000/ws/game/';
-let ws = new WebSocket(WS_ENDPOINT);
+let users;
+
+csrftoken = getCookie('csrftoken')
+fetch('accounts/user_info/', {
+	method: 'GET',
+	headers: {
+		'Content-Type' : 'application/json',
+		'X-CSRFToken': csrftoken
+	}
+})
+	.then(response => response.json())
+	.then(data => {
+        users = data.username;
+		console.log(users);
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+
+// const roomName = JSON.parse(document.getElementById('room-name').textContent);
+console.log("user", users)
+let ws = new WebSocket(
+    'ws://'
+    + window.location.host
+    + '/ws/pong/'
+    + 'suca'
+    + '/'
+);
 
 // Define constants for the game
 const PADDLE_WIDTH = 10;
@@ -19,6 +45,34 @@ let ballY = canvas.height / 2;
 let arrowUpPressed = false;
 let arrowDownPressed = false;
 
+canvas.addEventListener('touchstart', handleTouchStart, false);
+canvas.addEventListener('touchend', handleTouchEnd, false); 
+
+function handleTouchStart(event) {
+    event.preventDefault();
+        var touchY = event.touches[0].clientY;
+        var canvasOffsetTop = canvas.getBoundingClientRect().top;
+    
+    // Subtract the offset to get the relative touchY position
+        touchY -= canvasOffsetTop;
+        console.log(touchY)
+    // Determine if the touch event is above or below the paddle
+        if (touchY < playerPaddleY + PADDLE_HEIGHT / 2) {
+            // Move the paddle up
+            arrowUpPressed = true;
+        } else {
+            // Move the paddle down
+            arrowDownPressed = true;
+        }
+    }
+
+        // Function to handle touch end event
+function handleTouchEnd(event) {
+    event.preventDefault();
+    // Reset arrow key states
+    arrowUpPressed = false;
+    arrowDownPressed = false;
+}
 // Event listener for keydown events
 document.addEventListener('keydown', function(event) {
     console.log('keydown', event.key);
@@ -27,6 +81,7 @@ document.addEventListener('keydown', function(event) {
     } else if (event.key === 'ArrowDown') {
         arrowDownPressed = true;
     }
+    
 });
 
 // Event listener for keyup events
@@ -39,33 +94,32 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
-// Event listener for keydown events
-// document.addEventListener('keydown', function(event) {
-//     if (event.key === 'ArrowUp') {
-//         // Send a message to the server indicating the user wants to move the paddle up
-//         console.log('sending move_up');
-//         ws.send(JSON.stringify({'action': 'move_up'}));
-//     } else if (event.key === 'ArrowDown') {
-//         // Send a message to the server indicating the user wants to move the paddle down
-//         ws.send(JSON.stringify({'action': 'move_down'}));
-//     }
-//     else if (event.key === 'Enter') {
-//         console.log('sending start_game');
-//         // Send a message to the server indicating the user wants to start the game
-//         ws.send(JSON.stringify({'action': 'start_game'}));
-//     }
-// });
+        // Event listener for keydown events
+        // document.addEventListener('keydown', function(event) {
+        //     if (event.key === 'ArrowUp') {
+        //         // Send a message to the server indicating the user wants to move the paddle up
+        //         console.log('sending move_up');
+        //         ws.send(JSON.stringify({'action': 'move_up'}));
+        //     } else if (event.key === 'ArrowDown') {
+        //         // Send a message to the server indicating the user wants to move the paddle down
+        //         ws.send(JSON.stringify({'action': 'move_down'}));
+        //     }
+        //     else if (event.key === 'Enter') {
+        //         console.log('sending start_game');
+        //         // Send a message to the server indicating the user wants to start the game
+        //         ws.send(JSON.stringify({'action': 'start_game'}));
+        //     }
+        // });
 
 
-// Function to update paddle position
+        // Function to update paddle position
 function updatePaddlePosition() {
-    console.log('updatePaddlePosition');
     if (arrowUpPressed) {
         console.log('sending move_up');
-        ws.send(JSON.stringify({'action': 'move_up'}));
+        ws.send(JSON.stringify({'action': 'move_up', 'user': users}));
     }
     if (arrowDownPressed) {
-        ws.send(JSON.stringify({'action': 'move_down'}));
+        ws.send(JSON.stringify({'action': 'move_down', 'user': users}));
     }
 }
 
@@ -92,11 +146,11 @@ function drawPaddles() {
 // Event listener for incoming messages from the server
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    console.log(data);
-    // console.log('received message');
+    // +console.log('received message');
+    console.log(data.ball_speed_x)
     // Update the opponent's paddle position based on data received from the server
-    if (data.opponent_paddle_y !== undefined) {
-        opponentPaddleY = data.opponent_paddle_y;
+    if (data.paddle2_y !== undefined) {
+        opponentPaddleY = data.paddle2_y;
     }
     if (data.ball_x !== undefined) {
         ballX = data.ball_x;

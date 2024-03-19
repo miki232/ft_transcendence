@@ -309,12 +309,19 @@ function goToPage(page) {
 			return response.json();
 		})
 		.then(data => {
-			content.innerHTML = `
-				<p>Username: ${data.username}</p>
-				<p>Email: ${data.email}</p>
-				<p>First Name: ${data.first_name}</p>
-				<p>Last Name: ${data.last_name}</p>
-			`;
+			fetch(`pong/suca`)
+				.then(response => response.text())
+				.then(html => {
+					document.getElementById('content').innerHTML = html;
+					// history.pushState({ page }, "", `/${page}`);
+					
+					let script = document.createElement('script');
+					script.src = '/static/pong.js';
+					document.body.appendChild(script);
+				})
+				.catch((error) => {
+					console.error('Error:', error);
+			});
 			console.log(data);
 		})
 		.catch((error) => {
