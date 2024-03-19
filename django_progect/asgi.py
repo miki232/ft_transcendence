@@ -14,6 +14,8 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 import chat.routing
+import pong.routing
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_progect.settings')
 
 django_asgi_app = get_asgi_application()
@@ -22,7 +24,7 @@ application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(pong.routing.websocket_urlpatterns))
         ),
         # Just HTTP for now. (We can add other protocols later.)
     }

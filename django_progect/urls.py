@@ -22,7 +22,7 @@ urlpatterns = [
     path("", include("frontend.urls")),
     path('admin/', admin.site.urls),
     path("chat/", include("chat.urls")), # new
-    path("pong/", include("chat.urls")), # new
+    path("pong/", include("pong.urls")), # new
     path("accounts/", include("accounts.urls")), # new
     path("accounts/", include("django.contrib.auth.urls")), # new
 ]

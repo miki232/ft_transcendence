@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'chat', # new
     'frontend', #new
     'daphne', # new
+    'pong',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
