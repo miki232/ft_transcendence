@@ -68,9 +68,34 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link")) {
             e.preventDefault();
-            // activeLink(e.target.href.substring(21));
+            if (e.target.matches("onclick")) {
+                e.target.onclick();
+            }
             navigateTo(e.target.href);
         }
     });
     router();
 });
+
+function logout(){
+	var csrftoken = getCookie('csrftoken')
+	fetch('accounts/logout/', {
+		method: 'POST',
+		headers: {
+			'Content-Type' : 'application/json',
+			'X-CSRFToken': csrftoken
+		}
+	})
+	.then(response => {
+		if (response.status !== 204) {
+			throw new Error(`HTTP status ${response.status}`);
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log(data);
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}

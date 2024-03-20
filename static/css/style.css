@@ -5,6 +5,7 @@
     --secondary-color: #393E46;
     --tertiary-color: #0079FF;
     --quaternary-color: #EEEEEE;
+    --logout-color: #FF453A;
 }
 
 *,
@@ -72,6 +73,13 @@ nav ul li a.active {
     font-weight: bold;
 }
 
+nav ul li a#logout {
+    color: var(--logout-color);
+}
+
+nav ul li a#logout:hover {
+    font-weight: bold;
+}
 /********PORCATA!!!!***********
 nav ul li a:last-child:hover {
     padding-left: 6px;
