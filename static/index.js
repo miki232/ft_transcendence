@@ -1,15 +1,19 @@
 import Login from "./views/Login.js";
 import About from "./views/About.js";
 import Contact from "./views/Contact.js";
+import Dashboard from "./views/Dashboard.js";
 
-function activeLink(page) {
-    let oldActive = document.querySelector('a.active');
-	if (oldActive) {
-		oldActive.classList.remove('active');
-	}
-	let newActive = document.querySelector(`a[href="${page}"]`);
-	newActive.classList.add('active');
-}
+// function activeLink(page) {
+//     let oldActive = document.querySelector('a.active');
+// 	if (oldActive) {
+// 		oldActive.classList.remove('active');
+// 	}
+// 	let newActive = document.querySelector(`a[href="${page}"]`);
+// 	newActive.classList.add('active');
+// }
+
+const nav = document.querySelector("nav");
+const content = document.querySelector("#content");
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -21,8 +25,8 @@ const router = async () => {
         // { path: "/404", view: NotFound},
         { path: "/", view: Login },
         { path: "/about", view: About },
-        { path: "/contact", view: Contact }
-        // { path: "/Dashboard", view: Dashboard }
+        { path: "/contact", view: Contact },
+        { path: "/dashboard", view: Dashboard }
     ];
     
     const potentialMatches = routes.map(route => {
@@ -39,11 +43,23 @@ const router = async () => {
             isMatch: true
         };
     }
-
-    const view = new match.route.view();
-    document.querySelector("#content").innerHTML = await view.getHtml();
-    
-    // console.log(match.route.view());
+    // console.log(match.route.path);
+    if (match.route.path === "/dashboard") {
+        var view = new match.route.view();
+        await view.validateLogin();
+        if (view.isValid === true) {
+            await view.loadUserData();
+            nav.innerHTML = await view.getNav();
+            document.querySelector("#user").innerHTML = await view.getUser();
+            content.innerHTML = await view.getContent();
+            document.querySelector("span").innerHTML = await view.getEmail();
+            view.setTitle("Dashboard");
+        }
+    } else {
+        const view = new match.route.view();
+        nav.innerHTML = await view.getNav();
+        content.innerHTML = await view.getContent();
+    }
 };
 
 window.addEventListener("popstate", router);
@@ -52,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link")) {
             e.preventDefault();
-            activeLink(e.target.href.substring(21));
+            // activeLink(e.target.href.substring(21));
             navigateTo(e.target.href);
         }
     });

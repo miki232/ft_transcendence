@@ -1,0 +1,99 @@
+import AbstractView from "./AbstractView.js";
+
+const navHTML = `
+<ul>
+	<li id="user"></li>
+	<li><a onclick="logout()">Logout</a></li>
+</ul>
+`;
+
+const dashboardHTML = `
+<h1>Dashboard</h1>
+<p>Welcome to the dashboard <span></span>.</p>
+`;
+
+// var user, email;
+
+export default class extends AbstractView {
+    constructor() {
+        super();
+        this.isValid = false;
+        this.user;
+        this.email;
+        // this.validateLogin();
+        // this.setTitle("Dashboard");
+    }
+
+    async loadUserData() {
+        var csrftoken = this.getCookie('csrftoken')
+        await fetch('accounts/user_info/', {
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken': csrftoken
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.setUser(data.username);
+                this.setEmail(data.email);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            })
+    }
+
+    async validateLogin() {
+        var username = this.sanitizeInput(document.getElementById('login-user').value);
+	    var password = this.sanitizeInput(document.getElementById('login-pass').value);
+	    var csrftoken = this.getCookie('csrftoken');
+
+	    await fetch('accounts/login/', {
+	    	method: 'POST',
+	    	headers: {
+	    		'Content-Type' : 'application/json',
+	    		'X-CSRFToken': csrftoken
+	    	},
+	    	body: JSON.stringify({
+	    		username: username,
+	    		password: password
+	    	}),
+	    }).then(response => {
+	    	response.json();
+	    	console.log(response);
+	    	if (response.status === 200) {
+                this.isValid = true;
+	    	} else {
+	    		alert('Wrong username or password');
+	    	}
+	        })
+	    	.then(data => console.log(data))
+	    	.catch((error) => {
+	    		console.error('Error: ', error);
+	    })
+    }
+
+    async setUser(data_user) {
+        this.user = data_user;
+    }
+    
+    async setEmail (data_email) {
+        this.email = data_email;
+    }
+
+    async getUser() {
+        return this.user;
+    }
+
+    async getEmail() {
+        return this.email;
+    }
+
+    async getNav() {
+		return navHTML;
+	}
+
+    async getContent() {
+        return dashboardHTML;
+    }
+}

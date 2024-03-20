@@ -16,7 +16,7 @@ const loginHTML = `
       	    	  <input id="login-pass" type="password" class="input" data-type="password">
       	    	</div>
       	    	<div class="group">
-      	    	  <input type="submit" id="login" onclick="login()" class="button" value="Sign In">
+      	    	  <a href="/dashboard" id="login" class="button" data-link>Sign In</a>
       	    	</div>
 			  	<div class="group" id="forgot">
 			  		<a href="#forgot">Forgot Password?</a>
@@ -56,13 +56,27 @@ const loginHTML = `
   </div>
 `;
 
+const navHTML = `
+<ul>
+	<li>Logo</li>
+	<li><a onclick="logout()">logout</a></li>
+	<li><a href="/" class="active" name="index" data-link>Home</a></li>
+	<li><a href="/about" name="about" data-link>About</a></li>
+	<li><a href="/contact" name="contact" data-link>Contact</a></li>
+</ul>
+`;
+
 export default class extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Login");
+        this.setTitle("ft_transcendence");
     }
 
-    async getHtml() {
+	async getNav() {
+		return navHTML;
+	}
+
+    async getContent() {
         return loginHTML;
     }
 }

@@ -198,11 +198,12 @@ a {
 .login-form .group .button {
   background: var(--tertiary-color);
   cursor: pointer;
+  text-align: center;
 }
 .login-form .group .button:hover {
     background:#1454c4;
     cursor: pointer;
-  }
+}
 .login-form .group label .icon {
   width: 15px;
   height: 15px;
