@@ -3,7 +3,7 @@ import AbstractView from "./AbstractView.js";
 const navHTML = `
 <ul>
 	<li id="user"></li>
-	<li><a onclick="logout()">Logout</a></li>
+	<li><a href="/" id="logout" onclick="logout()">Logout</a></li>
 </ul>
 `;
 
@@ -11,8 +11,6 @@ const dashboardHTML = `
 <h1>Dashboard</h1>
 <p>Welcome to the dashboard <span></span>.</p>
 `;
-
-// var user, email;
 
 export default class extends AbstractView {
     constructor() {
