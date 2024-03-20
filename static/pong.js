@@ -2,9 +2,24 @@ const canvas = document.getElementById('pongCanvas');
 const context = canvas.getContext('2d');
 
 let users;
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
-csrftoken = getCookie('csrftoken')
-fetch('accounts/user_info/', {
+
+let csrftoken = getCookie('csrftoken')
+fetch('/accounts/user_info/', {
 	method: 'GET',
 	headers: {
 		'Content-Type' : 'application/json',
@@ -20,13 +35,22 @@ fetch('accounts/user_info/', {
 		console.error('Error:', error);
 	});
 
+    // Get the current URL path
+let path = window.location.pathname;
+
+// Split the path into segments
+let segments = path.split('/');
+
+// Get the room name from the path
+// Assuming the room name is the second last segment in the path
+let roomName = segments[segments.length - 2];
 // const roomName = JSON.parse(document.getElementById('room-name').textContent);
-console.log("user", users)
+console.log("user", users, "room name ", roomName);
 let ws = new WebSocket(
     'ws://'
     + window.location.host
     + '/ws/pong/'
-    + 'suca'
+    + roomName
     + '/'
 );
 

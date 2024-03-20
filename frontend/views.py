@@ -12,3 +12,6 @@ def about(request):
 
 def contact(request):
     return render(request, 'contact.html')
+
+def room(request):
+    return render(request, "base.html")

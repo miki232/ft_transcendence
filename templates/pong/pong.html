@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong Game</title>
     <style>
+        body {
+            background-color: #222831;
+            /* background: 
+                linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+                url('../img/bg3.jpg'); */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center -100px;
+            color: var(--quaternary-color);
+            line-height: 1.6;
+        }
         canvas {
             border: 2px solid #FFF;
             width: 90%; /* Adjust as needed */
@@ -30,6 +41,7 @@
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% load static %}
     <!-- You might want to include your static files here -->
 </head>
 <body data-username="{{user.username}}">
@@ -51,5 +63,6 @@
         <h1 id="score2">Score: 0</h1>
         <canvas id="pongCanvas" width="800" height="400"></canvas>
     </div>
+    <script src="{% static 'pong.js' %}" type="module"></script>
 </body>
 </html>
