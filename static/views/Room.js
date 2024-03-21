@@ -53,7 +53,7 @@ export default class Room extends AbstractView {
 			}
 		})
 		.catch((error) => {
-		  alert(error.name[0]);
+			alert(error.name[0]);
 			console.log('Error:', error);
 		});
 	}
