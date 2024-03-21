@@ -53,6 +53,7 @@ const router = async () => {
             document.querySelector("#user").innerHTML = await view.getUser();
             content.innerHTML = await view.getContent();
             document.querySelector("span").innerHTML = await view.getEmail();
+            document.querySelector("img").src = await view.getPic(); //new
             view.setTitle("Dashboard");
         }
     } else {

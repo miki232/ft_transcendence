@@ -9,6 +9,12 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ['email', 'username',] # new
+    list_display = ['email', 'username'] # new
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj:
+            fieldsets += (('Extra Fields', {'fields': ('pro_pic',)}),)
+        return fieldsets
+
 
 admin.site.register(CustomUser, CustomUserAdmin) # new

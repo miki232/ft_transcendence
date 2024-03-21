@@ -9,6 +9,7 @@ const navHTML = `
 
 const dashboardHTML = `
 <h1>Dashboard</h1>
+<img src=""></img>
 <p>Welcome to the dashboard <span></span>.</p>
 `;
 
@@ -18,6 +19,7 @@ export default class extends AbstractView {
         this.isValid = false;
         this.user;
         this.email;
+        this.pro_pic;
         // this.validateLogin();
         // this.setTitle("Dashboard");
     }
@@ -33,8 +35,10 @@ export default class extends AbstractView {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 this.setUser(data.username);
                 this.setEmail(data.email);
+                this.setPic(data.pro_pic); //new
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -54,7 +58,7 @@ export default class extends AbstractView {
 	    	},
 	    	body: JSON.stringify({
 	    		username: username,
-	    		password: password
+	    		password: password,
 	    	}),
 	    }).then(response => {
 	    	response.json();
@@ -71,6 +75,10 @@ export default class extends AbstractView {
 	    })
     }
 
+    async setPic(data_pic){ //new
+        this.pro_pic = data_pic;
+    }
+
     async setUser(data_user) {
         this.user = data_user;
     }
@@ -85,6 +93,10 @@ export default class extends AbstractView {
 
     async getEmail() {
         return this.email;
+    }
+    
+    async getPic(){ //new
+        return this.pro_pic;
     }
 
     async getNav() {
