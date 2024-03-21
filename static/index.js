@@ -16,6 +16,7 @@ import Room from "./views/Room.js";
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 const room = new Room();
+let inDashboard = false;
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -52,6 +53,7 @@ const router = async () => {
         await view.validateLogin();
         if (view.isValid === true) {
             await view.loadUserData();
+			inDashboard = true;
             nav.innerHTML = await view.getNav();
             document.querySelector("#user").innerHTML = await view.getUser();
             content.innerHTML = await view.getContent();
@@ -61,6 +63,7 @@ const router = async () => {
 			room.updateRoomList();
         }
     } else {
+		inDashboard = false;
         const view = new match.route.view();
         nav.innerHTML = await view.getNav();
         content.innerHTML = await view.getContent();
@@ -68,7 +71,12 @@ const router = async () => {
 };
 
 window.addEventListener("popstate", router);
-setInterval(room.updateRoomList, 5000);
+const updateRoomList = setInterval(() => {
+	if (inDashboard) {
+		room.updateRoomList();
+		console.log("Room list updated");
+	}
+}, 5000);
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
@@ -101,7 +109,7 @@ function logout(){
 		return response.json();
 	})
 	.then(data => {
-        isLoggedIn = false;
+        inDashboard = false;
 		console.log(data);
 	})
 	.catch((error) => {
