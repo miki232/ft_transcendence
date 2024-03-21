@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='login'),
     path('user_info/', UserInfoView.as_view(), name='user_info'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('user/<str:username>/match_history/', UserMatchHistoryView.as_view(), name='user_match_history')
+    path('match_history/', UserMatchHistoryView.as_view(), name='user_match_history'),
+    # path('user/<str:username>/match_history/', UserMatchHistoryView.as_view(), name='user_match_history')
 ]
