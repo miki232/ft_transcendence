@@ -16,6 +16,7 @@ import Room from "./views/Room.js";
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 const room = new Room();
+let isLoggedIn = false;
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -40,18 +41,19 @@ const router = async () => {
     });
     
     let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
-    if (!match) {
+    if (isLoggedIn) {
         match = {
-            route: routes[0],
+            route: routes[3],
             isMatch: true
         };
     }
     // console.log(match.route.path);
-    if (match.route.path === "/dashboard") {
+    if (match.route.path === "/dashboard" || isLoggedIn) {
         var view = new match.route.view();
         await view.validateLogin();
         if (view.isValid === true) {
             await view.loadUserData();
+            isLoggedIn = true;
             nav.innerHTML = await view.getNav();
             document.querySelector("#user").innerHTML = await view.getUser();
             content.innerHTML = await view.getContent();
@@ -99,6 +101,7 @@ function logout(){
 		return response.json();
 	})
 	.then(data => {
+        isLoggedIn = false;
 		console.log(data);
 	})
 	.catch((error) => {
