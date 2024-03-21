@@ -2,6 +2,7 @@ import Login from "./views/Login.js";
 import About from "./views/About.js";
 import Contact from "./views/Contact.js";
 import Dashboard from "./views/Dashboard.js";
+import Room from "./views/Room.js";
 
 // function activeLink(page) {
 //     let oldActive = document.querySelector('a.active');
@@ -14,6 +15,7 @@ import Dashboard from "./views/Dashboard.js";
 
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
+const room = new Room();
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -27,6 +29,7 @@ const router = async () => {
         { path: "/about", view: About },
         { path: "/contact", view: Contact },
         { path: "/dashboard", view: Dashboard }
+        // { path: "/pong", view: Pong }
     ];
     
     const potentialMatches = routes.map(route => {
@@ -73,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.target.onclick();
             }
             navigateTo(e.target.href);
+        } else if (e.target.matches("#createRoomBtn")) {
+            room.btnCreateRoom();
         }
     });
     router();

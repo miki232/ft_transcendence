@@ -4,13 +4,13 @@ const roomHtml = `
 <div id="room-card">
 	<h2>Create or Join a Room</h2>
 	<input type="text" id="roomNameInput" placeholder="Enter room name">
-	<button id="createRoomBtn">Create Room</button>
+	<button id="createRoomBtn"">Create Room</button>
 	<h3>Available Rooms</h3>
 	<ul id="roomList"></ul>
 </div>
 `;
 
-export default class extends AbstractView {
+export default class Room extends AbstractView {
 	constructor() {
 		super();
 		this.roomNameInput = document.getElementById("roomNameInput");
@@ -41,7 +41,7 @@ export default class extends AbstractView {
 				throw error;
 			  });
 			}
-			updateRoomList();
+			this.updateRoomList();
 			return response.json;
 		  })
 		  .then(data => {
