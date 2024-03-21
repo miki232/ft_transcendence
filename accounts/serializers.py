@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import CustomUser
+from .models import CustomUser, Match
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,8 +41,22 @@ class LoginSerializer(serializers.Serializer):
             msg = "Must provide username and password both."
             raise serializers.ValidationError(msg)
         return data
-    
+
+# class MatchSerializer(serializers.ModelSerializer):
+#     user1_name = serializers.CharField(source='user1.username', read_only=True)
+#     user2_name = serializers.CharField(source='user2.username', read_only=True)
+
+#     class Meta:
+#         model = Match
+#         fields = ['user1_name', 'user2_name', 'score_user1', 'score_user2', 'winner', 'date']
+
+
 class UserInfoSerializer(serializers.ModelSerializer):
+    match_history = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', 'match_history')
+
+    def get_match_history(self, obj):
+        return obj.get_match_history()

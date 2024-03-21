@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser
+from .models import CustomUser, Match
 # Register your models here.
 
 class CustomUserAdmin(UserAdmin):
@@ -16,5 +16,5 @@ class CustomUserAdmin(UserAdmin):
             fieldsets += (('Extra Fields', {'fields': ('pro_pic',)}),)
         return fieldsets
 
-
+admin.site.register(Match) #new
 admin.site.register(CustomUser, CustomUserAdmin) # new
