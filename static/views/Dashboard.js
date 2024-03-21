@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import Room from "./Room.js";
 
 const navHTML = `
 <ul>
@@ -7,7 +8,7 @@ const navHTML = `
 </ul>
 `;
 
-const dashboardHTML = `
+let dashboardHTML = `
 <h1>Dashboard</h1>
 <img src=""></img>
 <p>Welcome to the dashboard <span></span>.</p>
@@ -19,6 +20,7 @@ export default class extends AbstractView {
         this.isValid = false;
         this.user;
         this.email;
+        this.room = new Room();
         this.pro_pic;
         // this.validateLogin();
         // this.setTitle("Dashboard");
@@ -104,6 +106,7 @@ export default class extends AbstractView {
 	}
 
     async getContent() {
+        dashboardHTML += await this.room.getContent();
         return dashboardHTML;
     }
 }

@@ -39,7 +39,11 @@ export default class {
         document.title = title;
     }
 
-    async getHtml() {
+    async getNav() {
+        return "";
+    }
+
+    async getContent() {
         return "";
     }
 }
