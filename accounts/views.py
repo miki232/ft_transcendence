@@ -13,7 +13,7 @@ from .models import CustomUser
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer
@@ -100,6 +100,10 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class UserMatchHistoryView(generics.RetrieveAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserInfoSerializer
+    lookup_field = 'username'
 
 class LogoutView(APIView):
     def post(self, request):
