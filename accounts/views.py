@@ -61,8 +61,10 @@ def callback(request):
     user_info = response.json()
 
     # Check if the user already exists in your database
+    # print(user_info['image']['link'])
     user, created = CustomUser.objects.get_or_create(
         username=user_info['login'],
+        pro_pic=user_info['image']['link'],
         defaults={'email': user_info.get('email', '')}
     )
 
@@ -70,7 +72,7 @@ def callback(request):
     login(request, user)
 
     # Redirect the user to a success page or any other appropriate page
-    return redirect('home')
+    return redirect('/')
 
 class UserSignupView(APIView):
     def post(self, request, format=None):
