@@ -44,7 +44,7 @@ const loginHTML = `
       	    		<input id="email" type="text" class="input">
       	    	</div>
       	    	<div class="group">
-      	    		<input type="submit" onclick="register()"  class="button" value="Sign Up">
+				  <a id="signup" class="button">Sign Up</a>
       	    	</div>
       	    	<div class="hr"></div>
       	    	<div class="foot-lnk">
