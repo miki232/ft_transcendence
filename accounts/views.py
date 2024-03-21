@@ -100,10 +100,14 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-class UserMatchHistoryView(generics.RetrieveAPIView):
-    queryset = CustomUser.objects.all()
+class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserInfoSerializer
-    lookup_field = 'username'
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        if username is not None:
+            return CustomUser.objects.filter(username=username)
+        return CustomUser.objects.none()
 
 class LogoutView(APIView):
     def post(self, request):
