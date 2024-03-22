@@ -8,6 +8,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import requests
 import urllib
+import os
+import uuid
 
 from .forms import CustomUserCreationForm
 from .models import CustomUser
@@ -93,6 +95,7 @@ class UserLoginView(APIView):
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = (SessionAuthentication,)
@@ -109,7 +112,10 @@ class UserInfoView(APIView):
     def post(self, request):
         uploaded_file = request.FILES['imageFile']
         fs = FileSystemStorage(location='media/profile_pics/')
-        name = fs.save(uploaded_file.name, uploaded_file)
+        ext = uploaded_file.name.split('.')[-1]
+        filename = '{}.{}'.format(uuid.uuid4(), ext)
+
+        name = fs.save(filename, uploaded_file)
         name = 'profile_pics/' + name
         url = fs.url(name)
         request.user.pro_pic = url
