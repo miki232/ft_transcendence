@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import validateLogin from './Dashboard.js';
 
 const loginHTML = `
 <div class="login-wrap">
@@ -70,7 +71,34 @@ export default class extends AbstractView {
     constructor() {
         super();
         this.setTitle("ft_transcendence");
+		this.is_loggedin = false;
     }
+
+	async loadUserData() {
+		var csrftoken = this.getCookie('csrftoken')
+		await fetch('accounts/user_info/', {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		})
+		.then(response => {
+			if (response.ok) {
+				this.is_loggedin = true;
+				return response.json();
+			} else {
+				this.is_loggedin = false;
+				throw new Error('Not logged in');
+			}
+		})
+		.then(data => {
+			console.log(data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		})
+	}
 
 	async getNav() {
 		return navHTML;

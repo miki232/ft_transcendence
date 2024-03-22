@@ -24,6 +24,25 @@ const navigateTo = url => {
 	router();
 };
 
+const is_loggedin = async () => {
+    var csrftoken = getCookie('csrftoken');
+
+    return fetch('accounts/user_info/', {
+        method: 'GET',
+        headers: {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
 const router = async () => {
 	const routes = [
 		// { path: "/404", view: NotFound},
@@ -48,11 +67,14 @@ const router = async () => {
 			isMatch: true
 		};
 	}
-	// console.log(match.route.path);
+	let is_logged_in = await is_loggedin();
+	console.log(is_logged_in);
+	// console.log(match.route.path);z
 	if (match.route.path === "/dashboard") {
 		var view = new match.route.view();
-		await view.validateLogin();
-		if (view.isValid === true) {
+		if (is_logged_in === false)
+			await view.validateLogin();
+		if (view.isValid === true || is_logged_in === true) {
 			await view.loadUserData();
 			inDashboard = true;
 			nav.innerHTML = await view.getNav();
@@ -64,6 +86,8 @@ const router = async () => {
 			room.updateRoomList();
 		}
 	} else {
+		if (is_logged_in === true)
+			navigateTo("/dashboard");
 		inDashboard = false;
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
