@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import requests
 import urllib
@@ -99,6 +100,22 @@ class UserInfoView(APIView):
     def get(self, request):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    def put(self, request):
+        serializer = UserInfoSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        uploaded_file = request.FILES['imageFile']
+        fs = FileSystemStorage(location='media/profile_pics/')
+        name = fs.save(uploaded_file.name, uploaded_file)
+        name = 'profile_pics/' + name
+        url = fs.url(name)
+        request.user.pro_pic = url
+        request.user.save()
+        return Response({'pro_pic': url}, status=status.HTTP_200_OK)
+
     
 class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserInfoSerializer

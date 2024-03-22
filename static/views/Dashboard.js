@@ -10,7 +10,7 @@ const navHTML = `
 
 let dashboardHTML = `
 <h1>Dashboard</h1>
-<img src=""></img>
+<img src=""</img>
 <p>Welcome to the dashboard <span></span>.</p>
 `;
 

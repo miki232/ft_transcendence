@@ -15,3 +15,6 @@ def contact(request):
 
 def room(request):
     return render(request, "base.html")
+
+def test(request):
+    return render(request, "home2.html")

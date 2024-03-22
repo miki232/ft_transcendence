@@ -88,6 +88,7 @@ const router = async () => {
 			content.innerHTML = await view.getContent();
 			document.querySelector("span").innerHTML = await view.getEmail();
 			document.querySelector("img").src = await view.getPic(); //new
+			document.querySelector("img").style = "width: 5em; height: 5em;";
 			view.setTitle("Dashboard");
 			room.updateRoomList();
 		}

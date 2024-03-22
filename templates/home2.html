@@ -1,20 +1,60 @@
-<!-- templates/home.html -->
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Upload</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>Image Upload</h1>
+  
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="imageFile" id="imageFile">
+    <input type="submit" value="Upload">
+  </form>
 
-{% block title %}Home{% endblock %}
+  <script>
+    $(document).ready(function() {
+      // Get the CSRF token from the cookie
+      function getCSRFToken() {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='))
+          .split('=')[1];
+        return cookieValue;
+      }
 
-{% block content %}
-{% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">logout</button>
-    </form>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a> |
-  <a href="{% url 'signup' %}">Sign Up</a>
-  <button onclick="location.href='{% url 'authorize' %}'">Authorize with 42</button>
+      // Handle form submission
+      $('#uploadForm').submit(function(event) {
+        event.preventDefault();
 
-  {% endif %}
-{% endblock %}
+        // Get the selected image file
+        const imageFile = $('#imageFile')[0].files[0];
+
+        // Create a FormData object to send the file
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+
+        // Send the POST request
+        $.ajax({
+          url: '/accounts/user_info/',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          headers: {
+            'X-CSRFToken': getCSRFToken()
+          },
+          success: function(response) {
+            // Handle the response
+            console.log(response);
+          },
+          error: function(error) {
+            // Handle the error
+            console.error(error);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.conf.urls.static import static
+from django.conf import settings
 from django.views.generic.base import TemplateView # new
 
 urlpatterns = [
@@ -25,5 +27,6 @@ urlpatterns = [
     path("pong/", include("pong.urls")), # new
     path("accounts/", include("accounts.urls")), # new
     path("accounts/", include("django.contrib.auth.urls")), # new
-    re_path(r'^.*', include("frontend.urls"), name='index')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [re_path(r'^.*', include("frontend.urls"), name='index')]
