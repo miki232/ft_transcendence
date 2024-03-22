@@ -114,7 +114,6 @@ class UserInfoView(APIView):
         fs = FileSystemStorage(location='media/profile_pics/')
         ext = uploaded_file.name.split('.')[-1]
         filename = '{}.{}'.format(uuid.uuid4(), ext)
-
         name = fs.save(filename, uploaded_file)
         name = 'profile_pics/' + name
         url = fs.url(name)

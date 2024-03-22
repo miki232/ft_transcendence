@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>Image Upload</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
   <h1>Image Upload</h1>
@@ -13,7 +12,7 @@
   </form>
 
   <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
       // Get the CSRF token from the cookie
       function getCSRFToken() {
         const cookieValue = document.cookie
@@ -24,34 +23,32 @@
       }
 
       // Handle form submission
-      $('#uploadForm').submit(function(event) {
+      document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         // Get the selected image file
-        const imageFile = $('#imageFile')[0].files[0];
+        const imageFile = document.getElementById('imageFile').files[0];
 
         // Create a FormData object to send the file
         const formData = new FormData();
         formData.append('imageFile', imageFile);
 
         // Send the POST request
-        $.ajax({
-          url: '/accounts/user_info/',
-          type: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
+        fetch('/accounts/user_info/', {
+          method: 'POST',
+          body: formData,
           headers: {
             'X-CSRFToken': getCSRFToken()
-          },
-          success: function(response) {
-            // Handle the response
-            console.log(response);
-          },
-          error: function(error) {
-            // Handle the error
-            console.error(error);
           }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle the error
+          console.error(error);
         });
       });
     });
