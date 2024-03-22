@@ -82,7 +82,7 @@ const router = async () => {
 		}
 		if (view.isValid === true || is_logged_in === true) {
 			await view.loadUserData();
-			inDashboard = true;
+			// inDashboard = true;
 			nav.innerHTML = await view.getNav();
 			document.querySelector("#user").innerHTML = await view.getUser();
 			content.innerHTML = await view.getContent();
@@ -94,7 +94,7 @@ const router = async () => {
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
-		inDashboard = false;
+		// inDashboard = false;
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
@@ -131,23 +131,26 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#createRoomBtn")) {
 			room.btnCreateRoom();
 		}
+		if (e.target.matches("#signup")) {
+			await register();
+		}
 		if (e.target.matches("#logout")) {
             await logout();
-			navigateTo("/");
+			// navigateTo("/");
         }
 	});
 	router();
 });
 
-content.addEventListener("click", e => {
-	if (e.target.matches("#signup")) {
-		register();
-	}
-	console.log("sudsa", e.target);
-	if (e.target.matches("#logout")) {
-		// logout();
-	}
-});
+// content.addEventListener("click", e => {
+// 	if (e.target.matches("#signup")) {
+// 		register();
+// 	}
+// 	// console.log("sudsa", e.target);
+// 	if (e.target.matches("#logout")) {
+// 		logout();
+// 	}
+// });
 
 async function logout(){
 	var csrftoken = getCookie('csrftoken')
@@ -161,13 +164,16 @@ async function logout(){
 		}
 	})
 	.then(response => {
-		if (response.status !== 204) {
+		if (response.status > 204) {
 			throw new Error(`HTTP status ${response.status}`);
 		}
-		return response.json();
+		if (response.status === 200) {
+			return response.json();
+		}
 	})
 	.then(data => {
-		inDashboard = false;
+		console.log("Logged out");
+		// inDashboard = false;
 		navigateTo('/');
 		console.log(data);
 	})
@@ -176,8 +182,7 @@ async function logout(){
 	});
 }
 
-function register() {
-	console.log("register");
+async function register() {
 	var username = sanitizeInput(document.getElementById('signup-user').value);
 	var password = sanitizeInput(document.getElementById('signup-pass').value);
 	var re_pass = sanitizeInput(document.getElementById('re-pass').value);
@@ -194,7 +199,7 @@ function register() {
 		return;
 	}
 
-	fetch('accounts/register/', {
+	await fetch('accounts/register/', {
 		method: 'POST',
 		headers: {
 			'Content-Type' : 'application/json',
@@ -208,6 +213,7 @@ function register() {
 	}).then(response => response.json())
 		.then(data => {
 			console.log(data);
+			console.log("Register");
 			alert("Account created successfully");
 			var inputs = document.getElementsByTagName('input');
 			for (var i = 0; i < inputs.length; i++) {
