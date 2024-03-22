@@ -72,8 +72,14 @@ const router = async () => {
 	// console.log(match.route.path);z
 	if (match.route.path === "/dashboard") {
 		var view = new match.route.view();
-		if (is_logged_in === false)
-			await view.validateLogin();
+		if (is_logged_in === false){
+			const isVAlid = await view.validateLogin();
+			console.log("SUCA");
+			if (!isVAlid){
+				navigateTo("/");
+				return;
+			}
+		}
 		if (view.isValid === true || is_logged_in === true) {
 			await view.loadUserData();
 			inDashboard = true;
@@ -117,7 +123,7 @@ const updateRoomList = setInterval(() => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-	document.body.addEventListener("click", e => {
+	document.body.addEventListener("click", async e => {
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
@@ -125,6 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#createRoomBtn")) {
 			room.btnCreateRoom();
 		}
+		if (e.target.matches("#logout")) {
+            await logout();
+			navigateTo("/");
+        }
 	});
 	router();
 });
@@ -133,18 +143,22 @@ content.addEventListener("click", e => {
 	if (e.target.matches("#signup")) {
 		register();
 	}
+	console.log("sudsa", e.target);
 	if (e.target.matches("#logout")) {
-		logout();
+		// logout();
 	}
 });
 
 async function logout(){
 	var csrftoken = getCookie('csrftoken')
+	var sessionid = getCookie('sessionid')
+
 	await fetch('accounts/logout/', {
 		method: 'POST',
 		headers: {
 			'Content-Type' : 'application/json',
-			'X-CSRFToken': csrftoken
+			'X-CSRFToken': csrftoken,
+			'sessionid' : sessionid
 		}
 	})
 	.then(response => {

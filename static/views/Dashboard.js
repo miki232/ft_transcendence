@@ -4,7 +4,7 @@ import Room from "./Room.js";
 const navHTML = `
 <ul>
 	<li id="user"></li>
-	<li><a href="/" id="logout">Logout</a></li>
+	<li><a id="logout">Logout</a></li>
 </ul>
 `;
 
@@ -48,8 +48,13 @@ export default class extends AbstractView {
 	}
 
 	async validateLogin() {
-		var username = this.sanitizeInput(document.getElementById('login-user').value);
-		var password = this.sanitizeInput(document.getElementById('login-pass').value);
+		try{
+			var username = this.sanitizeInput(document.getElementById('login-user').value);
+			var password = this.sanitizeInput(document.getElementById('login-pass').value);
+		} catch (error){
+			console.error(error);
+			return;
+		}
 		var csrftoken = this.getCookie('csrftoken');
 
 		await fetch('accounts/login/', {
