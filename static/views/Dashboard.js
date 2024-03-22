@@ -113,7 +113,8 @@ export default class extends AbstractView {
 	}
 
 	async getContent() {
-		dashboardHTML += await this.room.getContent();
-		return dashboardHTML;
+		let content = '';
+		content = dashboardHTML + await this.room.getContent();
+		return content;
 	}
 }

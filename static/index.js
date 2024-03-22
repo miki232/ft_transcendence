@@ -152,7 +152,6 @@ content.addEventListener("click", e => {
 async function logout(){
 	var csrftoken = getCookie('csrftoken')
 	var sessionid = getCookie('sessionid')
-
 	await fetch('accounts/logout/', {
 		method: 'POST',
 		headers: {
