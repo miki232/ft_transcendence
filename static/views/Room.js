@@ -58,24 +58,24 @@ export default class Room extends AbstractView {
 		});
 	}
 
-	updateRoomList() {
-		fetch('http://127.0.0.1:8000/rooms_list/')
+	async updateRoomList() {
+		await fetch('http://127.0.0.1:8000/rooms_list/')
 		.then(response => response.json())
 		.then(data => {
 			// Clear the current list
 			roomList.innerHTML = '';
-
+	
 			// Append each room to the list
 			data.forEach(room => {
 				const roomItem = document.createElement('li');
 				roomItem.textContent = room.name;
 				roomItem.classList.add('roomItem');
-
+	
 				// Add click event to join the room
 				roomItem.addEventListener('click', function() {
 					window.location.href = '/pong/' + encodeURIComponent(room.name) + '/';
 				});
-
+	
 				// Append room to the list
 				roomList.appendChild(roomItem);
 			});

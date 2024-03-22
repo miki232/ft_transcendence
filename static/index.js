@@ -1,3 +1,4 @@
+import { getCookie, register, logout } from "./utilities.js";
 import Login from "./views/Login.js";
 import About from "./views/About.js";
 import Contact from "./views/Contact.js";
@@ -16,7 +17,6 @@ import Room from "./views/Room.js";
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 const room = new Room();
-// const groupContainer = document.querySelector(".group");
 let inDashboard = false;
 
 const navigateTo = url => {
@@ -82,7 +82,7 @@ const router = async () => {
 		}
 		if (view.isValid === true || is_logged_in === true) {
 			await view.loadUserData();
-			// inDashboard = true;
+			inDashboard = true;
 			nav.innerHTML = await view.getNav();
 			document.querySelector("#user").innerHTML = await view.getUser();
 			content.innerHTML = await view.getContent();
@@ -94,7 +94,7 @@ const router = async () => {
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
-		// inDashboard = false;
+		inDashboard = false;
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
@@ -110,18 +110,6 @@ const updateRoomList = setInterval(() => {
 	}
 }, 5000);
 
-// const loadNewElement = setInterval(() => {
-// 	const signUp = document.querySelector("#signup");
-// 	const logoutBtn = document.querySelector("#logout");
-// 	if (signUp) {
-// 		signUp.addEventListener("click", register);
-// 	}
-// 	if (logoutBtn) {
-// 		logoutBtn.addEventListener("click", logout);
-// 	}
-// }, 1000);
-
-
 document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		if (e.target.matches("[data-link]")) {
@@ -136,7 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (e.target.matches("#logout")) {
             await logout();
-			// navigateTo("/");
+			inDashboard = false;
+			navigateTo("/");
         }
 	});
 	router();
@@ -150,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 	if (e.target.matches("#logout")) {
 // 		logout();
 // 	}
+<<<<<<< Updated upstream
 // });
 
 async function logout(){
@@ -258,3 +248,6 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
+=======
+// });
+>>>>>>> Stashed changes

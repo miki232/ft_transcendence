@@ -8,7 +8,6 @@ const aboutHTML = `
 const navHTML = `
 <ul>
 	<li>Logo</li>
-	<li><a onclick="logout()">logout</a></li>
 	<li><a href="/" data-link>Home</a></li>
 	<li><a href="/about" class="active" name="about" data-link>About</a></li>
 	<li><a href="/contact" data-link>Contact</a></li>

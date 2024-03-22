@@ -82,8 +82,6 @@ export default class extends AbstractView {
 		})
 	}
 
-	
-
 	async setPic(data_pic){ //new
 		this.pro_pic = data_pic;
 	}
