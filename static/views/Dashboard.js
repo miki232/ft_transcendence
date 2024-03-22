@@ -28,7 +28,7 @@ export default class extends AbstractView {
 
 	async loadUserData() {
 		var csrftoken = this.getCookie('csrftoken')
-		await fetch('accounts/user_info/', {
+		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {
 				'Content-Type' : 'application/json',

@@ -31,10 +31,10 @@ ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    'pong',
     'chat', # new
     'frontend', #new
     'daphne', # new
-    'pong',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,9 +72,6 @@ TEMPLATES = [
         },
     },
 ]
-
-LOGIN_REDIRECT_URL = "home" # new
-LOGOUT_REDIRECT_URL = "home" # new
 
 WSGI_APPLICATION = 'django_progect.wsgi.application'
 ASGI_APPLICATION = 'django_progect.asgi.application' # new

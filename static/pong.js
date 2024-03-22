@@ -19,7 +19,7 @@ function getCookie(name) {
 
 
 let csrftoken = getCookie('csrftoken')
-fetch('/accounts/user_info/', {
+fetch('http:127.0.0.1:8000/accounts/user_info/', {
 	method: 'GET',
 	headers: {
 		'Content-Type' : 'application/json',

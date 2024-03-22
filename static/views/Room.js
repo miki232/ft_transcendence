@@ -73,7 +73,7 @@ export default class Room extends AbstractView {
 
 				// Add click event to join the room
 				roomItem.addEventListener('click', function() {
-					window.location.href = '/pong/' + encodeURIComponent(room.name);
+					window.location.href = '/pong/' + encodeURIComponent(room.name) + '/';
 				});
 
 				// Append room to the list

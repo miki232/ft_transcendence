@@ -27,7 +27,7 @@ const navigateTo = url => {
 const is_loggedin = async () => {
     var csrftoken = getCookie('csrftoken');
 
-    return fetch('accounts/user_info/', {
+    return fetch('/accounts/user_info/', {
         method: 'GET',
         headers: {
             'Content-Type' : 'application/json',
@@ -152,7 +152,7 @@ content.addEventListener("click", e => {
 async function logout(){
 	var csrftoken = getCookie('csrftoken')
 	var sessionid = getCookie('sessionid')
-	await fetch('accounts/logout/', {
+	await fetch('/accounts/logout/', {
 		method: 'POST',
 		headers: {
 			'Content-Type' : 'application/json',
