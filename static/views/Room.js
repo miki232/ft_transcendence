@@ -67,9 +67,17 @@ export default class Room extends AbstractView {
 	
 			// Append each room to the list
 			data.forEach(room => {
-				const roomItem = document.createElement('li');
-				roomItem.textContent = room.name;
+				let roomItem = document.createElement('li');
 				roomItem.classList.add('roomItem');
+				let roomName = document.createElement('p');
+				roomName.setAttribute('class', 'room-name');
+				let deleteRoom = document.createElement('span');
+				deleteRoom.setAttribute('class', 'delete-room');
+				roomName.textContent = room.name;
+				deleteRoom.textContent = '🗑';
+				// roomItem.textContent = room.name;
+				roomItem.appendChild(roomName);
+				roomName.appendChild(deleteRoom);
 	
 				// Add click event to join the room
 				roomItem.addEventListener('click', function() {

@@ -282,6 +282,12 @@ a {
 
 /***************** DASHBOARD *****************/
 
+.delete-room {
+    color: var(--logout-color);
+    font-size: smaller;
+    cursor: pointer;
+    margin-left: 5px;
+}
 
 /***************** FOOTER *****************/
 
