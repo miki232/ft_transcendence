@@ -30,6 +30,8 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
             if user:
                 if user.is_active:
+                    user.status_login = "online"
+                    user.save()
                     data['user'] = user
                 else:
                     msg = "User is deactivated."

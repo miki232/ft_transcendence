@@ -143,5 +143,7 @@ class GenericUserInfo(generics.ListAPIView):
 
 class LogoutView(APIView):
     def post(self, request):
+        request.user.status_login = "Offline"
+        request.user.save()
         logout(request)
         return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)
