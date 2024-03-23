@@ -14,7 +14,7 @@ import Room from "./views/Room.js";
 // 	newActive.classList.add('active');
 // }
 
-const nav = document.querySelector("nav");
+const nav = document.querySelector("#navbar");
 const content = document.querySelector("#content");
 const room = new Room();
 let inDashboard = false;

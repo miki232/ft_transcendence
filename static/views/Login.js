@@ -58,12 +58,14 @@ const loginHTML = `
 `;
 
 const navHTML = `
-<ul>
-	<li>Logo</li>
-	<li><a href="/" class="active" name="index" data-link>Home</a></li>
-	<li><a href="/about" name="about" data-link>About</a></li>
-	<li><a href="/contact" name="contact" data-link>Contact</a></li>
-</ul>
+	<nav>
+		<ul>
+			<li>Logo</li>
+			<li><a href="/" class="active" name="index" data-link>Home</a></li>
+			<li><a href="/about" name="about" data-link>About</a></li>
+			<li><a href="/contact" name="contact" data-link>Contact</a></li>
+		</ul>
+	</nav>
 `;
 
 export default class extends AbstractView {

@@ -95,12 +95,28 @@ export default class extends AbstractView {
 
 	async getNav() {
 		const navHTML = `
-			<ul>
-				<li id="user">
-				<img src="${await this.getPic()}"></img>
-				${await this.getUser()}</li>
-				<li><a id="logout">Logout</a></li>
-			</ul>
+			<div id="nav-bar">
+				<input id="nav-toggle" type="checkbox"/>
+				<div id="nav-header"><p id="nav-title">LOGO</p>
+				  <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
+				  <hr/>
+				</div>
+				<div id="nav-content">
+				  <div class="nav-button"><i class="icon">&#128187;</i><span>Rooms</span></div>
+				  <div id="nav-content-highlight"></div>
+				</div>
+				<input id="nav-footer-toggle" type="checkbox"/>
+				<div id="nav-footer">
+				  <div id="nav-footer-heading">
+					<div id="nav-footer-avatar"><img alt="Profile picture" src="${await this.getPic()}"/></div>
+					<div id="nav-footer-titlebox"><p id="nav-footer-title">${await this.getUser()}</p><span id="nav-footer-subtitle">Noob</span></div>
+					<label for="nav-footer-toggle"><span class="icon">^</span></label>
+				  </div>
+				  <div id="nav-footer-content">
+				  	<a id="logout">Logout</a>
+				  </div>
+				</div>
+			</div>
 		`;
 		return navHTML;
 	}
@@ -114,3 +130,11 @@ export default class extends AbstractView {
 		return dashboardHTML;
 	}
 }
+
+//OLD NAV
+{/* <ul>
+	<li id="user">
+	<img src="${await this.getPic()}"></img>
+	${await this.getUser()}</li>
+	<li><a id="logout">Logout</a></li>
+</ul> */}

@@ -18,7 +18,7 @@ export default class Room extends AbstractView {
 		this.roomList = document.getElementById("roomList");
 	}
 
-	btnCreateRoom() {
+	async btnCreateRoom() {
 		const roomName = roomNameInput.value.trim();
 		var csrftoken = this.getCookie('csrftoken');
 		if (roomName === '') {
@@ -27,7 +27,7 @@ export default class Room extends AbstractView {
 		}
 
 		// Send a POST request to create the room
-		fetch('http://127.0.0.1:8000/rooms/create/', {
+		await fetch('http://127.0.0.1:8000/rooms/create/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

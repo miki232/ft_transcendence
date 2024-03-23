@@ -1,3 +1,4 @@
+@import url("dashboard.css");
 /**** GENERAL ****/
 
 :root {
@@ -81,9 +82,10 @@ nav ul li a#logout:hover {
     font-weight: bold;
 }
 
-img {
+/* img {
   width: 1.6em;
-}
+  height: 1.6em;
+} */
 
 /***************** MAIN *****************/
 
@@ -291,7 +293,7 @@ a {
 
 /***************** FOOTER *****************/
 
-footer {
+/* footer {
     background-color: var(--secondary-color);
     color: var(--quaternary-color);
     text-align: center;
@@ -299,4 +301,4 @@ footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-}
+} */
