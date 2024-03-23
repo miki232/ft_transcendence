@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer
+from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer, UserMatchHistorySerializer
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -88,6 +88,7 @@ class UserSignupView(APIView):
     
 class UserLoginView(APIView):
     def post(self, request, format=None):
+        #request.session.set_expiry(5) ##possiamo settare il time expire per il session id
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
@@ -123,6 +124,15 @@ class UserInfoView(APIView):
 
     
 class UserMatchHistoryView(generics.ListAPIView):
+    serializer_class = UserMatchHistorySerializer
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        if username is not None:
+            return CustomUser.objects.filter(username=username)
+        return CustomUser.objects.none()
+
+class GenericUserInfo(generics.ListAPIView):
     serializer_class = UserInfoSerializer
 
     def get_queryset(self):

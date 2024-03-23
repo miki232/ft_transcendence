@@ -43,11 +43,17 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class UserInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active')
+    
+class UserMatchHistorySerializer(serializers.ModelSerializer):
     match_history = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', 'match_history')
+        fields = ('username', 'email', 'pro_pic', 'match_history')
 
     def get_match_history(self, obj):
         return obj.get_match_history()
