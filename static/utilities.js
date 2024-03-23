@@ -1,5 +1,4 @@
 export function getCookie(name) {
-    console.log("getCookie called");
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
 		const cookies = document.cookie.split(';');
@@ -15,7 +14,6 @@ export function getCookie(name) {
 }
 
 export function sanitizeInput(input) {
-    console.log("sanitizeInput called");
 	// Rimuovi markup HTML pericoloso
 	var sanitizedInput = input.replace(/<[^>]*>/g, '');
 	// Escape caratteri speciali per prevenire XSS
@@ -33,7 +31,6 @@ export function sanitizeInput(input) {
 }
 
 export async function register() {
-    console.log("register called");
 	var username = sanitizeInput(document.getElementById('signup-user').value);
 	var password = sanitizeInput(document.getElementById('signup-pass').value);
 	var re_pass = sanitizeInput(document.getElementById('re-pass').value);
@@ -79,7 +76,6 @@ export async function register() {
 }
 
 export async function logout(){
-    console.log("logout called");
 	var csrftoken = getCookie('csrftoken')
 	var sessionid = getCookie('sessionid')
 	await fetch('accounts/logout/', {
@@ -107,4 +103,27 @@ export async function logout(){
 	.catch((error) => {
 		console.error('Error:', error);
 	});
+}
+
+export async function deleteUser() {
+    const csrftoken = getCookie('csrftoken');
+
+    try {
+        const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        console.log('User deleted successfully');
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
