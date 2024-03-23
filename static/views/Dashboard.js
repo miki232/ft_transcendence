@@ -1,19 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import Room from "./Room.js";
 
-const navHTML = `
-<ul>
-	<li id="user"></li>
-	<li><a id="logout">Logout</a></li>
-</ul>
-`;
-
-let dashboardHTML = `
-<h1>Dashboard</h1>
-<img src=""</img>
-<p>Welcome to the dashboard <span></span>.</p>
-`;
-
 export default class extends AbstractView {
 	constructor() {
 		super();
@@ -107,12 +94,23 @@ export default class extends AbstractView {
 	}
 
 	async getNav() {
+		const navHTML = `
+			<ul>
+				<li id="user">
+				<img src="${await this.getPic()}"></img>
+				${await this.getUser()}</li>
+				<li><a id="logout">Logout</a></li>
+			</ul>
+		`;
 		return navHTML;
 	}
 
 	async getContent() {
-		let content = '';
-		content = dashboardHTML + await this.room.getContent();
-		return content;
+		let dashboardHTML = `
+			<h1>Dashboard</h1>
+			<p>Welcome to the dashboard <span>${await this.getEmail()}</span>.</p>
+		`;
+		dashboardHTML += await this.room.getContent();
+		return dashboardHTML;
 	}
 }

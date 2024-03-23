@@ -80,11 +80,10 @@ nav ul li a#logout {
 nav ul li a#logout:hover {
     font-weight: bold;
 }
-/********PORCATA!!!!***********
-nav ul li a:last-child:hover {
-    padding-left: 6px;
+
+img {
+  width: 1.6em;
 }
-*******************************/
 
 /***************** MAIN *****************/
 
@@ -279,6 +278,10 @@ a {
 .foot-lnk label:hover {
     cursor: pointer;
 }
+
+
+/***************** DASHBOARD *****************/
+
 
 /***************** FOOTER *****************/
 

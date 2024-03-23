@@ -68,8 +68,8 @@ const router = async () => {
 		};
 	}
 	let is_logged_in = await is_loggedin();
-	console.log(is_logged_in);
-	// console.log(match.route.path);z
+	// console.log(is_logged_in);
+	// console.log(match.route.path);
 	if (match.route.path === "/dashboard") {
 		var view = new match.route.view();
 		if (is_logged_in === false){
@@ -84,11 +84,7 @@ const router = async () => {
 			await view.loadUserData();
 			inDashboard = true;
 			nav.innerHTML = await view.getNav();
-			document.querySelector("#user").innerHTML = await view.getUser();
 			content.innerHTML = await view.getContent();
-			document.querySelector("span").innerHTML = await view.getEmail();
-			document.querySelector("img").src = await view.getPic(); //new
-			document.querySelector("img").style = "width: 5em; height: 5em;";
 			view.setTitle("Dashboard");
 			room.updateRoomList();
 		}

@@ -1,7 +1,7 @@
 import AbstractView from "./AbstractView.js";
 
 const roomHtml = `
-<div id="room-card">
+<div id="room-card" class="cards">
 	<h2>Create or Join a Room</h2>
 	<input type="text" id="roomNameInput" placeholder="Enter room name">
 	<button id="createRoomBtn"">Create Room</button>
