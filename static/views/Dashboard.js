@@ -25,7 +25,7 @@ export default class extends AbstractView {
 		// this.validateLogin();
 		// this.setTitle("Dashboard");
 	}
-
+	
 	async loadUserData() {
 		var csrftoken = this.getCookie('csrftoken')
 		await fetch('/accounts/user_info/', {
