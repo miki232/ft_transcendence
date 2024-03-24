@@ -28,13 +28,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
     'pong',
     'chat', # new
     'frontend', #new
+    'friends',
     'daphne', # new
     'django.contrib.admin',
     'django.contrib.auth',
