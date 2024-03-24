@@ -7,9 +7,8 @@ import json
 
 from accounts.models import CustomUser
 from .models import FriendRequest
-from .serializers import FriendRequestSerializer
+from .serializers import FriendRequestSerializer, FriendListSerializer
 # Create your views here.
-
 
 def send_friend_request(request):
     user = request.user
@@ -45,6 +44,16 @@ def send_friend_request(request):
 
 # views.py
 
+class ListFriendRequestView(APIView):
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            friend_request = FriendRequest.objects.filter(receiver=user, is_active=True)
+            serializer = FriendRequestSerializer(friend_request, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Non sei loggato Bro"}, status=status.HTTP_400_BAD_REQUEST)
+
 class SendFriendRequestView(APIView):
     def post(self, request):
         user = request.user
@@ -59,3 +68,5 @@ class SendFriendRequestView(APIView):
                 return Response({"detail": "Friend request already exists"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
