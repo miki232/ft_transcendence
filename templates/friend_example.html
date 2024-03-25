@@ -61,64 +61,103 @@
             xhr.send(data);
         }
 
+        
         // Function to accept a friend request
         function acceptFriendRequest(userId) {
             // Create a new XMLHttpRequest object
             var xhr = new XMLHttpRequest();
-
+            
             // Set the request URL
             var url = "accept/" + userId + "/";
-
+            
             // Set the request method to GET
             xhr.open("GET", url, true);
-
+            
             // Send the request
             xhr.send();
         }
-
+        
+        
         async function getFriendList() {
             var response = await fetch("list/");
             var data = await response.json();
             var friendListElement = document.getElementById("friend-list");
             friendListElement.innerHTML = "";
-
+            
             for (var i = 0; i < data.length; i++) {
                 var friendList = data[i];
                 var userUsername = friendList.user.username;
-
+                
                 for (var j = 0; j < friendList.friends.length; j++) {
                     var friendUsername = friendList.friends[j].username;
                     var friendElement = document.createElement("div");
-                    friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
+                    var remove = document.createElement("button");
+                    remove.innerHTML = "remove";
+                    remove.onclick = function() {
+                        removeFriend(friendUsername);
+                            };
+                            friendElement.appendChild(remove);
+
+                    // friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
+                    var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
+                    friendElement.appendChild(textNode);
                     friendListElement.appendChild(friendElement);
                 }
             }
         }
+        
+        async function removeFriend(){
+            // Get the username from the list of friend
+            var friendElement = document.getElementById("friend-list").firstChild;
+            var text = friendElement.textContent;
+            var parts = text.split(", ");
+            var friendUsername = parts[1].split(": ")[1];
+            console.log(friendUsername);
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
 
+            // Set the request URL
+            var url = "remove/";
+
+            // Set the request method to POST
+            xhr.open("POST", url, true);
+
+            // Set the request headers
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+
+            // Set the request body
+            var data = JSON.stringify({
+                "receiver_user_id": friendUsername
+            });
+
+            // Send the request
+            xhr.send(data);
+        }
         // Function to get the list of pending requests
         async function getPendingRequests() {
             var response = await fetch("request/list/");
             var data = await response.json();
             var pendingRequestsElement = document.getElementById("pending-requests");
             pendingRequestsElement.innerHTML = "";
-
+            
             for (var i = 0; i < data.length; i++) {
                 var request = data[i];
                 var senderUsername = request.sender.username;
                 var receiverUsername = request.receiver.username;
-
+                
                 var requestElement = document.createElement("div");
                 if (receiverUsername == CurrentUsername)
-                    requestElement.innerHTML = senderUsername;
-                else
-                    requestElement.innerHTML = receiverUsername;
-
-                // Create a button to accept the request
-                if (senderUsername !== CurrentUsername){
-                    var acceptButton = document.createElement("button");
-                    acceptButton.innerHTML = "Accept";
-                    acceptButton.onclick = function() {
-                        acceptFriendRequest(senderUsername);
+                requestElement.innerHTML = senderUsername;
+            else
+            requestElement.innerHTML = receiverUsername;
+        
+        // Create a button to accept the request
+        if (senderUsername !== CurrentUsername){
+            var acceptButton = document.createElement("button");
+            acceptButton.innerHTML = "Accept";
+            acceptButton.onclick = function() {
+                acceptFriendRequest(senderUsername);
                     };
                     
                     requestElement.appendChild(acceptButton);
@@ -126,8 +165,10 @@
                 pendingRequestsElement.appendChild(requestElement);
             }
         }
+
+
         // Function to get the friend list
-    </script>
+        </script>
 </head>
 <body>
     <h1>Friend Example</h1>
