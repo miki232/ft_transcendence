@@ -57,21 +57,28 @@ class ListFriendRequestView(APIView):
 
 class SendFriendRequestView(APIView):
     def post(self, request):
-        user = request.user
-        receiver_id = request.data.get('receiver_user_id')
-        if receiver_id:
-            receiver = CustomUser.objects.get(username=receiver_id)
-            friend_request, created = FriendRequest.objects.get_or_create(sender=user, receiver=receiver)
-            if created:
-                serializer = FriendRequestSerializer(friend_request)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.user.is_authenticated:
+            user = request.user
+            receiver_id = request.data.get('receiver_user_id')
+            if receiver_id:
+                receiver = CustomUser.objects.get(username=receiver_id)
+                try:
+                    friend_request = FriendRequest.objects.filter(
+                    Q(sender=user, receiver=receiver, is_active=True) |
+                    Q(sender=receiver, receiver=user, is_active=True)
+                    )
+                    if friend_request.exists():
+                        raise Exception("Friend request alredy exists")
+                    
+                    friend_request = FriendRequest(sender=user, receiver=receiver)
+                    friend_request.save()
+                    serializer = FriendRequestSerializer(friend_request)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except Exception as e:
+                    return Response(e, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({"detail": "Friend request already exists"}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-
+                return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
+            
 
 def accept_friend_request(request, *args, **kwargs):
      user = request.user
@@ -84,8 +91,6 @@ def accept_friend_request(request, *args, **kwargs):
          if friend_request_id:
             friend_request = FriendRequest.objects.get(sender=receiver, receiver=user)
 			# confirm that is the correct request
-            print("SDASD")
-            print(friend_request.receiver, user)
             if friend_request.receiver == user:
                 if friend_request: 
 					# found the request. Now accept it

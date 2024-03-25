@@ -12,6 +12,29 @@
             .split('=')[1];
             return cookieValue;
         }
+
+        async function loadUserData() {
+            var csrftoken = getCSRFToken()
+            await fetch('/accounts/user_info/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    CurrentUsername = data.username;
+                    // this.setUser(data.username);
+                    // this.setEmail(data.email);
+                    // this.setPic(data.pro_pic); //new
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                })
+        }
+
         function sendFriendRequest() {
             // Get the username from the input field
             var username = document.getElementById("username").value;
@@ -58,8 +81,7 @@
             var data = await response.json();
             var friendListElement = document.getElementById("friend-list");
             friendListElement.innerHTML = "";
-            CurrentUsername = data[0].user.username;
-            console.log(CurrentUsername)
+
             for (var i = 0; i < data.length; i++) {
                 var friendList = data[i];
                 var userUsername = friendList.user.username;
@@ -124,6 +146,7 @@
 
     <script>
         // Call the functions to get the pending requests and friend list
+        loadUserData();
         getPendingRequests();
         getFriendList();
     </script>
