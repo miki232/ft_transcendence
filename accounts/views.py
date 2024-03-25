@@ -147,3 +147,4 @@ class LogoutView(APIView):
         request.user.save()
         logout(request)
         return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)
+    

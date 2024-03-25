@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,7 +7,7 @@ from rest_framework import status
 import json
 
 from accounts.models import CustomUser
-from .models import FriendRequest
+from .models import FriendRequest, FriendList
 from .serializers import FriendRequestSerializer, FriendListSerializer
 # Create your views here.
 
@@ -48,7 +49,7 @@ class ListFriendRequestView(APIView):
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            friend_request = FriendRequest.objects.filter(receiver=user, is_active=True)
+            friend_request = FriendRequest.objects.filter(Q(sender=user) | Q(receiver=user), is_active=True)
             serializer = FriendRequestSerializer(friend_request, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -69,4 +70,50 @@ class SendFriendRequestView(APIView):
         else:
             return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
         
+
+
+
+def accept_friend_request(request, *args, **kwargs):
+     user = request.user
+     payload = {}
+
+     if request.method == "GET" and user.is_authenticated:
+         friend_request_id = kwargs.get("friend_request_id")
+         receiver = CustomUser.objects.get(username=friend_request_id)
+         print(friend_request_id, receiver)
+         if friend_request_id:
+            friend_request = FriendRequest.objects.get(sender=receiver, receiver=user)
+			# confirm that is the correct request
+            print("SDASD")
+            print(friend_request.receiver, user)
+            if friend_request.receiver == user:
+                if friend_request: 
+					# found the request. Now accept it
+                    updated_notification = friend_request.accept()
+                    payload['response'] = "Friend request accepted."
+                else:
+                    payload['response'] = "Something went wrong."
+            else:
+                payload['response'] = "That is not your request to accept."
+         else:
+             payload['response'] = "Unable to accept that friend request."
+     else:
+		# should never happen
+        payload['response'] = "You must be authenticated to accept a friend request."
+     return HttpResponse(json.dumps(payload), content_type="application/json")
+
+
+#{"friend_request_id" : "Sucamilla"}
+
+class ListFriendsView(APIView):
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            friends = FriendList.objects.filter(user=user)
+            serializer = FriendListSerializer(friends, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "You must be logged in"}, status=status.HTTP_400_BAD_REQUEST)
         
+def ex(request):
+    return render(request, "friend_example.html")

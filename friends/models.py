@@ -41,14 +41,24 @@ class FriendRequest(models.Model):
         return self.sender.username
     
     def accept(self):
-        receiver_friend_list = FriendList.objects.get(user=self.receiver)
-        if receiver_friend_list:
-            receiver_friend_list.add_friend(self.sender)
-            sender_friend_list = FriendList.objects.get(user=self.sender)
-            if sender_friend_list:
+        receiver_friend_list, created = FriendList.objects.get_or_create(user=self.receiver)
+        if self.sender not in receiver_friend_list.friends.all():
+            receiver_friend_list.friends.add(self.sender)
+            sender_friend_list, created = FriendList.objects.get_or_create(user=self.sender)
+            if self.receiver not in sender_friend_list.friends.all():
                 sender_friend_list.add_friend(self.receiver)
                 self.is_active = False
                 self.save()
+
+    # def accept(self):
+    #     receiver_friend_list = FriendList.objects.get(user=self.receiver)
+    #     if receiver_friend_list:
+    #         receiver_friend_list.add_friend(self.sender)
+    #         sender_friend_list = FriendList.objects.get(user=self.sender)
+    #         if sender_friend_list:
+    #             sender_friend_list.add_friend(self.receiver)
+    #             self.is_active = False
+    #             self.save()
 
     def decline(self):
         self.is_active = False
