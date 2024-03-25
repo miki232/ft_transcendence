@@ -126,7 +126,7 @@ export default class extends AbstractView {
 			<h1>Dashboard</h1>
 			<p>Welcome to the dashboard <span>${await this.getEmail()}</span>.</p>
 		`;
-		dashboardHTML += await this.room.getContent();
+		// dashboardHTML += await this.room.getContent();
 		return dashboardHTML;
 	}
 }

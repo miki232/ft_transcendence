@@ -14,6 +14,7 @@ import Room from "./views/Room.js";
 // 	newActive.classList.add('active');
 // }
 
+const container = document.querySelector("#container");
 const nav = document.querySelector("#navbar");
 const content = document.querySelector("#content");
 const room = new Room();
@@ -81,9 +82,12 @@ const router = async () => {
 			}
 		}
 		if (view.isValid === true || is_logged_in === true) {
+			container.classList.add("dashboard");
 			await view.loadUserData();
 			inDashboard = true;
-			nav.innerHTML = await view.getNav();
+			// nav.innerHTML = await view.getNav();
+			nav.setAttribute("style", "display: none;");
+			container.insertAdjacentHTML('afterbegin', await view.getNav());
 			content.innerHTML = await view.getContent();
 			view.setTitle("Dashboard");
 			room.updateRoomList();
@@ -91,6 +95,12 @@ const router = async () => {
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
+		container.classList.remove("dashboard");
+		let dashNav = document.getElementById("nav-bar");
+		if (dashNav) {
+			dashNav.remove();
+		}
+		nav.setAttribute("style", "display: block;");
 		inDashboard = false;
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
