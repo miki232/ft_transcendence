@@ -12,7 +12,7 @@ export default class extends AbstractView {
 		// this.validateLogin();
 		// this.setTitle("Dashboard");
 	}
-	
+
 	async loadUserData() {
 		var csrftoken = this.getCookie('csrftoken')
 		await fetch('/accounts/user_info/', {
@@ -102,7 +102,8 @@ export default class extends AbstractView {
 				  <hr/>
 				</div>
 				<div id="nav-content">
-				  <div class="nav-button"><i class="icon">&#128187;</i><span>Rooms</span></div>
+				  <div class="nav-button" id="rooms"><i class="icon">&#128187;</i><span>Rooms</span></div>
+				  <div class="nav-button" id="friends"><i class="icon">&#128378;</i><span>Friends</span></div>
 				  <div id="nav-content-highlight"></div>
 				</div>
 				<input id="nav-footer-toggle" type="checkbox"/>

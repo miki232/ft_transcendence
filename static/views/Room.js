@@ -1,15 +1,5 @@
 import AbstractView from "./AbstractView.js";
 
-const roomHtml = `
-<div id="room-card" class="cards">
-	<h2>Create or Join a Room</h2>
-	<input type="text" id="roomNameInput" placeholder="Enter room name">
-	<button id="createRoomBtn"">Create Room</button>
-	<h3>Available Rooms</h3>
-	<ul id="roomList"></ul>
-</div>
-`;
-
 export default class Room extends AbstractView {
 	constructor() {
 		super();
@@ -91,6 +81,15 @@ export default class Room extends AbstractView {
 	}
 
 	async getContent() {
+		const roomHtml = `
+			<div id="room-card" class="cards">
+				<h2>Create or Join a Room</h2>
+				<input type="text" id="roomNameInput" placeholder="Enter room name">
+				<button id="createRoomBtn"">Create Room</button>
+				<h3>Available Rooms</h3>
+				<ul id="roomList"></ul>
+			</div>
+		`;
 		return roomHtml;
 	}
 }

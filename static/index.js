@@ -4,6 +4,7 @@ import About from "./views/About.js";
 import Contact from "./views/Contact.js";
 import Dashboard from "./views/Dashboard.js";
 import Room from "./views/Room.js";
+import Friends from "./views/Friends.js";
 
 // function activeLink(page) {
 //     let oldActive = document.querySelector('a.active');
@@ -123,15 +124,16 @@ document.addEventListener("DOMContentLoaded", () => {
             await logout();
 			navigateTo("/");
         }
-		if (e.target.closest(".nav-button") || e.target.matches("#nav-title")) {
-			let selected;
-			if (e.target.matches("span")) {
-				selected = e.target.parentElement.querySelector('span').textContent;
-			} else {
-				selected = "Dashboard"
+		if (e.target.closest(".nav-button")) {
+			let selected = e.target.id;
+			if (!selected) {
+				selected = e.target.parentElement.id;
 			}
 			console.log(selected);
 			await renderDashboard(selected);
+		}
+		if (e.target.matches("#nav-title")) {
+			await renderDashboard("dashboard");
 		}
 	});
 	router();
@@ -151,15 +153,22 @@ async function renderDashboard(render) {
 	let view;
 	let refreshRoomList;
 	switch(render) {
-		case "Rooms":
+		case "rooms":
 			view = new Room();
-			console.log(view);
 			content.innerHTML = await view.getContent();
 			view.updateRoomList();
 			refreshRoomList = setInterval(() => {
 					view.updateRoomList();
 					console.log("Room list updated");
 			}, 5000);
+			break;
+		case "friends":
+			clearInterval(refreshRoomList);
+			view = new Friends();
+			content.innerHTML = await view.getContent();
+			await view.loadData();
+			await view.getPendingRequests();
+			await view.getFriendList();
 			break;
 		default:
 			clearInterval(refreshRoomList);
