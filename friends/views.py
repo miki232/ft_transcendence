@@ -82,7 +82,8 @@ class ListFriendRequestView(APIView):
 class SendFriendRequestView(APIView):
     def post(self, request):
         # Check if user is authenticated
-        if request.user.is_authenticated:
+        
+        if request.user.is_authenticated and request.user.username != request.data.get('receiver_user_id'):
             user = request.user
             receiver_id = request.data.get('receiver_user_id')
 
@@ -160,5 +161,26 @@ class ListFriendsView(APIView):
         else:
             return Response({"detail": "You must be logged in"}, status=status.HTTP_400_BAD_REQUEST)
         
+class RemoveFriend(APIView):
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            friend_2_remove_id = request.data.get('receiver_user_id')
+            if friend_2_remove_id:
+                try:
+                    removee = CustomUser.objects.get(username=friend_2_remove_id)
+                    friend_list = FriendList.objects.get(user=user)
+                    friend_list.unfriend(removee)
+                    return Response({"detail" : "Removed successfully"}, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({"detail" : str(e)}, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail" : "Erro Unable to remove Friend"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"detail" : "Brooo Devi essere loggato "}, status=status.HTTP_403_FORBIDDEN)
+
+
+            
+
 def ex(request):
     return render(request, "friend_example.html")
