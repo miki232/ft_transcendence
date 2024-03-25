@@ -17,8 +17,7 @@ import Room from "./views/Room.js";
 const container = document.querySelector("#container");
 const nav = document.querySelector("#navbar");
 const content = document.querySelector("#content");
-const room = new Room();
-let inDashboard = false;
+// const room = new Room();
 
 const navigateTo = url => {
 	history.pushState(null, null, url);
@@ -84,13 +83,12 @@ const router = async () => {
 		if (view.isValid === true || is_logged_in === true) {
 			container.classList.add("dashboard");
 			await view.loadUserData();
-			inDashboard = true;
 			// nav.innerHTML = await view.getNav();
 			nav.setAttribute("style", "display: none;");
 			container.insertAdjacentHTML('afterbegin', await view.getNav());
 			content.innerHTML = await view.getContent();
 			view.setTitle("Dashboard");
-			room.updateRoomList();
+			// room.updateRoomList();
 		}
 	} else {
 		if (is_logged_in === true)
@@ -101,7 +99,6 @@ const router = async () => {
 			dashNav.remove();
 		}
 		nav.setAttribute("style", "display: block;");
-		inDashboard = false;
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
@@ -110,30 +107,32 @@ const router = async () => {
 
 window.addEventListener("popstate", router);
 
-const updateRoomList = setInterval(() => {
-	if (inDashboard) {
-		room.updateRoomList();
-		console.log("Room list updated");
-	}
-}, 5000);
-
 document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}
-		if (e.target.matches("#createRoomBtn")) {
-			room.btnCreateRoom();
-		}
+		// if (e.target.matches("#createRoomBtn")) {
+		// 	room.btnCreateRoom();
+		// }
 		if (e.target.matches("#signup")) {
 			await register();
 		}
 		if (e.target.matches("#logout")) {
             await logout();
-			inDashboard = false;
 			navigateTo("/");
         }
+		if (e.target.closest(".nav-button") || e.target.matches("#nav-title")) {
+			let selected;
+			if (e.target.matches("span")) {
+				selected = e.target.parentElement.querySelector('span').textContent;
+			} else {
+				selected = "Dashboard"
+			}
+			console.log(selected);
+			await renderDashboard(selected);
+		}
 	});
 	router();
 });
@@ -147,3 +146,24 @@ document.addEventListener("DOMContentLoaded", () => {
 // 		logout();
 // 	}
 // });
+
+async function renderDashboard(render) {
+	let view;
+	let refreshRoomList;
+	switch(render) {
+		case "Rooms":
+			view = new Room();
+			console.log(view);
+			content.innerHTML = await view.getContent();
+			view.updateRoomList();
+			refreshRoomList = setInterval(() => {
+					view.updateRoomList();
+					console.log("Room list updated");
+			}, 5000);
+			break;
+		default:
+			clearInterval(refreshRoomList);
+			view = new Dashboard();
+			content.innerHTML = await view.getContent();
+	}
+}
