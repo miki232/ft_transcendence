@@ -55,30 +55,70 @@ class ListFriendRequestView(APIView):
         else:
             return Response({"detail": "Non sei loggato Bro"}, status=status.HTTP_400_BAD_REQUEST)
 
+# class SendFriendRequestView(APIView):
+#     def post(self, request):
+#         if request.user.is_authenticated:
+#             user = request.user
+#             receiver_id = request.data.get('receiver_user_id')
+#             if receiver_id:
+#                 receiver = CustomUser.objects.get(username=receiver_id)
+#                 try:
+#                     friend_request = FriendRequest.objects.filter(
+#                     Q(sender=user, receiver=receiver, is_active=True) |
+#                     Q(sender=receiver, receiver=user, is_active=True)
+#                     )
+#                     if friend_request.exists():
+#                         raise Exception("Friend request alredy exists")
+                    
+#                     friend_request = FriendRequest(sender=user, receiver=receiver)
+#                     friend_request.save()
+#                     serializer = FriendRequestSerializer(friend_request)
+#                     return Response(serializer.data, status=status.HTTP_201_CREATED)
+#                 except Exception as e:
+#                     return Response(e, status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
+            
 class SendFriendRequestView(APIView):
     def post(self, request):
+        # Check if user is authenticated
         if request.user.is_authenticated:
             user = request.user
             receiver_id = request.data.get('receiver_user_id')
+
+            # Check if receiver_id is provided
             if receiver_id:
                 receiver = CustomUser.objects.get(username=receiver_id)
+
                 try:
+                    # Check if a friend request already exists in either direction
                     friend_request = FriendRequest.objects.filter(
-                    Q(sender=user, receiver=receiver, is_active=True) |
-                    Q(sender=receiver, receiver=user, is_active=True)
+                        Q(sender=user, receiver=receiver, is_active=True) |
+                        Q(sender=receiver, receiver=user, is_active=True)
                     )
+
                     if friend_request.exists():
-                        raise Exception("Friend request alredy exists")
-                    
+                        raise Exception("Friend request already exists")
+
+                    # If no friend request exists, create a new one
                     friend_request = FriendRequest(sender=user, receiver=receiver)
                     friend_request.save()
+
+                    # Serialize the friend request and return it
                     serializer = FriendRequestSerializer(friend_request)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
                 except Exception as e:
-                    return Response(e, status=status.HTTP_400_BAD_REQUEST)
+                    # If an error occurs, return it
+                    return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
             else:
+                # If receiver_id is not provided, return an error
                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
+        # If user is not authenticated, return an error
+        return Response({"detail": "You must be authenticated to send a friend request."}, status=status.HTTP_403_FORBIDDEN)
+
 
 def accept_friend_request(request, *args, **kwargs):
      user = request.user
