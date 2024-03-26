@@ -163,12 +163,12 @@ async function renderDashboard(render) {
 			content.innerHTML = await view.getContent();
 			view.updateRoomList();
 			refreshRoomList = setInterval(() => {
+					if (!view.roomList) clearInterval(refreshRoomList);
 					view.updateRoomList();
 					console.log("Room list updated");
 			}, 5000);
 			break;
 		case "friends":
-			clearInterval(refreshRoomList);
 			view = new Friends();
 			content.innerHTML = await view.getContent();
 			await view.loadData();
@@ -176,7 +176,6 @@ async function renderDashboard(render) {
 			await view.getFriendList();
 			break;
 		default:
-			clearInterval(refreshRoomList);
 			view = new Dashboard();
 			content.innerHTML = await view.getContent();
 	}
