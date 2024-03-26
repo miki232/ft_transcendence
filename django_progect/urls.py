@@ -30,4 +30,4 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")), # new
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# urlpatterns += [re_path(r'^.*', include("frontend.urls"), name='index')]
+urlpatterns += [re_path(r'^.*', include("frontend.urls"), name='index')]
