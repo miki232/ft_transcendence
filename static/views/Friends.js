@@ -8,6 +8,50 @@ export function getCSRFToken() {
     return cookieValue;
 }
 
+export function acceptFriendRequest(userId) {
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+    
+    // Set the request URL
+    var url = "friend/accept/" + userId + "/";
+    
+    // Set the request method to GET
+    xhr.open("GET", url, true);
+    
+    // Send the request
+    xhr.send()
+}
+
+export async function removeFriend(){
+    // Get the username from the list of friend
+    var friendElement = document.getElementById("friends-list").firstChild;
+    var text = friendElement.textContent;
+    var parts = text.split(", ");
+    var friendUsername = parts[1].split(": ")[1];
+    console.log(friendUsername);
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Set the request URL
+    var url = "friend/remove/";
+
+    // Set the request method to POST
+    xhr.open("POST", url, true);
+
+    // Set the request headers
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+
+    // Set the request body
+    var data = JSON.stringify({
+        "receiver_user_id": friendUsername
+    });
+
+    // Send the request
+    xhr.send(data);
+}
+
+
 export function sendFriendRequest() {
         // Get the username from the input field
         
@@ -121,12 +165,13 @@ export default class Friends extends AbstractView {
             for (var j = 0; j < friendList.friends.length; j++) {
                 var friendUsername = friendList.friends[j].username;
                 var friendElement = document.createElement("div");
-                var remove = document.createElement("button");
-                remove.innerHTML = "remove";
-                remove.onclick = function() {
+                var removeButton = document.createElement("button");
+                removeButton.innerHTML = "remove";
+                removeButton.id = "Remove-friend";
+                removeButton.onclick = function() {
                     removeFriend(friendUsername);
                         };
-                        friendElement.appendChild(remove);
+                        friendElement.appendChild(removeButton);
 
                 // friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
                 var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
@@ -137,35 +182,7 @@ export default class Friends extends AbstractView {
         }
     }
 
-    async removeFriend(){
-        // Get the username from the list of friend
-        var friendElement = document.getElementById("friend-list").firstChild;
-        var text = friendElement.textContent;
-        var parts = text.split(", ");
-        var friendUsername = parts[1].split(": ")[1];
-        console.log(friendUsername);
-        // Create a new XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-
-        // Set the request URL
-        var url = "remove/";
-
-        // Set the request method to POST
-        xhr.open("POST", url, true);
-
-        // Set the request headers
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
-
-        // Set the request body
-        var data = JSON.stringify({
-            "receiver_user_id": friendUsername
-        });
-
-        // Send the request
-        xhr.send(data);
-    }
-
+    
     async getPendingRequests() {
         var response = await fetch("friend/request/list/");
         var data = await response.json();
@@ -187,6 +204,7 @@ export default class Friends extends AbstractView {
         if (senderUsername !== this.CurrentUsername){
             var acceptButton = document.createElement("button");
             acceptButton.innerHTML = "Accept";
+            acceptButton.id = "Accept-request";
             acceptButton.onclick = function() {
                 acceptFriendRequest(senderUsername);
                     };
