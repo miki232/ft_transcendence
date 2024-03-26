@@ -82,7 +82,7 @@ class ListFriendRequestView(APIView):
 class SendFriendRequestView(APIView):
     def post(self, request):
         # Check if user is authenticated
-        
+        print(request.user.is_authenticated, request.user.username, request.data.get('receiver_user_id'))
         if request.user.is_authenticated and request.user.username != request.data.get('receiver_user_id'):
             user = request.user
             receiver_id = request.data.get('receiver_user_id')
@@ -119,11 +119,9 @@ class SendFriendRequestView(APIView):
                     except Exception as e:
                         # If an error occurs, return it
                         return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-
             else:
                 # If receiver_id is not provided, return an error
                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-
         # If user is not authenticated, return an error
         return Response({"detail": "You must be authenticated to send a friend request."}, status=status.HTTP_403_FORBIDDEN)
 
