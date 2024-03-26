@@ -108,7 +108,7 @@ export function sendFriendRequest() {
 		var xhr = new XMLHttpRequest();
 
 		// Set the request URL
-		var url = "friend/request/send/";
+		var url = "/friend/request/send/";
 
 		// Set the request method to POST
 		xhr.open("POST", url, true);
@@ -167,7 +167,7 @@ export default class Friends extends AbstractView {
 		var xhr = new XMLHttpRequest();
 
 		// Set the request URL
-		var url = "friend/request/send/";
+		var url = "/friend/request/send/";
 
 		// Set the request method to POST
 		xhr.open("POST", url, true);
@@ -213,13 +213,13 @@ export default class Friends extends AbstractView {
             for (var j = 0; j < friendList.friends.length; j++) {
                 var friendUsername = friendList.friends[j].username;
                 var friendElement = document.createElement("div");
-                var removeButton = document.createElement("button");
-                removeButton.innerHTML = "remove";
-                removeButton.id = "Remove-friend";
-                removeButton.onclick = function() {
+                var remove = document.createElement("button");
+				remove.id = "Remove-friend";
+                remove.innerHTML = "remove";
+                remove.onclick = function() {
                     removeFriend(friendUsername);
                         };
-                        friendElement.appendChild(removeButton);
+                        friendElement.appendChild(remove);
 
 				// friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
 				var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
@@ -230,7 +230,35 @@ export default class Friends extends AbstractView {
 		}
 	}
 
-    
+    async removeFriend(){
+        // Get the username from the list of friend
+        var friendElement = document.getElementById("friend-list").firstChild;
+        var text = friendElement.textContent;
+        var parts = text.split(", ");
+        var friendUsername = parts[1].split(": ")[1];
+        console.log(friendUsername);
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Set the request URL
+        var url = "remove/";
+
+        // Set the request method to POST
+        xhr.open("POST", url, true);
+
+        // Set the request headers
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
+
+        // Set the request body
+        var data = JSON.stringify({
+            "receiver_user_id": friendUsername
+        });
+
+        // Send the request
+        xhr.send(data);
+    }
+
     async getPendingRequests() {
         var response = await fetch("friend/request/list/");
         var data = await response.json();
