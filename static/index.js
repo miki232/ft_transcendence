@@ -5,6 +5,7 @@ import Contact from "./views/Contact.js";
 import Dashboard from "./views/Dashboard.js";
 import Room from "./views/Room.js";
 import Friends from "./views/Friends.js";
+import { sendFriendRequest } from "./views/Friends.js"
 
 // function activeLink(page) {
 //     let oldActive = document.querySelector('a.active');
@@ -117,6 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		// if (e.target.matches("#createRoomBtn")) {
 		// 	room.btnCreateRoom();
 		// }
+		if (e.target.matches("#friendBtn")){
+			sendFriendRequest();
+			renderDashboard("friends")
+		}
 		if (e.target.matches("#signup")) {
 			await register();
 		}

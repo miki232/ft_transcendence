@@ -1,12 +1,46 @@
 import AbstractView from "./AbstractView.js";
 
+export function getCSRFToken() {
+    const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    .split('=')[1];
+    return cookieValue;
+}
+
+export function sendFriendRequest() {
+        // Get the username from the input field
+        
+        var username = document.getElementById("friendNameInput").value;
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Set the request URL
+        var url = "friend/request/send/";
+
+        // Set the request method to POST
+        xhr.open("POST", url, true);
+
+        // Set the request headers
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+
+        // Set the request body
+        var data = JSON.stringify({
+            "receiver_user_id": username
+        });
+
+        // Send the request
+        xhr.send(data);
+}
+
 export default class Friends extends AbstractView {
     constructor() {
         super();
         this.CurrentUsername;
     }
 
-    getCSRFToken() {
+    getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
         const cookieValue = document.cookie
         .split('; ')
         .find(row => row.startsWith('csrftoken='))
@@ -33,7 +67,7 @@ export default class Friends extends AbstractView {
             })
     }
 
-    sendFriendRequest() {
+    sendFriendRequest() { // anche questa standalone possiamo anche levarla
         // Get the username from the input field
         var username = document.getElementById("username").value;
 
