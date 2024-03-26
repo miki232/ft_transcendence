@@ -118,6 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		// if (e.target.matches("#createRoomBtn")) {
 		// 	room.btnCreateRoom();
 		// }
+		if (e.target.matches("#cancel-request"))
+			renderDashboard("friends");
 		if (e.target.matches("#decline-request"))
 			renderDashboard("friends");
 		if (e.target.matches("#Accept-request"))

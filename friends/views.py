@@ -224,5 +224,29 @@ class DeclineFriendRequestView(APIView):
                 return Response({"detail" : "Bro Devi essere Loggato!"}, status=status.HTTP_403_FORBIDDEN)
 
 
+class CancelFriendRequestView(APIView):
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            friend_request_id_to_cancel=  request.data.get('receiver_user_id')
+            print(friend_request_id_to_cancel)
+            if friend_request_id_to_cancel:
+                try:
+                    removee = CustomUser.objects.get(username=friend_request_id_to_cancel)
+                    friend_request = FriendRequest.objects.filter(sender=user, receiver=removee, is_active=True)
+                    if friend_request:
+                        if friend_request.first().sender == user:
+                                friend_request.first().cancel()
+                                return Response({"detail" : "Request Cancel Successfully"}, status=status.HTTP_200_OK)
+                        else:
+                            return Response({"detail" : "This is not your Friend request to cancel"}, status=status.HTTP_401_UNAUTHORIZED)
+                    else:
+                        return Response({"detail" : "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(str(e))
+                    return Response({"detail" : str(e)}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"detail" : "Bro Devi essere Loggato!"}, status=status.HTTP_403_FORBIDDEN)
+
 def ex(request):
     return render(request, "friend_example.html")

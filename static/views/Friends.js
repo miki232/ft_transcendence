@@ -76,6 +76,30 @@ export async function removeFriend(){
 }
 
 
+export async function cancelRequest(user){
+    // Get the username from the list of friend
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Set the request URL
+    var url = "friend/request/cancel/";
+
+    // Set the request method to POST
+    xhr.open("POST", url, true);
+
+    // Set the request headers
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+
+    // Set the request body
+    var data = JSON.stringify({
+        "receiver_user_id": user
+    });
+
+    // Send the request
+    xhr.send(data);
+}
+
 export function sendFriendRequest() {
 		// Get the username from the input field
 		
@@ -221,29 +245,48 @@ export default class Friends extends AbstractView {
             var requestElement = document.createElement("div");
             if (receiverUsername == this.CurrentUsername)
             requestElement.innerHTML = senderUsername;
-        else
-        requestElement.innerHTML = receiverUsername;
+            else
+            requestElement.innerHTML = receiverUsername;
     
-    // Create a button to accept the request
-        if (senderUsername !== this.CurrentUsername){
-            var acceptButton = document.createElement("button");
-            var declineButton = document.createElement("button");
-            declineButton.innerHTML = "Decline";
-            declineButton.id = "decline-request";
-            declineButton.onclick = function() {
-                declineFriendRequest(senderUsername);
+             // Create a button to accept the request
+            if (senderUsername !== this.CurrentUsername){
+                var acceptButton = document.createElement("button");
+                var declineButton = document.createElement("button");
+                declineButton.innerHTML = "Decline";
+                declineButton.id = "decline-request";
+                declineButton.onclick = (function(senderUsername) {
+                    return function(){
+                        declineFriendRequest(senderUsername);
                     };
-                    
-            requestElement.appendChild(declineButton);
-            acceptButton.innerHTML = "Accept";
-            acceptButton.id = "Accept-request";
-            acceptButton.onclick = function() {
-                acceptFriendRequest(senderUsername);
+                })(senderUsername);
+                        
+                requestElement.appendChild(declineButton);
+                acceptButton.innerHTML = "Accept";
+                acceptButton.id = "Accept-request";
+                acceptButton.onclick = (function(senderUsername) {
+                    return function(){
+                        acceptFriendRequest(senderUsername);
                     };
-                    
-            requestElement.appendChild(acceptButton);
-        }
-        pendingRequestsElement.appendChild(requestElement);
+                })(senderUsername);
+                        
+                requestElement.appendChild(acceptButton);
+            }
+            else
+            {
+                var cancelButton = document.createElement("button");
+                cancelButton.innerHTML = "Cancel";
+                cancelButton.id = "cancel-request";
+                cancelButton.onclick = (function(receiverUsername) {
+                    return function(){
+                        cancelRequest(receiverUsername);
+                    };
+                })(receiverUsername);
+                console.log(receiverUsername);
+                requestElement.appendChild(cancelButton);
+                
+
+            }
+            pendingRequestsElement.appendChild(requestElement);
         }
     }
 
