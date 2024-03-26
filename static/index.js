@@ -114,9 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}
+		console.log(e.target);
 		// if (e.target.matches("#createRoomBtn")) {
 		// 	room.btnCreateRoom();
 		// }
+		if (e.target.matches("#friendBtn")){
+			await sendFriendRequest();
+			Friends.caller(sendFriendRequest());
+			navigateTo("/");
+		}
 		if (e.target.matches("#signup")) {
 			await register();
 		}

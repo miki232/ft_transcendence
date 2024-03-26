@@ -41,7 +41,7 @@ export default class Friends extends AbstractView {
         var xhr = new XMLHttpRequest();
 
         // Set the request URL
-        var url = "request/send/";
+        var url = "friend/request/send/";
 
         // Set the request method to POST
         xhr.open("POST", url, true);
@@ -74,14 +74,15 @@ export default class Friends extends AbstractView {
     }
 
     async getFriendList() {
-        var response = await fetch("list/");
+        var response = await fetch("friend/list/");
         var data = await response.json();
         var friendListElement = document.getElementById("friends-list");
         friendListElement.innerHTML = "";
-        
+        console.log("SUCA");
         for (var i = 0; i < data.length; i++) {
             var friendList = data[i];
             var userUsername = friendList.user.username;
+            console.log("SUCA1");
             
             for (var j = 0; j < friendList.friends.length; j++) {
                 var friendUsername = friendList.friends[j].username;
@@ -95,6 +96,7 @@ export default class Friends extends AbstractView {
 
                 // friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
                 var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
+                console.log(friendUsername);
                 friendElement.appendChild(textNode);
                 friendListElement.appendChild(friendElement);
             }
@@ -131,7 +133,7 @@ export default class Friends extends AbstractView {
     }
 
     async getPendingRequests() {
-        var response = await fetch("request/list/");
+        var response = await fetch("friend/request/list/");
         var data = await response.json();
         var pendingRequestsElement = document.getElementById("pending-requests");
         pendingRequestsElement.innerHTML = "";
@@ -142,23 +144,23 @@ export default class Friends extends AbstractView {
             var receiverUsername = request.receiver.username;
             
             var requestElement = document.createElement("div");
-            if (receiverUsername == CurrentUsername)
+            if (receiverUsername == this.CurrentUsername)
             requestElement.innerHTML = senderUsername;
         else
         requestElement.innerHTML = receiverUsername;
     
     // Create a button to accept the request
-    if (senderUsername !== CurrentUsername){
-        var acceptButton = document.createElement("button");
-        acceptButton.innerHTML = "Accept";
-        acceptButton.onclick = function() {
-            acceptFriendRequest(senderUsername);
-                };
-                
-                requestElement.appendChild(acceptButton);
+        if (senderUsername !== this.CurrentUsername){
+            var acceptButton = document.createElement("button");
+            acceptButton.innerHTML = "Accept";
+            acceptButton.onclick = function() {
+                acceptFriendRequest(senderUsername);
+                    };
+                    
+                    requestElement.appendChild(acceptButton);
+                }
+                pendingRequestsElement.appendChild(requestElement);
             }
-            pendingRequestsElement.appendChild(requestElement);
-        }
     }
 
     async getContent() {
