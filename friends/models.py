@@ -61,9 +61,14 @@ class FriendRequest(models.Model):
     #             self.is_active = False
     #             self.save()
 
+    def update(self):
+        self.is_active = True
+        self.save()
+
     def decline(self):
         self.is_active = False
         self.save()
+        self.delete()
 
     def cancel(self): #se io decido di eliminare una richiesta di amicizia
         self.is_active = False
