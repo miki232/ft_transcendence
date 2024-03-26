@@ -90,28 +90,35 @@ class SendFriendRequestView(APIView):
             # Check if receiver_id is provided
             if receiver_id:
                 receiver = CustomUser.objects.get(username=receiver_id)
-
                 try:
-                    # Check if a friend request already exists in either direction
-                    friend_request = FriendRequest.objects.filter(
-                        Q(sender=user, receiver=receiver, is_active=True) |
-                        Q(sender=receiver, receiver=user, is_active=True)
-                    )
+                    friend_list = FriendList.objects.get(user=user)
 
-                    if friend_request.exists():
-                        raise Exception("Friend request already exists")
+                    #check if are alredy friend
+                    if friend_list.is_mutual_friend(receiver):
+                        return Response({"detail": "Users are already friends"}, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    
+                    try:
+                        # Check if a friend request already exists in either direction
+                        friend_request = FriendRequest.objects.filter(
+                            Q(sender=user, receiver=receiver, is_active=True) |
+                            Q(sender=receiver, receiver=user, is_active=True)
+                        )
 
-                    # If no friend request exists, create a new one
-                    friend_request = FriendRequest(sender=user, receiver=receiver)
-                    friend_request.save()
+                        if friend_request.exists():
+                            raise Exception("Friend request already exists")
+                        
+                        # If no friend request exists, create a new one
+                        friend_request = FriendRequest(sender=user, receiver=receiver)
+                        friend_request.save()
 
-                    # Serialize the friend request and return it
-                    serializer = FriendRequestSerializer(friend_request)
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                        # Serialize the friend request and return it
+                        serializer = FriendRequestSerializer(friend_request)
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-                except Exception as e:
-                    # If an error occurs, return it
-                    return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+                    except Exception as e:
+                        # If an error occurs, return it
+                        return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
             else:
                 # If receiver_id is not provided, return an error
@@ -180,7 +187,30 @@ class RemoveFriend(APIView):
             return Response({"detail" : "Brooo Devi essere loggato "}, status=status.HTTP_403_FORBIDDEN)
 
 
-            
+class DeclineFriendRequestView(APIView):
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            friend_request_id_to_decline=  request.data.get('receiver_user_id')
+            print(friend_request_id_to_decline)
+            if friend_request_id_to_decline:
+                try:
+                    removee = CustomUser.objects.get(username=friend_request_id_to_decline)
+                    friend_request = FriendRequest.objects.get(sender=removee, receiver=user)
+                    if friend_request.receiver == user:
+                        if friend_request:
+                            friend_request.decline()
+                            return Response({"detail" : "Request declined Successfully"}, status=status.HTTP_200_OK)
+                        else:
+                            return Response({"detail" : "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response({"detail" : "This is not your Friend request to decline"}, status=status.HTTP_401_UNAUTHORIZED)
+                except Exception as e:
+                    print(str(e))
+                    return Response({"detail" : str(e)}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"detail" : "Bro Devi essere Loggato!"}, status=status.HTTP_403_FORBIDDEN)
+
 
 def ex(request):
     return render(request, "friend_example.html")

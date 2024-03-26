@@ -49,7 +49,7 @@ class FriendRequest(models.Model):
                 sender_friend_list.add_friend(self.receiver)
                 self.is_active = False
                 self.save()
-        self.delete()
+        # self.delete()
 
     # def accept(self):
     #     receiver_friend_list = FriendList.objects.get(user=self.receiver)
