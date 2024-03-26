@@ -19,6 +19,8 @@ import { sendFriendRequest } from "./views/Friends.js"
 const container = document.querySelector("#container");
 const nav = document.querySelector("#navbar");
 const content = document.querySelector("#content");
+var refreshRoomList;
+
 // const room = new Room();
 
 const navigateTo = url => {
@@ -119,9 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	room.btnCreateRoom();
 		// }
 		if (e.target.matches("#cancel-request"))
-			renderDashboard("friends");
+			await renderDashboard("friends");
 		if (e.target.matches("#decline-request"))
-			renderDashboard("friends");
+			await renderDashboard("friends");
 		if (e.target.matches("#Accept-request"))
 			await renderDashboard("friends");
 		if (e.target.matches("#Remove-friend"))
@@ -163,20 +165,19 @@ document.addEventListener("DOMContentLoaded", () => {
 // });
 
 async function renderDashboard(render) {
-	let view;
-	let refreshRoomList;
+	var view;
 	switch(render) {
 		case "rooms":
 			view = new Room();
 			content.innerHTML = await view.getContent();
 			view.updateRoomList();
 			refreshRoomList = setInterval(() => {
-					if (!view.roomList) clearInterval(refreshRoomList);
 					view.updateRoomList();
 					console.log("Room list updated");
 			}, 5000);
 			break;
 		case "friends":
+			if (refreshRoomList) clearInterval(refreshRoomList);
 			view = new Friends();
 			content.innerHTML = await view.getContent();
 			await view.loadData();
@@ -184,6 +185,7 @@ async function renderDashboard(render) {
 			await view.getFriendList();
 			break;
 		default:
+			if (refreshRoomList) clearInterval(refreshRoomList);
 			view = new Dashboard();
 			content.innerHTML = await view.getContent();
 	}

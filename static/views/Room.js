@@ -9,6 +9,7 @@ export default class Room extends AbstractView {
 	}
 
 	async btnCreateRoom() {
+		console.log("Create room button clicked");
 		const roomName = roomNameInput.value.trim();
 		var csrftoken = this.getCookie('csrftoken');
 		if (roomName === '') {
