@@ -119,12 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	room.btnCreateRoom();
 		// }
 		if (e.target.matches("#Accept-request"))
-			renderDashboard("friends");
+			await renderDashboard("friends");
 		if (e.target.matches("#Remove-friend"))
-			renderDashboard("friends");
+			await renderDashboard("friends");
 		if (e.target.matches("#friendBtn")){
 			sendFriendRequest();
-			renderDashboard("friends")
+			await renderDashboard("friends")
 		}
 		if (e.target.matches("#signup")) {
 			await register();
