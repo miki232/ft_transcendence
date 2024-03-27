@@ -49,7 +49,7 @@ def callback(request):
     data = {
         'grant_type': 'authorization_code',
         'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'client_secret': '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',
+        'client_secret': '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',
         'code': code,
         'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
     }

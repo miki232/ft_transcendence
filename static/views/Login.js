@@ -24,7 +24,7 @@ const loginHTML = `
 				</div>		
       	    	<div class="hr"></div>
       	    	<div class="foot-lnk">
-					<a href="#42-login">Login with 42 intra account</a>
+					<a href="accounts/authorize/" id="login" class="button"">Login with 42 intra account</a>
       	    	</div>
       	 	</div>
       	  	<div class="sign-up-htm">
