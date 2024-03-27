@@ -58,21 +58,34 @@ export async function register() {
 			password: password,
 			email : email
 		}),
-	}).then(response => response.json())
-		.then(data => {
-			console.log(data);
-			console.log("Register");
-			alert("Account created successfully");
-			var inputs = document.getElementsByTagName('input');
-			for (var i = 0; i < inputs.length; i++) {
-                inputs[i].value = '';
-			}
-			document.querySelector('input[id="tab-2"]').checked = false;
-			document.querySelector('input[id="tab-1"]').checked = true;
-		})
-		.catch((error) => {
-			console.error('Error: ', error);
-		});
+	}).then(response => {
+		if (!response.ok) {
+			return response.json().then(data => {
+				if (data.email && data.email[0]){
+					console.log(data.email[0]);
+					throw new Error(data.email[0]);
+				}
+				if (data.username && data.username[0]){
+					console.log(data.username[0]);
+					throw new Error(data.username[0]);
+				}
+			});
+		}
+		return response.json();
+	}).then(data => {
+		console.log(data);
+		console.log("Register");
+		alert("Account created successfully");
+		var inputs = document.getElementsByTagName('input');
+		for (var i = 0; i < inputs.length; i++) {
+			inputs[i].value = '';
+		}
+		document.querySelector('input[id="tab-2"]').checked = false;
+		document.querySelector('input[id="tab-1"]').checked = true;
+	}).catch((error) => {
+		console.error('Error: ', error);
+		alert(error);
+	});
 }
 
 export async function logout(){

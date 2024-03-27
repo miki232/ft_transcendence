@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 class CustomUser(AbstractUser): # new
     pro_pic = models.URLField(default="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg")
     status_login = models.CharField(max_length=50, default="Offline")
+    email = models.EmailField(unique=True)
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):

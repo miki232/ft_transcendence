@@ -6,6 +6,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
+from django.db import IntegrityError
+
 import requests
 import urllib
 import os
@@ -81,9 +83,12 @@ class UserSignupView(APIView):
     def post(self, request, format=None):
         serializer = UserSignupSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            if user:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                user = serializer.save()
+                if user:
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({"detail": "A user with that email already exists."}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserLoginView(APIView):

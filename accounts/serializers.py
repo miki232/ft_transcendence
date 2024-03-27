@@ -1,13 +1,19 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser, Match
+from django.core.exceptions import ValidationError
+
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
-
+    def validate_email(self, value):
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with that email already exists.")
+        return value
+    
     def create(self, validated_data):
         user, created = CustomUser.objects.get_or_create(
             username=validated_data['username'],
