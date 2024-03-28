@@ -78,7 +78,8 @@ class ListFriendRequestView(APIView):
 #                     return Response(e, status=status.HTTP_400_BAD_REQUEST)
 #             else:
 #                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-            
+        
+
 class SendFriendRequestView(APIView):
     def post(self, request):
         # Check if user is authenticated

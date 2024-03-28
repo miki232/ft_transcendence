@@ -18,7 +18,7 @@ export default class Room extends AbstractView {
 		}
 
 		// Send a POST request to create the room
-		await fetch('http://127.0.0.1:8000/rooms/create/', {
+		await fetch('https://127.0.0.1:8000/rooms/create/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default class Room extends AbstractView {
 	}
 
 	async updateRoomList() {
-		await fetch('http://127.0.0.1:8000/rooms_list/')
+		await fetch('https://127.0.0.1:8000/rooms_list/')
 		.then(response => response.json())
 		.then(data => {
 			// Clear the current list

@@ -20,17 +20,43 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443']
 SECRET_KEY = 'django-insecure-xo%h1)ejm%b&&7j-6f6scrl60$g@lblj1mv23-p@gm_b!)$i+^'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Use a secure cookie for the session cookie
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True
+
+# Use a secure cookie for the CSRF cookie
+CSRF_COOKIE_SECURE = True
+
+# Use HttpOnly for the session cookie
+SESSION_COOKIE_HTTPONLY = True
+
+# Use HttpOnly for the CSRF cookie
+# CSRF_COOKIE_HTTPONLY = True
+
+# Enable Strict-Transport-Security
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Enable content type nosniff
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser XSS Filter
+SECURE_BROWSER_XSS_FILTER = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1", 'localhost', 'mtoiarecce.com']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
     'pong',
     'chat', # new
     'frontend', #new

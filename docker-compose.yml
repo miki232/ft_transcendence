@@ -1,14 +1,28 @@
 version: '3'
 
 services:
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: mypostgres
-      POSTGRES_USER: mtoiasql
-      POSTGRES_PASSWORD: "1235678"
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - 192.168.1.5:8443:443
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    
+      - ./ssl/:/etc/nginx/ssl
+      - static_volume:/etc/nginx/static
+    networks:
+      - webnet
+
+  django:
+    build:
+      context: ./transcendece
+    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - static_volume:/app/static
+    networks:
+      - webnet
+
 volumes:
-  postgres_data:
+  static_volume:
+
+networks:
+  webnet:
