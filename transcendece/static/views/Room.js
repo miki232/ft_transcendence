@@ -26,7 +26,7 @@ export async function btnCreateRoom(roomname) {
 	}
 
 	// Send a POST request to create the room
-	await fetch('https://192.168.1.5/rooms/create/', {
+	await fetch('https://192.168.1.5:8443/rooms/create/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export default class Room extends AbstractView {
 		}
 
 		// Send a POST request to create the room
-		await fetch('https://192.168.1.5/rooms/create/', {
+		await fetch('https://192.168.1.5:8443/rooms/create/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export default class Room extends AbstractView {
 	}
 
 	async updateRoomList() {
-		await fetch('https://192.168.1.5/rooms_list/')
+		await fetch('https://192.168.1.5:8443/rooms_list/')
 		.then(response => response.json())
 		.then(data => {
 			// Clear the current list

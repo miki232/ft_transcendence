@@ -28,6 +28,10 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 
+# Setup support for proxy headers
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Use a secure cookie for the CSRF cookie
 CSRF_COOKIE_SECURE = True
 
@@ -47,6 +51,12 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Enable browser XSS Filter
 SECURE_BROWSER_XSS_FILTER = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://192.168.1.5:8443",
+    "https://192.168.1.5:8443/rooms_list/",
+    # any other origins you want to allow
+]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

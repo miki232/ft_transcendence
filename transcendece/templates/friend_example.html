@@ -14,7 +14,7 @@
         }
 
         async function loadUserData() {
-            var csrftoken = getCSRFToken()
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;()
             await fetch('/accounts/user_info/', {
                 method: 'GET',
                 headers: {

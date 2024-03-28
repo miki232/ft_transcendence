@@ -12,7 +12,3 @@ urlpatterns = [
     path('list/', ListFriendsView.as_view()),
     path("", ex, name="index"),
 ]
-# Cookie: csrftoken=7lWHe8p7wIvnkp01XirNaZMwUWfXkZGI; sessionid=5refcxpy6eyfbfek6pevnqi24b442fb1
-# Cookie: csrftoken=7lWHe8p7wIvnkp01XirNaZMwUWfXkZGI; sessionid=5refcxpy6eyfbfek6pevnqi24b442fb1
-# X-CSRFTOKEN: 7zIFVje9FKuGh67F6NdbtKqllVtpPseA4KucZht61iPTrlXwTVuOtz2H5HycZhK8
-# X-CSRFToken: null
