@@ -19,7 +19,7 @@ function getCookie(name) {
 
 
 let csrftoken = getCookie('csrftoken')
-fetch('https:192.168.1.5/accounts/user_info/', {
+fetch('/accounts/user_info/', {
 	method: 'GET',
 	headers: {
 		'Content-Type' : 'application/json',
@@ -47,8 +47,8 @@ let roomName = segments[segments.length - 2];
 // const roomName = JSON.parse(document.getElementById('room-name').textContent);
 console.log("user", users, "room name ", roomName);
 let ws = new WebSocket(
-    'ws://'
-    + window.location.host
+    'wss://'
+    + '127.0.0.1:8000'
     + '/ws/pong/'
     + roomName
     + '/'

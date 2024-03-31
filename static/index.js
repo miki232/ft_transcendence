@@ -112,14 +112,15 @@ const router = async () => {
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
+
 	document.body.addEventListener("click", async e => {
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}
-		// if (e.target.matches("#createRoomBtn")) {
-		// 	room.btnCreateRoom();
-		// }
+		if (e.target.matches("#createRoomBtn")) {
+			console.log("SUCA");
+		}
 		if (e.target.matches("#cancel-request"))
 			await renderDashboard("friends");
 		if (e.target.matches("#decline-request"))
@@ -129,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#Remove-friend"))
 			await renderDashboard("friends");
 		if (e.target.matches("#friendBtn")){
-			sendFriendRequest();
+			let user = document.getElementById("friendNameInput").value;
+			sendFriendRequest(user);
 			await renderDashboard("friends")
 		}
 		if (e.target.matches("#signup")) {
@@ -175,6 +177,7 @@ async function renderDashboard(render) {
 					view.updateRoomList();
 					console.log("Room list updated");
 			}, 5000);
+			document.getElementById("createRoomBtn").addEventListener("click", view.btnCreateRoom);
 			break;
 		case "friends":
 			if (refreshRoomList) clearInterval(refreshRoomList);

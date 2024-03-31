@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def index(request):
@@ -18,3 +22,7 @@ def room(request):
 
 def test(request):
     return render(request, "home2.html")
+
+@login_required
+def csrf(request):
+    return JsonResponse({'csrfToken': get_token(request)})

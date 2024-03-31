@@ -1,11 +1,11 @@
 import AbstractView from "./AbstractView.js";
 
-export function getCSRFToken() {
-	const cookieValue = document.cookie
-	.split('; ')
-	.find(row => row.startsWith('csrftoken='))
-	.split('=')[1];
-	return cookieValue;
+export async function getCSRFToken() {
+	let csrftoken = await fetch("csrf-token")
+		.then(response => response.json())
+		.then(data => data.csrfToken);
+		console.log(csrftoken);
+	return csrftoken;
 }
 
 export function acceptFriendRequest(userId) {
@@ -22,7 +22,7 @@ export function acceptFriendRequest(userId) {
     xhr.send()
 }
 
-export function declineFriendRequest(userId) {
+export async function declineFriendRequest(userId) {
     // Create a new XMLHttpRequest object
     var xhr = new XMLHttpRequest();
     
@@ -34,7 +34,7 @@ export function declineFriendRequest(userId) {
 
     // Set the request headers
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
     // Set the request body
     var data = JSON.stringify({
@@ -64,7 +64,7 @@ export async function removeFriend(){
 
     // Set the request headers
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
     // Set the request body
     var data = JSON.stringify({
@@ -89,7 +89,7 @@ export async function cancelRequest(user){
 
     // Set the request headers
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
     // Set the request body
     var data = JSON.stringify({
@@ -100,13 +100,13 @@ export async function cancelRequest(user){
     xhr.send(data);
 }
 
-export function sendFriendRequest() {
+export async function sendFriendRequest(user) {
 		// Get the username from the input field
-		
-		var username = document.getElementById("friendNameInput").value;
+		var csrf = await getCSRFToken();
+		// var username = document.getElementById("friendNameInput").value;
 		// Create a new XMLHttpRequest object
 		var xhr = new XMLHttpRequest();
-
+        console.log(user)
 		// Set the request URL
 		var url = "/friend/request/send/";
 
@@ -115,11 +115,11 @@ export function sendFriendRequest() {
 
 		// Set the request headers
 		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+		xhr.setRequestHeader("X-CSRFToken", csrf);
 
 		// Set the request body
 		var data = JSON.stringify({
-			"receiver_user_id": username
+			"receiver_user_id": user
 		});
 
 		// Send the request
@@ -130,6 +130,7 @@ export default class Friends extends AbstractView {
 	constructor() {
 		super();
 		this.CurrentUsername;
+        this.Userto;
 	}
 
 	getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
@@ -141,7 +142,7 @@ export default class Friends extends AbstractView {
 	}
 
 	async loadData() {
-		var csrftoken = this.getCSRFToken()
+		var csrftoken = await getCSRFToken()
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {

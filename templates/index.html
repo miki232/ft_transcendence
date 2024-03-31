@@ -41,6 +41,9 @@
 		<p>© 2024 - 42 Roma Luiss</p>
 	</footer> -->
 	<!-- <script src="{% static 'script.js' %}"></script> -->
-	<script src="{% static 'index.js' %}" type="module"></script>
+	{% csrf_token %}
+	<script src="{% static 'index.js' %}" type="module">
+	</script>
+	
 </body>
 </html>

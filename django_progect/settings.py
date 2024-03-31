@@ -35,7 +35,7 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 
 # Use HttpOnly for the CSRF cookie
-# CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
 
 # Enable Strict-Transport-Security
 SECURE_HSTS_SECONDS = 3600
@@ -100,7 +100,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'django_progect.wsgi.application'
+# WSGI_APPLICATION = 'django_progect.wsgi.application'
 ASGI_APPLICATION = 'django_progect.asgi.application' # new
 
 CHANNEL_LAYERS = {

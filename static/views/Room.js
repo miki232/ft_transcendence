@@ -1,5 +1,21 @@
 import AbstractView from "./AbstractView.js";
 
+export function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+
 export default class Room extends AbstractView {
 	constructor() {
 		super();
@@ -11,14 +27,17 @@ export default class Room extends AbstractView {
 	async btnCreateRoom() {
 		console.log("Create room button clicked");
 		const roomName = roomNameInput.value.trim();
-		var csrftoken = this.getCookie('csrftoken');
+		let csrftoken = await fetch("csrf-token")
+		.then(response => response.json())
+		.then(data => data.csrfToken);
+		console.log(csrftoken);
+		// var csrftoken = getCookie('csrftoken');
 		if (roomName === '') {
 			alert('Please enter a room name');
 			return;
 		}
-
 		// Send a POST request to create the room
-		await fetch('https://127.0.0.1:8000/rooms/create/', {
+		await fetch('/rooms/create/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -50,7 +69,7 @@ export default class Room extends AbstractView {
 	}
 
 	async updateRoomList() {
-		await fetch('https://127.0.0.1:8000/rooms_list/')
+		await fetch('/rooms_list/')
 		.then(response => response.json())
 		.then(data => {
 			// Clear the current list
@@ -91,6 +110,7 @@ export default class Room extends AbstractView {
 				<ul id="roomList"></ul>
 			</div>
 		`;
+		
 		return roomHtml;
 	}
 }
