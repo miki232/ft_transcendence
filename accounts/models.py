@@ -27,11 +27,12 @@ class CustomUser(AbstractUser): # new
 
 
 class Match(models.Model):
+    room_name = models.CharField(max_length=254, default="None")
     user1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches_as_user1')
     user2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches_as_user2')
     score_user1 = models.PositiveIntegerField()
     score_user2 = models.PositiveIntegerField()
-    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='won_matches')
+    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='won_matches', null=True)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

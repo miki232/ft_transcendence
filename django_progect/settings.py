@@ -57,10 +57,11 @@ ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1", 'localhost', 'mtoiarecce.com']
 
 INSTALLED_APPS = [
     'sslserver',
-    'pong',
+    "accounts", # new
     'chat', # new
     'frontend', #new
     'friends',
+    'pong',
     'daphne', # new
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,7 +70,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  # add this line
-    "accounts", # new
 ]
 
 MIDDLEWARE = [

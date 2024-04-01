@@ -170,7 +170,12 @@ function drawPaddles() {
 // Event listener for incoming messages from the server
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    // +console.log('received message');
+    console.log(data);
+    if (data.victory != undefined){
+        console.log(data.state);
+        if (users === data.victory)
+            alert("YOU WIN!", users)
+    }
     console.log(data.ball_speed_x)
     // Update the opponent's paddle position based on data received from the server
     if (data.paddle2_y !== undefined) {

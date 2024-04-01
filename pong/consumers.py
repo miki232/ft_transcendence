@@ -1,36 +1,52 @@
 # pong/consumers.py
 import json
 from asgiref.sync import async_to_sync
-
+from channels.db import database_sync_to_async
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+from accounts.models import Match, CustomUser
+
 import json
 import asyncio
 import random
 
 class PongConsumer(AsyncWebsocketConsumer):
-    players = []
-    spectators = []
-    shared_state = None  # Class variable to store the shared state
+    players = {}
+    status = {}
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.spectator = False
+        self.spectators = []
+        self.shared_state = None  # Class variable to store the shared state
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "pong_%s" % self.room_name
         self.user = self.scope['user']
 
+        await self.accept()
+        self.loop_task = None
+
+
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
-        await self.accept()
+        if self.room_name not in PongConsumer.players:
+            PongConsumer.players[self.room_name] = []
+        PongConsumer.players[self.room_name].append(self.user.username)
+        
+        if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
+            await self.send(text_data=json.dumps({
+                'message': 'Game Terminated'
+            }))
+            await self.close()
+            return
 
-        self.players.append(self.user.username)
 
-        if len(self.players) == 1:
+        if len(PongConsumer.players[self.room_name]) == 1:
             # This is the first user, initialize the state
             self.state = {
                 'ball_x': 400,
@@ -46,29 +62,70 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'up_player2_paddle_y': 0,
                 'down_player2_paddle_y': 0,
                 'player': self.user.username,
+                'victory' : "none"
             }
             PongConsumer.shared_state = self.state  # Store the state in the class variable
-        elif len(self.players) == 2:
+        elif len(PongConsumer.players[self.room_name]) == 2:
             # This is the second user, inherit the state from the first user
             self.state = PongConsumer.shared_state
-        elif len(self.players) > 2:
+            await self.start_game()
+
+        elif len(PongConsumer.players[self.room_name]) > 2:
             # This is a spectator
             self.spectators.append(self.user.username)
             self.spectator = True
 
 
-        if len(self.players) >= 2:
+        if len(PongConsumer.players[self.room_name]) == 2:
             self.loop_task = asyncio.create_task(self.game_loop())
 
+    async def start_game(self):
+        user1 = await self.get_user(PongConsumer.players[self.room_name][0])
+        user2 = await self.get_user(PongConsumer.players[self.room_name][1])
+
+        self.match = await self.create_match(user1, user2)
+
+
+    @database_sync_to_async
+    def get_user(self, username):
+        return CustomUser.objects.get(username=username)
+
+    @database_sync_to_async
+    def create_match(self, user1, user2):
+        matchs = Match(room_name=self.room_name, user1=user1, user2=user2, score_user1=0, score_user2=0)
+        matchs.save()
+        return matchs
+
     async def disconnect(self, close_code):
+        # Remove the disconnected user from the players list and cancel the game loop task
+        if (self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]):
+            return
+        if self.user.username in PongConsumer.players[self.room_name]:
+            PongConsumer.players[self.room_name].remove(self.user.username)
+        # If there are no players left in the room, set status[self.room_name] to True
+        if not PongConsumer.players[self.room_name]:
+            PongConsumer.status[self.room_name] = True
+
+        if self.loop_task is not None:
+            self.loop_task.cancel()
+
+        # If there's only one player left, stop the game and send a "Victory" message
+        if len(PongConsumer.players[self.room_name]) == 1:
+            PongConsumer.status[self.room_name] = True
+            print(PongConsumer.players[self.room_name][0])
+            self.state['victory'] = PongConsumer.players[self.room_name][0]
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': self.state
+                }
+            )
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-        self.players.remove(self.user.username)
-        # If the user was the last one, cancel the game loop task
-        if len(self.players) == 0 and self.loop_task:
-            self.loop_task.cancel()
 
     async def receive(self, text_data):
         message = json.loads(text_data)
@@ -77,7 +134,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
         if 'action' in message:
             action = message['action']
-            if self.user.username == self.players[0]:
+            if self.user.username == PongConsumer.players[self.room_name][0]:
                 if action == 'move_up':
                     self.state['up_player_paddle_y'] = 1
                 elif action == 'move_down':
@@ -89,7 +146,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.state['down_player2_paddle_y'] = 1
 
     async def move_paddle_up(self, player):
-        if player == self.players[0]:
+        if player == PongConsumer.players[self.room_name][0]:
             print("paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] > 0:
                 self.state['paddle1_y'] -= 5
@@ -98,7 +155,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['paddle2_y'] -= 5
 
     async def move_paddle_down(self, player):
-        if player == self.players[0]:
+        if player == PongConsumer.players[self.room_name][0]:
             print("paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] < 300:
                 self.state['paddle1_y'] += 5
@@ -108,6 +165,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         while True:
+            if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
+                break
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -121,16 +180,16 @@ class PongConsumer(AsyncWebsocketConsumer):
             # Move paddles based on player input
             if self.state['up_player_paddle_y'] == 1:
                 print("up_player_paddle_y")
-                await self.move_paddle_up(self.players[0])
+                await self.move_paddle_up(PongConsumer.players[self.room_name][0])
                 self.state['up_player_paddle_y'] = 0
             if self.state['down_player_paddle_y'] == 1:
-                await self.move_paddle_down(self.players[0])
+                await self.move_paddle_down(PongConsumer.players[self.room_name][0])
                 self.state['down_player_paddle_y'] = 0
             if self.state['up_player2_paddle_y'] == 1:
-                await self.move_paddle_up(self.players[1])
+                await self.move_paddle_up(PongConsumer.players[self.room_name][1])
                 self.state['up_player2_paddle_y'] = 0
             if self.state['down_player2_paddle_y'] == 1:
-                await self.move_paddle_down(self.players[1])
+                await self.move_paddle_down(PongConsumer.players[self.room_name][1])
                 self.state['down_player2_paddle_y'] = 0
 
 
