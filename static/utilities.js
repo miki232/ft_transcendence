@@ -89,14 +89,17 @@ export async function register() {
 }
 
 export async function logout(){
-	var csrftoken = getCookie('csrftoken')
-	var sessionid = getCookie('sessionid')
+	///Csrf_token
+	let csrftoken = await fetch("csrf-token")
+	.then(response => response.json())
+	.then(data => data.csrfToken);
+	console.log(csrftoken);
+	///
 	await fetch('accounts/logout/', {
 		method: 'POST',
 		headers: {
 			'Content-Type' : 'application/json',
 			'X-CSRFToken': csrftoken,
-			'sessionid' : sessionid
 		}
 	})
 	.then(response => {
