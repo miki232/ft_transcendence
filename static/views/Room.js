@@ -1,4 +1,27 @@
 import AbstractView from "./AbstractView.js";
+export async function user_name(){
+	
+	let users;
+	let csrftoken = await fetch("csrf-token")
+		.then(response => response.json())
+		.then(data => data.csrfToken);
+	return fetch('/accounts/user_info/', {
+		method: 'GET',
+		headers: {
+			'Content-Type' : 'application/json',
+			'X-CSRFToken': csrftoken
+		}
+	})
+	.then(response => response.json())
+	.then(data => {
+		users = data.username;
+		console.log(users);
+		return users;
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
 
 export function getCookie(name) {
 	let cookieValue = null;
@@ -23,14 +46,21 @@ export default class Room extends AbstractView {
 		this.createRoomBtn = document.getElementById("createRoomBtn");
 		this.roomList = document.getElementById("roomList");
 	}
-
+	// Ora le room per essere create hanno bisogno per forza di Room_name, user_name(di chi la sta creando)
+	/// opzionale se è pubblica o privata. Per ora ho aggiunto una funzione per prendere l'username di chi è loggato.
+	// ma magari si può fare meglio, Da sistemare anche il csrf-token
 	async btnCreateRoom() {
 		console.log("Create room button clicked");
 		const roomName = roomNameInput.value.trim();
+		///Csrf_token
 		let csrftoken = await fetch("csrf-token")
 		.then(response => response.json())
 		.then(data => data.csrfToken);
 		console.log(csrftoken);
+		///
+		//user_name 
+		let users =  await user_name();
+		console.log(users);
 		// var csrftoken = getCookie('csrftoken');
 		if (roomName === '') {
 			alert('Please enter a room name');
@@ -43,7 +73,7 @@ export default class Room extends AbstractView {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrftoken
 			},
-			body: JSON.stringify({ name: roomName }),
+			body: JSON.stringify({ name: roomName, created_by: users }),
 		  })
 		  .then(response => {
 			if (!response.ok){

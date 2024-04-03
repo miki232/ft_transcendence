@@ -172,11 +172,6 @@ function drawPaddles() {
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
-    if (data.victory != undefined){
-        console.log(data.victory);
-        if (users === data.victory)
-            alert("YOU WIN!", users)
-    }
     console.log(data.ball_speed_x)
     // Update the opponent's paddle position based on data received from the server
     if (data.paddle2_y !== undefined) {
@@ -193,10 +188,23 @@ ws.onmessage = function(event) {
         // console.log('playerPaddleY', playerPaddleY);
     }
     if (data.score1 !== undefined) {
-        document.getElementById("score1").innerHTML = "Score: " + data.score1;
+        if (data.player === users)
+            document.getElementById("score1").innerHTML = "Your Score: " + data.score1;
+        else
+            document.getElementById("score1").innerHTML = "Not your Score: " + data.score1;
     }
     if (data.score2 !== undefined) {
-        document.getElementById("score2").innerHTML = "Score: " + data.score2;
+        if (data.player !== users)
+            document.getElementById("score2").innerHTML = "Your Score: " + data.score2;
+        else
+            document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
+    }
+    if (data.victory != "none"){
+        console.log(data.victory);
+        if (users === data.victory)
+            alert("YOU WIN!" + users)
+        else
+            alert("AHAHAH hai PERSO")
     }
     // Redraw the paddles and ball
     drawPaddles();

@@ -4,9 +4,8 @@ from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match, CustomUser
-
 import json
 import asyncio
 import random
@@ -40,8 +39,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         PongConsumer.players[self.room_name].append(self.user.username)
         
         if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
+            winner_of_the_room = await self.get_winner(self.room_name)
             await self.send(text_data=json.dumps({
-                'message': 'Game Terminated'
+                'message': 'Game Terminated',
+                'victory' : winner_of_the_room
             }))
             await self.close()
             return
@@ -87,6 +88,20 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         self.match = await self.create_match(user1, user2)
 
+
+    @database_sync_to_async
+    def get_winner(self, room_name):
+        try:
+            # Query the Match model for a match with the given room name
+            # Get the last istance created, if for any reason there is multiple istance with same room_name
+            # But based on the way is treated a room it shouldn't happen
+            match = Match.objects.filter(room_name=room_name).latest('date')
+
+            # Return the winner's username
+            return match.winner.username
+        except ObjectDoesNotExist:
+            # If no match is found with the given room name, return None
+            return None
 
     @database_sync_to_async
     def set_score(self, match, score, user):
@@ -222,7 +237,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             if self.state['ball_y'] >= 400:
                 self.state['ball_speed_y'] = -self.state['ball_speed_y']
 
-            # Collision with paddles
+            # # Collision with paddles
             if (
                 self.state['ball_x'] <= 10
                 and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
@@ -249,8 +264,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = +self.state['ball_speed_y']
                 self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
             if self.state['score1']  >= 7 or self.state['score2'] >= 7:
-                print(self.state['score1'])
-                print(self.state['score1']  >= 7 or self.state['score2'] >= 7)
                 if self.state['score1'] >= 7:
                     await self.set_winner(self.match, PongConsumer.players[self.room_name][0])
                 elif self.state['score2'] >= 7:
