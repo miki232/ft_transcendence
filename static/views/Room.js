@@ -103,8 +103,9 @@ export default class Room extends AbstractView {
 		.then(response => response.json())
 		.then(data => {
 			// Clear the current list
-			roomList.innerHTML = '';
-	
+			let publicroom = document.getElementById("publicroomList");
+			roomList.innerHTML = '';	
+			publicroom.innerHTML = '';
 			// Append each room to the list
 			data.forEach(room => {
 				let roomItem = document.createElement('li');
@@ -125,7 +126,10 @@ export default class Room extends AbstractView {
 				});
 	
 				// Append room to the list
-				roomList.appendChild(roomItem);
+				if (room.public)
+					publicroom.appendChild(roomItem);
+				else
+					roomList.appendChild(roomItem);
 			});
 		});
 	}
@@ -138,6 +142,8 @@ export default class Room extends AbstractView {
 				<button id="createRoomBtn"">Create Room</button>
 				<h3>Available Rooms</h3>
 				<ul id="roomList"></ul>
+				<h3>Available Public Rooms</h3>
+				<ul id="publicroomList"></ul>
 			</div>
 		`;
 		
