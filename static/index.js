@@ -170,8 +170,14 @@ async function renderDashboard(render) {
 	var view;
 	switch(render) {
 		case "rooms":
-			view = new Room();
+			if (!(view instanceof Room)) {
+				view = new Room();
+			}
 			content.innerHTML = await view.getContent();
+			if (refreshRoomList) {
+				clearInterval(refreshRoomList);
+			}
+			
 			view.updateRoomList();
 			refreshRoomList = setInterval(() => {
 					view.updateRoomList();

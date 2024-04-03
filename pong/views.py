@@ -9,6 +9,7 @@ from accounts.models import CustomUser
 from friends.models import FriendList
 from .serializers import RoomNameSerializer
 
+from django.core.exceptions import ObjectDoesNotExist
 
 class CreateRoomView(APIView):
     def post(self, request, format=None):
@@ -30,10 +31,15 @@ class ListRoomView(APIView):
     def get(self, request, format=None):
         # print(request.user)
         user = CustomUser.objects.get(username=request.user)
-        friendslist = FriendList.objects.get(user=user)
-        friends = friendslist.friends.all()
+        
+        try:
+            friendslist = FriendList.objects.get(user=user)
+            friends = friendslist.friends.all()
+            rooms = RoomName.objects.filter(Q(user__in=friends) | Q(user=user) | Q(public=True))
+        except ObjectDoesNotExist:
+            rooms = RoomName.objects.filter(Q(user=user) | Q(public=True))
+
          # Filter the RoomName queryset to only include rooms created by the user's friends or by the request.user, and where public is True
-        rooms = RoomName.objects.filter(Q(user__in=friends) | Q(user=user) | Q(public=True))
 
         
         serializer = RoomNameSerializer(rooms, many=True)
