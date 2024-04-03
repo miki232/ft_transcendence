@@ -19,6 +19,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.spectator = False
         self.spectators = []
         self.shared_state = None  # Class variable to store the shared state
+        self.match = None
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
@@ -44,7 +45,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             }))
             await self.close()
             return
-
+        else:
+            PongConsumer.status[self.room_name] = False
 
         if len(PongConsumer.players[self.room_name]) == 1:
             # This is the first user, initialize the state
@@ -87,6 +89,21 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
     @database_sync_to_async
+    def set_score(self, match, score, user):
+        print(score, user, self.match.user1)
+        if (self.match.user1 == CustomUser.objects.get(username=user)):
+            match.score_user1 = score
+        else:
+            match.score_user2 = score
+        match.save()
+
+    @database_sync_to_async
+    def set_winner(self, match, winner):
+        print(winner)
+        match.winner = CustomUser.objects.get(username=winner)
+        match.save()
+
+    @database_sync_to_async
     def get_user(self, username):
         return CustomUser.objects.get(username=username)
 
@@ -112,7 +129,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         # If there's only one player left, stop the game and send a "Victory" message
         if len(PongConsumer.players[self.room_name]) == 1:
             PongConsumer.status[self.room_name] = True
+            print("SUCA")
             print(PongConsumer.players[self.room_name][0])
+            winner = PongConsumer.players[self.room_name][0]
+            await self.set_winner(self.match, winner)
             self.state['victory'] = PongConsumer.players[self.room_name][0]
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -126,6 +146,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        print(f"User {self.scope['user']} disconnected with code {close_code}")
 
     async def receive(self, text_data):
         message = json.loads(text_data)
@@ -164,9 +185,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['paddle2_y'] += 5
 
     async def game_loop(self):
-        while True:
-            if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
-                break
+        while (PongConsumer.status[self.room_name]) == False:
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -217,17 +236,27 @@ class PongConsumer(AsyncWebsocketConsumer):
             # Scoring
             if self.state['ball_x'] <= 0:
                 self.state['score2'] += 1
+                await self.set_score(self.match, self.state['score2'], PongConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
                 self.state['ball_y'] = 200
                 self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
             elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
+                await self.set_score(self.match, self.state['score1'], PongConsumer.players[self.room_name][0])
                 self.state['ball_x'] = 400
                 self.state['ball_y'] = 200
                 self.state['ball_speed_x'] = +self.state['ball_speed_y']
                 self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
-
+            if self.state['score1'] | self.state['score2'] >= 7:
+                print(self.state['score1'])
+                print(self.state['score1']  >= 7 or self.state['score2'] >= 7)
+                if self.state['score1'] >= 7:
+                    await self.set_winner(self.match, PongConsumer.players[self.room_name][0])
+                elif self.state['score2'] >= 7:
+                    await self.set_winner(self.match, PongConsumer.players[self.room_name][1])
+                PongConsumer.status[self.room_name] = True
+                
             # Send updated game state to all clients
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -236,6 +265,19 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'state': self.state
                 }
             )
+        if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
+            print("THE winner is", self.match.winner)
+            self.state['victory'] = self.match.winner.username
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'game_state',
+                'state': self.state
+            }
+            )
+            await asyncio.sleep(1)  # Wait for 1 second
+            await self.close()
+            return
 
     async def handle_message(self, event):
         message_type = event['type']

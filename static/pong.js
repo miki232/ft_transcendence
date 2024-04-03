@@ -48,7 +48,8 @@ let roomName = segments[segments.length - 2];
 console.log("user", users, "room name ", roomName);
 let ws = new WebSocket(
     'wss://'
-    + '127.0.0.1:8000'
+    + window.location.hostname
+    + ':8000'
     + '/ws/pong/'
     + roomName
     + '/'
@@ -172,7 +173,7 @@ ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
     if (data.victory != undefined){
-        console.log(data.state);
+        console.log(data.victory);
         if (users === data.victory)
             alert("YOU WIN!", users)
     }
