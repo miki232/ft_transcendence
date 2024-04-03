@@ -248,7 +248,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_y'] = 200
                 self.state['ball_speed_x'] = +self.state['ball_speed_y']
                 self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
-            if self.state['score1'] | self.state['score2'] >= 7:
+            if self.state['score1']  >= 7 or self.state['score2'] >= 7:
                 print(self.state['score1'])
                 print(self.state['score1']  >= 7 or self.state['score2'] >= 7)
                 if self.state['score1'] >= 7:
