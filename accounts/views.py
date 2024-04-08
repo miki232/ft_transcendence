@@ -22,6 +22,7 @@ from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer, UserMatchHistorySerializer
+from friends.models import FriendList
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -140,11 +141,23 @@ class UserMatchHistoryView(generics.ListAPIView):
 class GenericUserInfo(generics.ListAPIView):
     serializer_class = UserInfoSerializer
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
         username = self.request.query_params.get('username', None)
         if username is not None:
-            return CustomUser.objects.filter(username=username)
-        return CustomUser.objects.none()
+            friend_list = FriendList.objects.get(user=self.request.user)
+            friend = CustomUser.objects.get(username=username)
+            is_mutual_friend = friend_list.is_mutual_friend(friend)
+
+            # Serialize the friend
+            serializer = self.get_serializer(friend)
+
+            # Return the serialized friend and the is_mutual_friend information
+            return Response({
+                'is_mutual_friend': is_mutual_friend,
+                'user': serializer.data,
+            })
+
+        return Response(status=404)
 
 class LogoutView(APIView):
     def post(self, request):

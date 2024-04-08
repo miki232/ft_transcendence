@@ -133,9 +133,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#Remove-friend"))
 			await renderDashboard("friends");
 		if (e.target.matches("#friendBtn")){
+			e.preventDefault();
 			let user = document.getElementById("friendNameInput").value;
-			sendFriendRequest(user);
-			await renderDashboard("friends")
+			if (user)
+				renderDashboard("friend_info", user);
+			else
+				alert("Please provide a username")
 		}
 		if (e.target.matches("#signup")) {
 			await register();
@@ -201,11 +204,49 @@ async function renderDashboard(render, addArg = null) {
 			await view.loadData();
 			await view.getPendingRequests();
 			await view.getFriendList();
+			var friendNameInput = document.getElementById("friendNameInput");
+			var dataList = document.createElement("datalist");
+			dataList.id = "users";
+			friendNameInput.setAttribute("list", "users");
+			friendNameInput.parentNode.insertBefore(dataList, friendNameInput.nextSibling);
+
+			friendNameInput.addEventListener("input", function() {
+				var inputText = this.value
+				fetch(`https://127.0.0.1:8001/accounts/search/?q=${inputText}`)
+				.then(response => {
+					if (response.status == "404"){
+						throw new Error('NO user FOund!');
+					}
+					return response.json();
+				})
+				.then(data => {
+					// Clear the datalist
+					dataList.innerHTML = "";
+		
+					// Add the users to the datalist
+					data.forEach(function(user) {
+						var option = document.createElement("option");
+						option.value = user.username; // Replace with the actual property name for the username
+						dataList.appendChild(option);
+					});
+				})
+				.catch(error => {
+					console.log('Error', error);
+					alert("Not Found!");
+				}
+				);
+				
+			})
 			break;
 		case "friend_info":
 			if (refreshRoomList) clearInterval(refreshRoomList);
-			view = new Info(addArg);
-			content.innerHTML = await view.getContent();
+			try {
+				view = new Info(addArg);
+				content.innerHTML = await view.getContent();
+			} catch (error) {
+				console.error('Error', error);
+				renderDashboard("friends");
+			}
 			break;
 		default:
 			if (refreshRoomList) clearInterval(refreshRoomList);

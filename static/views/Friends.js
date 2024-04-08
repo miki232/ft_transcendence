@@ -337,7 +337,7 @@ export default class Friends extends AbstractView {
 				<h3>Send Friend Request</h3>
 				<form>
 					<input type="text" id="friendNameInput" placeholder="Enter friend's username">
-					<button id="friendBtn">Send Request</button>
+					<button id="friendBtn">🔍</button>
 				</form>
 				<br>
 				<h3>Pending Requests</h3>
