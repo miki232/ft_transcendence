@@ -15,6 +15,9 @@ export default class Info extends AbstractView {
         this.friend_name = friend_name;
         this.username = "undefined";
         this.email = "undefined";
+        this.pro_pic = "undefined";
+        this.status = "undefined";
+        this.is_friend = "none";
     }
 
     async getuserinfo(){
@@ -30,6 +33,8 @@ export default class Info extends AbstractView {
         console.log(data[0]);
         this.username = data[0].username;
         this.email = data[0].email;
+        this.pro_pic = data[0].pro_pic;
+        this.status = data[0].status_login;
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -39,11 +44,14 @@ export default class Info extends AbstractView {
     async getContent() {
         await this.getuserinfo();
         return `
-            <div>
-                <h1>User Info</h1>
-                <p>Name: ${this.username}</p>
-                <p>Email: ${this.email}</p>
+            <div class="single-card">
+                <img src="${this.pro_pic}" alt="User pic">
+                <h1>${this.username}</h1>
+                <div class="friend-info">
+                    <p>${this.status}</p>
+                </div>
             </div>
+            <h1> Qua mettiamo i match ecc.. e anche un bottone per mandare la richiesta di amicizia se non sono amici, o rimuovi la richiesta se sono amici</h1>
         `;
     }
 }

@@ -328,13 +328,47 @@ a {
 
 .card img {
   margin-bottom: 10px;
-  width: 32px; /* Set a fixed width for the image */
-  height: 32px; /* Set a fixed height for the image */
+  width: 42px; /* Set a fixed width for the image */
+  height: 42px; /* Set a fixed height for the image */
   object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+  border-radius: 50%;
 
 }
 
 .card .friend-info {
   text-align: center;
   margin-left: 50%; /* Add a left margin */
+}
+
+/**********For Single User**********/
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.single-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 50%; /* Set a fixed width for the single card */
+  margin: 0 auto; /* Center the single card horizontally */
+}
+
+.single-card img {
+  width: 100px; /* Set a larger fixed width for the image */
+  height: 100px; /* Set a larger fixed height for the image */
+  object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+  margin-bottom: 20px; /* Add a bottom margin to create some space between the image and the other info */
+  border-radius: 50%;
+}
+
+.single-card .friend-info {
+  text-align: center;
 }
