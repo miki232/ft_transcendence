@@ -243,6 +243,16 @@ async function renderDashboard(render, addArg = null) {
 			try {
 				view = new Info(addArg);
 				content.innerHTML = await view.getContent();
+				try{
+
+					document.getElementById("sendFriendRequestButton").addEventListener("click", function() {
+						sendFriendRequest(view.username);
+						renderDashboard("friend_info", view.username);
+					});
+				}
+				catch{
+					/**non fare nulla */
+				}
 			} catch (error) {
 				console.error('Error', error);
 				renderDashboard("friends");

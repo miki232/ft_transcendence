@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { sendFriendRequest } from "./Friends.js"
 
 export async function getCSRFToken() {
 	let csrftoken = await fetch("csrf-token")
@@ -88,9 +89,13 @@ export default class Info extends AbstractView {
                     return `<h1>Accept Friend Request</h1>`;
             }
         }
-        else if (this.username === this.selfuser)
-            return `<h1>List of pending request or change info</h1>`;
-        return `<h1>Send Friend Request</h1>`;
+        else if (this.username === this.selfuser){
+            var response = await fetch("friend/request/list/");
+            var data = await response.json();
+            var pending = data.length;
+            return `<h1>List of pending request or change info ${pending}</h1>`;
+        }
+        return `<button id="sendFriendRequestButton">Send Friend Request</button>`;
     }
 
     async getContent() {
@@ -100,7 +105,6 @@ export default class Info extends AbstractView {
             throw ("No user Found!");
         else{
             let friendAction = await this.checkFriend();
-
             return `
             <div class="single-card">
                 <img src="${this.pro_pic}" alt="User pic">
@@ -110,7 +114,7 @@ export default class Info extends AbstractView {
                 </div>
             </div>
             <div class="friendRequest">
-                <p>${friendAction}</p>
+                ${friendAction}
             </div>
             `;
         }

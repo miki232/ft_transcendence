@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 
 import requests
 import urllib
@@ -144,7 +145,17 @@ class GenericUserInfo(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         username = self.request.query_params.get('username', None)
         if username is not None:
-            friend_list = FriendList.objects.get(user=self.request.user)
+            try:
+                friend_list = FriendList.objects.get(user=self.request.user)
+            except ObjectDoesNotExist:
+                friend = CustomUser.objects.get(username=username)
+                serializer = self.get_serializer(friend)
+                
+                return Response({
+                    'is_mutual_friend': False,
+                    'user': serializer.data,
+                })
+
             friend = CustomUser.objects.get(username=username)
             is_mutual_friend = friend_list.is_mutual_friend(friend)
 
