@@ -5,6 +5,7 @@ import Contact from "./views/Contact.js";
 import Dashboard from "./views/Dashboard.js";
 import Room from "./views/Room.js";
 import Friends from "./views/Friends.js";
+import Info from "./views/Info.js";
 import { sendFriendRequest } from "./views/Friends.js"
 
 // function activeLink(page) {
@@ -75,6 +76,7 @@ const router = async () => {
 	// console.log(is_logged_in);
 	// console.log(match.route.path);
 	if (match.route.path === "/dashboard") {
+		
 		var view = new match.route.view();
 		if (is_logged_in === false){
 			const isVAlid = await view.validateLogin();
@@ -114,6 +116,8 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
+
+		console.log(e.target)
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
@@ -152,6 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#nav-title")) {
 			await renderDashboard("dashboard");
 		}
+		if (e.target.matches("a[href='/user_info']")){
+			e.preventDefault();
+			let friend_name = e.target.getAttribute('data-username');
+			await renderDashboard("friend_info", friend_name);
+			history.pushState(null, '', '/user_info');
+		}
 	});
 	router();
 });
@@ -166,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 	}
 // });
 
-async function renderDashboard(render) {
+async function renderDashboard(render, addArg = null) {
 	var view;
 	switch(render) {
 		case "rooms":
@@ -193,9 +203,16 @@ async function renderDashboard(render) {
 			await view.getPendingRequests();
 			await view.getFriendList();
 			break;
+		case "friend_info":
+			if (refreshRoomList) clearInterval(refreshRoomList);
+			view = new Info(addArg);
+			content.innerHTML = await view.getContent();
+			break;
 		default:
 			if (refreshRoomList) clearInterval(refreshRoomList);
-			view = new Dashboard();
+			if (!(view instanceof Dashboard)) {
+				view = new Dashboard();
+			}
 			content.innerHTML = await view.getContent();
 	}
 }

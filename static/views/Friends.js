@@ -223,9 +223,13 @@ export default class Friends extends AbstractView {
                         friendElement.appendChild(remove);
 
 				// friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
-				var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
+				var usernameLink = document.createElement("a");
+                usernameLink.href = '/user_info';
+                usernameLink.setAttribute('data-username', friendUsername);
+                usernameLink.textContent = friendUsername;
+                // var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
 				console.log(friendUsername);
-				friendElement.appendChild(textNode);
+				friendElement.appendChild(usernameLink);
 				friendListElement.appendChild(friendElement);
 			}
 		}
