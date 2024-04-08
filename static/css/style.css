@@ -306,3 +306,35 @@ a {
     bottom: 0;
     width: 100%;
 } */
+
+/**************Friend card*****************/
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 0 calc(50% - 40px); /* Grow and shrink based on the content, basis is one third of the container width minus total gap */
+  max-width: calc(50% - 40px); /* Maximum width is one third of the container width minus total gap */
+  align-items: center;
+}
+
+.card img {
+  margin-bottom: 10px;
+  width: 32px; /* Set a fixed width for the image */
+  height: 32px; /* Set a fixed height for the image */
+  object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+
+}
+
+.card .friend-info {
+  text-align: center;
+  margin-left: 50%; /* Add a left margin */
+}

@@ -76,7 +76,6 @@ const router = async () => {
 	// console.log(is_logged_in);
 	// console.log(match.route.path);
 	if (match.route.path === "/dashboard") {
-		
 		var view = new match.route.view();
 		if (is_logged_in === false){
 			const isVAlid = await view.validateLogin();
@@ -210,9 +209,7 @@ async function renderDashboard(render, addArg = null) {
 			break;
 		default:
 			if (refreshRoomList) clearInterval(refreshRoomList);
-			if (!(view instanceof Dashboard)) {
-				view = new Dashboard();
-			}
+			view = new Dashboard();
 			content.innerHTML = await view.getContent();
 	}
 }

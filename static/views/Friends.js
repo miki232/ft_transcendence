@@ -205,15 +205,18 @@ export default class Friends extends AbstractView {
         var data = await response.json();
         var friendListElement = document.getElementById("friends-list");
         friendListElement.innerHTML = "";
+        friendListElement.className = "content";
         console.log("SUCA");
         for (var i = 0; i < data.length; i++) {
             var friendList = data[i];
-            var userUsername = friendList.user.username;
-            console.log("SUCA1");
-            
+            var userUsername = friendList.user.username;            
             for (var j = 0; j < friendList.friends.length; j++) {
+                console.log(friendList.friends[j]);
                 var friendUsername = friendList.friends[j].username;
+                var friendStatus = friendList.friends[j].status_login;
+                var friendPic = friendList.friends[j].pro_pic;        
                 var friendElement = document.createElement("div");
+                friendElement.className = "card";
                 var remove = document.createElement("button");
 				remove.id = "Remove-friend";
                 remove.innerHTML = "remove";
@@ -222,14 +225,17 @@ export default class Friends extends AbstractView {
                         };
                         friendElement.appendChild(remove);
 
-				// friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
+                friendElement.innerHTML = `
+                        <img src="${friendPic}" alt="User pic">
+                        <div class="friend-info">
+                            <p>${friendStatus}</p>
+                        </div>
+                `;
 				var usernameLink = document.createElement("a");
                 usernameLink.href = '/user_info';
                 usernameLink.setAttribute('data-username', friendUsername);
                 usernameLink.textContent = friendUsername;
-                // var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
-				console.log(friendUsername);
-				friendElement.appendChild(usernameLink);
+                friendElement.querySelector(".friend-info").prepend(usernameLink);
 				friendListElement.appendChild(friendElement);
 			}
 		}

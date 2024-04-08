@@ -65,3 +65,4 @@ class UserMatchHistorySerializer(serializers.ModelSerializer):
 
     def get_match_history(self, obj):
         return obj.get_match_history()
+    

@@ -153,3 +153,27 @@ class LogoutView(APIView):
         logout(request)
         return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)
     
+class UserSearchView(generics.ListAPIView):
+    serializer_class = UserInfoSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('q', None)
+        print(query)
+        if query is not None:
+            print(query)
+            return CustomUser.objects.filter(username__icontains=query)
+        return CustomUser.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        if not queryset:
+            return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

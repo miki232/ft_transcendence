@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, redirect_to_42, callback, UserSignupView, UserLoginView, UserInfoView, LogoutView, UserMatchHistoryView, GenericUserInfo
+from .views import SignUpView, redirect_to_42, callback, UserSignupView, UserLoginView, UserInfoView, LogoutView, UserMatchHistoryView, GenericUserInfo, UserSearchView
 
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
@@ -11,5 +11,6 @@ urlpatterns = [
     path('guser_info/', GenericUserInfo.as_view(), name='guser_info'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('match_history/', UserMatchHistoryView.as_view(), name='user_match_history'),
+    path('search/', UserSearchView.as_view(), name="user_search"),
     # path('user/<str:username>/match_history/', UserMatchHistoryView.as_view(), name='user_match_history')
 ]
