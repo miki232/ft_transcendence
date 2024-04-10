@@ -165,6 +165,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#nav-title")) {
 			await renderDashboard("dashboard");
 		}
+		if (e.target.matches("#nav-footer-title")) {
+			let user = document.getElementById("nav-footer-title").innerHTML;
+			await renderDashboard("friend_info", user);
+		}
 		if (e.target.matches("a[href='/user_info']")){
 			e.preventDefault();
 			let friend_name = e.target.getAttribute('data-username');
@@ -264,18 +268,6 @@ async function renderDashboard(render, addArg = null) {
 						 * Allo sfidante, quando visita il profilo di manda la richiesta, compare "X ti sta sfidando"
 						 * se clicca lo porta alla room
 						 */
-						document.getElementById("Play").addEventListener("click", function() {
-							invite_to_play(view.selfuser, addArg);
-							renderDashboard("friend_info", view.username);
-						});
-						document.getElementById("RemoveFriend").addEventListener("click", function() {
-							removeFriend(view.username);
-							renderDashboard("friend_info", view.username);
-						});
-						document.getElementById("Cancelrequest").addEventListener("click", function() {
-							cancelRequest(view.username);
-							renderDashboard("friend_info", view.username);
-						});
 						document.getElementById("Acceptrequest").addEventListener("click", function() {
 							acceptFriendRequest(view.username);
 							renderDashboard("friend_info", view.username);
@@ -287,12 +279,24 @@ async function renderDashboard(render, addArg = null) {
 						});
 					}
 					catch{
+						document.getElementById("Cancelrequest").addEventListener("click", function() {
+							cancelRequest(view.username);
+							renderDashboard("friend_info", view.username);
+						});
 						/**non fare nulla */
 					}
 				}
-			} catch (error) {
-				console.error('Error', error);
-				renderDashboard("friends");
+			} catch {
+				document.getElementById("Play").addEventListener("click", function() {
+					invite_to_play(view.selfuser, addArg);
+					renderDashboard("friend_info", view.username);
+				});
+				document.getElementById("RemoveFriend").addEventListener("click", function() {
+				removeFriend(view.username);
+				renderDashboard("friend_info", view.username);
+				});
+				// console.error('Error', error);
+				// renderDashboard("friends");
 			}
 			break;
 		default:
