@@ -287,13 +287,13 @@ async function renderDashboard(render, addArg = null) {
 					}
 				}
 			} catch {
-				document.getElementById("Play").addEventListener("click", function() {
-					invite_to_play(view.selfuser, addArg);
-					renderDashboard("friend_info", view.username);
-				});
 				document.getElementById("RemoveFriend").addEventListener("click", function() {
 				removeFriend(view.username);
 				renderDashboard("friend_info", view.username);
+				});
+				document.getElementById("Play").addEventListener("click", function() {
+					invite_to_play(view.selfuser, addArg);
+					renderDashboard("friend_info", view.username);
 				});
 				// console.error('Error', error);
 				// renderDashboard("friends");
