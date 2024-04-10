@@ -1,5 +1,4 @@
 import AbstractView from "./AbstractView.js";
-import { sendFriendRequest } from "./Friends.js"
 
 export async function getCSRFToken() {
 	let csrftoken = await fetch("csrf-token")
@@ -72,7 +71,7 @@ export default class Info extends AbstractView {
          */
         console.log(this.selfuser);
         if (this.is_friend && this.username !== this.selfuser)
-            return `<h1>Remove Friend</h1>`;
+            return `<button id="RemoveFriend">Remove</button>`;
         else if (this.is_friend === false && this.username !== this.selfuser){
 
             var response = await fetch("friend/request/list/");
@@ -82,11 +81,15 @@ export default class Info extends AbstractView {
                 var request = data[i];
                 var senderUsername = request.sender.username;
                 var receiverUsername = request.receiver.username;
-                console.log(senderUsername, receiverUsername, this.username);
+                console.log(senderUsername, receiverUsername, this.username, this.selfuser);
                 if (receiverUsername === this.username)
-                    return `<h1>Friend Request Pending</h1>`;
-                else if (receiverUsername === this.selfuser)
-                    return `<h1>Accept Friend Request</h1>`;
+                    return `<h1>Friend Request Pending</h1>
+                            <button id="Cancelrequest">Cancel</button>`;
+                else if (senderUsername === this.username)
+                {
+                    return `<button id="Acceptrequest">Accept</button>
+                            <button id="Declinerequest">Decline</button>`;
+                }
             }
         }
         else if (this.username === this.selfuser){
@@ -98,6 +101,55 @@ export default class Info extends AbstractView {
         return `<button id="sendFriendRequestButton">Send Friend Request</button>`;
     }
 
+    async updateRoomList(challenger, user) {
+        let response = await fetch('/rooms_list/');
+        let data = await response.json();
+    
+        let roomListHTML = '';
+        console.log(this.selfuser, this.username, this.friend_name, "chllenge: ", challenger, "users :", user);
+        // Iterate over the rooms
+        for (let room of data) {
+            // Check if the room name contains "<challenger> vs <user>"
+            if (room.name.includes(`${challenger} vs ${user}`)) {
+                // Add the room to the HTML string
+               
+                roomListHTML += `
+                    <li class="roomItem">
+                        <p class="room-name">
+                            <a href="/pong/${room.name}">${"You have been challenged by " + challenger}</a>
+                            <span class="delete-room">🗑</span>
+                        </p>
+                    </li>
+                `;
+            }
+            else if (room.name.includes(`${user} vs ${challenger}`)){
+                if (user === this.selfuser){
+                    roomListHTML += `
+                        <li class="roomItem">
+                            <p class="room-name">
+                                <a href="/pong/${room.name}">${"You challenged " + challenger}</a>
+                                <span class="delete-room">🗑</span>
+                            </p>
+                        </li>
+                    `;
+                }
+            }
+        }
+        return roomListHTML;
+    }
+
+    async game_Action() {
+        let content = '';
+        if (this.is_friend){
+
+            content = await this.updateRoomList(this.username, this.selfuser);
+            if (content.length > 2)
+                return content;
+            return '<button id="Play">invite to play</button>';
+        }
+        return content;
+    }
+
     async getContent() {
         await this.loadData();
         await this.getuserinfo();
@@ -105,6 +157,7 @@ export default class Info extends AbstractView {
             throw ("No user Found!");
         else{
             let friendAction = await this.checkFriend();
+            let gameAction = await this.game_Action();
             return `
             <div class="single-card">
                 <img src="${this.pro_pic}" alt="User pic">
@@ -115,6 +168,9 @@ export default class Info extends AbstractView {
             </div>
             <div class="friendRequest">
                 ${friendAction}
+            </div>
+            <div class="gameRequest">
+                ${gameAction}
             </div>
             `;
         }

@@ -46,12 +46,10 @@ export async function declineFriendRequest(userId) {
 }
 
 
-export async function removeFriend(){
+export async function removeFriend(user){
     // Get the username from the list of friend
-    var friendElement = document.getElementById("friends-list").firstChild;
-    var text = friendElement.textContent;
-    var parts = text.split(", ");
-    var friendUsername = parts[1].split(": ")[1];
+
+    var friendUsername = user;
     console.log(friendUsername);
     // Create a new XMLHttpRequest object
     var xhr = new XMLHttpRequest();
@@ -206,7 +204,6 @@ export default class Friends extends AbstractView {
         var friendListElement = document.getElementById("friends-list");
         friendListElement.innerHTML = "";
         friendListElement.className = "content";
-        console.log("SUCA");
         for (var i = 0; i < data.length; i++) {
             var friendList = data[i];
             var userUsername = friendList.user.username;            
@@ -281,12 +278,18 @@ export default class Friends extends AbstractView {
             var senderUsername = request.sender.username;
             var receiverUsername = request.receiver.username;
             
-            var requestElement = document.createElement("div");
-            if (receiverUsername == this.CurrentUsername)
-            requestElement.innerHTML = senderUsername;
-            else
-            requestElement.innerHTML = receiverUsername;
-    
+            var requestElement = document.createElement("a");
+            requestElement.href = '/user_info';
+            if (receiverUsername == this.CurrentUsername){
+
+                requestElement.setAttribute('data-username', senderUsername);
+                requestElement.textContent = senderUsername;
+            }
+            else{
+                requestElement.setAttribute('data-username', receiverUsername);
+                requestElement.textContent = receiverUsername;
+            }
+                
              // Create a button to accept the request
             if (senderUsername !== this.CurrentUsername){
                 var acceptButton = document.createElement("button");

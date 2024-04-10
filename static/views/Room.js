@@ -38,6 +38,55 @@ export function getCookie(name) {
 	return cookieValue;
 }
 
+/**Genera una room con nome del player e dello sfidante */
+export async function invite_to_play(user, challenger) {
+	console.log("Create room button clicked");
+	const roomName = user + ' vs ' + challenger;
+	///Csrf_token
+	let csrftoken = await fetch("csrf-token")
+	.then(response => response.json())
+	.then(data => data.csrfToken);
+	console.log(csrftoken);
+	///
+	//user_name 
+	// let users =  await user_name();
+	// console.log(users);
+	// var csrftoken = getCookie('csrftoken');
+	if (roomName === '') {
+		alert('Please enter a room name');
+		return;
+	}
+	// Send a POST request to create the room
+	await fetch('/rooms/create/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken
+		},
+		body: JSON.stringify({ name: roomName, created_by: user }),
+	  })
+	  .then(response => {
+		if (!response.ok){
+		  return response.json().then(error => {
+			throw error;
+		  });
+		}
+		this.updateRoomList();
+		return response.json;
+	  })
+	  .then(data => {
+		if (data.error) {
+			alert(data.error);
+		} else {
+			// Clear input
+			roomNameInput.value = '';
+		}
+	})
+	.catch((error) => {
+		alert(error.name[0]);
+		console.log('Error:', error);
+	});
+}
 
 export default class Room extends AbstractView {
 	constructor() {

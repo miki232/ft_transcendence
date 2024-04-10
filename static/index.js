@@ -4,9 +4,10 @@ import About from "./views/About.js";
 import Contact from "./views/Contact.js";
 import Dashboard from "./views/Dashboard.js";
 import Room from "./views/Room.js";
+import { invite_to_play } from "./views/Room.js";
 import Friends from "./views/Friends.js";
 import Info from "./views/Info.js";
-import { sendFriendRequest } from "./views/Friends.js"
+import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
 // function activeLink(page) {
 //     let oldActive = document.querySelector('a.active');
@@ -124,13 +125,19 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
 		}
-		if (e.target.matches("#cancel-request"))
+		if (e.target.matches("#cancel-request")){
+			e.preventDefault();
 			await renderDashboard("friends");
-		if (e.target.matches("#decline-request"))
+		}
+		if (e.target.matches("#decline-request")){			
+			e.preventDefault();
 			await renderDashboard("friends");
-		if (e.target.matches("#Accept-request"))
+		}
+		if (e.target.matches("#Accept-request")){
+			e.preventDefault();
 			await renderDashboard("friends");
-		if (e.target.matches("#Remove-friend"))
+		}
+		if (e.target.matches("#Remove-friend"))//**si può levare forse */
 			await renderDashboard("friends");
 		if (e.target.matches("#friendBtn")){
 			e.preventDefault();
@@ -244,14 +251,44 @@ async function renderDashboard(render, addArg = null) {
 				view = new Info(addArg);
 				content.innerHTML = await view.getContent();
 				try{
-
 					document.getElementById("sendFriendRequestButton").addEventListener("click", function() {
 						sendFriendRequest(view.username);
 						renderDashboard("friend_info", view.username);
 					});
 				}
 				catch{
-					/**non fare nulla */
+					try{
+						/**Play: visibile solo se amici, e crea una room con <"Nome utente di chi manda", "Sfidante">
+						 * quando chi manda clicca su Play(Invite to play) e laaromm è stata generata, viene indirizzato
+						 * alla room e aspetta che lo sfidante si colleghi alla stessa room per giocare.
+						 * Allo sfidante, quando visita il profilo di manda la richiesta, compare "X ti sta sfidando"
+						 * se clicca lo porta alla room
+						 */
+						document.getElementById("Play").addEventListener("click", function() {
+							invite_to_play(view.selfuser, addArg);
+							renderDashboard("friend_info", view.username);
+						});
+						document.getElementById("RemoveFriend").addEventListener("click", function() {
+							removeFriend(view.username);
+							renderDashboard("friend_info", view.username);
+						});
+						document.getElementById("Cancelrequest").addEventListener("click", function() {
+							cancelRequest(view.username);
+							renderDashboard("friend_info", view.username);
+						});
+						document.getElementById("Acceptrequest").addEventListener("click", function() {
+							acceptFriendRequest(view.username);
+							renderDashboard("friend_info", view.username);
+						});
+						document.getElementById("Declinerequest").addEventListener("click", function() {
+							console.log("PRova");
+							declineFriendRequest(view.username);
+							renderDashboard("friend_info", view.username);
+						});
+					}
+					catch{
+						/**non fare nulla */
+					}
 				}
 			} catch (error) {
 				console.error('Error', error);
