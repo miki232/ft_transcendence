@@ -89,7 +89,7 @@ header nav a:hover::before {
 .form-box {
 	position: relative;
 	width: 400px;
-	height: 450px;
+	height: 470px;
 	backdrop-filter: blur(20px);
 	color: white;
 	font-size: 20px;
@@ -235,6 +235,18 @@ header nav a:hover::before {
 	opacity: 1;
 }
 
+.hr {
+	height: 2px;
+	width: 60%;
+  margin: 10px 0 15px 0;
+  background: white;
+}
+
+#school-login {
+	color:white;
+	font-size: 16px;
+}
+	
 /***************** DASHBOARD *****************/
 
 .delete-room {
