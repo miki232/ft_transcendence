@@ -2,70 +2,64 @@ import AbstractView from "./AbstractView.js";
 import validateLogin from './Dashboard.js';
 
 const loginHTML = `
-<div class="login-wrap">
-    <div class="login-html">
-    	<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
-      	<input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
-      	<div class="login-form">
-      	  	<div class="sign-in-htm">
-      	    	<div class="group">
-      	    	  <label for="user" class="label">Username</label>
-      	    	  <input id="login-user" type="text" class="input">
-      	    	</div>
-      	    	<div class="group">
-      	    	  <label for="pass" class="label">Password</label>
-      	    	  <input id="login-pass" type="password" class="input" data-type="password">
-      	    	</div>
-      	    	<div class="group">
-      	    	  <a href="/dashboard" id="login" class="button" data-link>Sign In</a>
-      	    	</div>
-			  	<div class="group" id="forgot">
-			  		<a href="#forgot">Forgot Password?</a>
-				</div>		
-      	    	<div class="hr"></div>
-      	    	<div class="foot-lnk">
-					<a href="accounts/authorize/" id="login" class="button"">Login with 42 intra account</a>
-      	    	</div>
-      	 	</div>
-      	  	<div class="sign-up-htm">
-      	    	<div class="group">
-      	    		<label for="user" class="label">Username</label>
-      	    		<input id="signup-user" type="text" class="input">
-      	    	</div>
-      	    	<div class="group">
-      	    		<label for="pass" class="label">Password</label>
-      	    		<input id="signup-pass" type="password" class="input" data-type="password">
-      	    	</div>
-      	    	<div class="group">
-      	    		<label for="re-pass" class="label">Repeat Password</label>
-      	    		<input id="re-pass" type="password" class="input" data-type="password">
-      	    	</div>
-      	    	<div class="group">
-      	    		<label for="email" class="label">Email Address</label>
-      	    		<input id="email" type="text" class="input">
-      	    	</div>
-      	    	<div class="group">
-				  <a id="signup" class="button">Sign Up</a>
-      	    	</div>
-      	    	<div class="hr"></div>
-      	    	<div class="foot-lnk">
-      	    	  <label for="tab-1">Already Member?</a>
-      	    	</div>
-      	  	</div>
-      	</div>
-    </div>
-  </div>
+<div class="form-box">
+    <form class="login-form">
+		<h1>Login</h1>
+		<div class="input-box">
+			<input type="text" id="login-user" required>
+			<label>Username</label>
+			<ion-icon name="person-outline"></ion-icon>
+		</div>
+		<div class="input-box">
+			<input type="password" id="login-pass" required>
+			<label>Password</label>
+			<ion-icon name="lock-closed-outline"></ion-icon>
+		</div>
+		<div class="checkbox">
+			<span>
+				<input type="checkbox" id="login-checkbox">
+				<label for="login-checkbox">Remember me</label>
+			</span>
+			<h5>Forgot password?</h5>
+		</div>
+		<button type="submit" id="login-btn" class="submit-btn">Login</button>
+		<div class="login-register">
+			<p>Don't have an account? <a href="#" class="register-btn">Register</a></p>
+		</div>
+	</form>
+	<form class="register-form">
+		<h1>Registration</h1>
+		<div class="input-box">
+			<input type="text" required>
+			<label>Username</label>
+			<ion-icon name="person-outline"></ion-icon>
+		</div>
+		<div class="input-box">
+			<input type="text" required>
+			<label>Email</label>
+			<ion-icon name="mail-outline"></ion-icon>
+		</div>
+		<div class="input-box">
+			<input type="password" required>
+			<label>Password</label>
+			<ion-icon name="lock-closed-outline"></ion-icon>
+		</div>
+		<div class="checkbox">
+			<input type="checkbox" id="register-checkbox">
+			<label for="register-checkbox">I agree to the terms & conditions</label>
+		</div>
+		<button type="submit" class="submit-btn">Register</button>
+		<div class="login-register">
+			<p>Already have an account? <a href="#" class="login-btn">Login</a></p>
+		</div>
+	</form>
+</div>
 `;
 
 const navHTML = `
-	<nav>
-		<ul>
-			<li>Logo</li>
-			<li><a href="/" class="active" name="index" data-link>Home</a></li>
-			<li><a href="/about" name="about" data-link>About</a></li>
-			<li><a href="/contact" name="contact" data-link>Contact</a></li>
-		</ul>
-	</nav>
+	<a href="/" name="index" data-link>Home</a>
+	<a href="/about" name="about" data-link>About</a>
+	<a href="/contact" name="contact" data-link>Contact</a>
 `;
 
 export default class extends AbstractView {

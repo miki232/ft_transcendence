@@ -3,372 +3,321 @@
 /**** GENERAL ****/
 
 :root {
-    --primary-color: #222831;
-    --secondary-color: #393E46;
-    --tertiary-color: #0079FF;
-    --quaternary-color: #EEEEEE;
-    --logout-color: #FF453A;
+		--primary-color: #222831;
+		--secondary-color: #393E46;
+		--tertiary-color: #0079FF;
+		--quaternary-color: #EEEEEE;
+		--logout-color: #FF453A;
 }
 
 *,
 :after,
 :before {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
-}
-
-a:visited {
-    color: var(--quaternary-color);
-    text-decoration: none;
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		font-family: Arial, Helvetica, sans-serif;
+		/* font-size: 16px; */
+		text-decoration: none;
 }
 
 html, body {
-    background-color: var(--primary-color);
-    /* background: 
-        linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-        url('../img/bg3.jpg'); */
-    /* background-size: cover; */
-    /* background-attachment: fixed; */
-    /* background-position: center -100px; */
-    color: var(--quaternary-color);
-    line-height: 1.6;
-    height: 100vh;
-    width: 100vw;
+		/* color: var(--quaternary-color); */
+		/* line-height: 1.6; */
+		height: 100vh;
+		width: 100vw;
+}
+
+body {
+	background-color: var(--primary-color);
+	background-image: url(../img/bg1.jpg);
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 /***************** HEADER *****************/
 
-nav {
-    background-color: var(--secondary-color);
-    height: 80px;
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 20px;
+	padding: 40px 100px;
+	color: white;
 }
 
-nav ul {
-    height: 100%;
-    list-style: none;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;;
-    padding: 0 45px;
+header nav a {
+	font-size: 24px;
+	color: white;
+	position: relative;
+	margin-left: 70px;
 }
 
-nav ul li a{
-    color: var(--quaternary-color);
-    text-decoration: none;
-    padding: 0 20px;
-    font-size: 1.2em;
+header nav a::before {
+	content: "";
+	position: absolute;
+	bottom: -5px;
+	left: 0;
+	background-color: white;
+	width: 100%;
+	height: 2.5px;
+	transition: .3s;
+	transform: scaleX(0);
+	transform-origin: left;
 }
 
-nav ul li:first-child {
-    margin-right: auto;
+header nav a:hover::before {
+	transform: scaleX(1);
 }
-
-nav ul li a:hover {
-    color: var(--tertiary-color);
-    font-weight: bold;
-    cursor: pointer;
-}
-
-nav ul li a.active {
-    color: var(--tertiary-color);
-    font-weight: bold;
-}
-
-nav ul li a#logout {
-    color: var(--logout-color);
-}
-
-nav ul li a#logout:hover {
-    font-weight: bold;
-}
-
-/* img {
-  width: 1.6em;
-  height: 1.6em;
-} */
 
 /***************** MAIN *****************/
 
 #container {
-    height: inherit;
-    width: inherit;
-    /* display: flex; */
-    /* padding-top: 60px; */
+		/* display: flex; */
+		/* padding-top: 60px; */
 }
 
 /***************** LOGIN *****************/
 
-.clearfix:after,
-.clearfix:before {
-  content: "";
-  display: table;
-}
-.clearfix:after {
-  clear: both;
-  display: block;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-.login-wrap {
-  width: 100%;
-  margin: auto;
-  max-width: 525px;
-  min-height: 630px;
-  position: relative;
-  box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24),
-    0 17px 50px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 20px;
-}
-.login-html {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  padding: 40px 50px 10px 50px;
-  background: var(--secondary-color);
-  border-radius: 20px;
-}
-.login-html .sign-in-htm,
-.login-html .sign-up-htm {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  position: absolute;
-  transform: rotateY(180deg);
-  backface-visibility: hidden;
-  transition: all 0.4s linear;
-}
-.login-html .sign-in,
-.login-html .sign-up,
-.login-form .group .check {
-  display: none;
-}
-.login-html .tab,
-.login-form .group .label,
-.login-form .group .button {
-  text-transform: uppercase;
-}
-.login-html .tab {
-  font-size: 22px;
-  margin-right: 15px;
-  cursor: pointer;
-  padding-bottom: 5px;
-  margin: 0 15px 25px 0;
-  display: inline-block;
-  border-bottom: 2px solid transparent;
-}
-.login-html .sign-in:checked + .tab,
-.login-html .sign-up:checked + .tab {
-  color: var(--quartenary-color);
-  border-color: var(--tertiary-color);
-  cursor: pointer;
-}
-.login-form {
-  min-height: 345px;
-  position: relative;
-  perspective: 1000px;
-  transform-style: preserve-3d;
-}
-.login-form .sign-in-htm .group {
-  margin-bottom: 30px;
-}
-.login-form .sign-up-htm .group {
-    margin-bottom: 15px;
-}
-.login-form .sign-up-htm #email {
-    margin-bottom: 25px;
-}
-.login-form .group .label,
-.login-form .group .input,
-.login-form .group .button {
-  width: 100%;
-  color: #fff;
-  display: block;
-  margin-bottom: 5px;
-}
-.login-form .input:focus {
-    outline: none;
-}
-.login-form .group .input,
-.login-form .group .button {
-  border: none;
-  padding: 15px 20px;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.1);
-}
-.login-form .group input[data-type="password"] {
-  -webkit-text-security: circle;
-}
-.login-form .group .label {
-  color: var(--quaternary-color);
-  font-size: 12px;
-}
-.login-form .group .button {
-  background: var(--tertiary-color);
-  cursor: pointer;
-  text-align: center;
-}
-.login-form .group .button:hover {
-    background:#1454c4;
-    cursor: pointer;
-}
-.login-form .group label .icon {
-  width: 15px;
-  height: 15px;
-  border-radius: 2px;
-  position: relative;
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-}
-.login-form .group label .icon:before,
-.login-form .group label .icon:after {
-  content: "";
-  width: 10px;
-  height: 2px;
-  background: #fff;
-  position: absolute;
-  transition: all 0.2s ease-in-out 0s;
-}
-.login-form .group label .icon:before {
-  left: 3px;
-  width: 5px;
-  bottom: 6px;
-  transform: scale(0) rotate(0);
-}
-.login-form .group label .icon:after {
-  top: 6px;
-  right: 0;
-  transform: scale(0) rotate(0);
-}
-.login-form .group .check:checked + label {
-  color: #fff;
-}
-.login-form .group .check:checked + label .icon {
-  background: #1161ee;
-}
-.login-form .group .check:checked + label .icon:before {
-  transform: scale(1) rotate(45deg);
-}
-.login-form .group .check:checked + label .icon:after {
-  transform: scale(1) rotate(-45deg);
-}
-.login-html
-  .sign-in:checked
-  + .tab
-  + .sign-up
-  + .tab
-  + .login-form
-  .sign-in-htm {
-  transform: rotate(0);
-}
-.login-html .sign-up:checked + .tab + .login-form .sign-up-htm {
-  transform: rotate(0);
-}
-.login-form #forgot {
-    text-align: center;
-    margin-bottom: 15px;
-}
-.hr {
-  height: 2px;
-  margin: 30px 0 30px 0;
-  background: rgba(255, 255, 255, 0.2);
-}
-.foot-lnk {
-  text-align: center;
-}
-.foot-lnk label:hover {
-    cursor: pointer;
+.form-box {
+	position: relative;
+	width: 400px;
+	height: 450px;
+	backdrop-filter: blur(20px);
+	color: white;
+	font-size: 20px;
+	border: 2px solid white;
+	border-radius: 20px;
+	overflow: hidden;
+	transition: transform 0.5s ease, height 0.3s ease-in-out;
 }
 
+.form-box form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.3s ease;
+}
+
+.form-box .register-form {
+	transform: translateX(-100%);
+	opacity: 0;
+}
+
+.form-box form h1 {
+	font-size: 35px;
+}
+
+.input-box {
+	width: 75%;
+	display: flex;
+	justify-content: space-between;
+	position: relative;
+	border-bottom: 2px solid white;
+	margin: 25px 0;
+	padding: 0 1px 10px 1px;
+}
+
+.input-box:first-of-type {
+	margin-top: 32px;
+}
+
+.register-form .input-box {
+	margin: 20px 0;
+}
+
+.input-box input {
+	width: 85%;
+	position: absolute;
+	color: white;
+	font-size: 16px;
+	border: none;
+	background: transparent;
+	outline: none;
+}
+
+.input-box label {
+	transition: .4s;
+	font-size: 17px;
+	pointer-events: none;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+	transform: translateY(-27px);
+}
+
+.input-box ion-icon {
+	font-size: 25px;
+}
+
+.checkbox {
+	width: 76%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.register-form .checkbox {
+	display: block;
+}
+
+.checkbox h5 {
+	font-size: 14px;
+	font-weight: 100;
+	cursor: pointer;
+}
+
+.checkbox label {
+	font-weight: 500;
+	font-size: 15px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.checkbox input {
+	cursor: pointer;
+	margin-right: 3px;
+}
+
+.checkbox span {
+	display: flex;
+}
+
+.submit-btn {
+	width: 76%;
+	height: 38px;
+	cursor: pointer;
+	border-radius: 6px;
+	margin: 15px 0 22px 0;
+	border: none;
+	font-size: 16px;
+}
+
+.login-register p {
+	font-size: 16px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.login-register a {
+	color: white;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.login-register a:hover {
+	text-decoration: underline;
+}
+
+.change-form {
+	height: 500px;
+}
+
+.change-form .login-form {
+	transform: translateX(100%);
+	opacity: 0;
+}
+
+.change-form .register-form {
+	transform: translateX(0%);
+	opacity: 1;
+}
 
 /***************** DASHBOARD *****************/
 
 .delete-room {
-    color: var(--logout-color);
-    font-size: smaller;
-    cursor: pointer;
-    margin-left: 5px;
+		color: var(--logout-color);
+		font-size: smaller;
+		cursor: pointer;
+		margin-left: 5px;
 }
 
 /***************** FOOTER *****************/
 
 /* footer {
-    background-color: var(--secondary-color);
-    color: var(--quaternary-color);
-    text-align: center;
-    padding: 10px 0;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+		background-color: var(--secondary-color);
+		color: var(--quaternary-color);
+		text-align: center;
+		padding: 10px 0;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
 } */
 
 /**************Friend card*****************/
 .content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 20px;
 }
 
 .card {
-  display: flex;
-  background-color: var(--secondary-color);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  flex: 1 0 calc(50% - 40px); /* Grow and shrink based on the content, basis is one third of the container width minus total gap */
-  max-width: calc(50% - 40px); /* Maximum width is one third of the container width minus total gap */
-  align-items: center;
+	display: flex;
+	background-color: var(--secondary-color);
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	flex: 1 0 calc(50% - 40px); /* Grow and shrink based on the content, basis is one third of the container width minus total gap */
+	max-width: calc(50% - 40px); /* Maximum width is one third of the container width minus total gap */
+	align-items: center;
 }
 
 .card img {
-  margin-bottom: 10px;
-  width: 42px; /* Set a fixed width for the image */
-  height: 42px; /* Set a fixed height for the image */
-  object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
-  border-radius: 50%;
+	margin-bottom: 10px;
+	width: 42px; /* Set a fixed width for the image */
+	height: 42px; /* Set a fixed height for the image */
+	object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+	border-radius: 50%;
 
 }
 
 .card .friend-info {
-  text-align: center;
-  margin-left: 50%; /* Add a left margin */
+	text-align: center;
+	margin-left: 50%; /* Add a left margin */
 }
 
 /**********For Single User**********/
 
 .centered {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 .single-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: var(--secondary-color);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 50%; /* Set a fixed width for the single card */
-  margin: 0 auto; /* Center the single card horizontally */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--secondary-color);
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	max-width: 50%; /* Set a fixed width for the single card */
+	margin: 0 auto; /* Center the single card horizontally */
 }
 
 .single-card img {
-  width: 100px; /* Set a larger fixed width for the image */
-  height: 100px; /* Set a larger fixed height for the image */
-  object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
-  margin-bottom: 20px; /* Add a bottom margin to create some space between the image and the other info */
-  border-radius: 50%;
+	width: 100px; /* Set a larger fixed width for the image */
+	height: 100px; /* Set a larger fixed height for the image */
+	object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+	margin-bottom: 20px; /* Add a bottom margin to create some space between the image and the other info */
+	border-radius: 50%;
 }
 
 .single-card .friend-info {
-  text-align: center;
+	text-align: center;
 }

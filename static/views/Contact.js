@@ -6,14 +6,9 @@ const contactHTML = `
 `;
 
 const navHTML = `
-	<nav>
-		<ul>
-			<li>Logo</li>
-			<li><a href="/" data-link>Home</a></li>
-			<li><a href="/about" data-link>About</a></li>
-			<li><a href="/contact" class="active" data-link>Contact</a></li>
-		</ul>
-	</nav>
+	<a href="/" name="index" data-link>Home</a>
+	<a href="/about" name="about" data-link>About</a>
+	<a href="/contact" name="contact" data-link>Contact</a>
 `;
 
 export default class extends AbstractView {

@@ -19,7 +19,7 @@ import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelReq
 // }
 
 const container = document.querySelector("#container");
-const nav = document.querySelector("#navbar");
+const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 var refreshRoomList;
 // const room = new Room();
@@ -130,11 +130,23 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
-
 		console.log(e.target)
+		const form_box = document.querySelector(".form-box");
+		if (e.target.matches(".register-btn")) {
+			e.preventDefault();
+			form_box.classList.add("change-form");
+		}
+		if (e.target.matches(".login-btn")) {
+			e.preventDefault();
+			form_box.classList.remove("change-form");
+		}
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
+		}
+		if (e.target.matches("#login-btn")) {
+			e.preventDefault();
+			navigateTo("/dashboard");
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
