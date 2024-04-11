@@ -33,14 +33,8 @@ export function sanitizeInput(input) {
 export async function register() {
 	var username = sanitizeInput(document.getElementById('signup-user').value);
 	var password = sanitizeInput(document.getElementById('signup-pass').value);
-	var re_pass = sanitizeInput(document.getElementById('re-pass').value);
 	var email = sanitizeInput(document.getElementById('email').value);
 	var csrftoken = getCookie('csrftoken');
-
-	if (password !== re_pass){
-		alert('Password and Repeat Password do not match');
-		return;
-	}
 
 	if (username === '' || password === '' || email === ''){
 		alert('Please fill in all fields');

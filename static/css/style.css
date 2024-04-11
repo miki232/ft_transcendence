@@ -77,6 +77,10 @@ header nav a:hover::before {
 	transform: scaleX(1);
 }
 
+header h1 {
+	margin: 10px 0;
+}
+
 /***************** MAIN *****************/
 
 #container {

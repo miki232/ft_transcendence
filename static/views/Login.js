@@ -32,17 +32,17 @@ const loginHTML = `
 	<form class="register-form">
 		<h1>Registration</h1>
 		<div class="input-box">
-			<input type="text" required>
+			<input type="text" id="signup-user" required>
 			<label>Username</label>
 			<ion-icon name="person-outline"></ion-icon>
 		</div>
 		<div class="input-box">
-			<input type="text" required>
+			<input type="text" id="email" required>
 			<label>Email</label>
 			<ion-icon name="mail-outline"></ion-icon>
 		</div>
 		<div class="input-box">
-			<input type="password" required>
+			<input type="password" id="signup-pass" required>
 			<label>Password</label>
 			<ion-icon name="lock-closed-outline"></ion-icon>
 		</div>
@@ -50,7 +50,7 @@ const loginHTML = `
 			<input type="checkbox" id="register-checkbox">
 			<label for="register-checkbox">I agree to the terms & conditions</label>
 		</div>
-		<button type="submit" class="submit-btn">Register</button>
+		<button type="submit" id="signup" class="submit-btn">Register</button>
 		<div class="login-register">
 			<p>Already have an account? <a href="#" class="login-btn">Login</a></p>
 		</div>
