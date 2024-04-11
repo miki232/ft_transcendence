@@ -1,28 +1,39 @@
+# version: '3'
+
+# services:
+#   nginx:
+#     build:
+#       context: ./nginx
+#     ports:
+#       - 192.168.1.5:8443:443
+#     volumes:
+#       - ./ssl/:/etc/nginx/ssl
+#       - static_volume:/etc/nginx/static
+#     networks:
+#       - webnet
+
+#   django:
+#     build:
+#       context: ./transcendece
+#     command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
+#     volumes:
+#       - static_volume:/app/static
+#     networks:
+#       - webnet
+
+# volumes:
+#   static_volume:
+
+# networks:
+#   webnet:
+
+# docker-compose.yml
+
 version: '3'
 
 services:
-  nginx:
+  redis:
     build:
-      context: ./nginx
+      context: ./redis
     ports:
-      - 192.168.1.5:8443:443
-    volumes:
-      - ./ssl/:/etc/nginx/ssl
-      - static_volume:/etc/nginx/static
-    networks:
-      - webnet
-
-  django:
-    build:
-      context: ./transcendece
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
-    volumes:
-      - static_volume:/app/static
-    networks:
-      - webnet
-
-volumes:
-  static_volume:
-
-networks:
-  webnet:
+      - "6379:6379"

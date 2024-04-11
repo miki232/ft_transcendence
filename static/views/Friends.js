@@ -99,6 +99,7 @@ export async function cancelRequest(user){
 }
 
 export async function sendFriendRequest(user) {
+
 		// Get the username from the input field
 		var csrf = await getCSRFToken();
 		// var username = document.getElementById("friendNameInput").value;
@@ -121,7 +122,9 @@ export async function sendFriendRequest(user) {
 		});
 
 		// Send the request
-		xhr.send(data);
+        // ws.send(JSON.stringify({'notifications to ': user}));
+	
+        xhr.send(data);
 }
 
 export default class Friends extends AbstractView {

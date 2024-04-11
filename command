@@ -1,6 +1,9 @@
 #First make the certcert.pem and certkey.pem with openssl
 #then run daphne on a separated terminal, and Django in another
 
+#Start redis server
+docker-compose up
+
 daphne -e ssl:8000:privateKey=certkey.pem:certKey=certcert.pem django_progect.asgi:application
 
 

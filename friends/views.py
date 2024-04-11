@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 import json
 
 from accounts.models import CustomUser
@@ -15,6 +17,8 @@ def send_friend_request(request):
     user = request.user
     payload = {}
     print(user.is_authenticated)
+    print("SUCAAAAAA")
+
     if request.method == "POST" and user.is_authenticated:
         user_id = request.POST.get("receiver_user_id")
         if user_id:
@@ -28,11 +32,13 @@ def send_friend_request(request):
                     friend_request = FriendRequest(sender=user, receiver=receiver)
                     friend_request.save()
                     payload['response'] = "Friend request sent"
+                    
                 except Exception as e:
                     payload['response'] = str(e)
             except FriendRequest.DoesNotExist:
                 friend_request = FriendRequest(sender=user, receiver=receiver)
                 friend_request.save()
+                print("SUCAAAAAA")
                 payload['response'] = "Friend request sent"
 
             if payload['response'] == None:
@@ -78,11 +84,42 @@ class ListFriendRequestView(APIView):
 #                     return Response(e, status=status.HTTP_400_BAD_REQUEST)
 #             else:
 #                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-        
+"""
+Per mandare una notifica
+"""
+from chat.models import Notifications
+from channels.db import database_sync_to_async
+
+def send_save_notification(receiver, message):
+    #save notifications
+    notification = Notifications.objects.create(user=receiver, content=message)    
+
+    channel_layer = get_channel_layer()
+    async_to_sync(send_message)(receiver.id, channel_layer, notification)
+
+@database_sync_to_async
+def get_db(notification):
+    return (Notifications.objects.get(id=notification.id))
+
+def update_db_notifications(sender, receiver):
+    print(receiver, sender)
+    Notifications.objects.get(user=receiver, content__icontains=sender).delete()
+    print("ok")
+
+
+
+async def send_message(receiverid, channel_layer, notification):
+    content = await get_db(notification)
+    print(content.content, content.read)
+    await channel_layer.group_send(
+        f"notifications_{receiverid}", {"type": "notifier", "message": content.content, "status" : content.read}
+    )
+    
 
 class SendFriendRequestView(APIView):
     def post(self, request):
         # Check if user is authenticated
+
         print(request.user.is_authenticated, request.user.username, request.data.get('receiver_user_id'))
         if request.user.is_authenticated and request.user.username != request.data.get('receiver_user_id'):
             user = request.user
@@ -112,7 +149,12 @@ class SendFriendRequestView(APIView):
                         # If no friend request exists, create a new one
                         friend_request = FriendRequest(sender=user, receiver=receiver)
                         friend_request.save()
-                        
+                        print(f"Sending message to group notifications_{receiver.id}")
+                        print("SUCAAAAAA", receiver.id)
+                        send_save_notification(receiver, f"You have a request from {user.username}")
+                        # async_to_sync(send_message)(receiver.id)
+                                # break  # If the group_send call succeeds, break out of the loop
+                        print(f"Message sent to group notifications_{receiver.id}")
                         # Serialize the friend request and return it
                         serializer = FriendRequestSerializer(friend_request)
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -127,7 +169,10 @@ class SendFriendRequestView(APIView):
     
         return Response({"detail": "You must be authenticated to send a friend request."}, status=status.HTTP_403_FORBIDDEN)
 
-
+"""FARE ATTENZIONE CHE RECEIVER E USER SONO VARIABILI INVERTITE
+    RECEIVER è IN REALTà L'utente che invia la richiesta "Sender"
+    Sender è in realtà l'utente che riceve "RECEIVER
+"""
 def accept_friend_request(request, *args, **kwargs):
      user = request.user
      payload = {}
@@ -143,6 +188,7 @@ def accept_friend_request(request, *args, **kwargs):
                 if friend_request: 
 					# found the request. Now accept it
                     updated_notification = friend_request.accept()
+                    update_db_notifications(receiver, user)
                     payload['response'] = "Friend request accepted."
                 else:
                     payload['response'] = "Something went wrong."
@@ -200,6 +246,7 @@ class DeclineFriendRequestView(APIView):
                     if friend_request.receiver == user:
                         if friend_request:
                             friend_request.decline()
+                            update_db_notifications(removee, user)
                             return Response({"detail" : "Request declined Successfully"}, status=status.HTTP_200_OK)
                         else:
                             return Response({"detail" : "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
@@ -225,6 +272,7 @@ class CancelFriendRequestView(APIView):
                     if friend_request:
                         if friend_request.first().sender == user:
                                 friend_request.first().cancel()
+                                update_db_notifications(user, removee)
                                 return Response({"detail" : "Request Cancel Successfully"}, status=status.HTTP_200_OK)
                         else:
                             return Response({"detail" : "This is not your Friend request to cancel"}, status=status.HTTP_401_UNAUTHORIZED)

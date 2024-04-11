@@ -24,7 +24,8 @@ application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(pong.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(pong.routing.websocket_urlpatterns 
+                                            + chat.routing.websocket_urlpatterns))
         ),
         # Just HTTP for now. (We can add other protocols later.)
     }

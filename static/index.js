@@ -22,8 +22,8 @@ const container = document.querySelector("#container");
 const nav = document.querySelector("#navbar");
 const content = document.querySelector("#content");
 var refreshRoomList;
-
 // const room = new Room();
+let ws;
 
 const navigateTo = url => {
 	history.pushState(null, null, url);
@@ -87,6 +87,20 @@ const router = async () => {
 			}
 		}
 		if (view.isValid === true || is_logged_in === true) {
+			ws	= new WebSocket('wss://'
+			+ window.location.hostname
+			+ ':8000'
+			+ '/ws/notifications'
+			+ '/');
+			ws.onmessage = function(event) {
+				const data = JSON.parse(event.data);
+				console.log(event);
+				console.log(data.content);
+				if (data.read === false){
+					alert(data.content);
+					ws.send(JSON.stringify({'action': "read"}));
+				}
+			}
 			container.classList.add("dashboard");
 			await view.loadUserData();
 			// nav.innerHTML = await view.getNav();
@@ -305,3 +319,4 @@ async function renderDashboard(render, addArg = null) {
 			content.innerHTML = await view.getContent();
 	}
 }
+
