@@ -74,8 +74,8 @@ export async function register() {
 		for (var i = 0; i < inputs.length; i++) {
 			inputs[i].value = '';
 		}
-		document.querySelector('input[id="tab-2"]').checked = false;
-		document.querySelector('input[id="tab-1"]').checked = true;
+		// document.querySelector('input[id="tab-2"]').checked = false;
+		// document.querySelector('input[id="tab-1"]').checked = true;
 	}).catch((error) => {
 		console.error('Error: ', error);
 		alert(error);

@@ -101,11 +101,12 @@ const router = async () => {
 					ws.send(JSON.stringify({'action': "read"}));
 				}
 			}
-			container.classList.add("dashboard");
+			// container.classList.add("dashboard");
 			await view.loadUserData();
+			nav.innerHTML = await view.getNav();
 			// nav.innerHTML = await view.getNav();
-			nav.setAttribute("style", "display: none;");
-			container.insertAdjacentHTML('afterbegin', await view.getNav());
+			// nav.setAttribute("style", "display: none;");
+			// container.insertAdjacentHTML('afterbegin', await view.getNav());
 			content.innerHTML = await view.getContent();
 			view.setTitle("Dashboard");
 			// room.updateRoomList();
@@ -113,12 +114,12 @@ const router = async () => {
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
-		container.classList.remove("dashboard");
-		let dashNav = document.getElementById("nav-bar");
-		if (dashNav) {
-			dashNav.remove();
-		}
-		nav.setAttribute("style", "display: block;");
+		// container.classList.remove("dashboard");
+		// let dashNav = document.getElementById("nav-bar");
+		// if (dashNav) {
+		// 	dashNav.remove();
+		// }
+		// nav.setAttribute("style", "display: block;");
 		const view = new match.route.view();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
@@ -176,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#signup")) {
 			await register();
 		}
-		if (e.target.matches("#logout")) {
+		if (e.target.matches("#logout-btn")) {
             await logout();
 			navigateTo("/");
         }

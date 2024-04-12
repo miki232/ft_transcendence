@@ -95,37 +95,28 @@ export default class extends AbstractView {
 
 	async getNav() {
 		const navHTML = `
-			<div id="nav-bar">
-				<input id="nav-toggle" type="checkbox"/>
-				<div id="nav-header"><p id="nav-title">LOGO</p>
-				  <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
-				  <hr/>
-				</div>
-				<div id="nav-content">
-				  <div class="nav-button" id="rooms"><i class="icon">&#128187;</i><span>Rooms</span></div>
-				  <div class="nav-button" id="friends"><i class="icon">&#128378;</i><span>Friends</span></div>
-				  <div id="nav-content-highlight"></div>
-				</div>
-				<input id="nav-footer-toggle" type="checkbox"/>
-				<div id="nav-footer">
-				  <div id="nav-footer-heading">
-					<div id="nav-footer-avatar"><img alt="Profile picture" src="${await this.getPic()}"/></div>
-					<div id="nav-footer-titlebox"><p id="nav-footer-title">${await this.getUser()}</p><span id="nav-footer-subtitle">Noob</span></div>
-					<label for="nav-footer-toggle"><span class="icon">^</span></label>
-				  </div>
-				  <div id="nav-footer-content">
-				  	<a id="logout">Logout</a>
-				  </div>
-				</div>
-			</div>
+			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${await this.getPic()}"/></a>
 		`;
 		return navHTML;
 	}
 
 	async getContent() {
 		let dashboardHTML = `
-			<h1>Dashboard</h1>
-			<p>Welcome to the dashboard <span>${await this.getEmail()}</span>.</p>
+			<div class="dashboard">
+				<div class="profile-card">
+					<img alt="Profile picture" src="${await this.getPic()}"/>
+					<h3>${await this.getUser()}</h3>
+					<button type="button" class="submit-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
+					<button type="button" class="submit-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
+					<div class="hr dashboard-hr"></div>
+					<button type="button" id="logout-btn" class="submit-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+				</div>
+			</div>
 		`;
 		// dashboardHTML += await this.room.getContent();
 		return dashboardHTML;
@@ -139,3 +130,30 @@ export default class extends AbstractView {
 	${await this.getUser()}</li>
 	<li><a id="logout">Logout</a></li>
 </ul> */}
+
+//OLD SECOND NAV
+/*
+<div id="nav-bar">
+	<input id="nav-toggle" type="checkbox"/>
+	<div id="nav-header"><p id="nav-title">LOGO</p>
+	  <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
+	  <hr/>
+	</div>
+	<div id="nav-content">
+	  <div class="nav-button" id="rooms"><i class="icon">&#128187;</i><span>Rooms</span></div>
+	  <div class="nav-button" id="friends"><i class="icon">&#128378;</i><span>Friends</span></div>
+	  <div id="nav-content-highlight"></div>
+	</div>
+	<input id="nav-footer-toggle" type="checkbox"/>
+	<div id="nav-footer">
+	  <div id="nav-footer-heading">
+		<div id="nav-footer-avatar"><img alt="Profile picture" src="${await this.getPic()}"/></div>
+		<div id="nav-footer-titlebox"><p id="nav-footer-title">${await this.getUser()}</p><span id="nav-footer-subtitle">Noob</span></div>
+		<label for="nav-footer-toggle"><span class="icon">^</span></label>
+	  </div>
+	  <div id="nav-footer-content">
+	  	<a id="logout">Logout</a>
+	  </div>
+	</div>
+</div>
+*/

@@ -1,4 +1,4 @@
-@import url("dashboard.css");
+/* @import url("dashboard.css"); */
 
 /**** GENERAL ****/
 
@@ -60,25 +60,37 @@ header nav a {
 	margin-left: 70px;
 }
 
-header nav a::before {
+.dashboard-nav {
+	margin-left: 40px;
+}
+
+header nav a:not(.profile-pic)::before {
 	content: "";
 	position: absolute;
-	bottom: -5px;
+	bottom: -6px;
 	left: 0;
 	background-color: white;
-	width: 100%;
+	width: 0;
 	height: 2.5px;
-	transition: .3s;
-	transform: scaleX(0);
-	transform-origin: left;
+	transition: width .3s;
+	/* transform: scaleX(0); */
+	/* transform-origin: left; */
 }
 
 header nav a:hover::before {
-	transform: scaleX(1);
+	/* transform: scaleX(1); */
+	width: 100%;
 }
 
 header h1 {
+	/* text-align: center; */
+	font-size: 30px;
 	margin: 10px 0;
+}
+
+header a img {
+	height: 42px;
+	vertical-align: middle;
 }
 
 /***************** MAIN *****************/
@@ -88,9 +100,10 @@ header h1 {
 		/* padding-top: 60px; */
 }
 
-/***************** LOGIN *****************/
+/***************** CONTENT *****************/
 
-.form-box {
+.form-box,
+.dashboard {
 	position: relative;
 	width: 400px;
 	height: 470px;
@@ -103,7 +116,8 @@ header h1 {
 	transition: transform 0.5s ease, height 0.3s ease-in-out;
 }
 
-.form-box form {
+.form-box form,
+.profile-card {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -207,6 +221,14 @@ header h1 {
 	margin: 15px 0 22px 0;
 	border: none;
 	font-size: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.submit-btn:active {
+	border: 2px solid black;
+	font-size: 14px;
 }
 
 .login-register p {
@@ -242,8 +264,8 @@ header h1 {
 .hr {
 	height: 2px;
 	width: 60%;
-  margin: 10px 0 15px 0;
-  background: white;
+	margin: 10px 0 15px 0;
+	background: white;
 }
 
 #school-login {
@@ -252,6 +274,36 @@ header h1 {
 }
 	
 /***************** DASHBOARD *****************/
+
+.profile-card img {
+	height: 130px;
+}
+
+.profile-card h3 {
+	font-size: 28px;
+	margin: 10px 0 20px 0;
+}
+
+.dashboard-hr {
+	margin-top: 15px;
+}
+
+#logout-btn {
+	background-color: var(--logout-color);
+	color: white;
+	width: 40%;
+	margin: 0;
+	/* font-size: 20px; */
+}
+
+.submit-btn ion-icon {
+	margin-right: 10px;
+}
+
+#logout-btn:active {
+	border: 2px solid darkred;
+	font-size: 14px;
+}
 
 .delete-room {
 		color: var(--logout-color);

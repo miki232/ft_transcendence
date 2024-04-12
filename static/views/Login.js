@@ -22,7 +22,7 @@ const loginHTML = `
 			</span>
 			<h5>Forgot password?</h5>
 		</div>
-		<button type="submit" id="login-btn" class="submit-btn">Login</button>
+		<button type="submit" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon>Login</button>
 		<div class="login-register">
 			<p>Don't have an account? <a href="#" class="register-btn">Register</a></p>
 		</div>

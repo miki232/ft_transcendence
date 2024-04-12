@@ -4,7 +4,9 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 
 class CustomUser(AbstractUser): # new
-    pro_pic = models.URLField(default="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg")
+    #https://i.pravatar.cc/300
+    #https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
+    pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
     status_login = models.CharField(max_length=50, default="Offline")
     email = models.EmailField(unique=True)
     # wins= models.PositiveIntegerField(default=0)
