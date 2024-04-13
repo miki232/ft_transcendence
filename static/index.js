@@ -55,7 +55,8 @@ const router = async () => {
 		{ path: "/", view: Login },
 		{ path: "/about", view: About },
 		{ path: "/contact", view: Contact },
-		{ path: "/dashboard", view: Dashboard }
+		{ path: "/dashboard", view: Dashboard },
+		{ path: "/friends", view: Friends }
 		// { path: "/pong", view: Pong }
 	];
 	
@@ -108,9 +109,14 @@ const router = async () => {
 			// nav.setAttribute("style", "display: none;");
 			// container.insertAdjacentHTML('afterbegin', await view.getNav());
 			content.innerHTML = await view.getContent();
-			view.setTitle("Dashboard");
+			view.setTitle("Dashboard");// da inserire nei constructor
 			// room.updateRoomList();
 		}
+	} else if (match.route.path === "/friends" && is_logged_in === true) {
+		const view = new match.route.view();
+		await view.loadUserData();
+		nav.innerHTML = await view.getNav();
+		content.innerHTML = await view.getContent();
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");

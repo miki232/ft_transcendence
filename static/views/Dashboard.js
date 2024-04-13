@@ -111,8 +111,9 @@ export default class extends AbstractView {
 				<div class="profile-card">
 					<img alt="Profile picture" src="${await this.getPic()}"/>
 					<h3>${await this.getUser()}</h3>
-					<button type="button" class="submit-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
-					<button type="button" class="submit-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
+					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
+					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="notifications-outline"></ion-icon>Requests</button>
+					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
 					<div class="hr dashboard-hr"></div>
 					<button type="button" id="logout-btn" class="submit-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>
@@ -124,12 +125,12 @@ export default class extends AbstractView {
 }
 
 //OLD NAV
-{/* <ul>
+/* <ul>
 	<li id="user">
 	<img src="${await this.getPic()}"></img>
 	${await this.getUser()}</li>
 	<li><a id="logout">Logout</a></li>
-</ul> */}
+</ul> */
 
 //OLD SECOND NAV
 /*

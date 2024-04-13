@@ -117,7 +117,8 @@ header a img {
 }
 
 .form-box form,
-.profile-card {
+.profile-card,
+.friends-card {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -281,11 +282,11 @@ header a img {
 
 .profile-card h3 {
 	font-size: 28px;
-	margin: 10px 0 20px 0;
+	margin: 10px 0 15px 0;
 }
 
 .dashboard-hr {
-	margin-top: 15px;
+	margin-top: 10px;
 }
 
 #logout-btn {
@@ -298,6 +299,10 @@ header a img {
 
 .submit-btn ion-icon {
 	margin-right: 10px;
+}
+
+.dashboard-btn {
+	margin: 8px 0;
 }
 
 #logout-btn:active {

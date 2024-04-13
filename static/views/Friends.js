@@ -1,12 +1,12 @@
 import AbstractView from "./AbstractView.js";
 
-export async function getCSRFToken() {
-	let csrftoken = await fetch("csrf-token")
-		.then(response => response.json())
-		.then(data => data.csrfToken);
-		console.log(csrftoken);
-	return csrftoken;
-}
+// export async function getCSRFToken() {
+// 	let csrftoken = await fetch("csrf-token")
+// 		.then(response => response.json())
+// 		.then(data => data.csrfToken);
+// 		console.log(csrftoken);
+// 	return csrftoken;
+// }
 
 export function acceptFriendRequest(userId) {
     // Create a new XMLHttpRequest object
@@ -132,6 +132,9 @@ export default class Friends extends AbstractView {
 		super();
 		this.CurrentUsername;
         this.Userto;
+        this.user;
+		this.email;
+        this.pro_pic;
 	}
 
 	getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
@@ -335,24 +338,111 @@ export default class Friends extends AbstractView {
         }
     }
 
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async loadUserData() {
+		var csrftoken = this.getCookie('csrftoken')
+		await fetch('/accounts/user_info/', {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				this.setUser(data.username);
+				this.setEmail(data.email);
+				this.setPic(data.pro_pic); //new
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			})
+	}
+
+    async setPic(data_pic){ //new
+		this.pro_pic = data_pic;
+	}
+
+	async setUser(data_user) {
+		this.user = data_user;
+	}
+	
+	async setEmail (data_email) {
+		this.email = data_email;
+	}
+
+	async getUser() {
+		return this.user;
+	}
+
+	async getEmail() {
+		return this.email;
+	}
+	
+	async getPic(){ //new
+		return this.pro_pic;
+	}
+
+    async getNav() {
+		const navHTML = `
+			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${await this.getPic()}"/></a>
+		`;
+		return navHTML;
+	}
+
 	async getContent() {
 		const friendHTML = `
-			<div id="friends-card" class="cards">
-				<h2>Friends</h2>
-				<br>
-				<h3>Send Friend Request</h3>
-				<form>
-					<input type="text" id="friendNameInput" placeholder="Enter friend's username">
-					<button id="friendBtn">🔍</button>
-				</form>
-				<br>
-				<h3>Pending Requests</h3>
-				<div id="pending-requests"></div>
-				<br>
-				<h3>Friends List</h3>
-				<div id="friends-list"></div>
-			</div>
+            <div class="dashboard">
+                <div class="friends-card">
+                    <h1>Friends List</h1>
+                    <div class="input-box add-friend">
+                        <input type="text" id="friendNameInput" required>
+                        <label>Find User</label>
+                        <ion-icon name="person-add-outline"></ion-icon>
+                    </div>
+                    <button type="submit" class="submit-btn dashboard-btn" id="friendBtn"><ion-icon name="paper-plane-outline"></ion-icon>Send Request</button>
+                </div>
+            </div>
 		`;
 		return friendHTML;
 	}
 }
+
+//OLD FRIEND CARD
+/*
+<div id="friends-card" class="cards">
+	<h2>Friends</h2>
+	<br>
+	<h3>Send Friend Request</h3>
+	<form>
+		<input type="text" id="friendNameInput" placeholder="Enter friend's username">
+		<button id="friendBtn">🔍</button>
+	</form>
+	<br>
+	<h3>Pending Requests</h3>
+	<div id="pending-requests"></div>
+	<br>
+	<h3>Friends List</h3>
+	<div id="friends-list"></div>
+</div>
+*/
