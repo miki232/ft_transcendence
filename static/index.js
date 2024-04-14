@@ -117,6 +117,8 @@ const router = async () => {
 		await view.loadUserData();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
+		await view.getFriendList();
+		await view.getPendingRequests();
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");

@@ -105,8 +105,8 @@ header a img {
 .form-box,
 .dashboard {
 	position: relative;
-	width: 400px;
-	height: 470px;
+	width: 430px;
+	height: 550px;
 	backdrop-filter: blur(20px);
 	color: white;
 	font-size: 20px;
@@ -138,7 +138,8 @@ header a img {
 	font-size: 35px;
 }
 
-.input-box {
+.input-box,
+.friend {
 	width: 75%;
 	display: flex;
 	justify-content: space-between;
@@ -249,7 +250,7 @@ header a img {
 }
 
 .change-form {
-	height: 500px;
+	height: 580px;
 }
 
 .change-form .login-form {
@@ -316,6 +317,71 @@ header a img {
 		cursor: pointer;
 		margin-left: 5px;
 }
+
+/***************** FRIENDS *****************/
+
+/* .friends-card {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+} */
+
+.friends-card .add-friend {
+	margin: 20px 0;
+}
+
+.friends-list {
+	width: 75%;
+	height: 50%;
+	margin: 10px 0;
+	padding: 10px 0;
+	text-align: center;
+	overflow-y: auto;
+}
+
+.friend {
+	width: 100%;
+	/* justify-content: start; */
+	align-items: center;
+	padding-bottom: 7px;
+	margin: 20px 0;
+	color: white;
+	font-size: 24px;
+}
+
+.friend span {
+	cursor: pointer;
+}
+
+.friend :nth-child(2) {
+	margin-left: 20px;
+}
+
+.friend :nth-child(3) {
+	margin-left: auto;
+}
+
+.friend img {
+	height: 35px;
+}
+
+.friend-online {
+	color: green;
+}
+
+.friend-offline {
+	color: red;
+}
+
+.friends-list h4 {
+	margin-bottom: 15px;
+}
+
+
 
 /***************** FOOTER *****************/
 
