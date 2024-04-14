@@ -338,9 +338,22 @@ header a img {
 .friends-list {
 	width: 75%;
 	height: 50%;
-	margin: 10px 0 25px 0;
+	margin-bottom: 25px;
 	text-align: center;
-	overflow-y: auto;
+	overflow-y: scroll;
+}
+
+.friends-list::-webkit-scrollbar {
+	width: 10px;
+}
+
+.friends-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.friends-list::-webkit-scrollbar-thumb {
+	background: white;
+	border-radius: 10px;
 }
 
 .friend {
@@ -377,8 +390,8 @@ header a img {
 	color: red;
 }
 
-.friends-list h4 {
-	margin-bottom: 15px;
+.friends-card h4 {
+	margin: 15px 0;
 }
 
 .friend-info {
@@ -405,6 +418,7 @@ header a img {
 	font-size: 18px;
 	margin: 0 0 15px 0;
 }
+
 
 
 /***************** FOOTER *****************/

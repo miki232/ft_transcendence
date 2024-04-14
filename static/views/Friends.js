@@ -456,7 +456,8 @@ export default class Friends extends AbstractView {
 					</div>
 					<button type="submit" class="submit-btn dashboard-btn" id="friendBtn"><ion-icon name="paper-plane-outline"></ion-icon>Send Request</button>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<div class="friends-list"><h4>Friends List</h4></div>
+					<h4>Friends List</h4>
+					<div class="friends-list"></div>
 				</div>
 				<div class="friend-info"></div>
 			</div>
