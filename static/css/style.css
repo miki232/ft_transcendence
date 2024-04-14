@@ -118,7 +118,8 @@ header a img {
 
 .form-box form,
 .profile-card,
-.friends-card {
+.friends-card,
+.friend-info {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -277,7 +278,8 @@ header a img {
 	
 /***************** DASHBOARD *****************/
 
-.profile-card img {
+.profile-card img,
+.friend-info img {
 	height: 130px;
 }
 
@@ -290,10 +292,9 @@ header a img {
 	margin-top: 10px;
 }
 
-#logout-btn {
+.red-btn {
 	background-color: var(--logout-color);
 	color: white;
-	width: 40%;
 	margin: 0;
 	/* font-size: 20px; */
 }
@@ -306,7 +307,7 @@ header a img {
 	margin: 8px 0;
 }
 
-#logout-btn:active {
+.red-btn:active {
 	border: 2px solid darkred;
 	font-size: 14px;
 }
@@ -337,8 +338,7 @@ header a img {
 .friends-list {
 	width: 75%;
 	height: 50%;
-	margin: 10px 0;
-	padding: 10px 0;
+	margin: 10px 0 25px 0;
 	text-align: center;
 	overflow-y: auto;
 }
@@ -381,6 +381,30 @@ header a img {
 	margin-bottom: 15px;
 }
 
+.friend-info {
+	transform: translateX(-100%);
+	opacity: 0;
+}
+
+.change-view .friends-card {
+	transform: translateX(100%);
+	opacity: 0;
+}
+
+.change-view .friend-info {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+.friend-info h3 {
+	font-size: 28px;
+	margin: 10px 0 5px 0;
+}
+
+.friend-info h4 {
+	font-size: 18px;
+	margin: 0 0 15px 0;
+}
 
 
 /***************** FOOTER *****************/

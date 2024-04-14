@@ -26,7 +26,7 @@ const loginHTML = `
 		<div class="login-register">
 			<p>Don't have an account? <a href="#" class="register-btn">Register</a></p>
 		</div>
-		<div class="hr"></div>
+		<div class="hr" style="width: 75%; margin: 25px 0 30px 0;"></div>
 		<a href="accounts/authorize/" id="school-login">Login with 42 intra account</a>
 	</form>
 	<form class="register-form">

@@ -10,93 +10,93 @@ import { getCSRFToken } from "./Info.js";
 // }
 
 export function acceptFriendRequest(userId) {
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-    
-    // Set the request URL
-    var url = "friend/accept/" + userId + "/";
-    
-    // Set the request method to GET
-    xhr.open("GET", url, true);
-    
-    // Send the request
-    xhr.send()
+	// Create a new XMLHttpRequest object
+	var xhr = new XMLHttpRequest();
+	
+	// Set the request URL
+	var url = "friend/accept/" + userId + "/";
+	
+	// Set the request method to GET
+	xhr.open("GET", url, true);
+	
+	// Send the request
+	xhr.send()
 }
 
 export async function declineFriendRequest(userId) {
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-    
-    // Set the request URL
-    var url = "friend/request/decline/";
-    
-    // Set the request method to POST
-    xhr.open("POST", url, true);
+	// Create a new XMLHttpRequest object
+	var xhr = new XMLHttpRequest();
+	
+	// Set the request URL
+	var url = "friend/request/decline/";
+	
+	// Set the request method to POST
+	xhr.open("POST", url, true);
 
-    // Set the request headers
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
+	// Set the request headers
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
-    // Set the request body
-    var data = JSON.stringify({
-        "receiver_user_id": userId
-    });
+	// Set the request body
+	var data = JSON.stringify({
+		"receiver_user_id": userId
+	});
 
-    // Send the request
-    xhr.send(data);
+	// Send the request
+	xhr.send(data);
 }
 
 
 export async function removeFriend(user){
-    // Get the username from the list of friend
+	// Get the username from the list of friend
 
-    var friendUsername = user;
-    console.log(friendUsername);
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
+	var friendUsername = user;
+	console.log(friendUsername);
+	// Create a new XMLHttpRequest object
+	var xhr = new XMLHttpRequest();
 
-    // Set the request URL
-    var url = "friend/remove/";
+	// Set the request URL
+	var url = "friend/remove/";
 
-    // Set the request method to POST
-    xhr.open("POST", url, true);
+	// Set the request method to POST
+	xhr.open("POST", url, true);
 
-    // Set the request headers
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
+	// Set the request headers
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
-    // Set the request body
-    var data = JSON.stringify({
-        "receiver_user_id": friendUsername
-    });
+	// Set the request body
+	var data = JSON.stringify({
+		"receiver_user_id": friendUsername
+	});
 
-    // Send the request
-    xhr.send(data);
+	// Send the request
+	xhr.send(data);
 }
 
 
 export async function cancelRequest(user){
-    // Get the username from the list of friend
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
+	// Get the username from the list of friend
+	// Create a new XMLHttpRequest object
+	var xhr = new XMLHttpRequest();
 
-    // Set the request URL
-    var url = "friend/request/cancel/";
+	// Set the request URL
+	var url = "friend/request/cancel/";
 
-    // Set the request method to POST
-    xhr.open("POST", url, true);
+	// Set the request method to POST
+	xhr.open("POST", url, true);
 
-    // Set the request headers
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
+	// Set the request headers
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("X-CSRFToken", await getCSRFToken());
 
-    // Set the request body
-    var data = JSON.stringify({
-        "receiver_user_id": user
-    });
+	// Set the request body
+	var data = JSON.stringify({
+		"receiver_user_id": user
+	});
 
-    // Send the request
-    xhr.send(data);
+	// Send the request
+	xhr.send(data);
 }
 
 export async function sendFriendRequest(user) {
@@ -106,7 +106,7 @@ export async function sendFriendRequest(user) {
 		// var username = document.getElementById("friendNameInput").value;
 		// Create a new XMLHttpRequest object
 		var xhr = new XMLHttpRequest();
-        console.log(user)
+		console.log(user)
 		// Set the request URL
 		var url = "/friend/request/send/";
 
@@ -123,19 +123,19 @@ export async function sendFriendRequest(user) {
 		});
 
 		// Send the request
-        // ws.send(JSON.stringify({'notifications to ': user}));
+		// ws.send(JSON.stringify({'notifications to ': user}));
 	
-        xhr.send(data);
+		xhr.send(data);
 }
 
 export default class Friends extends AbstractView {
 	constructor() {
 		super();
 		this.CurrentUsername;
-        this.Userto;
-        this.user;
+		this.Userto;
+		this.user;
 		this.email;
-        this.pro_pic;
+		this.pro_pic;
 	}
 
 	getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
@@ -205,188 +205,189 @@ export default class Friends extends AbstractView {
 		xhr.send();
 	}
 
-    async getFriendInfo(user) {
-        var csrf = await getCSRFToken();
-        await fetch('/accounts/guser_info/?username=' + user, {
-            method: 'GET',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken': csrf
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // console.log(data);
-            var friendInfoElement = document.querySelector(".friend-info");
-            var friendInfo = `
-                <div class="friend-info-card">
-                    <img src="${data.user.pro_pic}" alt="User pic">
-                    <h3>${data.user.username}</h3>
-                    <span>${data.user.status_login}</span>
-                    <button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-                    <button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
-                    <button type="button" class="submit-btn dashboard-btn remove-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>
-                    <button type="button" class="submit-btn dashboard-btn remove-btn" id="remove"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
-                </div>
-            `;
-            friendInfoElement.innerHTML = friendInfo;
-        })
-        .catch((error) => {
-            alert("No user found!");
-            console.error('Error:', error);
-        })
-    }
+	async getFriendInfo(user) {
+		var csrf = await getCSRFToken();
+		await fetch('/accounts/guser_info/?username=' + user, {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrf
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			// console.log(data);
+			var friendInfoElement = document.querySelector(".friend-info");
+			var friendInfo = `
+				<img src="${data.user.pro_pic}" alt="User pic">
+				<h3>${data.user.username}</h3>
+				<h4>${data.user.status_login}</h4>
+				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
+				<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+				<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>
+				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
+				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+			`;
+			friendInfoElement.innerHTML = friendInfo;
+		})
+		.catch((error) => {
+			alert("No user found!");
+			console.error('Error:', error);
+		})
+	}
 
-    async getFriendList() {
-        var response = await fetch("friend/list/");
-        var data = await response.json();
-        var friendListElement = document.querySelector(".friends-list");
-        // friendListElement.innerHTML = "";
-        // friendListElement.className = "content";
-        for (var i = 0; i < data.length; i++) {
-            var friendList = data[i];
-            var userUsername = friendList.user.username;            
-            for (var j = 0; j < friendList.friends.length; j++) {
-                console.log(friendList.friends[j]);
-                var friendUsername = friendList.friends[j].username;
-                var friendStatus = friendList.friends[j].status_login;
-                console.log(friendStatus);
-                var friendPic = friendList.friends[j].pro_pic;
-                var friendElement = `
-                    <div class="friend">
-                        <img src="${friendPic}" alt="User pic">
-                        <span class="info" data-username="${friendUsername}">${friendUsername}</span>
-                        <ion-icon class="friend-icon" name="person-sharp"></ion-icon>
-                    </div>
-                `;
-                friendListElement.innerHTML += friendElement;
-                var friendIcon = document.querySelectorAll(".friend-icon")[j];
-                if (friendStatus == "online")
-                    friendIcon.classList.add("friend-online");
-                else
-                    friendIcon.classList.add("friend-offline");
-                var infoElements = document.querySelectorAll(".info");
-                infoElements.forEach(element => {
-                    element.addEventListener("click", async (event) =>{
-                        var friend = event.target.getAttribute("data-username");
-                        console.log(friend);
-                        await this.getFriendInfo(friend);
-                    });
-                });
+	async getFriendList() {
+		var response = await fetch("friend/list/");
+		var data = await response.json();
+		var friendListElement = document.querySelector(".friends-list");
+		// friendListElement.innerHTML = "";
+		// friendListElement.className = "content";
+		for (var i = 0; i < data.length; i++) {
+			var friendList = data[i];
+			var userUsername = friendList.user.username;            
+			for (var j = 0; j < friendList.friends.length; j++) {
+				console.log(friendList.friends[j]);
+				var friendUsername = friendList.friends[j].username;
+				var friendStatus = friendList.friends[j].status_login;
+				console.log(friendStatus);
+				var friendPic = friendList.friends[j].pro_pic;
+				var friendElement = `
+					<div class="friend">
+						<img src="${friendPic}" alt="User pic">
+						<span class="info" data-username="${friendUsername}">${friendUsername}</span>
+						<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+					</div>
+				`;
+				friendListElement.innerHTML += friendElement;
+				var friendIcon = document.querySelectorAll(".friend-icon")[j];
+				if (friendStatus == "online")
+					friendIcon.classList.add("friend-online");
+				else
+					friendIcon.classList.add("friend-offline");
+				var infoElements = document.querySelectorAll(".info");
+				const friendBox = document.querySelector(".dashboard");
+				infoElements.forEach(element => {
+					element.addEventListener("click", async e =>{
+						e.preventDefault();
+						var friend = e.target.getAttribute("data-username");
+						friendBox.classList.add("change-view");
+						await this.getFriendInfo(friend);
+					});
+				});
 			}
 		}
 	}
 
-    async removeFriend(){
-        // Get the username from the list of friend
-        var friendElement = document.getElementById("friend-list").firstChild;
-        var text = friendElement.textContent;
-        var parts = text.split(", ");
-        var friendUsername = parts[1].split(": ")[1];
-        console.log(friendUsername);
-        // Create a new XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
+	async removeFriend(){
+		// Get the username from the list of friend
+		var friendElement = document.getElementById("friend-list").firstChild;
+		var text = friendElement.textContent;
+		var parts = text.split(", ");
+		var friendUsername = parts[1].split(": ")[1];
+		console.log(friendUsername);
+		// Create a new XMLHttpRequest object
+		var xhr = new XMLHttpRequest();
 
-        // Set the request URL
-        var url = "remove/";
+		// Set the request URL
+		var url = "remove/";
 
-        // Set the request method to POST
-        xhr.open("POST", url, true);
+		// Set the request method to POST
+		xhr.open("POST", url, true);
 
-        // Set the request headers
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
+		// Set the request headers
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
 
-        // Set the request body
-        var data = JSON.stringify({
-            "receiver_user_id": friendUsername
-        });
+		// Set the request body
+		var data = JSON.stringify({
+			"receiver_user_id": friendUsername
+		});
 
-        // Send the request
-        xhr.send(data);
-    }
+		// Send the request
+		xhr.send(data);
+	}
 
-    async getPendingRequests() {
-        var response = await fetch("friend/request/list/");
-        var data = await response.json();
-        var pendingRequestsElement = document.querySelector(".pending-requests");
-        // pendingRequestsElement.innerHTML = "";
-        
-        for (var i = 0; i < data.length; i++) {
-            var request = data[i];
-            var senderUsername = request.sender.username;
-            var receiverUsername = request.receiver.username;
-            
-            var requestElement = document.createElement("a");
-            requestElement.href = '/user_info';
-            if (receiverUsername == this.CurrentUsername){
+	async getPendingRequests() {
+		var response = await fetch("friend/request/list/");
+		var data = await response.json();
+		var pendingRequestsElement = document.querySelector(".pending-requests");
+		// pendingRequestsElement.innerHTML = "";
+		
+		for (var i = 0; i < data.length; i++) {
+			var request = data[i];
+			var senderUsername = request.sender.username;
+			var receiverUsername = request.receiver.username;
+			
+			var requestElement = document.createElement("a");
+			requestElement.href = '/user_info';
+			if (receiverUsername == this.CurrentUsername){
 
-                requestElement.setAttribute('data-username', senderUsername);
-                requestElement.textContent = senderUsername;
-            }
-            else{
-                requestElement.setAttribute('data-username', receiverUsername);
-                requestElement.textContent = receiverUsername;
-            }
-                
-             // Create a button to accept the request
-            if (senderUsername !== this.CurrentUsername){
-                var acceptButton = document.createElement("button");
-                var declineButton = document.createElement("button");
-                declineButton.innerHTML = "Decline";
-                declineButton.id = "decline-request";
-                declineButton.onclick = (function(senderUsername) {
-                    return function(){
-                        declineFriendRequest(senderUsername);
-                    };
-                })(senderUsername);
-                        
-                requestElement.appendChild(declineButton);
-                acceptButton.innerHTML = "Accept";
-                acceptButton.id = "Accept-request";
-                acceptButton.onclick = (function(senderUsername) {
-                    return function(){
-                        acceptFriendRequest(senderUsername);
-                    };
-                })(senderUsername);
-                        
-                requestElement.appendChild(acceptButton);
-            }
-            else
-            {
-                var cancelButton = document.createElement("button");
-                cancelButton.innerHTML = "Cancel";
-                cancelButton.id = "cancel-request";
-                cancelButton.onclick = (function(receiverUsername) {
-                    return function(){
-                        cancelRequest(receiverUsername);
-                    };
-                })(receiverUsername);
-                console.log(receiverUsername);
-                requestElement.appendChild(cancelButton);
-                
+				requestElement.setAttribute('data-username', senderUsername);
+				requestElement.textContent = senderUsername;
+			}
+			else{
+				requestElement.setAttribute('data-username', receiverUsername);
+				requestElement.textContent = receiverUsername;
+			}
+				
+			 // Create a button to accept the request
+			if (senderUsername !== this.CurrentUsername){
+				var acceptButton = document.createElement("button");
+				var declineButton = document.createElement("button");
+				declineButton.innerHTML = "Decline";
+				declineButton.id = "decline-request";
+				declineButton.onclick = (function(senderUsername) {
+					return function(){
+						declineFriendRequest(senderUsername);
+					};
+				})(senderUsername);
+						
+				requestElement.appendChild(declineButton);
+				acceptButton.innerHTML = "Accept";
+				acceptButton.id = "Accept-request";
+				acceptButton.onclick = (function(senderUsername) {
+					return function(){
+						acceptFriendRequest(senderUsername);
+					};
+				})(senderUsername);
+						
+				requestElement.appendChild(acceptButton);
+			}
+			else
+			{
+				var cancelButton = document.createElement("button");
+				cancelButton.innerHTML = "Cancel";
+				cancelButton.id = "cancel-request";
+				cancelButton.onclick = (function(receiverUsername) {
+					return function(){
+						cancelRequest(receiverUsername);
+					};
+				})(receiverUsername);
+				console.log(receiverUsername);
+				requestElement.appendChild(cancelButton);
+				
 
-            }
-            pendingRequestsElement.appendChild(requestElement);
-        }
-    }
+			}
+			pendingRequestsElement.appendChild(requestElement);
+		}
+	}
 
-    getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
+	getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
 
-    async loadUserData() {
+	async loadUserData() {
 		var csrftoken = this.getCookie('csrftoken')
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
@@ -407,7 +408,7 @@ export default class Friends extends AbstractView {
 			})
 	}
 
-    async setPic(data_pic){ //new
+	async setPic(data_pic){ //new
 		this.pro_pic = data_pic;
 	}
 
@@ -431,7 +432,7 @@ export default class Friends extends AbstractView {
 		return this.pro_pic;
 	}
 
-    async getNav() {
+	async getNav() {
 		const navHTML = `
 			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
 			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
@@ -445,21 +446,20 @@ export default class Friends extends AbstractView {
 
 	async getContent() {
 		const friendHTML = `
-            <div class="dashboard">
-                <div class="friends-card">
-                    <h1>Friends</h1>
-                    <div class="input-box add-friend">
-                        <input type="text" id="friendNameInput" required>
-                        <label>Find User</label>
-                        <ion-icon name="person-add-outline"></ion-icon>
-                    </div>
-                    <button type="submit" class="submit-btn dashboard-btn" id="friendBtn"><ion-icon name="paper-plane-outline"></ion-icon>Send Request</button>
-                    <div class="hr" style="width: 75%"></div>
-                    <div class="friends-list"><h4>Friends List</h4></div>
-                    <div class="friend-info"></div>
-                    </div>
-                </div>
-            </div>
+			<div class="dashboard">
+				<div class="friends-card">
+					<h1>Friends</h1>
+					<div class="input-box add-friend">
+						<input type="text" id="friendNameInput" required>
+						<label>Find User</label>
+						<ion-icon name="person-add-outline"></ion-icon>
+					</div>
+					<button type="submit" class="submit-btn dashboard-btn" id="friendBtn"><ion-icon name="paper-plane-outline"></ion-icon>Send Request</button>
+					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
+					<div class="friends-list"><h4>Friends List</h4></div>
+				</div>
+				<div class="friend-info"></div>
+			</div>
 		`;
 		return friendHTML;
 	}

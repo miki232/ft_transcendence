@@ -141,13 +141,22 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		console.log(e.target)
 		const form_box = document.querySelector(".form-box");
+		const friend_box = document.querySelector(".dashboard");
 		if (e.target.matches(".register-btn")) {
 			e.preventDefault();
 			form_box.classList.add("change-form");
 		}
+		if (e.target.matches(".info")) {
+			e.preventDefault();
+			friend_box.classList.add("change-view");
+		}
 		if (e.target.matches(".login-btn")) {
 			e.preventDefault();
 			form_box.classList.remove("change-form");
+		}
+		if (e.target.matches("#back")) {
+			e.preventDefault();
+			friend_box.classList.remove("change-view");
 		}
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
