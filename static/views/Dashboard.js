@@ -81,15 +81,16 @@ export default class extends AbstractView {
 		`;
 		requestsElement.innerHTML = requestsHTML;
 		const requestsListElement = document.querySelector(".requests-list");
-		if (data.length < 1) {
-			requestsListElement.innerHTML = "No requests";
-			return;
-		}
+		var noEntries = document.createElement("span");
+		noEntries.className = "no-entries";
+		noEntries.textContent = "No requests found.";
+		requestsListElement.appendChild(noEntries);
 		for (var i = 0; i < data.length; i++) {
 			var request = data[i];
 			var senderUsername = request.sender.username;
 			var receiverUsername = request.receiver.username;
 			var requestType = receiverUsername === this.user;
+			noEntries.remove();
 			const requestView = `
 				<div class="request-line">
 					<img src="${requestType ? request.sender.pro_pic : request.receiver.pro_pic}"/>
@@ -108,12 +109,7 @@ export default class extends AbstractView {
 					e.preventDefault();
 					await acceptFriendRequest(senderUsername);
 					element.parentElement.remove();
-					data = await getRequests();
-					console.log(data.length);
-					if (data.length < 2) {
-						requestsListElement.innerHTML = "No requests";
-						return;
-					}
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});
 			});
 			declineRequestBtn.forEach(element => {
@@ -121,12 +117,7 @@ export default class extends AbstractView {
 					e.preventDefault();
 					await declineFriendRequest(senderUsername);
 					element.parentElement.remove();
-					data = await getRequests();
-					console.log(data.length);
-					if (data.length < 2) {
-						requestsListElement.innerHTML = "No requests";
-						return;
-					}
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});
 			});
 			cancelRequestBtn.forEach(element => {
@@ -134,12 +125,7 @@ export default class extends AbstractView {
 					e.preventDefault();
 					await cancelRequest(receiverUsername);
 					element.parentElement.remove();
-					data = await getRequests();
-					console.log(data.length);
-					if (data.length < 2) {
-						requestsListElement.innerHTML = "No requests";
-						return;
-					}
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});
 			});
 		}

@@ -126,24 +126,32 @@ export default class Friends extends AbstractView {
 		.then(data => {
 			// console.log(data);
 			var friendInfoElement = document.querySelector(".friend-info");
+			var is_friend = data.is_mutual_friend;
 			var friendInfo = `
 				<img src="${data.user.pro_pic}" alt="User pic">
 				<h3>${data.user.username}</h3>
 				<h4>${data.user.status_login}</h4>
 				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-				<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
-				<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>
+				${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : `<button type="button" class="submit-btn dashboard-btn" id="friend-request" user="${data.user.username}"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` }
+				${is_friend ? `<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
 				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 			`;
 			friendInfoElement.innerHTML = friendInfo;
-			const removeFriendBtn = document.getElementById("remove");
-			removeFriendBtn.addEventListener("click", async e => {
-				e.preventDefault();
-				await removeFriend(data.user.username);
-				const toRemove = document.querySelector("[data-username='" + data.user.username + "']");
-				toRemove.parentElement.remove();
-			});
+			if (is_friend) {
+				const removeFriendBtn = document.getElementById("remove");
+				removeFriendBtn.addEventListener("click", async e => {
+					e.preventDefault();
+					await removeFriend(data.user.username);
+					const toRemove = document.querySelector("[data-username='" + data.user.username + "']");
+					toRemove.parentElement.remove();
+					if (document.querySelector(".friends-list").childElementCount == 0) {
+						var noEntries = document.createElement("span");
+						noEntries.textContent = "No friends";
+						document.querySelector(".friends-list").appendChild(noEntries);
+					}
+				});
+			}
 		})
 		.catch((error) => {
 			alert("No user found!");
@@ -157,16 +165,16 @@ export default class Friends extends AbstractView {
 		var friendListElement = document.querySelector(".friends-list");
 		// friendListElement.innerHTML = "";
 		// friendListElement.className = "content";
-		console.log(data.length);
-		if (data.length < 1) {
-			friendListElement.textContent = "No friends found!";
-			return;
-		}
+		var noEntries = document.createElement("span");
+		noEntries.className = "no-entries";
+		noEntries.textContent = "You don't have any friends yet.";
+		friendListElement.appendChild(noEntries);
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
 			var userUsername = friendList.user.username;            
 			for (var j = 0; j < friendList.friends.length; j++) {
 				console.log(friendList.friends[j]);
+				noEntries.remove();
 				var friendUsername = friendList.friends[j].username;
 				var friendStatus = friendList.friends[j].status_login;
 				console.log(friendStatus);
@@ -195,6 +203,94 @@ export default class Friends extends AbstractView {
 				friendBox.classList.add("change-view");
 				await this.getFriendInfo(friend);
 			});
+		});
+	}
+
+	async getUserInfo(user) {
+		var csrf = await getCSRFToken();
+		await fetch('/accounts/guser_info/?username=' + user, {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrf
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			// console.log(data);
+			var friendInfoElement = document.querySelector(".friend-info");
+			var friendInfo = `
+				<img src="${data.user.pro_pic}" alt="User pic">
+				<h3>${data.user.username}</h3>
+				<h4>${data.user.status_login}</h4>
+				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
+				<button type="button" class="submit-btn dashboard-btn" id="friend-request" user="${data.user.username}"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>
+				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
+				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+			`;
+			friendInfoElement.innerHTML = friendInfo;
+		})
+		.catch((error) => {
+			alert("No user found!");
+			console.error('Error:', error);
+		})
+	}
+
+	async searchUser() {
+		const friendsSearch = document.querySelector(".friends-list");
+		const friendInput = document.querySelector("#friendNameInput");
+		const searchBtn = document.querySelector("#search-btn");
+		const friendTitle = document.querySelector("#friend-title");
+		friendInput.addEventListener("input", async e => {
+			if (friendInput.value === "") {
+				friendTitle.textContent = "Friends List";
+				friendsSearch.innerHTML = "";
+				await this.getFriendList();
+			}
+		});
+		searchBtn.addEventListener("click", async e => {
+			var inputText = friendInput.value;
+			fetch(`https://127.0.0.1:8000/accounts/search/?q=${inputText}`)
+    		    .then(response => response.json())
+    		    .then(data => {
+    		        // Cancella la lista degli utenti
+    		        friendsSearch.innerHTML = "";
+
+    		        // Aggiungi ogni utente alla lista
+    		        data.forEach(user => {
+						console.log(user);
+						var userElement = `
+							<div class="friend">
+								<img src="${user.pro_pic}" alt="User pic">
+								<span class="info" data-username="${user.username}">${user.username}</span>
+								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+							</div>
+						`;
+						if (user.username) {
+							friendTitle.textContent = "Search Results";
+							friendsSearch.innerHTML += userElement;
+							var friendIcon = document.querySelectorAll(".friend-icon");
+							friendIcon.forEach(friendIcon => {
+								if (user.status_login == "online")
+									friendIcon.classList.add("friend-online");
+								else
+									friendIcon.classList.add("friend-offline");
+							});
+						}
+    		        });
+					friendInput.value = "";
+					var infoElements = document.querySelectorAll(".info");
+					const searchBox = document.querySelector(".dashboard");
+					infoElements.forEach(element => {
+						element.addEventListener("click", async e =>{
+							e.preventDefault();
+							var userInfo = e.target.getAttribute("data-username");
+							searchBox.classList.add("change-view");
+							await this.getFriendInfo(userInfo);
+						});
+					});
+    		    })
+    		    .catch(error => console.error('Error:', error));
 		});
 	}
 
@@ -369,14 +465,15 @@ export default class Friends extends AbstractView {
 			<div class="dashboard">
 				<div class="friends-card">
 					<h1>Friends</h1>
+					<h4>Search friends</h4>
 					<div class="input-box add-friend">
 						<input type="text" id="friendNameInput" required>
 						<label>Find User</label>
-						<ion-icon name="person-add-outline"></ion-icon>
+						<ion-icon name="search-outline"></ion-icon>
 					</div>
-					<button type="submit" class="submit-btn dashboard-btn" id="friendBtn"><ion-icon name="paper-plane-outline"></ion-icon>Send Request</button>
-					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<h4>Friends List</h4>
+					<button type="submit" class="submit-btn dashboard-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
+					<div class="hr" style="width: 75%; margin: 10px 0 10px 0;"></div>
+					<h4 id="friend-title">Friends List</h4>
 					<div class="friends-list"></div>
 				</div>
 				<div class="friend-info"></div>

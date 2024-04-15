@@ -123,6 +123,7 @@ const router = async () => {
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
 		await view.getFriendList();
+		view.searchUser();
 		// await view.getPendingRequests();
 	} else {
 		if (is_logged_in === true)
@@ -150,7 +151,7 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
-		console.log(e.target)
+		// console.log(e.target)
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		if (e.target.matches(".register-btn")) {
@@ -181,11 +182,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			e.preventDefault();
 			navigateTo("/dashboard");
 		}
-		if (e.target.matches("#friendBtn")) {
+		if (e.target.matches("#friend-request")) {
 			e.preventDefault();
-			var input = document.getElementById("friendNameInput");
-			await sendFriendRequest(input.value);
-			input.value = "";
+			var input = document.getElementById("friend-request");
+			var userToAdd = input.getAttribute("user");
+			await sendFriendRequest(userToAdd);
+			console.log("Friend request sent to " + userToAdd);
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
@@ -239,6 +241,35 @@ document.addEventListener("DOMContentLoaded", () => {
 			let friend_name = e.target.getAttribute('data-username');
 			await renderDashboard("friend_info", friend_name);
 			history.pushState(null, '', '/user_info');
+		}
+	});
+
+	document.body.addEventListener("input", async e => {
+		const friendsSearch = document.querySelector(".friends-list");
+		const friendInput = document.querySelector("#friendNameInput");
+		var inputText = friendInput.value;
+		console.log(inputText);
+		if (e.target.matches("#friendNameInpu") && inputText.length > 0) {
+    		// Fai una richiesta fetch alla API di ricerca
+    		fetch(`https://127.0.0.1:8000/accounts/search/?q=${inputText}`)
+    		    .then(response => response.json())
+    		    .then(data => {
+    		        // Cancella la lista degli utenti
+    		        friendsSearch.innerHTML = "";
+
+    		        // Aggiungi ogni utente alla lista
+    		        data.forEach(user => {
+						var userElement = `
+							<div class="friend">
+								<img src="${user.pro_pic}" alt="User pic">
+								<span class="info" data-username="${user.username}">${user.username}</span>
+								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+							</div>
+						`;
+						if (user.username) friendsSearch.innerHTML += userElement;
+    		        });
+    		    })
+    		    .catch(error => console.error('Error:', error));
 		}
 	});
 	router();

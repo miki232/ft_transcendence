@@ -363,6 +363,12 @@ div .requests-list {
 	margin-left: 8px;
 }
 
+.no-entries {
+	position: relative;
+	top: 25%;
+	font-size: 16px;
+}
+
 /***************** FRIENDS *****************/
 
 /* .friends-card {
@@ -376,7 +382,7 @@ div .requests-list {
 } */
 
 .friends-card .add-friend {
-	margin: 20px 0;
+	margin: 20px 0 10px 0;
 }
 
 .friends-list,
@@ -411,6 +417,18 @@ div .requests-list {
 	font-size: 24px;
 }
 
+.friends-card h1 {
+	margin: 16px;
+}
+
+.friends-card #search-btn {
+	margin: 5px;
+}
+
+.friends-list {
+	height: 40%;
+}
+
 .friend span {
 	cursor: pointer;
 }
@@ -437,7 +455,7 @@ div .requests-list {
 }
 
 .friends-card h4 {
-	margin: 15px 0;
+	margin: 10px 0;
 }
 
 .friend-info,
