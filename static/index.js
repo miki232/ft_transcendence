@@ -136,6 +136,12 @@ const router = async () => {
 
 window.addEventListener("popstate", router);
 
+//** API per le History Dei Match*/
+// https://127.0.0.1:8001/accounts/match_history/?username=<USERNAME>
+// URL per vedere la history dei match,
+// tramite il parametro <USERNAME> si può vedere la history dei match di quell'utente
+///*/
+
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
