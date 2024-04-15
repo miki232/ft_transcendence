@@ -417,3 +417,120 @@ e inviare direttamente con value modificato.
     "detail": "Request Cancel Successfully"
     }
     ```
+- Se gia' cancellata o non esiste
+- Status Code: 400
+- Body:
+    ```json
+    {
+     "detail": "Something went wrong"
+    }
+    ```
+
+
+
+
+## ACCEPT FIREND REQUEST
+
+### Description
+    Per Accettare una richiesta di amicizia ricevuta
+
+### Request
+- Method: [GET]
+- URL: /friend/accept/<USERNAME>/
+
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+   {
+  "response": "Friend request accepted."
+    }
+    ```
+- Se gia' Accettata o non esiste
+- Status Code: 500
+- Body:
+    Pagina di errore Di DJANGO.
+
+
+
+
+
+
+## REMOVE FIREND
+
+### Description
+    Per Rimuovere una amicizia
+
+### Request
+- Esempio:  Admin e' Amico con Madonna, allora Admin per rimuovere Madonna
+    deve fare una richiesta POST con username di chi vuole rimuovere
+- Method: [POST]
+- URL: /friend/remove/
+- Headers:
+    -       'Content-Type' : "application/json"
+    -       'X-CSRFToken': csrftoken
+- Body:
+    ```json
+    {"receiver_user_id" : "Madonna"}
+    ```
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+   {
+    "detail": "Removed successfully"
+    }
+    ```
+
+
+
+
+## LIST FIREND
+
+### Description
+    Lista di Amici per user loggato 
+
+### Request
+- Method: [GET]
+- URL: /friend/list/
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+    [
+        {
+            "user": {
+                "username": "admin",
+                "email": "admin@admin.it",
+                "first_name": "",
+                "last_name": "",
+                "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
+                "status_login": "online",
+                "is_active": true
+            },
+            "friends": [
+                {
+                "username": "Madonna",
+                "email": "",
+                "first_name": "",
+                "last_name": "",
+                "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+                "status_login": "online",
+                "is_active": true
+                },
+                {
+                    "username": "Suca",
+                    "email": "suca@gmail.com",
+                    "first_name": "",
+                    "last_name": "",
+                    "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+                    "status_login": "Offline",
+                    "is_active": true
+                }
+            ]
+        }
+    ]
+    ```
