@@ -88,11 +88,13 @@ const router = async () => {
 			}
 		}
 		if (view.isValid === true || is_logged_in === true) {
-			ws	= new WebSocket('wss://'
-			+ window.location.hostname
-			+ ':8000'
-			+ '/ws/notifications'
-			+ '/');
+			if (!ws){
+				ws	= new WebSocket('wss://'
+				+ window.location.hostname
+				+ ':8000'
+				+ '/ws/notifications'
+				+ '/');
+			}
 			ws.onmessage = function(event) {
 				const data = JSON.parse(event.data);
 				console.log(event);
