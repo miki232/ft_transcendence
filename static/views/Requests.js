@@ -106,7 +106,7 @@ export async function declineFriendRequest(userId) {
 
 	// Set the request body
 	var data = JSON.stringify({
-		"receiver_user_id": userId
+		"sender_user_id": userId
 	});
 
 	// Send the request
