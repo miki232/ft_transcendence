@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import Room from "./Room.js";
+import { getRequests, acceptFriendRequest, declineFriendRequest, cancelRequest } from "./Requests.js";
 
 export default class extends AbstractView {
 	constructor() {
@@ -69,6 +70,60 @@ export default class extends AbstractView {
 		})
 	}
 
+	async requestsList() {
+		var data = await getRequests();
+		const requestsElement = document.querySelector(".requests");
+		const requestsHTML = `
+			<h2>Requests</h2>
+			<div class="requests-list"></div>
+			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
+			<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+		`;
+		requestsElement.innerHTML = requestsHTML;
+		const requestsListElement = document.querySelector(".requests-list");
+		if (data.length < 1) {
+			requestsListElement.innerHTML = "No requests";
+			return;
+		}
+		for (var i = 0; i < data.length; i++) {
+			var request = data[i];
+			var senderUsername = request.sender.username;
+			var receiverUsername = request.receiver.username;
+			var requestType = receiverUsername === this.user;
+			const requestView = `
+				<div class="request-line">
+					<img src="${requestType ? request.sender.pro_pic : request.receiver.pro_pic}"/>
+					<span class="info" data-username="${requestType ? senderUsername : receiverUsername}">${requestType ? senderUsername : receiverUsername}</span>
+					${requestType ? `<button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+					<button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button>` :
+					`<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>`}
+				</div>
+			`;
+			requestsListElement.innerHTML += requestView;
+			const acceptRequestBtn = document.querySelectorAll(".accept-request");
+			const declineRequestBtn = document.querySelectorAll(".decline-request");
+			const cancelRequestBtn = document.querySelectorAll(".cancel-request");
+			acceptRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					await acceptFriendRequest(senderUsername);
+				});
+			});
+			declineRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					await declineFriendRequest(senderUsername);
+				});
+			});
+			cancelRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					await cancelRequest(receiverUsername);
+				});
+			});
+		}
+	}
+
 	async setPic(data_pic){ //new
 		this.pro_pic = data_pic;
 	}
@@ -112,11 +167,12 @@ export default class extends AbstractView {
 					<img alt="Profile picture" src="${await this.getPic()}"/>
 					<h3>${await this.getUser()}</h3>
 					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
-					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="notifications-outline"></ion-icon>Requests</button>
+					<button type="button" id="requests-btn" class="submit-btn dashboard-btn"><ion-icon name="notifications-outline"></ion-icon>Requests</button>
 					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 					<button type="button" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>
+				<div class="requests"></div>
 			</div>
 		`;
 		// dashboardHTML += await this.room.getContent();

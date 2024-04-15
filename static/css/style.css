@@ -26,6 +26,7 @@ html, body {
 		/* line-height: 1.6; */
 		height: 100vh;
 		width: 100vw;
+		overflow-wrap: anywhere;
 }
 
 body {
@@ -95,10 +96,10 @@ header a img {
 
 /***************** MAIN *****************/
 
-#container {
+/* #container { */
 		/* display: flex; */
 		/* padding-top: 60px; */
-}
+/* } */
 
 /***************** CONTENT *****************/
 
@@ -119,7 +120,8 @@ header a img {
 .form-box form,
 .profile-card,
 .friends-card,
-.friend-info {
+.friend-info,
+.requests {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -140,7 +142,8 @@ header a img {
 }
 
 .input-box,
-.friend {
+.friend,
+.request-line {
 	width: 75%;
 	display: flex;
 	justify-content: space-between;
@@ -288,10 +291,6 @@ header a img {
 	margin: 10px 0 15px 0;
 }
 
-.dashboard-hr {
-	margin-top: 10px;
-}
-
 .red-btn {
 	background-color: var(--logout-color);
 	color: white;
@@ -319,6 +318,51 @@ header a img {
 		margin-left: 5px;
 }
 
+div .requests-list {
+	height: 60%;
+}
+
+.request-line {
+	width: 100%;
+	align-items: center;
+	justify-content: start;
+}
+
+.request-line .red-btn,
+.request-line .accept-request {
+	width: 80px;
+	height: 35px;
+	margin: 0;
+	font-size: 16px;
+}
+
+.request-line .accept-request {
+	margin-right: 12px;
+	color: white;
+	background-color: green;
+}
+
+.request-line .accept-request:active {
+	border: 2px solid rgb(0, 66, 0);
+}
+
+.request-line button:active {
+	font-size: 14px;
+}
+
+.request-line .accept-request,
+.request-line .cancel-request{
+	margin-left: auto;
+}
+
+.request-line ion-icon {
+	margin-right: 4px;
+}
+
+.request-line span {
+	margin-left: 8px;
+}
+
 /***************** FRIENDS *****************/
 
 /* .friends-card {
@@ -335,12 +379,13 @@ header a img {
 	margin: 20px 0;
 }
 
-.friends-list {
+.friends-list,
+.requests-list {
 	width: 75%;
 	height: 50%;
 	margin-bottom: 25px;
 	text-align: center;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .friends-list::-webkit-scrollbar {
@@ -378,7 +423,8 @@ header a img {
 	margin-left: auto;
 }
 
-.friend img {
+.friend img,
+.request-line img {
 	height: 35px;
 }
 
@@ -394,17 +440,20 @@ header a img {
 	margin: 15px 0;
 }
 
-.friend-info {
+.friend-info,
+.requests {
 	transform: translateX(-100%);
 	opacity: 0;
 }
 
-.change-view .friends-card {
+.change-view .friends-card,
+.change-view .profile-card {
 	transform: translateX(100%);
 	opacity: 0;
 }
 
-.change-view .friend-info {
+.change-view .friend-info,
+.change-view .requests {
 	transform: translateX(0%);
 	opacity: 1;
 }

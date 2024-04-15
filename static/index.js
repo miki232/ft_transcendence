@@ -7,7 +7,8 @@ import Room from "./views/Room.js";
 import { invite_to_play } from "./views/Room.js";
 import Friends from "./views/Friends.js";
 import Info from "./views/Info.js";
-import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
+import { sendFriendRequest } from "./views/Requests.js";
+// import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
 // function activeLink(page) {
 //     let oldActive = document.querySelector('a.active');
@@ -107,10 +108,12 @@ const router = async () => {
 			// container.classList.add("dashboard");
 			await view.loadUserData();
 			nav.innerHTML = await view.getNav();
-			// nav.innerHTML = await view.getNav();
-			// nav.setAttribute("style", "display: none;");
-			// container.insertAdjacentHTML('afterbegin', await view.getNav());
 			content.innerHTML = await view.getContent();
+			const requestBtn = document.getElementById("requests-btn");
+			requestBtn.addEventListener("click", async e => {
+				e.preventDefault();
+				await view.requestsList();
+			}); 
 			view.setTitle("Dashboard");// da inserire nei constructor
 			// room.updateRoomList();
 		}
@@ -120,7 +123,7 @@ const router = async () => {
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
 		await view.getFriendList();
-		await view.getPendingRequests();
+		// await view.getPendingRequests();
 	} else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
@@ -149,22 +152,26 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		console.log(e.target)
 		const form_box = document.querySelector(".form-box");
-		const friend_box = document.querySelector(".dashboard");
+		const dashboard = document.querySelector(".dashboard");
 		if (e.target.matches(".register-btn")) {
 			e.preventDefault();
 			form_box.classList.add("change-form");
 		}
 		if (e.target.matches(".info")) {
 			e.preventDefault();
-			friend_box.classList.add("change-view");
+			dashboard.classList.add("change-view");
+		}
+		if (e.target.matches("#requests-btn")) {
+			e.preventDefault();
+			dashboard.classList.add("change-view");
 		}
 		if (e.target.matches(".login-btn")) {
 			e.preventDefault();
 			form_box.classList.remove("change-form");
 		}
-		if (e.target.matches("#back")) {
+		if (e.target.matches("#back") || e.target.matches("#remove")) {
 			e.preventDefault();
-			friend_box.classList.remove("change-view");
+			dashboard.classList.remove("change-view");
 		}
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
@@ -173,6 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#login-btn")) {
 			e.preventDefault();
 			navigateTo("/dashboard");
+		}
+		if (e.target.matches("#friendBtn")) {
+			e.preventDefault();
+			var input = document.getElementById("friendNameInput");
+			await sendFriendRequest(input.value);
+			input.value = "";
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
@@ -191,14 +204,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (e.target.matches("#Remove-friend"))//**si può levare forse */
 			await renderDashboard("friends");
-		if (e.target.matches("#friendBtn")){
-			e.preventDefault();
-			let user = document.getElementById("friendNameInput").value;
-			if (user)
-				renderDashboard("friend_info", user);
-			else
-				alert("Please provide a username")
-		}
+		// if (e.target.matches("#friendBtn")){
+		// 	e.preventDefault();
+		// 	let user = document.getElementById("friendNameInput").value;
+		// 	if (user)
+		// 		renderDashboard("friend_info", user);
+		// 	else
+		// 		alert("Please provide a username")
+		// }
 		if (e.target.matches("#signup")) {
 			await register();
 		}
