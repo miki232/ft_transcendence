@@ -141,6 +141,8 @@ export default class Friends extends AbstractView {
 			removeFriendBtn.addEventListener("click", async e => {
 				e.preventDefault();
 				await removeFriend(data.user.username);
+				const toRemove = document.querySelector("[data-username='" + data.user.username + "']");
+				toRemove.parentElement.remove();
 			});
 		})
 		.catch((error) => {

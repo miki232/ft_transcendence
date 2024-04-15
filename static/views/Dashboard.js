@@ -107,18 +107,39 @@ export default class extends AbstractView {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
 					await acceptFriendRequest(senderUsername);
+					element.parentElement.remove();
+					data = await getRequests();
+					console.log(data.length);
+					if (data.length < 2) {
+						requestsListElement.innerHTML = "No requests";
+						return;
+					}
 				});
 			});
 			declineRequestBtn.forEach(element => {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
 					await declineFriendRequest(senderUsername);
+					element.parentElement.remove();
+					data = await getRequests();
+					console.log(data.length);
+					if (data.length < 2) {
+						requestsListElement.innerHTML = "No requests";
+						return;
+					}
 				});
 			});
 			cancelRequestBtn.forEach(element => {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
 					await cancelRequest(receiverUsername);
+					element.parentElement.remove();
+					data = await getRequests();
+					console.log(data.length);
+					if (data.length < 2) {
+						requestsListElement.innerHTML = "No requests";
+						return;
+					}
 				});
 			});
 		}
