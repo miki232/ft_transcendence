@@ -5,15 +5,15 @@
 </head>
 <body>
   <h1>User Info</h1>
-
+  
   <div id="userInfo">
     <p id="username1"> Username: </p>
     <p id="email1"> Email :</p>
     <img id="propic">
   </div>
-
+  
   <h1>Edit User Info</h1>
-
+  
   <form id="editForm">
     <label for="username">Username:</label><br>
     <input type="text" id="username" name="username"><br>
@@ -31,14 +31,19 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Get the CSRF token from the cookie
-      function getCSRFToken() {
-        const cookieValue = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          .split('=')[1];
-        return cookieValue;
-      }
-
+      async function getCSRFToken() {
+        let csrftoken = await fetch("/csrf-token")
+          .then(response => response.json())
+          .then(data => data.csrfToken);
+          console.log(csrftoken);
+        return csrftoken;
+      };
+      let ss;
+      getCSRFToken().then(csrftoken => {
+        // You can use csrftoken here
+        ss = csrftoken;
+        console.log('X-CSRFToken:', csrftoken);
+      });
       // Get user info when the page loads
       fetch('/accounts/user_info/')
         .then(response => response.json())
@@ -70,7 +75,7 @@
           method: 'PUT',
           body: formData,
           headers: {
-            'X-CSRFToken': getCSRFToken()
+            'X-CSRFToken': ss
           }
         })
         .then(response => response.json())
@@ -101,7 +106,7 @@
           method: 'POST',
           body: formData,
           headers: {
-            'X-CSRFToken': getCSRFToken()
+            'X-CSRFToken': ss
           }
         })
         .then(response => response.json())

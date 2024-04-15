@@ -1,0 +1,419 @@
+# API Documentation
+
+
+
+# ACCOUNTS
+## REGISTRATION
+
+### Description
+        API per creare un utente
+
+### Request
+- Method: [POST]
+- URL: /accounts/register/
+- Headers:
+        -    'Content-Type' : 'application/json',
+        -    'X-CSRFToken': csrftoken
+- Body :
+    ```json
+    {
+    "username": "Suca" ,
+    "email":    "suca@gmail.com" ,
+    "password": "This field is required." 
+    }```
+
+### Response
+- Status Code: 201
+- Body (if applicable):
+    ```json
+    {
+    "username": "Suca",
+    "email": "suca@gmail.com"
+    }
+    ```
+
+
+
+
+
+##   LOGIN
+
+### Description
+        API per login
+
+### Request
+- Method: [POST]
+- URL: /accounts/login/
+- Headers:
+        -    'Content-Type' : 'application/json',
+        -    'X-CSRFToken': csrftoken
+- Body (if applicable):
+    ```json
+    {
+    "username": "Suca",
+    "password": "SUCAPASSWORD"
+    }
+    ```
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+    {
+    "status": "Login successful"
+    }
+    ```
+
+
+
+
+
+## USER_UNFO
+
+### Description
+    Ritorna le Info dell'utente loggato, (SELF)
+    Ma ha anche la possibilita' di modificare le info
+    imagine profilo, Username, Email
+
+### Request
+- Method: [GET/POST/PUT/]
+- URL: /accounts/user_info/
+- Headers:
+    -       'X-CSRFToken': csrftoken
+
+-[POST]
+```java
+const imageFile = document.getElementById('imageFile').files[0];
+
+        // Create a FormData object to send the file
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+
+        // Send the POST request
+        fetch('/accounts/user_info/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': ss
+          }
+```
+
+-[PUT]
+Basta inviare una request PUT con uno delle key da modificare,
+e inviare direttamente con value modificato.
+    {"key" : "value"}
+- Body:
+    ```json
+    {
+    "username": "admina",
+    "email": "admin@admin.it",
+    "first_name": "",
+    "last_name": "",
+    "pro_pic": "/media/profile_pics/c5d29d70-3855-4b72-bf14-2e98c1f3766f.svg",
+    "status_login": "online",
+    "is_active": true
+    }
+    ```
+
+### Response
+- Status Code: 200
+- Body (if applicable):
+    ```json
+    {
+    "username": "admina",
+    "email": "admin@admin.it",
+    "first_name": "",
+    "last_name": "",
+    "pro_pic": "/media/profile_pics/c5d29d70-3855-4b72-bf14-2e98c1f3766f.svg",
+    "status_login": "online",
+    "is_active": true
+    }
+    ```
+
+
+
+
+## GUSER_UNFO
+
+### Description
+    Ritorna le Info dell'utente specificato nella query
+
+### Request
+- Method: [GET]
+- URL: /accounts/guser_info/?username=<USERNAME>
+- Headers:
+    -       'X-CSRFToken': csrftoken
+
+### Response
+- Status Code: 200
+- Body (if applicable):
+    ```json
+    {
+    "is_mutual_friend": false,
+    "user": {
+        "username": "USER",
+        "email": "",
+        "first_name": "",
+        "last_name": "",
+        "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+        "status_login": "online",
+        "is_active": true
+    }
+    }
+    ```
+
+
+
+
+## Match_History
+
+### Description
+    Ritorna le Match_history dell'utente specificato nella query
+
+### Request
+- Method: [GET]
+- URL: /accounts/match_history/?username=<USERNAME>
+- Headers:
+    -       'X-CSRFToken': csrftoken
+
+### Response
+- Status Code: 200
+- Body (if applicable):
+    ```json
+    [
+    {
+        "username": "Madonna",
+        "email": "",
+        "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+        "match_history": [
+            {
+                "user1__username": "Madonna",
+                "user2__username": "Suca",
+                "score_user1": 2,
+                "score_user2": 1,
+                "winner__username": "Madonna",
+                "date": "2024-04-15T09:03:36.142455Z"
+            },
+        ]
+    }
+    ]
+    ```
+
+
+
+## SEARCH
+
+### Description
+    Ritorna una lista di utenti con info, in base alla ricerca
+
+### Request
+- Method: [GET]
+- URL: /accounts/search/?q=<USERNAME>
+- Headers:
+    -       'X-CSRFToken': csrftoken
+
+### Response
+- se nella query viene messo "a", allora ritorna tutti gli utenti 
+    che hanno "a" nel loro username. Se inserito l'username specifico
+    ritorna l'user specificato.
+- Status Code: 200
+- Body:
+- Esempio con ?q=a:
+    ```json
+    [
+        {
+            "username": "admin",
+            "email": "admin@admin.it",
+            "first_name": "",
+            "last_name": "",
+            "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
+            "status_login": "online",
+            "is_active": true
+        },
+        {
+            "username": "Madonna",
+            "email": "",
+            "first_name": "",
+            "last_name": "",
+            "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+            "status_login": "online",
+            "is_active": true
+        },
+        {
+            "username": "Suca",
+            "email": "suca@gmail.com",
+            "first_name": "",
+            "last_name": "",
+            "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+            "status_login": "Offline",
+            "is_active": true
+        }
+    ]
+    ```
+
+
+
+
+
+# FRIENDS
+
+## SEND FRIEND REQUEST
+
+### Description
+    API Per inviare una richiesta di amicizia
+
+### Request
+- Method: [POST]
+- URL: /friend/request/send/
+- Headers:
+    -       'X-CSRFToken': csrftoken
+- Body:
+    ```json
+    {"receiver_user_id":"Madonna"}
+    ```
+
+### Response
+- Ritorna le info di chi invia e chi dovrebbe ricevere la richiesta di amicizia
+- Status Code: 201
+- Body:
+    ```json
+    
+    {
+        "sender": {
+            "username": "admin",
+            "email": "admin@admin.it",
+            "first_name": "",
+            "last_name": "",
+            "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
+            "status_login": "online",
+            "is_active": true
+        },
+        "receiver": {
+            "username": "Madonna",
+            "email": "",
+            "first_name": "",
+            "last_name": "",
+            "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+            "status_login": "online",
+            "is_active": true
+        },
+        "is_active": true,
+        "timestamp": "2024-04-15T09:20:03.058770Z"
+    }
+    ```
+- Se la richiesta gia' esiste, allora:
+- Status Code: 429
+- Body:
+    ```json
+    "Friend request already exists"
+    ```
+
+
+
+
+
+## LIST FIREND REQUEST
+
+### Description
+    Ritorna una lista di richieste con info, per user loggato
+    ogni richiesta e' un bundle di "sender/receiver"
+
+### Request
+- Method: [GET]
+- URL: /friend/request/list/
+- Headers:
+    -       'X-CSRFToken': csrftoken
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+    [
+        {
+            "sender": {
+                "username": "admin",
+                "email": "admin@admin.it",
+                "first_name": "",
+                "last_name": "",
+                "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
+                "status_login": "online",
+                "is_active": true
+            },
+            "receiver": {
+                "username": "Madonna",
+                "email": "",
+                "first_name": "",
+                "last_name": "",
+                "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+                "status_login": "online",
+                "is_active": true
+            },
+            "is_active": true,
+            "timestamp": "2024-04-15T09:20:03.058770Z"
+        }
+    ]
+    ```
+
+
+
+
+## DECLINE FIREND REQUEST
+
+### Description
+    Per rifiutare una richiesta di amicizia in arrivo
+
+### Request
+- Method: [POST]
+- URL: /friend/request/decline/
+- Headers:
+    -       'X-CSRFToken': csrftoken
+- Body:
+    Esempio, se Admin ha ricevuto una richiesta di amicizia da Madonna
+    ```json
+    {"sender_user_id":"Madonna"}
+    ```
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+    {
+    "detail": "Request declined Successfully"
+    }
+    ```
+- Se non esiste una richiesta a nome di "sender_user_id"
+- Status Codee: 204
+- Body:
+    ```json
+    {
+    "detail": "FriendRequest matching query does not exist."
+    }  
+    ```
+
+
+
+
+## CANCEL FIREND REQUEST
+
+### Description
+    Per Cancellare una richiesta di amicizia in inviata
+
+### Request
+- Method: [POST]
+- URL: /friend/request/cancel/
+- Headers:
+    -       'X-CSRFToken': csrftoken
+- Body:
+    Esempio, se Admin ha inviato una richiesta a Madonna
+    ```json
+    {"receiver_user_id" : "Madonna"}
+    ```
+
+### Response
+- Status Code: 200
+- Body:
+    ```json
+    {
+    "detail": "Request Cancel Successfully"
+    }
+    ```

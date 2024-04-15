@@ -237,7 +237,7 @@ class DeclineFriendRequestView(APIView):
     def post(self, request):
         user = request.user
         if user.is_authenticated:
-            friend_request_id_to_decline=  request.data.get('receiver_user_id')
+            friend_request_id_to_decline=  request.data.get('sender_user_id')
             print(friend_request_id_to_decline)
             if friend_request_id_to_decline:
                 try:
