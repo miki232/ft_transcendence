@@ -336,7 +336,8 @@ div .requests-list {
 	font-size: 16px;
 }
 
-.request-line .accept-request {
+.request-line .accept-request,
+.friend-info .accept-request {
 	margin-right: 12px;
 	color: white;
 	background-color: green;
@@ -415,6 +416,22 @@ div .requests-list {
 	margin: 20px 0;
 	color: white;
 	font-size: 24px;
+}
+
+.info-request {
+	width: 75%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 8px 0;
+}
+
+.info-request button {
+	margin: 0;
+}
+
+.friend-info .cancel-request {
+	margin: 8px 0;
 }
 
 .friends-card h1 {

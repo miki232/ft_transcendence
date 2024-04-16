@@ -183,13 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			e.preventDefault();
 			navigateTo("/dashboard");
 		}
-		if (e.target.matches("#friend-request")) {
-			e.preventDefault();
-			var input = document.getElementById("friend-request");
-			var userToAdd = input.getAttribute("user");
-			await sendFriendRequest(userToAdd);
-			createNotification("Friend request sent!");
-		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
 		}

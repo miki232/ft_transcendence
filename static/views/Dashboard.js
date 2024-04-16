@@ -107,7 +107,7 @@ export default class extends AbstractView {
 			acceptRequestBtn.forEach(element => {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
-					await acceptFriendRequest(senderUsername);
+					acceptFriendRequest(senderUsername);
 					element.parentElement.remove();
 					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});

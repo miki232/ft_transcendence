@@ -2,6 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
+import { getRequests, acceptFriendRequest, declineFriendRequest, cancelRequest, sendFriendRequest } from "./Requests.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -75,7 +76,7 @@ export default class Friends extends AbstractView {
 			})
 	}
 
-	sendFriendRequest() { // anche questa standalone possiamo anche levarla
+/* 	sendFriendRequest() { // anche questa standalone possiamo anche levarla
 		// Get the username from the input field
 		var username = document.getElementById("username").value;
 
@@ -99,12 +100,12 @@ export default class Friends extends AbstractView {
 
 		// Send the request
 		xhr.send(data);
-	}
+	} */
 
-	acceptFriendRequest(userId) {
+	/* acceptFriendRequest(userId) {
 		// Create a new XMLHttpRequest object
 		var xhr = new XMLHttpRequest();
-		
+		console.log(userId);
 		// Set the request URL
 		var url = "accept/" + userId + "/";
 		
@@ -113,7 +114,7 @@ export default class Friends extends AbstractView {
 		
 		// Send the request
 		xhr.send();
-	}
+	} */
 
 	async getFriendInfo(user) {
 		var csrf = await getCSRFToken();
@@ -125,16 +126,22 @@ export default class Friends extends AbstractView {
 			}
 		})
 		.then(response => response.json())
-		.then(data => {
-			// console.log(data);
+		.then(async data => {
+			const requestList = await getRequests();
 			var friendInfoElement = document.querySelector(".friend-info");
 			var is_friend = data.is_mutual_friend;
+			var senderObj = requestList.find(req => req.sender.username == data.user.username);
+			var receiverObj = requestList.find(req => req.receiver.username == data.user.username);
+			var pendingReq = senderObj || receiverObj ? true : false;
 			var friendInfo = `
 				<img src="${data.user.pro_pic}" alt="User pic">
 				<h3>${data.user.username}</h3>
 				<h4>${data.user.status_login}</h4>
 				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-				${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : `<button type="button" class="submit-btn dashboard-btn" id="friend-request" user="${data.user.username}"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` }
+				${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
+					!pendingReq ? `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
+					senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
+					receiverObj ? `<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
 				${is_friend ? `<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
 				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
@@ -152,6 +159,39 @@ export default class Friends extends AbstractView {
 						noEntries.textContent = "No friends";
 						document.querySelector(".friends-list").appendChild(noEntries);
 					}
+				});
+			} else if (!pendingReq){
+				const sendRequestBtn = document.getElementById("friend-request");
+				sendRequestBtn.addEventListener("click", async e => {
+					e.preventDefault();
+					await sendFriendRequest(data.user.username);
+					createNotification("Friend request sent!");
+					friendInfoElement.innerHTML = "";
+					await this.getFriendInfo(data.user.username);
+				});
+			}
+			if (senderObj) {
+				const acceptRequestBtn = document.querySelector(".accept-request");
+				const declineRequestBtn = document.querySelector(".decline-request");
+				acceptRequestBtn.addEventListener("click", async e => {
+					e.preventDefault();
+					acceptFriendRequest(data.user.username);
+					friendInfoElement.innerHTML = "";
+					await this.getFriendInfo(data.user.username);
+				});
+				declineRequestBtn.addEventListener("click", async e => {
+					e.preventDefault();
+					declineFriendRequest(data.user.username);
+					friendInfoElement.innerHTML = "";
+					await this.getFriendInfo(data.user.username);
+				});
+			} else if (receiverObj) {
+				const cancelRequestBtn = document.querySelector(".cancel-request");
+				cancelRequestBtn.addEventListener("click", async e => {
+					e.preventDefault();
+					cancelRequest(data.user.username);
+					friendInfoElement.innerHTML = "";
+					await this.getFriendInfo(data.user.username);
 				});
 			}
 		})
@@ -175,11 +215,9 @@ export default class Friends extends AbstractView {
 			var friendList = data[i];
 			var userUsername = friendList.user.username;            
 			for (var j = 0; j < friendList.friends.length; j++) {
-				console.log(friendList.friends[j]);
 				noEntries.remove();
 				var friendUsername = friendList.friends[j].username;
 				var friendStatus = friendList.friends[j].status_login;
-				console.log(friendStatus);
 				var friendPic = friendList.friends[j].pro_pic;
 				var friendElement = `
 					<div class="friend">
