@@ -220,7 +220,7 @@ export default class Friends extends AbstractView {
 		});
 		searchBtn.addEventListener("click", async e => {
 			var inputText = friendInput.value;
-			fetch(`https://127.0.0.1:8000/accounts/search/?q=${inputText}`)
+			fetch(`/accounts/search/?q=${inputText}`)
     		    .then(response => response.json())
     		    .then(data => {
     		        // Cancella la lista degli utenti
