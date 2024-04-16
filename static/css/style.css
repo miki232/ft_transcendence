@@ -389,7 +389,7 @@ div .requests-list {
 .requests-list {
 	width: 75%;
 	height: 50%;
-	margin-bottom: 35px;
+	margin-bottom: 40px;
 	text-align: center;
 	overflow-y: auto;
 }
@@ -491,7 +491,43 @@ div .requests-list {
 	font-size: 25px;
 	cursor: pointer;
 	position: absolute;
-	bottom: 4px;
+	bottom: 3px;
+}
+
+/**************** NOTIFICATION ****************/
+
+.notification {
+	min-width: 220px;
+	min-height: 100px;
+	padding: 5px;
+	position: fixed;
+	top: 0px;
+	margin-left: auto;
+	color: white;
+	font-size: 18px;
+	backdrop-filter: blur(20px);
+	border: 2px solid white;
+	border-radius: 20px;
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	animation: slide-down 2s ease-out forwards;
+}
+
+.notification ion-icon {
+	font-size: 20px;
+}
+
+@keyframes slide-down {
+	0% {
+		transform: translateY(-50px);
+	}
+	100% {
+		transform: translateY(30px);
+	}
 }
 
 

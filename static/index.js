@@ -8,6 +8,7 @@ import { invite_to_play } from "./views/Room.js";
 import Friends from "./views/Friends.js";
 import Info from "./views/Info.js";
 import { sendFriendRequest } from "./views/Requests.js";
+import { createNotification } from "./views/Notifications.js";
 // import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
 // function activeLink(page) {
@@ -187,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			var input = document.getElementById("friend-request");
 			var userToAdd = input.getAttribute("user");
 			await sendFriendRequest(userToAdd);
-			console.log("Friend request sent to " + userToAdd);
+			createNotification("Friend request sent!");
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");

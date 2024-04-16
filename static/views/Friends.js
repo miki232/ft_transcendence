@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
+import { createNotification } from "./Notifications.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -220,54 +221,56 @@ export default class Friends extends AbstractView {
 			}
 		});
 		searchBtn.addEventListener("click", async e => {
-			var inputText = friendInput.value;
+			var inputText = sanitizeInput(friendInput.value);
 			fetch(`/accounts/search/?q=${inputText}`)
     		    .then(response => response.json())
     		    .then(data => {
-    		        // Cancella la lista degli utenti
-					if (data.length > 1) {
+					console.log(data[0]);
+					const notFound = "User not Found"
+					if (data[0] != notFound && data.some(user => user.username != this.user)) {
+						friendsSearch.innerHTML = "";
+						var k = 0;
+    		        	data.forEach(user => {
+							var userElement = `
+								<div class="friend">
+									<img src="${user.pro_pic}" alt="User pic">
+									<span class="info" data-username="${user.username}">${user.username}</span>
+									<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+								</div>
+							`;
+							if (user.username && user.username != this.user) {
+								friendTitle.textContent = "Search Results";
+								friendsSearch.innerHTML += userElement;
+								var friendIcon = document.querySelectorAll(".friend-icon")[k++];
+								if (user.status_login == "online")
+									friendIcon.classList.add("friend-online");
+								else
+									friendIcon.classList.add("friend-offline");
+							}
+    		        	});					
+						friendInput.value = "";
 						friendsSearch.innerHTML += `<span id="close-search"><ion-icon name="close-circle-outline"></ion-icon></span>`;
-    		        	friendsSearch.innerHTML = "";
+						const closeBtn = document.getElementById("close-search");
 						closeBtn.addEventListener("click", async e => {
 							e.preventDefault();
 							friendTitle.textContent = "Friends List";
 							friendsSearch.innerHTML = "";
 							await this.getFriendList();
 						});
-					}
-
-    		        // Aggiungi ogni utente alla lista
-					var k = 0;
-    		        data.forEach(user => {
-						var userElement = `
-							<div class="friend">
-								<img src="${user.pro_pic}" alt="User pic">
-								<span class="info" data-username="${user.username}">${user.username}</span>
-								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
-							</div>
-						`;
-						if (user.username && user.username != this.user) {
-							friendTitle.textContent = "Search Results";
-							friendsSearch.innerHTML += userElement;
-							var friendIcon = document.querySelectorAll(".friend-icon")[k++];
-							if (user.status_login == "online")
-								friendIcon.classList.add("friend-online");
-							else
-								friendIcon.classList.add("friend-offline");
-						}
-    		        });					
-					const closeBtn = document.getElementById("close-search");
-					friendInput.value = "";
-					var infoElements = document.querySelectorAll(".info");
-					const searchBox = document.querySelector(".dashboard");
-					infoElements.forEach(element => {
-						element.addEventListener("click", async e =>{
-							e.preventDefault();
-							var userInfo = e.target.getAttribute("data-username");
-							searchBox.classList.add("change-view");
-							await this.getFriendInfo(userInfo);
+						var infoElements = document.querySelectorAll(".info");
+						const searchBox = document.querySelector(".dashboard");
+						infoElements.forEach(element => {
+							element.addEventListener("click", async e =>{
+								e.preventDefault();
+								var userInfo = e.target.getAttribute("data-username");
+								searchBox.classList.add("change-view");
+								await this.getFriendInfo(userInfo);
+							});
 						});
-					});
+					} else {
+						createNotification("User not found");
+						friendInput.value = "";
+					}
     		    })
     		    .catch(error => console.error('Error:', error));
 		});
