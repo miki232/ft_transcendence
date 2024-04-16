@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
+import { sanitizeInput } from "../utilities.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
