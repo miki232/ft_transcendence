@@ -206,36 +206,6 @@ export default class Friends extends AbstractView {
 		});
 	}
 
-	async getUserInfo(user) {
-		var csrf = await getCSRFToken();
-		await fetch('/accounts/guser_info/?username=' + user, {
-			method: 'GET',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken': csrf
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			// console.log(data);
-			var friendInfoElement = document.querySelector(".friend-info");
-			var friendInfo = `
-				<img src="${data.user.pro_pic}" alt="User pic">
-				<h3>${data.user.username}</h3>
-				<h4>${data.user.status_login}</h4>
-				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-				<button type="button" class="submit-btn dashboard-btn" id="friend-request" user="${data.user.username}"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>
-				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
-			`;
-			friendInfoElement.innerHTML = friendInfo;
-		})
-		.catch((error) => {
-			alert("No user found!");
-			console.error('Error:', error);
-		})
-	}
-
 	async searchUser() {
 		const friendsSearch = document.querySelector(".friends-list");
 		const friendInput = document.querySelector("#friendNameInput");
@@ -257,6 +227,7 @@ export default class Friends extends AbstractView {
     		        friendsSearch.innerHTML = "";
 
     		        // Aggiungi ogni utente alla lista
+					var k = 0;
     		        data.forEach(user => {
 						console.log(user);
 						var userElement = `
@@ -269,15 +240,21 @@ export default class Friends extends AbstractView {
 						if (user.username) {
 							friendTitle.textContent = "Search Results";
 							friendsSearch.innerHTML += userElement;
-							var friendIcon = document.querySelectorAll(".friend-icon");
-							friendIcon.forEach(friendIcon => {
-								if (user.status_login == "online")
-									friendIcon.classList.add("friend-online");
-								else
-									friendIcon.classList.add("friend-offline");
-							});
+							var friendIcon = document.querySelectorAll(".friend-icon")[k++];
+							if (user.status_login == "online")
+								friendIcon.classList.add("friend-online");
+							else
+								friendIcon.classList.add("friend-offline");
 						}
     		        });
+					friendsSearch.innerHTML += `<span id="close-search"><ion-icon name="close-circle-outline"></ion-icon></span>`;
+					const closeBtn = document.getElementById("close-search");
+					closeBtn.addEventListener("click", async e => {
+						e.preventDefault();
+						friendTitle.textContent = "Friends List";
+						friendsSearch.innerHTML = "";
+						await this.getFriendList();
+					});
 					friendInput.value = "";
 					var infoElements = document.querySelectorAll(".info");
 					const searchBox = document.querySelector(".dashboard");

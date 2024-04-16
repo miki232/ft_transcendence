@@ -389,7 +389,7 @@ div .requests-list {
 .requests-list {
 	width: 75%;
 	height: 50%;
-	margin-bottom: 25px;
+	margin-bottom: 35px;
 	text-align: center;
 	overflow-y: auto;
 }
@@ -486,6 +486,13 @@ div .requests-list {
 	margin: 0 0 15px 0;
 }
 
+#close-search {
+	color: white;
+	font-size: 25px;
+	cursor: pointer;
+	position: absolute;
+	bottom: 4px;
+}
 
 
 /***************** FOOTER *****************/

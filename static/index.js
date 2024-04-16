@@ -243,35 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			history.pushState(null, '', '/user_info');
 		}
 	});
-
-	document.body.addEventListener("input", async e => {
-		const friendsSearch = document.querySelector(".friends-list");
-		const friendInput = document.querySelector("#friendNameInput");
-		var inputText = friendInput.value;
-		console.log(inputText);
-		if (e.target.matches("#friendNameInpu") && inputText.length > 0) {
-    		// Fai una richiesta fetch alla API di ricerca
-    		fetch(`https://127.0.0.1:8000/accounts/search/?q=${inputText}`)
-    		    .then(response => response.json())
-    		    .then(data => {
-    		        // Cancella la lista degli utenti
-    		        friendsSearch.innerHTML = "";
-
-    		        // Aggiungi ogni utente alla lista
-    		        data.forEach(user => {
-						var userElement = `
-							<div class="friend">
-								<img src="${user.pro_pic}" alt="User pic">
-								<span class="info" data-username="${user.username}">${user.username}</span>
-								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
-							</div>
-						`;
-						if (user.username) friendsSearch.innerHTML += userElement;
-    		        });
-    		    })
-    		    .catch(error => console.error('Error:', error));
-		}
-	});
 	router();
 });
 
