@@ -237,7 +237,7 @@ export default class Friends extends AbstractView {
 								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 							</div>
 						`;
-						if (user.username) {
+						if (user.username && user.username != this.user) {
 							friendTitle.textContent = "Search Results";
 							friendsSearch.innerHTML += userElement;
 							var friendIcon = document.querySelectorAll(".friend-icon")[k++];
