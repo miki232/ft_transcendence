@@ -224,12 +224,20 @@ export default class Friends extends AbstractView {
     		    .then(response => response.json())
     		    .then(data => {
     		        // Cancella la lista degli utenti
-    		        friendsSearch.innerHTML = "";
+					if (data.length > 1) {
+						friendsSearch.innerHTML += `<span id="close-search"><ion-icon name="close-circle-outline"></ion-icon></span>`;
+    		        	friendsSearch.innerHTML = "";
+						closeBtn.addEventListener("click", async e => {
+							e.preventDefault();
+							friendTitle.textContent = "Friends List";
+							friendsSearch.innerHTML = "";
+							await this.getFriendList();
+						});
+					}
 
     		        // Aggiungi ogni utente alla lista
 					var k = 0;
     		        data.forEach(user => {
-						console.log(user);
 						var userElement = `
 							<div class="friend">
 								<img src="${user.pro_pic}" alt="User pic">
@@ -246,15 +254,8 @@ export default class Friends extends AbstractView {
 							else
 								friendIcon.classList.add("friend-offline");
 						}
-    		        });
-					friendsSearch.innerHTML += `<span id="close-search"><ion-icon name="close-circle-outline"></ion-icon></span>`;
+    		        });					
 					const closeBtn = document.getElementById("close-search");
-					closeBtn.addEventListener("click", async e => {
-						e.preventDefault();
-						friendTitle.textContent = "Friends List";
-						friendsSearch.innerHTML = "";
-						await this.getFriendList();
-					});
 					friendInput.value = "";
 					var infoElements = document.querySelectorAll(".info");
 					const searchBox = document.querySelector(".dashboard");
