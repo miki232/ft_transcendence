@@ -151,7 +151,7 @@ class SendFriendRequestView(APIView):
                         friend_request.save()
                         print(f"Sending message to group notifications_{receiver.id}")
                         print("SUCAAAAAA", receiver.id)
-                        send_save_notification(receiver, f"You have a request from {user.username}")
+                        send_save_notification(receiver, f"You have a new friend request from {user.username}")
                         # async_to_sync(send_message)(receiver.id)
                                 # break  # If the group_send call succeeds, break out of the loop
                         print(f"Message sent to group notifications_{receiver.id}")

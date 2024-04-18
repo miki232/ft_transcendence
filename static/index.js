@@ -7,7 +7,7 @@ import Room from "./views/Room.js";
 import { invite_to_play } from "./views/Room.js";
 import Friends from "./views/Friends.js";
 import Info from "./views/Info.js";
-import { sendFriendRequest } from "./views/Requests.js";
+import { getRequests, sendFriendRequest } from "./views/Requests.js";
 import { createNotification } from "./views/Notifications.js";
 // import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
@@ -26,6 +26,11 @@ const content = document.querySelector("#content");
 var refreshRoomList;
 // const room = new Room();
 let ws;
+
+const checkRequest = async () => {
+	var requestList = await getRequests();
+	console.log(requestList);
+};
 
 const navigateTo = url => {
 	history.pushState(null, null, url);
@@ -102,7 +107,8 @@ const router = async () => {
 				console.log(event);
 				console.log(data.content);
 				if (data.read === false){
-					alert(data.content);
+					// alert(data.content);
+					createNotification(data.content);
 					ws.send(JSON.stringify({'action': "read"}));
 				}
 			}
@@ -239,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	router();
 });
+
 
 // content.addEventListener("click", e => {
 // 	if (e.target.matches("#signup")) {
