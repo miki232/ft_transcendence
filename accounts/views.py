@@ -119,15 +119,24 @@ class UserInfoView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def post(self, request):
-        uploaded_file = request.FILES['imageFile']
-        fs = FileSystemStorage(location='media/profile_pics/')
-        ext = uploaded_file.name.split('.')[-1]
-        filename = '{}.{}'.format(uuid.uuid4(), ext)
-        name = fs.save(filename, uploaded_file)
-        name = 'profile_pics/' + name
-        url = fs.url(name)
-        request.user.pro_pic = url
-        request.user.save()
+        url = request.user.pro_pic
+        if 'url' in request.POST:
+            print(request.POST)
+            request.user.pro_pic = request.POST['url']
+            request.user.save()
+            print(request.user.pro_pic)
+        elif 'imageFile' in request.FILE:
+            uploaded_file = request.FILES['imageFile']
+            fs = FileSystemStorage(location='media/profile_pics/')
+            ext = uploaded_file.name.split('.')[-1]
+            filename = '{}.{}'.format(uuid.uuid4(), ext)
+            name = fs.save(filename, uploaded_file)
+            name = 'profile_pics/' + name
+            url = fs.url(name)
+            request.user.pro_pic = url
+            request.user.save()
+        else:
+            return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'pro_pic': url}, status=status.HTTP_200_OK)
 
     

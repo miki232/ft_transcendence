@@ -28,6 +28,13 @@
     <input type="submit" value="Upload">
   </form>
 
+  <h1>URL Upload</h1>
+
+  <form id="urlForm">
+    <input type="text" name="url" id="url">
+    <input type="submit" value="Upload">
+  </form>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Get the CSRF token from the cookie
@@ -118,6 +125,34 @@
           // Handle the error
           console.error(error);
           location.reload(); 
+        });
+      });
+        // Handle URL form submission
+      document.getElementById('urlForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Get the entered URL
+        const url = document.getElementById('url').value;
+
+        // Create a FormData object to send the URL
+        const formData = new FormData();
+        formData.append('url', url);
+
+        // Send the POST request
+        fetch('/accounts/user_info/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': ss
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle the error
+          console.error(error);
         });
       });
     });
