@@ -121,7 +121,8 @@ header a img {
 .profile-card,
 .friends-card,
 .friend-info,
-.requests {
+.requests,
+.settings {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -370,6 +371,11 @@ div .requests-list {
 	font-size: 16px;
 }
 
+.change-setting .settings {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
 /***************** FRIENDS *****************/
 
 /* .friends-card {
@@ -476,13 +482,15 @@ div .requests-list {
 }
 
 .friend-info,
-.requests {
+.requests,
+.settings {
 	transform: translateX(-100%);
 	opacity: 0;
 }
 
 .change-view .friends-card,
-.change-view .profile-card {
+.change-view .profile-card,
+.change-setting .profile-card {
 	transform: translateX(100%);
 	opacity: 0;
 }

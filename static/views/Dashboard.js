@@ -167,6 +167,17 @@ export default class extends AbstractView {
 		return navHTML;
 	}
 
+	userSettings() {
+		const dashboardElement = document.querySelector(".dashboard");
+		const settingsElement = document.createElement("div");
+		settingsElement.className = "settings";
+		dashboardElement.appendChild(settingsElement);
+		const settingsHTML = `
+				<h1>Settings</h1>
+		`;
+		settingsElement.innerHTML = settingsHTML;
+	}
+
 	async getContent() {
 		let dashboardHTML = `
 			<div class="dashboard">
@@ -175,7 +186,7 @@ export default class extends AbstractView {
 					<h3>${await this.getUser()}</h3>
 					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
 					<button type="button" id="requests-btn" class="submit-btn dashboard-btn"><ion-icon name="notifications-outline"></ion-icon>Requests</button>
-					<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
+					<button type="button" id="settings-btn" class="submit-btn dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</button>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 					<button type="button" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>

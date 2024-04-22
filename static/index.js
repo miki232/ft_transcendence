@@ -116,6 +116,7 @@ const router = async () => {
 			await view.loadUserData();
 			nav.innerHTML = await view.getNav();
 			content.innerHTML = await view.getContent();
+			view.userSettings();
 			const requestBtn = document.getElementById("requests-btn");
 			requestBtn.addEventListener("click", async e => {
 				e.preventDefault();
@@ -172,6 +173,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("#requests-btn")) {
 			e.preventDefault();
 			dashboard.classList.add("change-view");
+		}
+		if (e.target.matches("#settings-btn")) {
+			e.preventDefault();
+			dashboard.classList.add("change-setting");
 		}
 		if (e.target.matches(".login-btn")) {
 			e.preventDefault();
