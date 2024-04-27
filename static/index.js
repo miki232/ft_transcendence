@@ -6,7 +6,7 @@ import Dashboard from "./views/Dashboard.js";
 import Room from "./views/Room.js";
 import { invite_to_play } from "./views/Room.js";
 import Friends from "./views/Friends.js";
-import Info from "./views/Info.js";
+import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import { getRequests, sendFriendRequest } from "./views/Requests.js";
 import { createNotification } from "./views/Notifications.js";
 // import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
@@ -26,7 +26,7 @@ const content = document.querySelector("#content");
 var refreshRoomList;
 // const room = new Room();
 let ws;
-
+let username;
 const checkRequest = async () => {
 	var requestList = await getRequests();
 	console.log(requestList);
@@ -159,7 +159,7 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
-		// console.log(e.target)
+		console.log(e.target)
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		if (e.target.matches(".register-btn")) {
@@ -247,10 +247,57 @@ document.addEventListener("DOMContentLoaded", () => {
 			await renderDashboard("friend_info", friend_name);
 			history.pushState(null, '', '/user_info');
 		}
+		///////////////////NOUOVA PARTE////////////////////////
+		//// Manda una richiesta POST per creare una room /////
+		//// con "Friend Username" che è il nome dell'amico ///
+		//// e    "selfuser" è il nome dell'utente attuale ////
+		///////////////////////////////////////////////////////
+		if (e.target.matches('#game'))
+		{
+			let Friend_username = document.getElementById("Username").innerHTML;
+			console.log(Friend_username);
+			let selfuser = await getusename() // Per ora lascio Admin, ma è solo per provare, è da sostituire con l'username reale di chi sta cliccand PLAY
+			console.log(selfuser);
+			send_game_request(Friend_username, selfuser);
+		}
+		/////////////////
 	});
 	router();
 });
 
+//////////////
+///Quando invia una richiesta, oltre a creare una room
+///Viene creata ed inviata una notifica all'utente che si sfida
+async function send_game_request(receiver, selfuser)
+{
+	let csr = await getCSRFToken();
+	const data = {
+        name: "1",
+        created_by: selfuser,
+        to_fight: receiver
+    };
+
+    // Send the POST request
+    fetch('/pong/create/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+			'X-CSRFToken': csr
+            // Add any other necessary headers, such as CSRF token
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the respons
+        console.log(data.name);
+		// window.location.href = "/pong/" + data.name + "/";
+    })
+    .catch(error => {
+        // Handle the error
+        console.error(error);
+    });
+}
 
 // content.addEventListener("click", e => {
 // 	if (e.target.matches("#signup")) {

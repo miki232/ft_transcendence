@@ -8,6 +8,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
 
+from chat.notifier import send_save_notification, get_db, update_db_notifications
 from accounts.models import CustomUser
 from .models import FriendRequest, FriendList
 from .serializers import FriendRequestSerializer, FriendListSerializer
@@ -84,36 +85,7 @@ class ListFriendRequestView(APIView):
 #                     return Response(e, status=status.HTTP_400_BAD_REQUEST)
 #             else:
 #                 return Response({"detail": "Unable to send request"}, status=status.HTTP_400_BAD_REQUEST)
-"""
-Per mandare una notifica
-"""
-from chat.models import Notifications
-from channels.db import database_sync_to_async
 
-def send_save_notification(receiver, message):
-    #save notifications
-    notification = Notifications.objects.create(user=receiver, content=message)    
-
-    channel_layer = get_channel_layer()
-    async_to_sync(send_message)(receiver.id, channel_layer, notification)
-
-@database_sync_to_async
-def get_db(notification):
-    return (Notifications.objects.get(id=notification.id))
-
-def update_db_notifications(sender, receiver):
-    print(receiver, sender)
-    Notifications.objects.get(user=receiver, content__icontains=sender).delete()
-    print("ok")
-
-
-
-async def send_message(receiverid, channel_layer, notification):
-    content = await get_db(notification)
-    print(content.content, content.read)
-    await channel_layer.group_send(
-        f"notifications_{receiverid}", {"type": "notifier", "message": content.content, "status" : content.read}
-    )
     
 
 class SendFriendRequestView(APIView):

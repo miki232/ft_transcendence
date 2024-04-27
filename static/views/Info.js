@@ -9,6 +9,27 @@ export async function getCSRFToken() {
 }
 
 
+export async function getusename() {
+    var csrftoken = await getCSRFToken()
+    let username;
+    await fetch('/accounts/user_info/', {
+        method: 'GET',
+        headers: {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken': csrftoken
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            username = data.username;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        })
+        return username;
+}
+
 export default class Info extends AbstractView {
     constructor(friend_name) {
         super();

@@ -7,21 +7,33 @@ from rest_framework import status
 from .models import RoomName
 from accounts.models import CustomUser
 from friends.models import FriendList
+from chat.notifier import get_db, update_db_notifications, send_save_notification
 from .serializers import RoomNameSerializer
-
+import uuid
 from django.core.exceptions import ObjectDoesNotExist
 
 class CreateRoomView(APIView):
     def post(self, request, format=None):
-        serializer = RoomNameSerializer(data=request.data)
+        room_name = request.data.get("name")
+        if room_name == "1":
+            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+        username = request.data.get("created_by")
+        sfidante = request.data.get("to_fight")
+        user = CustomUser.objects.get(username=username)
+        user_to_fight = CustomUser.objects.get(username=sfidante)
+        print(user_to_fight)
+        send_save_notification(user_to_fight, f"{user} Want to play with YOU!")
+        # Pass the primary keys to the serializer
+        serializer = RoomNameSerializer(data={
+            'created_by': user,
+            'opponent': user_to_fight,
+            'name': room_name
+        })
+
         if serializer.is_valid():
-            username = request.data.get("created_by")
-            user = CustomUser.objects.get(username=username)
-            serializer.save(user=user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class ListRoomView(APIView):
     """
@@ -36,9 +48,9 @@ class ListRoomView(APIView):
         try:
             friendslist = FriendList.objects.get(user=user)
             friends = friendslist.friends.all()
-            rooms = RoomName.objects.filter(Q(user__in=friends) | Q(user=user) | Q(public=True))
+            rooms = RoomName.objects.filter(Q(opponent__in=friends) | Q(opponent=user) | Q(public=True))
         except ObjectDoesNotExist:
-            rooms = RoomName.objects.filter(Q(user=user) | Q(public=True))
+            rooms = RoomName.objects.filter(Q(opponent=user) | Q(public=True))
 
 
         

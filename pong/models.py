@@ -6,9 +6,9 @@ from accounts.models import CustomUser
 class RoomName(models.Model):
     name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.CharField(max_length=255)
+    created_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     public = models.BooleanField(default=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches', default=1)
+    opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches')
     
     def __str__(self):
         return self.name
