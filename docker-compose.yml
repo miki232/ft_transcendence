@@ -1,23 +1,64 @@
-version: '3'
-
 services:
   nginx:
+    depends_on:
+      - django
     build:
       context: ./nginx
     ports:
       - 192.168.1.5:8443:443
     volumes:
-      - ./ssl/:/etc/nginx/ssl
+      - ./transcendence/ssl/:/etc/nginx/ssl
       - static_volume:/etc/nginx/static
+    networks:
+      - webnet
+  
+  my-postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: mypassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     networks:
       - webnet
 
   django:
+    depends_on:
+      my-postgres:
+        condition: service_healthy
     build:
-      context: ./transcendece
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+      context: ./transcendence
+    # command: bash -c "python manage.py collectstatic --no-input && python manage.py runsslserver --certificate ./ssl/certcert.pem --key ./ssl/certkey.pem 0.0.0.0:8001"
+    command: bash -c "./wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
+    ports:
+      - 192.168.1.5:8001:8001
     volumes:
+      - ./transcendence/ssl/:/app/ssl
       - static_volume:/app/static
+      - static_volume:/app/staticfiles
+    networks:
+      - webnet
+
+  redis:
+    build:
+      context: ./redis
+    networks:
+      - webnet
+
+
+  daphne:
+    depends_on:
+      - redis
+    build:
+      context: ./daphne
+    ports:
+      - 192.168.1.5:8000:8000
+    volumes:
+      - ./transcendence/ssl/:/app/ssl
+      - ./transcendence:/app/
     networks:
       - webnet
 
@@ -26,3 +67,14 @@ volumes:
 
 networks:
   webnet:
+
+# docker-compose.yml
+
+# version: '3.9'
+
+# services:
+#   redis:
+#     build:
+#       context: ./redis
+#     ports:
+#       - "6379:6379"

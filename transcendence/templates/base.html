@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room Creator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #FF6B6B, #556270);
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    }
+    #roomNameInput {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    #createRoomBtn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #createRoomBtn:hover {
+        background-color: #45a049;
+    }
+    #roomList {
+        list-style-type: none;
+        padding: 0;
+    }
+    .roomItem {
+        background-color: #ddd;
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .roomItem:hover {
+        background-color: #bfbfbf;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Create or Join a Room</h2>
+    <input type="text" id="roomNameInput" placeholder="Enter room name">
+    <button id="createRoomBtn">Create Room</button>
+    <h3>Available Rooms</h3>
+    <ul id="roomList"></ul>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const roomNameInput = document.getElementById('roomNameInput');
+    const createRoomBtn = document.getElementById('createRoomBtn');
+    const roomList = document.getElementById('roomList');
+    
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    
+    createRoomBtn.addEventListener('click', function() {
+        const roomName = roomNameInput.value.trim();
+        var csrftoken = getCookie('csrftoken');
+        if (roomName === '') {
+            alert('Please enter a room name');
+            return;
+        }
+
+        // Send a POST request to create the room
+        fetch('https://127.0.0.1:8001/rooms/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ name: roomName }),
+          })
+          .then(response => {
+            if (!response.ok){
+              return response.json().then(error => {
+                throw error;
+              });
+            }
+            updateRoomList();
+            return response.json;
+          })
+          .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Clear input
+                roomNameInput.value = '';
+            }
+        })
+        .catch((error) => {
+          alert(error.name[0]);
+            console.log('Error:', error);
+        });
+    });
+
+    // Function to update the list of rooms
+    function updateRoomList() {
+        fetch('https://127.0.0.1:8001/rooms_list/')
+        .then(response => response.json())
+        .then(data => {
+            // Clear the current list
+            roomList.innerHTML = '';
+
+            // Append each room to the list
+            data.forEach(room => {
+                const roomItem = document.createElement('li');
+                roomItem.textContent = room.name;
+                roomItem.classList.add('roomItem');
+
+                // Add click event to join the room
+                roomItem.addEventListener('click', function() {
+                    window.location.href = '/pong/' + encodeURIComponent(room.name);
+                });
+
+                // Append room to the list
+                roomList.appendChild(roomItem);
+            });
+        });
+    }
+    updateRoomList();
+    // Update the list of rooms every 5 seconds
+    setInterval(updateRoomList, 5000);
+});
+</script>
+
+</body>
+</html>

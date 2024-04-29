@@ -1,0 +1,635 @@
+/* @import url("dashboard.css"); */
+
+/**** GENERAL ****/
+
+:root {
+		--primary-color: #222831;
+		--secondary-color: #393E46;
+		--tertiary-color: #0079FF;
+		--quaternary-color: #EEEEEE;
+		--logout-color: #FF453A;
+}
+
+*,
+:after,
+:before {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		font-family: Arial, Helvetica, sans-serif;
+		/* font-size: 16px; */
+		text-decoration: none;
+}
+
+html, body {
+		/* color: var(--quaternary-color); */
+		/* line-height: 1.6; */
+		height: 100vh;
+		width: 100vw;
+		overflow-wrap: anywhere;
+}
+
+body {
+	background-color: var(--primary-color);
+	background-image: url(../img/bg1.jpg);
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/***************** HEADER *****************/
+
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 20px;
+	padding: 40px 100px;
+	color: white;
+}
+
+header nav a {
+	font-size: 24px;
+	color: white;
+	position: relative;
+	margin-left: 70px;
+}
+
+.dashboard-nav {
+	margin-left: 40px;
+}
+
+header nav a:not(.profile-pic)::before {
+	content: "";
+	position: absolute;
+	bottom: -6px;
+	left: 0;
+	background-color: white;
+	width: 0;
+	height: 2.5px;
+	transition: width .3s;
+	/* transform: scaleX(0); */
+	/* transform-origin: left; */
+}
+
+header nav a:hover::before {
+	/* transform: scaleX(1); */
+	width: 100%;
+}
+
+header h1 {
+	/* text-align: center; */
+	font-size: 30px;
+	margin: 10px 0;
+}
+
+header a img {
+	height: 42px;
+	vertical-align: middle;
+}
+
+/***************** MAIN *****************/
+
+/* #container { */
+		/* display: flex; */
+		/* padding-top: 60px; */
+/* } */
+
+/***************** CONTENT *****************/
+
+.form-box,
+.dashboard {
+	position: relative;
+	width: 430px;
+	height: 550px;
+	backdrop-filter: blur(20px);
+	color: white;
+	font-size: 20px;
+	border: 2px solid white;
+	border-radius: 20px;
+	overflow: hidden;
+	transition: transform 0.5s ease, height 0.3s ease-in-out;
+}
+
+.form-box form,
+.profile-card,
+.friends-card,
+.friend-info,
+.requests,
+.settings {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.3s ease;
+}
+
+.form-box .register-form {
+	transform: translateX(-100%);
+	opacity: 0;
+}
+
+.form-box form h1 {
+	font-size: 35px;
+}
+
+.input-box,
+.friend,
+.request-line {
+	width: 75%;
+	display: flex;
+	justify-content: space-between;
+	position: relative;
+	border-bottom: 2px solid white;
+	margin: 25px 0;
+	padding: 0 1px 10px 1px;
+}
+
+.input-box:first-of-type {
+	margin-top: 32px;
+}
+
+.register-form .input-box {
+	margin: 20px 0;
+}
+
+.input-box input {
+	width: 85%;
+	position: absolute;
+	color: white;
+	font-size: 16px;
+	border: none;
+	background: transparent;
+	outline: none;
+}
+
+.input-box label {
+	transition: .4s;
+	font-size: 17px;
+	pointer-events: none;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+	transform: translateY(-27px);
+}
+
+.input-box ion-icon {
+	font-size: 25px;
+}
+
+.checkbox {
+	width: 76%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.register-form .checkbox {
+	display: block;
+}
+
+.checkbox h5 {
+	font-size: 14px;
+	font-weight: 100;
+	cursor: pointer;
+}
+
+.checkbox label {
+	font-weight: 500;
+	font-size: 15px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.checkbox input {
+	cursor: pointer;
+	margin-right: 3px;
+}
+
+.checkbox span {
+	display: flex;
+}
+
+.submit-btn {
+	width: 76%;
+	height: 38px;
+	cursor: pointer;
+	border-radius: 6px;
+	margin: 15px 0 22px 0;
+	border: none;
+	font-size: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.submit-btn:active {
+	border: 2px solid black;
+	font-size: 14px;
+}
+
+.login-register p {
+	font-size: 16px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.login-register a {
+	color: white;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.login-register a:hover {
+	text-decoration: underline;
+}
+
+.change-form {
+	height: 580px;
+}
+
+.change-form .login-form {
+	transform: translateX(100%);
+	opacity: 0;
+}
+
+.change-form .register-form {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+.hr {
+	height: 2px;
+	width: 60%;
+	margin: 10px 0 15px 0;
+	background: white;
+}
+
+#school-login {
+	color:white;
+	font-size: 16px;
+}
+	
+/***************** DASHBOARD *****************/
+
+.profile-card img,
+.friend-info img {
+	height: 130px;
+}
+
+.profile-card h3 {
+	font-size: 28px;
+	margin: 10px 0 15px 0;
+}
+
+.red-btn {
+	background-color: var(--logout-color);
+	color: white;
+	margin: 0;
+	/* font-size: 20px; */
+}
+
+.submit-btn ion-icon {
+	margin-right: 10px;
+}
+
+.dashboard-btn {
+	margin: 8px 0;
+}
+
+.red-btn:active {
+	border: 2px solid darkred;
+	font-size: 14px;
+}
+
+.delete-room {
+		color: var(--logout-color);
+		font-size: smaller;
+		cursor: pointer;
+		margin-left: 5px;
+}
+
+div .requests-list {
+	height: 60%;
+}
+
+.request-line {
+	width: 100%;
+	align-items: center;
+	justify-content: start;
+}
+
+.request-line .red-btn,
+.request-line .accept-request {
+	width: 80px;
+	height: 35px;
+	margin: 0;
+	font-size: 16px;
+}
+
+.request-line .accept-request,
+.friend-info .accept-request {
+	margin-right: 12px;
+	color: white;
+	background-color: green;
+}
+
+.request-line .accept-request:active {
+	border: 2px solid rgb(0, 66, 0);
+}
+
+.request-line button:active {
+	font-size: 14px;
+}
+
+.request-line .accept-request,
+.request-line .cancel-request{
+	margin-left: auto;
+}
+
+.request-line ion-icon {
+	margin-right: 4px;
+}
+
+.request-line span {
+	margin-left: 8px;
+}
+
+.no-entries {
+	position: relative;
+	top: 25%;
+	font-size: 16px;
+}
+
+.change-setting .settings {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+/***************** FRIENDS *****************/
+
+/* .friends-card {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+} */
+
+.friends-card .add-friend {
+	margin: 20px 0 10px 0;
+}
+
+.friends-list,
+.requests-list {
+	width: 75%;
+	height: 50%;
+	margin-bottom: 40px;
+	text-align: center;
+	overflow-y: auto;
+}
+
+.friends-list::-webkit-scrollbar {
+	width: 10px;
+}
+
+.friends-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.friends-list::-webkit-scrollbar-thumb {
+	background: white;
+	border-radius: 10px;
+}
+
+.friend {
+	width: 100%;
+	/* justify-content: start; */
+	align-items: center;
+	padding-bottom: 7px;
+	margin: 20px 0;
+	color: white;
+	font-size: 24px;
+}
+
+.info-request {
+	width: 75%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 8px 0;
+}
+
+.info-request button {
+	margin: 0;
+}
+
+.friend-info .cancel-request {
+	margin: 8px 0;
+}
+
+.friends-card h1 {
+	margin: 16px;
+}
+
+.friends-card #search-btn {
+	margin: 5px;
+}
+
+.friends-list {
+	height: 40%;
+}
+
+.friend span {
+	cursor: pointer;
+}
+
+.friend :nth-child(2) {
+	margin-left: 20px;
+}
+
+.friend :nth-child(3) {
+	margin-left: auto;
+}
+
+.friend img,
+.request-line img {
+	height: 35px;
+}
+
+.friend-online {
+	color: green;
+}
+
+.friend-offline {
+	color: red;
+}
+
+.friends-card h4 {
+	margin: 10px 0;
+}
+
+.friend-info,
+.requests,
+.settings {
+	transform: translateX(-100%);
+	opacity: 0;
+}
+
+.change-view .friends-card,
+.change-view .profile-card,
+.change-setting .profile-card {
+	transform: translateX(100%);
+	opacity: 0;
+}
+
+.change-view .friend-info,
+.change-view .requests {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+.friend-info h3 {
+	font-size: 28px;
+	margin: 10px 0 5px 0;
+}
+
+.friend-info h4 {
+	font-size: 18px;
+	margin: 0 0 15px 0;
+}
+
+#close-search {
+	color: white;
+	font-size: 25px;
+	cursor: pointer;
+	position: absolute;
+	bottom: 3px;
+}
+
+/**************** NOTIFICATION ****************/
+
+.notification {
+	min-width: 220px;
+	min-height: 100px;
+	padding: 5px;
+	position: fixed;
+	top: 0px;
+	margin-left: auto;
+	color: white;
+	font-size: 18px;
+	backdrop-filter: blur(20px);
+	border: 2px solid white;
+	border-radius: 20px;
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	animation: slide-down 2s ease-out forwards;
+}
+
+.notification ion-icon {
+	font-size: 20px;
+}
+
+@keyframes slide-down {
+	0% {
+		transform: translateY(-50px);
+	}
+	100% {
+		transform: translateY(30px);
+	}
+}
+
+
+/***************** FOOTER *****************/
+
+/* footer {
+		background-color: var(--secondary-color);
+		color: var(--quaternary-color);
+		text-align: center;
+		padding: 10px 0;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+} */
+
+/**************Friend card*****************/
+.content {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.card {
+	display: flex;
+	background-color: var(--secondary-color);
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	flex: 1 0 calc(50% - 40px); /* Grow and shrink based on the content, basis is one third of the container width minus total gap */
+	max-width: calc(50% - 40px); /* Maximum width is one third of the container width minus total gap */
+	align-items: center;
+}
+
+.card img {
+	margin-bottom: 10px;
+	width: 42px; /* Set a fixed width for the image */
+	height: 42px; /* Set a fixed height for the image */
+	object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+	border-radius: 50%;
+
+}
+
+.card .friend-info {
+	text-align: center;
+	margin-left: 50%; /* Add a left margin */
+}
+
+/**********For Single User**********/
+
+.centered {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.single-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--secondary-color);
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	max-width: 50%; /* Set a fixed width for the single card */
+	margin: 0 auto; /* Center the single card horizontally */
+}
+
+.single-card img {
+	width: 100px; /* Set a larger fixed width for the image */
+	height: 100px; /* Set a larger fixed height for the image */
+	object-fit: cover; /* Resize the image to fill its box while preserving its aspect ratio */
+	margin-bottom: 20px; /* Add a bottom margin to create some space between the image and the other info */
+	border-radius: 50%;
+}
+
+.single-card .friend-info {
+	text-align: center;
+}

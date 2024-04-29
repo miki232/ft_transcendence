@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Info</title>
+</head>
+<body>
+  <h1>User Info</h1>
+  
+  <div id="userInfo">
+    <p id="username1"> Username: </p>
+    <p id="email1"> Email :</p>
+    <img id="propic">
+  </div>
+  
+  <h1>Edit User Info</h1>
+  
+  <form id="editForm">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username"><br>
+    <label for="email">Email:</label><br>
+    <input type="text" id="email" name="email"><br>
+    <input type="submit" value="Submit">
+  </form>
+  <h1>Image Upload</h1>
+  
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="imageFile" id="imageFile">
+    <input type="submit" value="Upload">
+  </form>
+
+  <h1>URL Upload</h1>
+
+  <form id="urlForm">
+    <input type="text" name="url" id="url">
+    <input type="submit" value="Upload">
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the CSRF token from the cookie
+      async function getCSRFToken() {
+        let csrftoken = await fetch("/csrf-token")
+          .then(response => response.json())
+          .then(data => data.csrfToken);
+          console.log(csrftoken);
+        return csrftoken;
+      };
+      let ss;
+      getCSRFToken().then(csrftoken => {
+        // You can use csrftoken here
+        ss = csrftoken;
+        console.log('X-CSRFToken:', csrftoken);
+      });
+      // Get user info when the page loads
+      fetch('/accounts/user_info/')
+        .then(response => response.json())
+        .then(data => {
+          // Display user info
+          // document.getElementById('userInfo').innerText = JSON.stringify(data);
+          // Fill the edit form with the current user info
+          document.getElementById('username').value = data.username;
+          document.getElementById('email').value = data.email;
+          document.getElementById("username1").innerHTML = data.username;
+          document.getElementById("email1").innerHTML = data.email;
+          document.getElementById("propic").src = data.pro_pic;
+        });
+          ///Per cambiare le info, testuali Utilizzare PUT come richiesta
+      // Handle form submission
+      document.getElementById('editForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get the edited user info
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        // Create a FormData object to send the edited user info
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('email', email);
+
+        // Send the PUT request
+        fetch('/accounts/user_info/', {
+          method: 'PUT',
+          body: formData,
+          headers: {
+            'X-CSRFToken': ss
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response
+          console.log(data);
+          location.reload(); //Per ora faccio un reload per prendere le info modificate
+                              //ma se separiamo le 2 funzioni, quando l'utente va submit, e la risposta va a buon fine
+                              //allora richiama la funzione per il fetch delle info
+        })
+        .catch(error => {
+          // Handle the error
+          console.error(error);
+        });
+      }); /// per inviare un Imaggine bisogna usare POST come richiesta
+      document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get the selected image file
+        const imageFile = document.getElementById('imageFile').files[0];
+
+        // Create a FormData object to send the file
+        const formData = new FormData();
+        formData.append('imageFile', imageFile);
+
+        // Send the POST request
+        fetch('/accounts/user_info/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': ss
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle the error
+          console.error(error);
+          location.reload(); 
+        });
+      });
+        // Handle URL form submission
+      document.getElementById('urlForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Get the entered URL
+        const url = document.getElementById('url').value;
+
+        // Create a FormData object to send the URL
+        const formData = new FormData();
+        formData.append('url', url);
+
+        // Send the POST request
+        fetch('/accounts/user_info/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': ss
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the response
+          console.log(data);
+        })
+        .catch(error => {
+          // Handle the error
+          console.error(error);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

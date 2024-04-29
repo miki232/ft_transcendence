@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <style>
+        body {
+            background-color: #222831;
+            /* background: 
+                linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+                url('../img/bg3.jpg'); */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center -100px;
+            color: var(--quaternary-color);
+            line-height: 1.6;
+        }
+        canvas {
+            border: 2px solid #FFF;
+            width: 90%; /* Adjust as needed */
+            max-width: 800px; /* Maximum width of 800 pixels */
+            height: auto; /* Maintain aspect ratio */
+        }
+        #score1, #score2 {
+            color: #FFF;
+            position: absolute;
+            top: 10px;
+        }
+        #score1 {
+            left: 10px;
+        }
+        #score2 {
+            right: 10px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% load static %}
+    <!-- You might want to include your static files here -->
+</head>
+<body data-username="{{user.username}}">
+    <div class="container">
+        {% block content %}
+        {% if user.is_authenticated %}
+        His {{ user.username }}!
+        {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">Log In</a> |
+        <a href="{% url 'signup' %}">Sign Up</a>
+        {% endif %}
+        {% endblock %}
+        <h1 id="score1">Score: 0</h1>
+        <h1 id="score2">Score: 0</h1>
+        <canvas id="pongCanvas" width="800" height="400"></canvas>
+    </div>
+    <script src="{% static 'pong.js' %}" type="module"></script>
+</body>
+</html>
