@@ -5,7 +5,7 @@ services:
     build:
       context: ./nginx
     ports:
-      - 192.168.1.5:8443:443
+      - 127.0.0.1:8443:443
     volumes:
       - ./transcendence/ssl/:/etc/nginx/ssl
       - static_volume:/etc/nginx/static
@@ -18,10 +18,10 @@ services:
       POSTGRES_PASSWORD: mypassword
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
-      interval: 1m30s
-      timeout: 30s
+      interval: 5s
+      timeout: 2s
       retries: 5
-      start_period: 30s
+      start_period: 5s
     networks:
       - webnet
 
@@ -32,9 +32,9 @@ services:
     build:
       context: ./transcendence
     # command: bash -c "python manage.py collectstatic --no-input && python manage.py runsslserver --certificate ./ssl/certcert.pem --key ./ssl/certkey.pem 0.0.0.0:8001"
-    command: bash -c "./wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
+    command: bash -c "./wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && ./admin.sh"
     ports:
-      - 192.168.1.5:8001:8001
+      - 127.0.0.1:8001:8001
     volumes:
       - ./transcendence/ssl/:/app/ssl
       - static_volume:/app/static
@@ -55,7 +55,7 @@ services:
     build:
       context: ./daphne
     ports:
-      - 192.168.1.5:8000:8000
+      - 127.0.0.1:8000:8000
     volumes:
       - ./transcendence/ssl/:/app/ssl
       - ./transcendence:/app/

@@ -211,3 +211,4 @@ class UserSearchView(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    

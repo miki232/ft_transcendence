@@ -13,13 +13,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . ./
 COPY wait_for_it.sh .
+COPY admin.sh .
 RUN chmod 7777 wait_for_it.sh
+RUN chmod 7777 admin.sh
+
 
 # Install Gunicorn
 RUN pip install gunicorn
 
 # RUN python manage.py collectstatic --noinput
 # RUN python manage.py makemigrations && python manage.py migrate
+
 
 EXPOSE 8001
 
