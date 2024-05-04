@@ -9,6 +9,9 @@ import Friends from "./views/Friends.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import { getRequests, sendFriendRequest } from "./views/Requests.js";
 import { createNotification } from "./views/Notifications.js";
+import MatchMaking from "./views/MatchMaking.js";
+import AbstractView from "./views/AbstractView.js";
+import Pong from "./views/Pong.js";
 // import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
 // function activeLink(page) {
@@ -23,16 +26,17 @@ import { createNotification } from "./views/Notifications.js";
 const container = document.querySelector("#container");
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
+let view = null;
 var refreshRoomList;
-// const room = new Room();
-let ws;
+// const room = new Room()
+let room_name;
 let username;
 const checkRequest = async () => {
 	var requestList = await getRequests();
 	console.log(requestList);
 };
 
-const navigateTo = url => {
+export const navigateTo = url => {
 	history.pushState(null, null, url);
 	router();
 };
@@ -57,16 +61,24 @@ const is_loggedin = async () => {
 };
 
 const router = async () => {
+	let ws;
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: Login },
 		{ path: "/about", view: About },
 		{ path: "/contact", view: Contact },
 		{ path: "/dashboard", view: Dashboard },
-		{ path: "/friends", view: Friends }
-		// { path: "/pong", view: Pong }
+		{ path: "/friends", view: Friends },
+		{ path: "/online", view: MatchMaking},
+		{ path: "/pong", view: Pong }
 	];
 	
+	if (view instanceof MatchMaking)
+	{
+		view.closeWebSocket();
+		console.log("DISCONNESIONE DALLA WEBSOCKET");
+	}
+
 	const potentialMatches = routes.map(route => {
 		return {
 			route: route,
@@ -85,7 +97,7 @@ const router = async () => {
 	// console.log(is_logged_in);
 	// console.log(match.route.path);
 	if (match.route.path === "/dashboard") {
-		var view = new match.route.view();
+		view = new match.route.view();
 		if (is_logged_in === false){
 			const isVAlid = await view.validateLogin();
 			console.log("SUCA");
@@ -108,6 +120,7 @@ const router = async () => {
 				console.log(data.content);
 				if (data.read === false){
 					// alert(data.content);
+					console.log("SUCASDJNSADJNKSAKDNJASD");
 					createNotification(data.content);
 					ws.send(JSON.stringify({'action': "read"}));
 				}
@@ -126,14 +139,31 @@ const router = async () => {
 			// room.updateRoomList();
 		}
 	} else if (match.route.path === "/friends" && is_logged_in === true) {
-		const view = new match.route.view();
+		view = new match.route.view();
 		await view.loadUserData();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
 		await view.getFriendList();
 		view.searchUser();
 		// await view.getPendingRequests();
-	} else {
+	}
+	else if(match.route.path === "/online" && is_logged_in === true)
+	{
+		view = new match.route.view();
+		content.innerHTML = await view.getContent();
+		room_name = await view.getRoom_Match();
+		console.log(room_name);
+		if (room_name != "undefined"){
+			navigateTo("/pong");
+		}
+	}
+	else if(match.route.path === "/pong" && is_logged_in === true)
+	{
+		view = new match.route.view(room_name);
+		content.innerHTML = await view.getContent();
+		await view.loop();
+	}
+	else {
 		if (is_logged_in === true)
 			navigateTo("/dashboard");
 		// container.classList.remove("dashboard");
@@ -142,7 +172,7 @@ const router = async () => {
 		// 	dashNav.remove();
 		// }
 		// nav.setAttribute("style", "display: block;");
-		const view = new match.route.view();
+		view = new match.route.view();
 		nav.innerHTML = await view.getNav();
 		content.innerHTML = await view.getContent();
 	}

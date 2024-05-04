@@ -24,6 +24,14 @@ class CustomUser(AbstractUser): # new
 
         return match_history
     # add additional fields in here
+    def calculate_level(self):
+        match_history = self.get_match_history()
+        total_wins = len([match for match in match_history if match['winner__username'] == self.username])
+
+        # Set level equal to total wins
+        level = total_wins
+
+        return level
     def __str__(self):
         return self.username
 

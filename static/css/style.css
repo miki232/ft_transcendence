@@ -633,3 +633,41 @@ div .requests-list {
 .single-card .friend-info {
 	text-align: center;
 }
+
+/* CSS PER ONLINE GAME */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+	width: 80vh;
+    border: 2px solid #000; /* Add a border */
+    background-color: rgba(174, 187, 230, 0.5); /* Add a transparent background color */
+    padding: 20px; /* Add some padding */
+    box-sizing: border-box; /* Make sure the border and padding are included in the element's total width and height */
+}
+
+.half {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-image {
+    max-width: 50%;
+    height: auto;
+}
+
+.search-text {
+    text-align: center;
+}
+
+.game-area {
+    padding: 20px;
+    background-color: #383636;
+}
+
+#pongCanvas {
+    border: 1px solid #000;
+}

@@ -64,7 +64,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_notifications(self):
-        return list(Notifications.objects.filter(user=self.user))
+        print("SUCA: ", self.user, " dd ", self.user.id)
+        return list(Notifications.objects.filter(user=self.user.id))
 
     @database_sync_to_async
     def update_notifications(self):

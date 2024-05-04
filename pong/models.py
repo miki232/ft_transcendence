@@ -6,9 +6,15 @@ from accounts.models import CustomUser
 class RoomName(models.Model):
     name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     public = models.BooleanField(default=False)
-    opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches')
-    
+    opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches', null=True)
+    level = models.FloatField(max_length=2, default=0)
+
     def __str__(self):
         return self.name
+
+class WaitingUser(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    level = models.FloatField(max_length=2, default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)

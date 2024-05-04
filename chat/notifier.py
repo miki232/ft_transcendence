@@ -22,6 +22,7 @@ def send_save_notification(receiver, message):
 
 @database_sync_to_async
 def get_db(notification):
+    print("SUCA: ", notification.user.id, "   ", notification.id)
     return (Notifications.objects.get(id=notification.id))
 
 def update_db_notifications(sender, receiver):

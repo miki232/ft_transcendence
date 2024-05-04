@@ -1,39 +1,83 @@
-# version: '3'
+services:
+  # nginx:
+  #   depends_on:
+  #     - django
+  #   build:
+  #     context: ./nginx
+  #   ports:
+  #     - 192.168.1.4:8443:443
+  #   volumes:
+  #     - ./ssl/:/etc/nginx/ssl
+  #     - static_volume:/etc/nginx/static
+  #   networks:
+  #     - webnet
+  
+  my-postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - 192.168.1.4:5432:5432
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
+    #   interval: 5s
+    #   timeout: 2s
+    #   retries: 5
+    #   start_period: 5s
+    # networks:
+    #   - webnet
 
-# services:
-#   nginx:
-#     build:
-#       context: ./nginx
-#     ports:
-#       - 192.168.1.5:8443:443
-#     volumes:
-#       - ./ssl/:/etc/nginx/ssl
-#       - static_volume:/etc/nginx/static
-#     networks:
-#       - webnet
+  # django:
+  #   depends_on:
+  #     my-postgres:
+  #       condition: service_healthy
+  #   build:
+  #     context: ./
+  #   # command: bash -c "python manage.py collectstatic --no-input && python manage.py runsslserver --certificate ./ssl/certcert.pem --key ./ssl/certkey.pem 0.0.0.0:8001"
+  #   command: bash -c "./wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && ./admin.sh"
+  #   ports:
+  #     - 192.168.1.4:8001:8001
+  #   volumes:
+  #     - ./:/app
+  #     - ./ssl/:/app/ssl
+  #     - static_volume:/app/static
+  #     - static_volume:/app/staticfiles
+  #   networks:
+  #     - webnet
 
-#   django:
-#     build:
-#       context: ./transcendece
-#     command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
-#     volumes:
-#       - static_volume:/app/static
-#     networks:
-#       - webnet
+  # redis:
+  #   build:
+  #     context: ./redis
+  #   networks:
+  #     - webnet
 
-# volumes:
-#   static_volume:
 
-# networks:
-#   webnet:
+  # daphne:
+  #   depends_on:
+  #     - redis
+  #   build:
+  #     context: ./daphne
+  #   ports:
+  #     - 192.168.1.4:8000:8000
+  #   volumes:
+  #     - ./ssl/:/app/ssl
+  #     - ./:/app/
+  #   networks:
+  #     - webnet
+
+volumes:
+  static_volume:
+
+networks:
+  webnet:
 
 # docker-compose.yml
 
 # version: '3.9'
 
-services:
-  redis:
-    build:
-      context: ./redis
-    ports:
-      - "6379:6379"
+# services:
+#   redis:
+#     build:
+#       context: ./redis
+#     ports:
+#       - "6379:6379"

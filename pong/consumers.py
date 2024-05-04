@@ -1,14 +1,20 @@
 # pong/consumers.py
 import json
+import uuid
+import asyncio
+import random
+
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+
 from accounts.models import Match, CustomUser
-import json
-import asyncio
-import random
+from .models import WaitingUser, RoomName
+
 
 class PongConsumer(AsyncWebsocketConsumer):
     players = {}
@@ -24,7 +30,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "pong_%s" % self.room_name
         self.user = self.scope['user']
-
+        print(self.user)
         await self.accept()
         self.loop_task = None
 
@@ -68,6 +74,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'victory' : "none"
             }
             PongConsumer.shared_state = self.state  # Store the state in the class variable
+            
+            print("SUCA")
         elif len(PongConsumer.players[self.room_name]) == 2:
             # This is the second user, inherit the state from the first user
             self.state = PongConsumer.shared_state
@@ -85,8 +93,21 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def start_game(self):
         user1 = await self.get_user(PongConsumer.players[self.room_name][0])
         user2 = await self.get_user(PongConsumer.players[self.room_name][1])
-
+        await self.get_room_istance_delete(self.room_name)
         self.match = await self.create_match(user1, user2)
+        print("CREA MATHC " , self.match.id)
+
+    @database_sync_to_async
+    def get_room_istance_delete(self, roomname):
+        try:
+            print("-----------TRY TO DELETE THE ROOM ISTANCE ------")
+            room_istance = RoomName.objects.get(name=roomname)
+            print("ROOM ISTANCE ", room_istance.id)
+            room_istance.delete()
+            print("-----------ISTANCE DELTED SUCCESS ------")
+
+        except:
+            print("----------------FAILED TO DELETE ------------")
 
 
     @database_sync_to_async
@@ -114,9 +135,14 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def set_winner(self, match, winner):
-        print(winner)
-        match.winner = CustomUser.objects.get(username=winner)
+        print(winner, "Set winner", self.room_name, self.room_group_name)
+        prova = CustomUser.objects.get(username=winner)
+        print("GET USER ", type(prova), prova)
+        print("MATCH: ", match)
+        match.winner = prova
+        print("FROME MATCH.WINNER " , match.winner.username)
         match.save()
+
 
     @database_sync_to_async
     def get_user(self, username):
@@ -127,6 +153,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         matchs = Match(room_name=self.room_name, user1=user1, user2=user2, score_user1=0, score_user2=0)
         matchs.save()
         return matchs
+
+    @database_sync_to_async
+    def get_match_from_db(self, roomname):
+        print(roomname)
+        return Match.objects.get(room_name=roomname)
 
     async def disconnect(self, close_code):
         # Remove the disconnected user from the players list and cancel the game loop task
@@ -144,9 +175,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         # If there's only one player left, stop the game and send a "Victory" message
         if len(PongConsumer.players[self.room_name]) == 1:
             PongConsumer.status[self.room_name] = True
-            print("SUCA")
-            print(PongConsumer.players[self.room_name][0])
+            print(PongConsumer.players[self.room_name][0], " Disconneted from room ", self.room_name)
+            print("------------------ RETRIVE MATCH FORM DB -----------------------------")
+            matchdb = await self.get_match_from_db(self.room_name)
+            self.match = matchdb
+            print("------------------MATCH FORM DB IS: ", matchdb.id, self.match.id)
+            print("DISCONNETED ", PongConsumer.players[self.room_name][0], "SETTING VICTORY")
             winner = PongConsumer.players[self.room_name][0]
+            print("WINNER: ", winner, self.match.id)
             await self.set_winner(self.match, winner)
             self.state['victory'] = PongConsumer.players[self.room_name][0]
             await self.channel_layer.group_send(
@@ -301,3 +337,117 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def game_state(self, event):
         # Send the game state to the client
         await self.send(text_data=json.dumps(event['state']))
+
+
+class MatchMaking(AsyncWebsocketConsumer):
+    room_name = ""
+    async def connect(self):
+        self.user = self.scope["user"]
+        print(self.user)
+        await self.accept()
+        self.connected = True
+        # notificationslist = await self.get_notifications()
+        # for notification in notificationslist:
+        #     await self.send(text_data=json.dumps(
+        #         {
+        #             'content' : notification.content,
+        #             'read' : notification.read
+        #         }
+        #     ))
+
+    async def disconnect(self, close_code):
+        print(self.user, "Disconnected")
+        self.connected = False
+        await self.leave_queue()
+        self.queue_task.cancel()
+        
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        action = text_data_json['action']
+        print(action)
+        await self.send(json.dumps({"status": "Joining Queue"}))
+        if action == 'join_queue':
+            await self.handle_join_queue()
+        elif action == 'leave_queue':
+            await self.leave_queue()
+
+    @database_sync_to_async
+    def join_queue(self):
+        user_level = self.user.calculate_level()
+
+        existing_room = RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).first()
+        if existing_room:
+            print("ss", self.user.username == existing_room.created_by.username, existing_room.created_by.username, existing_room.opponent.username, self.user)
+            if (self.user.username == existing_room.created_by.username):
+                opponent = existing_room.opponent.username
+            else:
+                opponent = existing_room.created_by.username
+            return ({"status": 2, "room_name": existing_room.name, "opponent" : opponent, "group_name": f"matchmaking_{existing_room.name}" , "User_self" : self.user.username})
+
+        if not WaitingUser.objects.filter(user=self.user).exists():
+            WaitingUser.objects.create(user=self.user, level=user_level)
+
+        waiting_users = WaitingUser.objects.exclude(user=self.user)
+
+        print("Suca", len(waiting_users), self.user)
+        for waiting_user in waiting_users:
+            print("SUCA")
+            level_difference = abs(user_level - waiting_user.level)
+
+            if level_difference <= 2:
+                WaitingUser.objects.filter(user__in=[self.user, waiting_user.user]).delete()
+
+                room_name = str(uuid.uuid1()).replace('-', '')
+                room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=waiting_user.user)
+
+                return({"status": 2, "room_name": room_name, "opponent" : waiting_user.user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+
+    @database_sync_to_async
+    def leave_queue(self):
+        WaitingUser.objects.filter(user=self.user).delete()
+    
+    async def handle_join_queue(self):
+        self.queue_task = asyncio.create_task(self.queue_loop())
+
+    async def queue_loop(self):
+        result = ""
+        while self.connected:
+            await self.send(text_data=json.dumps({"status" : 1}))
+            result = await self.join_queue()
+            if result:
+                await self.channel_layer.group_add(result["group_name"], self.channel_name)
+                 # Send the result to the group
+                
+                await self.channel_layer.group_send(result["group_name"], {
+                    "type": "chat.message",
+                    "text": json.dumps(result)
+                })
+                break
+            await asyncio.sleep(2)  # Wait for 1 second
+        print("SUCAaaaaa")
+        await self.channel_layer.group_discard(
+            result["group_name"],
+            self.channel_name
+        )
+
+    async def chat_message(self, event):
+    # Send a message to the WebSocket
+        await self.send(text_data=event["text"])
+    # async def receive(self, text_data):
+    #     # text_data_json = json.loads(text_data)
+    #     # content = text_data_json["action"]
+    #     # print(content)
+    #     # await self.update_notifications()
+    #     # # await self.send(text_data=json.dumps({
+    #     # #     'message' : content
+    #     # # }))
+
+    # async def notifier(self, event):
+    #     print("Notifier method called")
+    #     print(event)
+
+    #     await self.send(text_data=json.dumps({
+    #         'content' : event['message'],
+    #         'read': event['status']
+
+    #     }))

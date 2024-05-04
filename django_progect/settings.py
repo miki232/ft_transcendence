@@ -51,7 +51,7 @@ SECURE_BROWSER_XSS_FILTER = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1", 'localhost', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
+ALLOWED_HOSTS = ["192.168.1.4", "127.0.0.1", 'localhost', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
 
 # Application definition
 
@@ -113,7 +113,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('localhost', 6379)],
+            "hosts": [('192.168.1.4', 6379)],
         },
     },
 }
@@ -121,10 +121,21 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'mypassword',
+        'HOST': '192.168.1.4',
+        'PORT': '5432',
     }
 }
 
@@ -134,7 +145,7 @@ DATABASES = {
 #         'NAME': 'mypostgres',
 #         'USER': 'mtoiasql',
 #         'PASSWORD': '1235678',
-#         'HOST': '172.18.0.2',  # This is the name of the service in docker-compose
+#         'HOST': 'postgresql',  # This is the name of the service in docker-compose
 #         'PORT': '5432',
 #     }
 # }
