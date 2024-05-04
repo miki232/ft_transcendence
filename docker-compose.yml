@@ -17,7 +17,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mypassword
     ports:
-      - 192.168.1.4:5432:5432
+      - 127.0.0.1:5432:5432
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
     #   interval: 5s
@@ -45,12 +45,13 @@ services:
   #   networks:
   #     - webnet
 
-  # redis:
-  #   build:
-  #     context: ./redis
-  #   networks:
-  #     - webnet
-
+  redis:
+    build:
+      context: ./redis
+    networks:
+      - webnet
+    ports:
+          - 127.0.0.1:6379:6379
 
   # daphne:
   #   depends_on:
