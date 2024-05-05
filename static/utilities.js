@@ -1,17 +1,17 @@
-// export function getCookie(name) {
-// 	let cookieValue = null;
-// 	if (document.cookie && document.cookie !== '') {
-// 		const cookies = document.cookie.split(';');
-// 		for (let i = 0; i < cookies.length; i++) {
-// 			const cookie = cookies[i].trim();
-// 			if (cookie.substring(0, name.length + 1) === (name + '=')) {
-// 				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-// 				break;
-// 			}
-// 		}
-// 	}
-// 	return cookieValue;
-// }
+export function getCookieRegister(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
 
 export async function getCookie() {
 		let csrftoken = await fetch("csrf-token")
@@ -39,56 +39,60 @@ export function sanitizeInput(input) {
 }
 
 export async function register() {
-	var username = sanitizeInput(document.getElementById('signup-user').value);
-	var password = sanitizeInput(document.getElementById('signup-pass').value);
-	var email = sanitizeInput(document.getElementById('email').value);
-	var csrftoken = await getCookie('csrftoken');
+    const usernameInput = document.getElementById('signup-user');
+    const passwordInput = document.getElementById('signup-pass');
+    const emailInput = document.getElementById('email');
 
-	if (username === '' || password === '' || email === ''){
-		alert('Please fill in all fields');
-		return;
-	}
+    const username = sanitizeInput(usernameInput.value);
+    const password = sanitizeInput(passwordInput.value);
+    const email = sanitizeInput(emailInput.value);
+    const csrftoken = getCookieRegister('csrftoken');
 
-	await fetch('accounts/register/', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-			'X-CSRFToken': csrftoken
-		},
-		body: JSON.stringify({
-			username: username,
-			password: password,
-			email : email
-		}),
-	}).then(response => {
-		if (!response.ok) {
-			return response.json().then(data => {
-				if (data.email && data.email[0]){
-					console.log(data.email[0]);
-					throw new Error(data.email[0]);
-				}
-				if (data.username && data.username[0]){
-					console.log(data.username[0]);
-					throw new Error(data.username[0]);
-				}
-			});
-		}
-		return response.json();
-	}).then(data => {
-		console.log(data);
-		console.log("Register");
-		alert("Account created successfully");
-		var inputs = document.getElementsByTagName('input');
-		for (var i = 0; i < inputs.length; i++) {
-			inputs[i].value = '';
-		}
-		// document.querySelector('input[id="tab-2"]').checked = false;
-		// document.querySelector('input[id="tab-1"]').checked = true;
-	}).catch((error) => {
-		console.error('Error: ', error);
-		alert(error);
-	});
+    if (!username || !password || !email) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    try {
+        const response = await fetch('accounts/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                email: email
+            })
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            if (data.email && data.email[0]) {
+                console.error(data.email[0]);
+                throw new Error(data.email[0]);
+            }
+            if (data.username && data.username[0]) {
+                console.error(data.username[0]);
+                throw new Error(data.username[0]);
+            }
+        } else {
+            const data = await response.json();
+            console.log(data);
+            console.log("Register");
+            alert("Account created successfully");
+            usernameInput.value = '';
+            passwordInput.value = '';
+            emailInput.value = '';
+			return true;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
 }
+
 
 export async function logout(){
 	///Csrf_token

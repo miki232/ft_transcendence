@@ -29,22 +29,22 @@ const container = document.querySelector("#container");
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 var user = new User();
-console.log(user);
 let view = null;
 var refreshRoomList;
 var ws;
 // const room = new Room()
 let room_name;
 let username;
-const checkRequest = async () => {
-	var requestList = await getRequests();
-	console.log(requestList);
-};
+// const checkRequest = async () => {
+// 	var requestList = await getRequests();
+// 	console.log(requestList);
+// };
 
 export const navigateTo = url => {
 	history.pushState(null, null, url);
 	router();
 };
+
 
 // const is_loggedin = async () => {
 //     var csrftoken = getCookie('csrftoken');
@@ -123,9 +123,7 @@ const router = async () => {
 	switch (match.route.path) {
 		case "/":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
-			view = new match.route.view();
-			nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
+			view = new match.route.view(user);
 			break;
 		case "/about":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
@@ -169,7 +167,7 @@ const router = async () => {
 			await view.loop();
 			break;
 		default:
-			user.isLogged === true ? navigateTo("/dashboard") : navigateTo("/");
+			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
 };
 
@@ -184,7 +182,6 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
 	document.body.addEventListener("click", async e => {
-		console.log(e.target)
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		if (e.target.matches(".register-btn")) {
@@ -215,15 +212,15 @@ document.addEventListener("DOMContentLoaded", () => {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}
-		if (e.target.matches("#login-btn")) {
-			e.preventDefault();
-			await user.validateLogin();
-			console.log(user.logged);
-			if (user.logged === true) {
-				console.log("LOGGATO OK");
-				navigateTo("/dashboard");
-			}
-		}
+		// if (e.target.matches("#login-btn")) {
+		// 	e.preventDefault();
+		// 	await user.validateLogin();
+		// 	console.log(user.logged);
+		// 	if (user.logged === true) {
+		// 		console.log("LOGGATO OK");
+		// 		navigateTo("/dashboard");
+		// 	}
+		// }
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
 		}
@@ -249,10 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	else
 		// 		alert("Please provide a username")
 		// }
-		if (e.target.matches("#register-btn")) {
-			console.log("FANCULO!");
-			await register();
-		}
+		// if (e.target.matches("#register-btn")) {
+		// 	console.log("FANCULO!");
+		// 	await register();
+		// }
 		if (e.target.matches("#logout-btn")) {
 			await logout();
 			navigateTo("/");

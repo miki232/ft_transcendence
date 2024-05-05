@@ -65,9 +65,9 @@ export default class User extends AbstractView {
         })
         .then(response => {
             if (response.ok) {
-               return true;
+            	return true;
             } else {
-                return false;
+            	return false;
             }
         });
     }
@@ -95,35 +95,35 @@ export default class User extends AbstractView {
 			})
 	}
 
-    async setPic(data_pic) {
+    setPic(data_pic) {
 		this.pro_pic = data_pic;
 	}
 
-	async setUser(data_user) {
+	setUser(data_user) {
 		this.user = data_user;
 	}
 	
-	async setEmail (data_email) {
+	setEmail (data_email) {
 		this.email = data_email;
 	}
 
-    async setPassword(data_password) {
+    setPassword(data_password) {
         this.password = data_password;
     }
 
-	async getUser() {
+	getUser() {
 		return this.user;
 	}
 
-	async getEmail() {
+	getEmail() {
 		return this.email;
 	}
 	
-	async getPic(){ //new
+	getPic(){ //new
 		return this.pro_pic;
 	}
 
-    async getPassword() {
+    getPassword() {
         return this.password;
     }
 }

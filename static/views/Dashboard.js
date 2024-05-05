@@ -107,7 +107,7 @@ export default class extends AbstractView {
 			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.pro_pic}"/></a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;
 		return navHTML;
 	}
@@ -127,8 +127,8 @@ export default class extends AbstractView {
 		let dashboardHTML = `
 			<div class="dashboard">
 				<div class="profile-card">
-					<img alt="Profile picture" src="${this.user.pro_pic}"/>
-					<h3>${this.user.user}</h3>
+					<img alt="Profile picture" src="${this.user.getPic()}"/>
+					<h3>${this.user.getUser()}</h3>
 					<a href="/history" id="history-btn" class="submit-btn dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</a>
 					<a href="/requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
 					<a href="/settings" id="settings-btn" class="submit-btn dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</a>
