@@ -119,61 +119,61 @@ const router = async () => {
 		};
 	}
 	
-    switch (match.route.path) {
-        case "/":
-            await user.isLogged() === true ? navigateTo("/dashboard") : null;
-            view = new match.route.view();
-            nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            break;
-        case "/about":
-            await user.isLogged() === true ? navigateTo("/dashboard") : null;
-            view = new match.route.view();
-            nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            break;
-        case "/contact":
-            await user.isLogged() === true ? navigateTo("/dashboard") : null;
-            view = new match.route.view();
-            nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            break;
-        case "/dashboard":
-            await user.isLogged() === false ? navigateTo("/") : user.loadUserData();
-            wsConnection(ws);
-            view = new match.route.view(user);
-            nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            break;
-        case "/requests":
-            await user.isLogged() === false ? navigateTo("/") : null;
-            view = new match.route.view();
-            // nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            break;
-        case "/friends":
-            await user.isLogged() === false ? navigateTo("/") : null;
-            view = new match.route.view();
-            // nav.innerHTML = await view.getNav();
-            content.innerHTML = await view.getContent();
-            await view.getFriendList();
-            view.searchUser();
-            break;
-        case "/online":
-            view = new match.route.view();
-		    content.innerHTML = await view.getContent();
-		    room_name = await view.getRoom_Match();
-		    console.log(room_name);
-		    if (room_name !== "undefined") navigateTo("/pong");
-            break;
-        case "/pong":
-            view = new match.route.view(room_name);
-		    content.innerHTML = await view.getContent();
-		    await view.loop();
-            break;
-        default:
-            content.innerHTML = "404 Not Found";
-    }
+	switch (match.route.path) {
+		case "/":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/about":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/contact":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/dashboard":
+			await user.isLogged() === false ? navigateTo("/") : user.loadUserData();
+			wsConnection(ws);
+			view = new match.route.view(user);
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/requests":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			view = new match.route.view();
+			// nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/friends":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			view = new match.route.view();
+			// nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			await view.getFriendList();
+			view.searchUser();
+			break;
+		case "/online":
+			view = new match.route.view();
+			content.innerHTML = await view.getContent();
+			room_name = await view.getRoom_Match();
+			console.log(room_name);
+			if (room_name !== "undefined") navigateTo("/pong");
+			break;
+		case "/pong":
+			view = new match.route.view(room_name);
+			content.innerHTML = await view.getContent();
+			await view.loop();
+			break;
+		default:
+			content.innerHTML = "404 Not Found";
+	}
 };
 
 window.addEventListener("popstate", router);
@@ -220,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (e.target.matches("#login-btn")) {
 			e.preventDefault();
-            if (await user.validateLogin() === true) navigateTo("/dashboard");
+			if (await user.validateLogin() === true) navigateTo("/dashboard");
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
@@ -247,28 +247,29 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	else
 		// 		alert("Please provide a username")
 		// }
-		if (e.target.matches("#signup")) {
+		if (e.target.matches("#register-btn")) {
+			console.log("FANCULO!");
 			await register();
 		}
 		if (e.target.matches("#logout-btn")) {
-            await logout();
+			await logout();
 			navigateTo("/");
-        }
-		if (e.target.closest(".nav-button")) {
-			let selected = e.target.id;
-			if (!selected) {
-				selected = e.target.parentElement.id;
-			}
-			console.log(selected);
-			await renderDashboard(selected);
 		}
-		if (e.target.matches("#nav-title")) {
-			await renderDashboard("dashboard");
-		}
-		if (e.target.matches("#nav-footer-title")) {
-			let user = document.getElementById("nav-footer-title").innerHTML;
-			await renderDashboard("friend_info", user);
-		}
+		// if (e.target.closest(".nav-button")) {
+		// 	let selected = e.target.id;
+		// 	if (!selected) {
+		// 		selected = e.target.parentElement.id;
+		// 	}
+		// 	console.log(selected);
+		// 	await renderDashboard(selected);
+		// }
+		// if (e.target.matches("#nav-title")) {
+		// 	await renderDashboard("dashboard");
+		// }
+		// if (e.target.matches("#nav-footer-title")) {
+		// 	let user = document.getElementById("nav-footer-title").innerHTML;
+		// 	await renderDashboard("friend_info", user);
+		// }
 		if (e.target.matches("a[href='/user_info']")){
 			e.preventDefault();
 			let friend_name = e.target.getAttribute('data-username');
@@ -300,31 +301,31 @@ async function send_game_request(receiver, selfuser)
 {
 	let csr = await getCSRFToken();
 	const data = {
-        name: "1",
-        created_by: selfuser,
-        to_fight: receiver
-    };
+		name: "1",
+		created_by: selfuser,
+		to_fight: receiver
+	};
 
-    // Send the POST request
-    fetch('/pong/create/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+	// Send the POST request
+	fetch('/pong/create/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
 			'X-CSRFToken': csr
-            // Add any other necessary headers, such as CSRF token
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the respons
-        console.log(data.name);
+			// Add any other necessary headers, such as CSRF token
+		},
+		body: JSON.stringify(data)
+	})
+	.then(response => response.json())
+	.then(data => {
+		// Handle the respons
+		console.log(data.name);
 		// window.location.href = "/pong/" + data.name + "/";
-    })
-    .catch(error => {
-        // Handle the error
-        console.error(error);
-    });
+	})
+	.catch(error => {
+		// Handle the error
+		console.error(error);
+	});
 }
 
 // content.addEventListener("click", e => {

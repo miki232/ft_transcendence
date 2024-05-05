@@ -50,7 +50,7 @@ const loginHTML = `
 			<input type="checkbox" id="register-checkbox">
 			<label for="register-checkbox">I agree to the terms & conditions</label>
 		</div>
-		<button type="submit" id="signup" class="submit-btn">Register</button>
+		<button type="submit" id="register-btn" class="submit-btn">Register</button>
 		<div class="login-register">
 			<p>Already have an account? <a href="#" class="login-btn">Login</a></p>
 		</div>

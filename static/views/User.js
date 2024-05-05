@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
 import { getCookie, sanitizeInput } from "../utilities.js";
 
-export default class extends AbstractView {
+export default class User extends AbstractView {
     constructor() {
         super();
         this.user;
@@ -20,7 +20,7 @@ export default class extends AbstractView {
 			console.error(error);
 			return;
 		}
-		var csrftoken = this.getCookie('csrftoken');
+		var csrftoken = await this.getCSRFToken();
 
 		await fetch('accounts/login/', {
 			method: 'POST',
@@ -36,10 +36,11 @@ export default class extends AbstractView {
 			response.json();
 			console.log(response);
 			if (response.status === 200) {
-                return true;
+                this.logged = true;
+                
             } else {
                 createNotification("Wrong username or password");
-                return false;
+                this.logged = false;
             }
 			// if (response.status === 200) {
 			// 	this.isValid = true;
@@ -54,7 +55,7 @@ export default class extends AbstractView {
 	}
 
     async isLogged() {
-        var csrftoken = this.getCookie('csrftoken');
+        var csrftoken = await this.getCSRFToken();
 
         return fetch('/accounts/user_info/', {
             method: 'GET',
@@ -65,15 +66,16 @@ export default class extends AbstractView {
         })
         .then(response => {
             if (response.ok) {
-                this.logged = true;
+                true;
             } else {
-                 false;
+                false;
             }
         });
     }
 
     async loadUserData() {
-		var csrftoken = this.getCookie('csrftoken')
+		var csrftoken = await this.getCSRFToken();
+        
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {

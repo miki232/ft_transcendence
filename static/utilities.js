@@ -1,17 +1,25 @@
-export function getCookie(name) {
-	let cookieValue = null;
-	if (document.cookie && document.cookie !== '') {
-		const cookies = document.cookie.split(';');
-		for (let i = 0; i < cookies.length; i++) {
-			const cookie = cookies[i].trim();
-			if (cookie.substring(0, name.length + 1) === (name + '=')) {
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-				break;
-			}
-		}
+// export function getCookie(name) {
+// 	let cookieValue = null;
+// 	if (document.cookie && document.cookie !== '') {
+// 		const cookies = document.cookie.split(';');
+// 		for (let i = 0; i < cookies.length; i++) {
+// 			const cookie = cookies[i].trim();
+// 			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+// 				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+// 				break;
+// 			}
+// 		}
+// 	}
+// 	return cookieValue;
+// }
+
+export async function getCookie() {
+		let csrftoken = await fetch("csrf-token")
+			.then(response => response.json())
+			.then(data => data.csrfToken);
+			console.log(csrftoken);
+		return csrftoken;
 	}
-	return cookieValue;
-}
 
 export function sanitizeInput(input) {
 	// Rimuovi markup HTML pericoloso
@@ -34,7 +42,7 @@ export async function register() {
 	var username = sanitizeInput(document.getElementById('signup-user').value);
 	var password = sanitizeInput(document.getElementById('signup-pass').value);
 	var email = sanitizeInput(document.getElementById('email').value);
-	var csrftoken = getCookie('csrftoken');
+	var csrftoken = await getCookie('csrftoken');
 
 	if (username === '' || password === '' || email === ''){
 		alert('Please fill in all fields');
@@ -116,7 +124,7 @@ export async function logout(){
 }
 
 export async function deleteUser() {
-    const csrftoken = getCookie('csrftoken');
+    const csrftoken = await getCookie('csrftoken');
 
     try {
         const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato

@@ -29,8 +29,10 @@ const container = document.querySelector("#container");
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
 var user = new User();
+console.log(user);
 let view = null;
 var refreshRoomList;
+var ws;
 // const room = new Room()
 let room_name;
 let username;
@@ -63,8 +65,28 @@ export const navigateTo = url => {
 //     });
 // };
 
+function wsConnection() {
+	if (!ws){
+		ws	= new WebSocket('wss://'
+		+ window.location.hostname
+		+ ':8000'
+		+ '/ws/notifications'
+		+ '/');
+	}
+	ws.onmessage = function(event) {
+		const data = JSON.parse(event.data);
+		console.log(event);
+		console.log(data.content);
+		if (data.read === false){
+			// alert(data.content);
+			console.log("SUCASDJNSADJNKSAKDNJASD");
+			createNotification(data.content);
+			ws.send(JSON.stringify({'action': "read"}));
+		}
+	}
+}
+
 const router = async () => {
-	let ws;
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: Login },
@@ -97,93 +119,61 @@ const router = async () => {
 			isMatch: true
 		};
 	}
-	let is_logged_in = await is_loggedin();
-	// console.log(is_logged_in);
-	// console.log(match.route.path);
-	if (match.route.path === "/dashboard") {
-		view = new match.route.view();
-		if (is_logged_in === false){
-			const isVAlid = await view.validateLogin();
-			console.log("SUCA");
-			if (!isVAlid){
-				navigateTo("/");
-				return;
-			}
-		}
-		if (view.isValid === true || is_logged_in === true) {
-			if (!ws){
-				ws	= new WebSocket('wss://'
-				+ window.location.hostname
-				+ ':8000'
-				+ '/ws/notifications'
-				+ '/');
-			}
-			ws.onmessage = function(event) {
-				const data = JSON.parse(event.data);
-				console.log(event);
-				console.log(data.content);
-				if (data.read === false){
-					// alert(data.content);
-					console.log("SUCASDJNSADJNKSAKDNJASD");
-					createNotification(data.content);
-					ws.send(JSON.stringify({'action': "read"}));
-				}
-			}
-			// container.classList.add("dashboard");
-			await view.loadUserData();
+	
+	switch (match.route.path) {
+		case "/":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
 			nav.innerHTML = await view.getNav();
 			content.innerHTML = await view.getContent();
-			// view.userSettings();
-			// const requestBtn = document.getElementById("requests-btn");
-			// requestBtn.addEventListener("click", async e => {
-			// 	e.preventDefault();
-			// 	await view.requestsList();
-			// }); 
-			view.setTitle("Dashboard");// da inserire nei constructor
-			// room.updateRoomList();
-		}
-	} else if (match.route.path === "/requests") {
-		const view = new match.route.view();
-		console.log("REQUESTS PAGE!");
-		content.innerHTML = view.getContent();
-		await view.requestsList();
-	} else if (match.route.path === "/friends" && is_logged_in === true) {
-		view = new match.route.view();
-		await view.loadUserData();
-		nav.innerHTML = await view.getNav();
-		content.innerHTML = await view.getContent();
-		await view.getFriendList();
-		view.searchUser();
-		// await view.getPendingRequests();
-	}
-	else if(match.route.path === "/online" && is_logged_in === true)
-	{
-		view = new match.route.view();
-		content.innerHTML = await view.getContent();
-		room_name = await view.getRoom_Match();
-		console.log(room_name);
-		if (room_name != "undefined"){
-			navigateTo("/pong");
-		}
-	}
-	else if(match.route.path === "/pong" && is_logged_in === true)
-	{
-		view = new match.route.view(room_name);
-		content.innerHTML = await view.getContent();
-		await view.loop();
-	}
-	else {
-		if (is_logged_in === true)
-			navigateTo("/dashboard");
-		// container.classList.remove("dashboard");
-		// let dashNav = document.getElementById("nav-bar");
-		// if (dashNav) {
-		// 	dashNav.remove();
-		// }
-		// nav.setAttribute("style", "display: block;");
-		view = new match.route.view();
-		nav.innerHTML = await view.getNav();
-		content.innerHTML = await view.getContent();
+			break;
+		case "/about":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/contact":
+			await user.isLogged() === true ? navigateTo("/dashboard") : null;
+			view = new match.route.view();
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/dashboard":
+			await user.isLogged() === false ? navigateTo("/") : user.loadUserData();
+			wsConnection(ws);
+			view = new match.route.view(user);
+			nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/requests":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			view = new match.route.view();
+			// nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			break;
+		case "/friends":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			view = new match.route.view();
+			// nav.innerHTML = await view.getNav();
+			content.innerHTML = await view.getContent();
+			await view.getFriendList();
+			view.searchUser();
+			break;
+		case "/online":
+			view = new match.route.view();
+			content.innerHTML = await view.getContent();
+			room_name = await view.getRoom_Match();
+			console.log(room_name);
+			if (room_name !== "undefined") navigateTo("/pong");
+			break;
+		case "/pong":
+			view = new match.route.view(room_name);
+			content.innerHTML = await view.getContent();
+			await view.loop();
+			break;
+		default:
+			content.innerHTML = "404 Not Found";
 	}
 };
 
@@ -231,7 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (e.target.matches("#login-btn")) {
 			e.preventDefault();
-			navigateTo("/dashboard");
+			await user.validateLogin();
+			console.log(user.logged);
+			if (user.logged === true) {
+				console.log("LOGGATO OK");
+				navigateTo("/dashboard");
+			}
 		}
 		if (e.target.matches("#createRoomBtn")) {
 			console.log("SUCA");
@@ -258,28 +253,29 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	else
 		// 		alert("Please provide a username")
 		// }
-		if (e.target.matches("#signup")) {
+		if (e.target.matches("#register-btn")) {
+			console.log("FANCULO!");
 			await register();
 		}
 		if (e.target.matches("#logout-btn")) {
-            await logout();
+			await logout();
 			navigateTo("/");
-        }
-		if (e.target.closest(".nav-button")) {
-			let selected = e.target.id;
-			if (!selected) {
-				selected = e.target.parentElement.id;
-			}
-			console.log(selected);
-			await renderDashboard(selected);
 		}
-		if (e.target.matches("#nav-title")) {
-			await renderDashboard("dashboard");
-		}
-		if (e.target.matches("#nav-footer-title")) {
-			let user = document.getElementById("nav-footer-title").innerHTML;
-			await renderDashboard("friend_info", user);
-		}
+		// if (e.target.closest(".nav-button")) {
+		// 	let selected = e.target.id;
+		// 	if (!selected) {
+		// 		selected = e.target.parentElement.id;
+		// 	}
+		// 	console.log(selected);
+		// 	await renderDashboard(selected);
+		// }
+		// if (e.target.matches("#nav-title")) {
+		// 	await renderDashboard("dashboard");
+		// }
+		// if (e.target.matches("#nav-footer-title")) {
+		// 	let user = document.getElementById("nav-footer-title").innerHTML;
+		// 	await renderDashboard("friend_info", user);
+		// }
 		if (e.target.matches("a[href='/user_info']")){
 			e.preventDefault();
 			let friend_name = e.target.getAttribute('data-username');
@@ -311,31 +307,31 @@ async function send_game_request(receiver, selfuser)
 {
 	let csr = await getCSRFToken();
 	const data = {
-        name: "1",
-        created_by: selfuser,
-        to_fight: receiver
-    };
+		name: "1",
+		created_by: selfuser,
+		to_fight: receiver
+	};
 
-    // Send the POST request
-    fetch('/pong/create/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+	// Send the POST request
+	fetch('/pong/create/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
 			'X-CSRFToken': csr
-            // Add any other necessary headers, such as CSRF token
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the respons
-        console.log(data.name);
+			// Add any other necessary headers, such as CSRF token
+		},
+		body: JSON.stringify(data)
+	})
+	.then(response => response.json())
+	.then(data => {
+		// Handle the respons
+		console.log(data.name);
 		// window.location.href = "/pong/" + data.name + "/";
-    })
-    .catch(error => {
-        // Handle the error
-        console.error(error);
-    });
+	})
+	.catch(error => {
+		// Handle the error
+		console.error(error);
+	});
 }
 
 // content.addEventListener("click", e => {
@@ -348,120 +344,120 @@ async function send_game_request(receiver, selfuser)
 // 	}
 // });
 
-async function renderDashboard(render, addArg = null) {
-	var view;
-	switch(render) {
-		case "rooms":
-			if (!(view instanceof Room)) {
-				view = new Room();
-			}
-			content.innerHTML = await view.getContent();
-			if (refreshRoomList) {
-				clearInterval(refreshRoomList);
-			}
+// async function renderDashboard(render, addArg = null) {
+// 	var view;
+// 	switch(render) {
+// 		case "rooms":
+// 			if (!(view instanceof Room)) {
+// 				view = new Room();
+// 			}
+// 			content.innerHTML = await view.getContent();
+// 			if (refreshRoomList) {
+// 				clearInterval(refreshRoomList);
+// 			}
 			
-			view.updateRoomList();
-			refreshRoomList = setInterval(() => {
-					view.updateRoomList();
-					console.log("Room list updated");
-			}, 5000);
-			document.getElementById("createRoomBtn").addEventListener("click", view.btnCreateRoom);
-			break;
-		case "friends":
-			if (refreshRoomList) clearInterval(refreshRoomList);
-			view = new Friends();
-			content.innerHTML = await view.getContent();
-			await view.loadData();
-			await view.getPendingRequests();
-			await view.getFriendList();
-			var friendNameInput = document.getElementById("friendNameInput");
-			var dataList = document.createElement("datalist");
-			dataList.id = "users";
-			friendNameInput.setAttribute("list", "users");
-			friendNameInput.parentNode.insertBefore(dataList, friendNameInput.nextSibling);
+// 			view.updateRoomList();
+// 			refreshRoomList = setInterval(() => {
+// 					view.updateRoomList();
+// 					console.log("Room list updated");
+// 			}, 5000);
+// 			document.getElementById("createRoomBtn").addEventListener("click", view.btnCreateRoom);
+// 			break;
+// 		case "friends":
+// 			if (refreshRoomList) clearInterval(refreshRoomList);
+// 			view = new Friends();
+// 			content.innerHTML = await view.getContent();
+// 			await view.loadData();
+// 			await view.getPendingRequests();
+// 			await view.getFriendList();
+// 			var friendNameInput = document.getElementById("friendNameInput");
+// 			var dataList = document.createElement("datalist");
+// 			dataList.id = "users";
+// 			friendNameInput.setAttribute("list", "users");
+// 			friendNameInput.parentNode.insertBefore(dataList, friendNameInput.nextSibling);
 
-			friendNameInput.addEventListener("input", function() {
-				var inputText = this.value
-				fetch(`https://127.0.0.1:8001/accounts/search/?q=${inputText}`)
-				.then(response => {
-					if (response.status == "404"){
-						throw new Error('NO user FOund!');
-					}
-					return response.json();
-				})
-				.then(data => {
-					// Clear the datalist
-					dataList.innerHTML = "";
+// 			friendNameInput.addEventListener("input", function() {
+// 				var inputText = this.value
+// 				fetch(`https://127.0.0.1:8001/accounts/search/?q=${inputText}`)
+// 				.then(response => {
+// 					if (response.status == "404"){
+// 						throw new Error('NO user FOund!');
+// 					}
+// 					return response.json();
+// 				})
+// 				.then(data => {
+// 					// Clear the datalist
+// 					dataList.innerHTML = "";
 		
-					// Add the users to the datalist
-					data.forEach(function(user) {
-						var option = document.createElement("option");
-						option.value = user.username; // Replace with the actual property name for the username
-						dataList.appendChild(option);
-					});
-				})
-				.catch(error => {
-					console.log('Error', error);
-					alert("Not Found!");
-				}
-				);
+// 					// Add the users to the datalist
+// 					data.forEach(function(user) {
+// 						var option = document.createElement("option");
+// 						option.value = user.username; // Replace with the actual property name for the username
+// 						dataList.appendChild(option);
+// 					});
+// 				})
+// 				.catch(error => {
+// 					console.log('Error', error);
+// 					alert("Not Found!");
+// 				}
+// 				);
 				
-			})
-			break;
-		case "friend_info":
-			if (refreshRoomList) clearInterval(refreshRoomList);
-			try {
-				view = new Info(addArg);
-				content.innerHTML = await view.getContent();
-				try{
-					document.getElementById("sendFriendRequestButton").addEventListener("click", function() {
-						sendFriendRequest(view.username);
-						renderDashboard("friend_info", view.username);
-					});
-				}
-				catch{
-					try{
-						/**Play: visibile solo se amici, e crea una room con <"Nome utente di chi manda", "Sfidante">
-						 * quando chi manda clicca su Play(Invite to play) e laaromm è stata generata, viene indirizzato
-						 * alla room e aspetta che lo sfidante si colleghi alla stessa room per giocare.
-						 * Allo sfidante, quando visita il profilo di manda la richiesta, compare "X ti sta sfidando"
-						 * se clicca lo porta alla room
-						 */
-						document.getElementById("Acceptrequest").addEventListener("click", function() {
-							acceptFriendRequest(view.username);
-							renderDashboard("friend_info", view.username);
-						});
-						document.getElementById("Declinerequest").addEventListener("click", function() {
-							console.log("PRova");
-							declineFriendRequest(view.username);
-							renderDashboard("friend_info", view.username);
-						});
-					}
-					catch{
-						document.getElementById("Cancelrequest").addEventListener("click", function() {
-							cancelRequest(view.username);
-							renderDashboard("friend_info", view.username);
-						});
-						/**non fare nulla */
-					}
-				}
-			} catch {
-				document.getElementById("RemoveFriend").addEventListener("click", function() {
-				removeFriend(view.username);
-				renderDashboard("friend_info", view.username);
-				});
-				document.getElementById("Play").addEventListener("click", function() {
-					invite_to_play(view.selfuser, addArg);
-					renderDashboard("friend_info", view.username);
-				});
-				// console.error('Error', error);
-				// renderDashboard("friends");
-			}
-			break;
-		default:
-			if (refreshRoomList) clearInterval(refreshRoomList);
-			view = new Dashboard();
-			content.innerHTML = await view.getContent();
-	}
-}
+// 			})
+// 			break;
+// 		case "friend_info":
+// 			if (refreshRoomList) clearInterval(refreshRoomList);
+// 			try {
+// 				view = new Info(addArg);
+// 				content.innerHTML = await view.getContent();
+// 				try{
+// 					document.getElementById("sendFriendRequestButton").addEventListener("click", function() {
+// 						sendFriendRequest(view.username);
+// 						renderDashboard("friend_info", view.username);
+// 					});
+// 				}
+// 				catch{
+// 					try{
+// 						/**Play: visibile solo se amici, e crea una room con <"Nome utente di chi manda", "Sfidante">
+// 						 * quando chi manda clicca su Play(Invite to play) e laaromm è stata generata, viene indirizzato
+// 						 * alla room e aspetta che lo sfidante si colleghi alla stessa room per giocare.
+// 						 * Allo sfidante, quando visita il profilo di manda la richiesta, compare "X ti sta sfidando"
+// 						 * se clicca lo porta alla room
+// 						 */
+// 						document.getElementById("Acceptrequest").addEventListener("click", function() {
+// 							acceptFriendRequest(view.username);
+// 							renderDashboard("friend_info", view.username);
+// 						});
+// 						document.getElementById("Declinerequest").addEventListener("click", function() {
+// 							console.log("PRova");
+// 							declineFriendRequest(view.username);
+// 							renderDashboard("friend_info", view.username);
+// 						});
+// 					}
+// 					catch{
+// 						document.getElementById("Cancelrequest").addEventListener("click", function() {
+// 							cancelRequest(view.username);
+// 							renderDashboard("friend_info", view.username);
+// 						});
+// 						/**non fare nulla */
+// 					}
+// 				}
+// 			} catch {
+// 				document.getElementById("RemoveFriend").addEventListener("click", function() {
+// 				removeFriend(view.username);
+// 				renderDashboard("friend_info", view.username);
+// 				});
+// 				document.getElementById("Play").addEventListener("click", function() {
+// 					invite_to_play(view.selfuser, addArg);
+// 					renderDashboard("friend_info", view.username);
+// 				});
+// 				// console.error('Error', error);
+// 				// renderDashboard("friends");
+// 			}
+// 			break;
+// 		default:
+// 			if (refreshRoomList) clearInterval(refreshRoomList);
+// 			view = new Dashboard();
+// 			content.innerHTML = await view.getContent();
+// 	}
+// }
 
