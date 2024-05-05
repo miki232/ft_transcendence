@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
-import { getRequests, acceptFriendRequest, declineFriendRequest, cancelRequest, sendFriendRequest } from "./Requests.js";
+import { getRequests } from "./Requests.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -115,6 +115,20 @@ export default class Friends extends AbstractView {
 		// Send the request
 		xhr.send();
 	} */
+
+	acceptFriendRequest(userId) {
+    	// Create a new XMLHttpRequest object
+    	var xhr = new XMLHttpRequest();
+    
+    	// Set the request URL
+    	var url = "friend/accept/" + userId + "/";
+    
+    	// Set the request method to GET
+    	xhr.open("GET", url, true);
+    
+    	// Send the request
+    	xhr.send()
+    }
 
 	async getFriendInfo(user) {
 		var csrf = await getCSRFToken();

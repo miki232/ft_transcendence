@@ -224,6 +224,8 @@ header a img {
 	width: 76%;
 	height: 38px;
 	cursor: pointer;
+	background-color: white;
+	color: black;
 	border-radius: 6px;
 	margin: 15px 0 22px 0;
 	border: none;
@@ -482,7 +484,6 @@ div .requests-list {
 }
 
 .friend-info,
-.requests,
 .settings {
 	transform: translateX(-100%);
 	opacity: 0;

@@ -1,69 +1,10 @@
+import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 
 export async function getRequests() {
-    var response = await fetch("friend/request/list/");
-    var data = await response.json();
-    return data;
-    // var pendingRequestsElement = document.querySelector(".pending-requests");
-    // // pendingRequestsElement.innerHTML = "";
-    
-    // for (var i = 0; i < data.length; i++) {
-    //     var request = data[i];
-    //     var senderUsername = request.sender.username;
-    //     var receiverUsername = request.receiver.username;
-        
-    //     var requestElement = document.createElement("a");
-    //     requestElement.href = '/user_info';
-    //     if (receiverUsername == this.CurrentUsername){
-
-    //         requestElement.setAttribute('data-username', senderUsername);
-    //         requestElement.textContent = senderUsername;
-    //     }
-    //     else{
-    //         requestElement.setAttribute('data-username', receiverUsername);
-    //         requestElement.textContent = receiverUsername;
-    //     }
-            
-    //      // Create a button to accept the request
-    //     if (senderUsername !== this.CurrentUsername){
-    //         var acceptButton = document.createElement("button");
-    //         var declineButton = document.createElement("button");
-    //         declineButton.innerHTML = "Decline";
-    //         declineButton.id = "decline-request";
-    //         declineButton.onclick = (function(senderUsername) {
-    //             return function(){
-    //                 declineFriendRequest(senderUsername);
-    //             };
-    //         })(senderUsername);
-                    
-    //         requestElement.appendChild(declineButton);
-    //         acceptButton.innerHTML = "Accept";
-    //         acceptButton.id = "Accept-request";
-    //         acceptButton.onclick = (function(senderUsername) {
-    //             return function(){
-    //                 acceptFriendRequest(senderUsername);
-    //             };
-    //         })(senderUsername);
-                    
-    //         requestElement.appendChild(acceptButton);
-    //     }
-    //     else
-    //     {
-    //         var cancelButton = document.createElement("button");
-    //         cancelButton.innerHTML = "Cancel";
-    //         cancelButton.id = "cancel-request";
-    //         cancelButton.onclick = (function(receiverUsername) {
-    //             return function(){
-    //                 cancelRequest(receiverUsername);
-    //             };
-    //         })(receiverUsername);
-    //         console.log(receiverUsername);
-    //         requestElement.appendChild(cancelButton);
-            
-
-    //     }
-    //     pendingRequestsElement.appendChild(requestElement);
-    // }
+	var response = await fetch("friend/request/list/");
+	var data = await response.json();
+	return data;
 }
 
 export async function cancelRequest(user){
@@ -93,10 +34,10 @@ export async function cancelRequest(user){
 export async function declineFriendRequest(userId) {
 	// Create a new XMLHttpRequest object
 	var xhr = new XMLHttpRequest();
-	
+
 	// Set the request URL
 	var url = "friend/request/decline/";
-	
+
 	// Set the request method to POST
 	xhr.open("POST", url, true);
 
@@ -116,42 +57,124 @@ export async function declineFriendRequest(userId) {
 export function acceptFriendRequest(userId) {
 	// Create a new XMLHttpRequest object
 	var xhr = new XMLHttpRequest();
-	
+
 	// Set the request URL
 	var url = "friend/accept/" + userId + "/";
-	
+
 	// Set the request method to GET
 	xhr.open("GET", url, true);
-	
+
 	// Send the request
 	xhr.send()
 }
 
 export async function sendFriendRequest(user) {
 
-    // Get the username from the input field
-    var csrf = await getCSRFToken();
-    // var username = document.getElementById("friendNameInput").value;
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-    console.log(user)
-    // Set the request URL
-    var url = "/friend/request/send/";
+	// Get the username from the input field
+	var csrf = await getCSRFToken();
+	// var username = document.getElementById("friendNameInput").value;
+	// Create a new XMLHttpRequest object
+	var xhr = new XMLHttpRequest();
+	console.log(user)
+	// Set the request URL
+	var url = "/friend/request/send/";
 
-    // Set the request method to POST
-    xhr.open("POST", url, true);
+	// Set the request method to POST
+	xhr.open("POST", url, true);
 
-    // Set the request headers
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("X-CSRFToken", csrf);
+	// Set the request headers
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("X-CSRFToken", csrf);
 
-    // Set the request body
-    var data = JSON.stringify({
-        "receiver_user_id": user
-    });
+	// Set the request body
+	var data = JSON.stringify({
+		"receiver_user_id": user
+	});
 
-    // Send the request
-    // ws.send(JSON.stringify({'notifications to ': user}));
+	// Send the request
+	// ws.send(JSON.stringify({'notifications to ': user}));
 
-    xhr.send(data);
+	xhr.send(data);
+}
+
+export default class extends AbstractView {
+	// constructor() {
+	//     super();
+	// }
+
+	async requestsList() {
+		var data = await getRequests();
+		const requestsElement = document.querySelector(".requests");
+		const requestsHTML = `
+			<h2>Requests</h2>
+			<div class="requests-list"></div>
+			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
+			<button type="button" class="submit-btn dashboard-btn" id="friend-back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+		`;
+		requestsElement.innerHTML = requestsHTML;
+		const requestsListElement = document.querySelector(".requests-list");
+		var noEntries = document.createElement("span");
+		noEntries.className = "no-entries";
+		noEntries.textContent = "No requests found.";
+		requestsListElement.appendChild(noEntries);
+		const dashboard = document.querySelector(".dashboard");
+		const friendBackBtn = document.getElementById("friend-back");
+		friendBackBtn.addEventListener("click", e => {
+			e.preventDefault();
+			dashboard.classList.remove("change-form");
+		});
+		for (var i = 0; i < data.length; i++) {
+			var request = data[i];
+			var senderUsername = request.sender.username;
+			var receiverUsername = request.receiver.username;
+			var requestType = receiverUsername === this.user;
+			noEntries.remove();
+			const requestView = `
+				<div class="request-line">
+					<img src="${requestType ? request.sender.pro_pic : request.receiver.pro_pic}"/>
+					<span class="info" data-username="${requestType ? senderUsername : receiverUsername}">${requestType ? senderUsername : receiverUsername}</span>
+					${requestType ? `<button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+					<button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button>` :
+					`<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>`}
+				</div>
+			`;
+			requestsListElement.innerHTML += requestView;
+			const acceptRequestBtn = document.querySelectorAll(".accept-request");
+			const declineRequestBtn = document.querySelectorAll(".decline-request");
+			const cancelRequestBtn = document.querySelectorAll(".cancel-request");
+			acceptRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					acceptFriendRequest(senderUsername);
+					element.parentElement.remove();
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
+				});
+			});
+			declineRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					await declineFriendRequest(senderUsername);
+					element.parentElement.remove();
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
+				});
+			});
+			cancelRequestBtn.forEach(element => {
+				element.addEventListener("click", async e => {
+					e.preventDefault();
+					await cancelRequest(receiverUsername);
+					element.parentElement.remove();
+					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
+				});
+			});
+		}
+	}
+
+	getContent() {
+		const requestHTML = `
+			<div class="dashboard">
+				<div class="requests"></div>
+			</div>
+		`;
+		return requestHTML;
+	}
 }
