@@ -98,9 +98,13 @@ export async function sendFriendRequest(user) {
 }
 
 export default class extends AbstractView {
-	// constructor() {
-	//     super();
-	// }
+	constructor(user) {
+	    super();
+		this.user = user;
+		this.content = document.querySelector("#content");
+		this.content.innerHTML = this.getContent();
+		this.requestsList();
+	}
 
 	async requestsList() {
 		var data = await getRequests();
@@ -167,6 +171,18 @@ export default class extends AbstractView {
 				});
 			});
 		}
+	}
+
+	getNav() {
+		const navHTML = `
+			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.pro_pic}"/></a>
+		`;
+		return navHTML;
 	}
 
 	getContent() {

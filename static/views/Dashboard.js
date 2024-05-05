@@ -6,12 +6,15 @@ export default class extends AbstractView {
 	constructor(user) {
 		super();
 		this.user = user;
-		console.log(this.user);
-		this.isValid = false;
-		this.user;
-		this.email;
-		this.room = new Room();
-		this.pro_pic;
+		this.content = document.querySelector("#content");
+		this.nav = document.querySelector("nav");
+		this.nav.innerHTML = this.getNav();
+		this.content.innerHTML = this.getContent();
+		// this.isValid = false;
+		// this.user;
+		// this.email;
+		// this.room = new Room();
+		// this.pro_pic;
 		// this.validateLogin();
 		// this.setTitle("Dashboard");
 	}
@@ -97,7 +100,7 @@ export default class extends AbstractView {
 	// 	return this.pro_pic;
 	// }
 
-	async getNav() {
+	getNav() {
 		const navHTML = `
 			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
 			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
@@ -120,7 +123,7 @@ export default class extends AbstractView {
 		settingsElement.innerHTML = settingsHTML;
 	}
 
-	async getContent() {
+	getContent() {
 		let dashboardHTML = `
 			<div class="dashboard">
 				<div class="profile-card">

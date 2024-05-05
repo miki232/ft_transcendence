@@ -37,7 +37,6 @@ export default class User extends AbstractView {
 			console.log(response);
 			if (response.status === 200) {
                 this.logged = true;
-                
             } else {
                 createNotification("Wrong username or password");
                 this.logged = false;
@@ -66,16 +65,16 @@ export default class User extends AbstractView {
         })
         .then(response => {
             if (response.ok) {
-                true;
+               return true;
             } else {
-                false;
+                return false;
             }
         });
     }
 
     async loadUserData() {
 		var csrftoken = await this.getCSRFToken();
-        
+
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {

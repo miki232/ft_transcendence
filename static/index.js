@@ -136,21 +136,17 @@ const router = async () => {
 		case "/contact":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
 			view = new match.route.view();
-			nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
+			nav.innerHTML = view.getNav();
+			content.innerHTML = view.getContent();
 			break;
 		case "/dashboard":
-			await user.isLogged() === false ? navigateTo("/") : user.loadUserData();
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			wsConnection(ws);
 			view = new match.route.view(user);
-			nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
 			break;
 		case "/requests":
 			await user.isLogged() === false ? navigateTo("/") : null;
-			view = new match.route.view();
-			// nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
+			view = new match.route.view(user);
 			break;
 		case "/friends":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -173,7 +169,7 @@ const router = async () => {
 			await view.loop();
 			break;
 		default:
-			content.innerHTML = "404 Not Found";
+			user.isLogged === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
 };
 
