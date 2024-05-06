@@ -104,7 +104,10 @@ const router = async () => {
 		view.closeWebSocket();
 		console.log("DISCONNESIONE DALLA WEBSOCKET");
 	}
-
+	if (view instanceof Pong)
+	{
+		view.closeWebSocket();
+	}
 	const potentialMatches = routes.map(route => {
 		return {
 			route: route,
@@ -251,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	await register();
 		// }
 		if (e.target.matches("#logout-btn")) {
+			ws.close();
 			await logout();
 			navigateTo("/");
 		}

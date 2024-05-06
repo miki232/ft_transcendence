@@ -17,6 +17,16 @@ export default class Pong{
         );
     }
 
+    async closeWebSocket() {
+        if (this.game_ws) {
+            //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
+            // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
+            // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
+            await this.game_ws.close();
+            console.log("DISCONNECTED FROM WEBSOCKET PONG");
+        }
+    }
+
     update(canvas, context) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         

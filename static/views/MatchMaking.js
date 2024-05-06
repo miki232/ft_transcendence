@@ -16,7 +16,7 @@ export default class MatchMaking extends AbstractView {
     }
 
     async loadUserData() {
-		var csrftoken = this.getCookie('csrftoken')
+		var csrftoken = await this.getCSRFToken('csrftoken')
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {
@@ -100,7 +100,7 @@ export default class MatchMaking extends AbstractView {
     // cerca una room, è più scarso, allora da meno importanza a quella room e ne cerca una con un user al suo livello.
     
     async getFriendInfo(user) {
-        var csrftoken = this.getCookie('csrftoken')
+        var csrftoken = this.getCSRFToken();
 		await fetch('/accounts/guser_info/?username=' + user, {
             method: 'GET',
 			headers: {

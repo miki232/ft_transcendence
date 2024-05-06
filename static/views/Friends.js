@@ -49,14 +49,6 @@ export default class Friends extends AbstractView {
 		this.pro_pic;
 	}
 
-	getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
-		const cookieValue = document.cookie
-		.split('; ')
-		.find(row => row.startsWith('csrftoken='))
-		.split('=')[1];
-		return cookieValue;
-	}
-
 	async loadData() {
 		var csrftoken = await getCSRFToken()
 		await fetch('/accounts/user_info/', {
