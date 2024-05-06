@@ -77,6 +77,10 @@ export async function register() {
                 console.error(data.username[0]);
                 throw new Error(data.username[0]);
             }
+            if (data.password && data.password[0]) { ///Parte nuova
+                console.error(data.password[0]);
+                throw new Error(data.password[0]);
+            }
         } else {
             const data = await response.json();
             console.log(data);
