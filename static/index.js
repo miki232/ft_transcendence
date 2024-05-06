@@ -40,9 +40,9 @@ let username;
 // 	console.log(requestList);
 // };
 
-export const navigateTo = url => {
+export const navigateTo = async url => {
 	history.pushState(null, null, url);
-	router();
+	await router();
 };
 
 
@@ -89,14 +89,15 @@ function wsConnection() {
 const router = async () => {
 	const routes = [
 		// { path: "/404", view: NotFound},
-		{ path: "/", view: Login },
-		{ path: "/about", view: About },
-		{ path: "/contact", view: Contact },
-		{ path: "/dashboard", view: Dashboard },
-		{ path: "/requests", view: Requests},
-		{ path: "/friends", view: Friends },
-		{ path: "/online", view: MatchMaking},
-		{ path: "/pong", view: Pong }
+		{ path: "/", view: () => import('./views/Login.js') },
+        { path: "/about", view: () => import('./views/About.js') },
+        { path: "/contact", view: () => import('./views/Contact.js') },
+        { path: "/dashboard", view: () => import('./views/Dashboard.js') },
+        { path: "/requests", view: () => import('./views/Requests.js') },
+        { path: "/friends", view: () => import('./views/Friends.js') },
+        // { path: "/user_info", view: () => import('./views/User_Info.js') },
+        { path: "/online", view: () => import('./views/MatchMaking.js') },
+        { path: "/pong", view: () => import('./views/Pong.js') }
 	];
 	
 	if (view instanceof MatchMaking)
@@ -126,46 +127,50 @@ const router = async () => {
 	switch (match.route.path) {
 		case "/":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
-			view = new match.route.view(user);
+			const LoginClass = await match.route.view();
+			view = new LoginClass.default(user);
 			break;
 		case "/about":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
-			view = new match.route.view();
+			const AboutClass = await match.route.view();
+			view = new AboutClass.default();
 			nav.innerHTML = await view.getNav();
 			content.innerHTML = await view.getContent();
 			break;
 		case "/contact":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
-			view = new match.route.view();
+			const ContactClass = await match.route.view();
+			view = new ContactClass.default();
 			nav.innerHTML = view.getNav();
 			content.innerHTML = view.getContent();
 			break;
 		case "/dashboard":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
-			wsConnection(ws);
-			view = new match.route.view(user);
+			wsConnection();
+			const DashboardClass = await match.route.view();
+			view = new DashboardClass.default(user);
 			break;
 		case "/requests":
 			await user.isLogged() === false ? navigateTo("/") : null;
-			view = new match.route.view(user);
+			const RequestsClass = await match.route.view();
+			view = new RequestsClass.default(user);
 			break;
 		case "/friends":
 			await user.isLogged() === false ? navigateTo("/") : null;
-			view = new match.route.view();
-			// nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
-			await view.getFriendList();
-			view.searchUser();
+			const FriendsClass = await match.route.view();
+			view = new FriendsClass.default(user);
 			break;
 		case "/online":
-			view = new match.route.view();
+			const OnlineClass = await match.route.view();
+			view = new OnlineClass.default();
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
 			console.log(room_name);
 			if (room_name !== "undefined") navigateTo("/pong");
 			break;
 		case "/pong":
-			view = new match.route.view(room_name);
+			const PongClass = await match.route.view();
+			view = new PongClass.default();
 			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;

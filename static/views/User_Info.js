@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
-import { getRequests, sendFriendRequest } from "./Requests.js";
+import { getRequests } from "./Requests.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -58,6 +58,14 @@ export default class Friends extends AbstractView {
 	async initialize() {
 		await this.getFriendList();
 		await this.searchUser();
+	}
+
+	getCSRFToken() { //fatta standalone, in teoria possiamo levarla da qua
+		const cookieValue = document.cookie
+		.split('; ')
+		.find(row => row.startsWith('csrftoken='))
+		.split('=')[1];
+		return cookieValue;
 	}
 
 	async loadData() {
