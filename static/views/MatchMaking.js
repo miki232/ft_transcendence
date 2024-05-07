@@ -187,6 +187,7 @@ export default class MatchMaking extends AbstractView {
                         conente_opponent.innerHTML = this.opponent;
                         // await this.connect_game(this.roomName);
                         await new Promise(r => setTimeout(r, 2000));
+                        console.log("ROOM NAME", this.roomName);
                         resolve(this.roomName);
                     }
                 } catch (error) {

@@ -165,13 +165,19 @@ const router = async () => {
 			view = new OnlineClass.default();
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
-			console.log(room_name);
-			if (room_name !== "undefined") navigateTo("/pong");
+			console.log("OSU", room_name);
+			if (room_name !== undefined) navigateTo("/pong");
 			break;
 		case "/pong":
+			///** DA rivisitare */
+			document.body.classList.remove("body");
+			document.body.classList.add("bodypong");
+			document.getElementById("container").classList.add("containerpong");
+			document.getElementById("container").removeAttribute("id");
+			//***sdassdad */
 			const PongClass = await match.route.view();
-			view = new PongClass.default();
-			content.innerHTML = await view.getContent();
+			view = new PongClass.default(room_name);
+			container.innerHTML = await view.getContent();
 			await view.loop();
 			break;
 		default:

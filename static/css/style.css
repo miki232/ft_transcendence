@@ -637,15 +637,14 @@ div .requests-list {
 
 /* CSS PER ONLINE GAME */
 .container {
-    display: flex;
-    justify-content: center;
+	display: flex;
+    flex-direction: column;
     align-items: center;
-    height: 50vh;
-	width: 80vh;
+    width: 100%;
     border: 2px solid #000; /* Add a border */
-    background-color: rgba(174, 187, 230, 0.5); /* Add a transparent background color */
-    padding: 20px; /* Add some padding */
-    box-sizing: border-box; /* Make sure the border and padding are included in the element's total width and height */
+	background-color: rgba(174, 187, 230, 0.5); /* Add a transparent background color */
+	box-sizing: border-box; /* Make sure the border and padding are included in the element's total width and height */
+	padding: 20px; /* Add some padding */
 }
 
 .half {
@@ -664,11 +663,38 @@ div .requests-list {
     text-align: center;
 }
 
-.game-area {
-    padding: 20px;
-    background-color: #383636;
+.bodypong {
+	background-color: #222831;
+	/* background: 
+		linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+		url('../img/bg3.jpg'); */
+	background-size: cover;
+	background-attachment: fixed;
+	background-position: center -100px;
+	color: var(--quaternary-color);
+	line-height: 1.6;
 }
 
-#pongCanvas {
-    border: 1px solid #000;
+canvas {
+	border: 2px solid #FFF;
+	width: 90%; /* Adjust as needed */
+	max-width: 800px; /* Maximum width of 800 pixels */
+	height: auto; /* Maintain aspect ratio */
+}
+#score1, #score2 {
+	color: #FFF;
+	position: absolute;
+	top: 10px;
+}
+#score1 {
+	left: 10px;
+}
+#score2 {
+	right: 10px;
+}
+.containerpong {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
 }
