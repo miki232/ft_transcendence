@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { createNotification } from "./Notifications.js";
+import { navigateTo } from "../index.js";
 
 export async function getRequests() {
 	var response = await fetch("friend/request/list/");
@@ -116,20 +117,20 @@ export default class extends AbstractView {
 			<h2>Requests</h2>
 			<div class="requests-list"></div>
 			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-			<button type="button" class="submit-btn dashboard-btn" id="friend-back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+			<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 		`;
 		requestsElement.innerHTML = requestsHTML;
+		const backBtn = document.getElementById("back");
+			backBtn.addEventListener("click", e => {
+				e.preventDefault();
+				console.log("request back");
+				navigateTo("/dashboard");
+			});
 		const requestsListElement = document.querySelector(".requests-list");
 		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "No requests found.";
 		requestsListElement.appendChild(noEntries);
-		const dashboard = document.querySelector(".dashboard");
-		const friendBackBtn = document.getElementById("friend-back");
-		friendBackBtn.addEventListener("click", e => {
-			e.preventDefault();
-			dashboard.classList.remove("change-form");
-		});
 		for (let i = 0; i < data.length; i++) {
 			const request = data[i];
 			const senderUsername = request.sender.username;

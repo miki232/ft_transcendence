@@ -34,7 +34,6 @@ export default class UserInfo extends AbstractView {
 	};
 
 	async getUserInfo(userID) {
-		console.log("Getting friend info of " + userID);
 		var csrf = await getCSRFToken();
 		await fetch('/accounts/guser_info/?username=' + userID, {
 			method: 'GET',
@@ -66,6 +65,11 @@ export default class UserInfo extends AbstractView {
 				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 			`;
 			friendInfoElement.innerHTML = friendInfo;
+			const backBtn = document.getElementById("back");
+			backBtn.addEventListener("click", e => {
+				e.preventDefault();
+				navigateTo("/friends");
+			});
 			if (is_friend) {
 				const removeFriendBtn = document.getElementById("remove");
 				removeFriendBtn.addEventListener("click", async e => {
