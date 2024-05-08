@@ -233,16 +233,15 @@ export default class Friends extends AbstractView {
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
 			var userUsername = friendList.user.username;            
-			for (var j = 0; j < friendList.friends.length; j++) {
+			for (let j = 0; j < friendList.friends.length; j++) {
 				noEntries.remove();
-				console.log(friendList.friends[j]);
-				var friendUsername = friendList.friends[j].username;
-				var friendStatus = friendList.friends[j].status_login;
-				var friendPic = friendList.friends[j].pro_pic;
-				var friendElement = `
+				const friendUsername = friendList.friends[j].username;
+				const friendStatus = friendList.friends[j].status_login;
+				const friendPic = friendList.friends[j].pro_pic;
+				const friendElement = `
 					<div class="friend">
 						<img src="${friendPic}" alt="User pic">
-						<a href="/user_info_${user.username}" class="info" data-link">${user.username}</a>
+						<a href="/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
 						<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 					</div>
 				`;

@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
+import { createNotification } from "./Notifications.js";
 
 export async function getRequests() {
 	var response = await fetch("friend/request/list/");
@@ -119,7 +120,7 @@ export default class extends AbstractView {
 		`;
 		requestsElement.innerHTML = requestsHTML;
 		const requestsListElement = document.querySelector(".requests-list");
-		var noEntries = document.createElement("span");
+		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "No requests found.";
 		requestsListElement.appendChild(noEntries);
@@ -129,11 +130,12 @@ export default class extends AbstractView {
 			e.preventDefault();
 			dashboard.classList.remove("change-form");
 		});
-		for (var i = 0; i < data.length; i++) {
-			var request = data[i];
-			var senderUsername = request.sender.username;
-			var receiverUsername = request.receiver.username;
-			var requestType = receiverUsername === this.user;
+		for (let i = 0; i < data.length; i++) {
+			const request = data[i];
+			const senderUsername = request.sender.username;
+			const receiverUsername = request.receiver.username;
+			const requestType = receiverUsername === this.user.getUser();
+			console.log(requestType);
 			noEntries.remove();
 			const requestView = `
 				<div class="request-line">
@@ -152,6 +154,7 @@ export default class extends AbstractView {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
 					acceptFriendRequest(senderUsername);
+					createNotification("Friend request accepted!");
 					element.parentElement.remove();
 					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});

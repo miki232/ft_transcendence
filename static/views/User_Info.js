@@ -4,6 +4,7 @@ import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
 import { getRequests, acceptFriendRequest, declineFriendRequest, sendFriendRequest, cancelRequest } from "./Requests.js";
 import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -70,13 +71,7 @@ export default class UserInfo extends AbstractView {
 				removeFriendBtn.addEventListener("click", async e => {
 					e.preventDefault();
 					await removeFriend(data.user.username);
-					const toRemove = document.querySelector("[data-username='" + data.user.username + "']");
-					toRemove.parentElement.remove();
-					if (document.querySelector(".friends-list").childElementCount == 0) {
-						var noEntries = document.createElement("span");
-						noEntries.textContent = "No friends";
-						document.querySelector(".friends-list").appendChild(noEntries);
-					}
+					navigateTo("/friends");
 				});
 			} else if (!pendingReq){
 				const sendRequestBtn = document.getElementById("friend-request");
