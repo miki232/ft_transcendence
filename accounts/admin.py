@@ -13,7 +13,7 @@ class CustomUserAdmin(UserAdmin):
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj:
-            fieldsets += (('Extra Fields', {'fields': ('pro_pic',)}),)
+            fieldsets += (('Extra Fields', {'fields': ('pro_pic', 'Ai')}),)
         return fieldsets
 
 admin.site.register(Match) #new

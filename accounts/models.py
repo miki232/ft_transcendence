@@ -9,6 +9,7 @@ class CustomUser(AbstractUser): # new
     pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
     status_login = models.CharField(max_length=50, default="Offline")
     email = models.EmailField(unique=True)
+    Ai = models.BooleanField(default=False)
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):
@@ -30,6 +31,8 @@ class CustomUser(AbstractUser): # new
 
         # Set level equal to total wins
         level = total_wins
+        if self.Ai:
+            level = 0
 
         return level
     def __str__(self):

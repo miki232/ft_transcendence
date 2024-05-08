@@ -78,12 +78,19 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.spectators = []
         self.shared_state = None  # Class variable to store the shared state
         self.match = None
+        self.user1 = None
+        self.user2 = None
+
+    @database_sync_to_async
+    def getAi(self):
+        return RoomName.objects.get(name=self.room_name).opponent
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "pong_%s" % self.room_name
         self.user = self.scope['user']
-        print(self.user)
+        ai = await self.getAi()
+        print(self.user, "opponent", ai.username, ai.Ai)
         await self.accept()
         self.loop_task = None
 
@@ -127,12 +134,23 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'victory' : "none"
             }
             PongConsumer.shared_state = self.state  # Store the state in the class variable
+            if ai.Ai:
+                print("AI", ai.username, len(PongConsumer.players[self.room_name]))
+                PongConsumer.players[self.room_name].append(ai.username)
             
-            print("SUCA")
-        elif len(PongConsumer.players[self.room_name]) == 2:
+            print("SUCA", len(PongConsumer.players[self.room_name]))
+        if len(PongConsumer.players[self.room_name]) == 2:
+            print("SUCA2", self.user.Ai)
             # This is the second user, inherit the state from the first user
             self.state = PongConsumer.shared_state
             await self.start_game()
+            print(self.user1, self.user2)
+            if (ai.Ai):
+                if (self.user1 == None):
+                    self.user1 = ai
+                elif (self.user2 == None):
+                    self.user2 = ai
+            print(self.user1, self.user2)
 
         elif len(PongConsumer.players[self.room_name]) > 2:
             # This is a spectator
@@ -140,14 +158,15 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.spectator = True
 
 
-        if len(PongConsumer.players[self.room_name]) == 2:
+        if len(PongConsumer.players[self.room_name] or ai) == 2:
             self.loop_task = asyncio.create_task(self.game_loop())
 
     async def start_game(self):
-        user1 = await self.get_user(PongConsumer.players[self.room_name][0])
-        user2 = await self.get_user(PongConsumer.players[self.room_name][1])
+        self.user1 = await self.get_user(PongConsumer.players[self.room_name][0])
+        self.user2 = await self.get_user(PongConsumer.players[self.room_name][1])
+        print("User2", self.user2.username, "AI", self.user2.Ai)
         await self.get_room_istance_delete(self.room_name)
-        self.match = await self.create_match(user1, user2)
+        self.match = await self.create_match(self.user1, self.user2)
         print("CREA MATHC " , self.match.id)
 
     @database_sync_to_async
@@ -292,10 +311,16 @@ class PongConsumer(AsyncWebsocketConsumer):
         last_ai_update_time = time.time()
         while (PongConsumer.status[self.room_name]) == False:
             current_time = time.time()
-            if current_time - last_ai_update_time >= 1:
-                ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
-                last_ai_update_time = current_time
-            self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], ai_target_pos, 5)
+            # print(self.user1.Ai, "AI", self.user1.username, self.user2.Ai, "AI2", self.user2.username)
+            """Find who is the AI and move the paddle accordingly"""
+            if (self.user1.Ai or self.user2.Ai):
+                if current_time - last_ai_update_time >= 1:
+                    ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
+                    last_ai_update_time = current_time
+                if (self.user1.Ai):
+                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], ai_target_pos, 5)
+                else:
+                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], ai_target_pos, 5)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -398,12 +423,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event['state']))
 
 
+
+
 class MatchMaking(AsyncWebsocketConsumer):
     room_name = ""
     async def connect(self):
         self.user = self.scope["user"]
         print(self.user)
         await self.accept()
+        self.time_passed = 0
         self.connected = True
         # notificationslist = await self.get_notifications()
         # for notification in notificationslist:
@@ -448,7 +476,17 @@ class MatchMaking(AsyncWebsocketConsumer):
 
         waiting_users = WaitingUser.objects.exclude(user=self.user)
 
-        print("Suca", len(waiting_users), self.user)
+        print("Suca", len(waiting_users), self.user, self.time_passed)
+        self.time_passed += 1
+        if self.time_passed >= 10:
+            self.time_passed = 0
+            WaitingUser.objects.filter(user=self.user).delete()
+            room_name = str(uuid.uuid1()).replace('-', '')
+            ai_user = CustomUser.objects.get(Ai=True)
+            print("AI USER", ai_user.username)
+            room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
+
+            return({"status": 2, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
         for waiting_user in waiting_users:
             print("SUCA")
             level_difference = abs(user_level - waiting_user.level)
