@@ -102,6 +102,8 @@ export default class extends AbstractView {
 	    super();
 		this.user = user;
 		this.content = document.querySelector("#content");
+		this.nav = document.querySelector("nav");
+		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		this.requestsList();
 	}

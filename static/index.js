@@ -1,19 +1,19 @@
-import { getCookie, register, logout } from "./utilities.js";
-import Login from "./views/Login.js";
-import About from "./views/About.js";
-import Contact from "./views/Contact.js";
+// import { getCookie, register } from "./utilities.js";
 import User from "./views/User.js";
-import Dashboard from "./views/Dashboard.js";
-import Requests from "./views/Requests.js";
-import Room from "./views/Room.js";
-import { invite_to_play } from "./views/Room.js";
-import Friends from "./views/Friends.js";
-import Info, { getCSRFToken, getusename } from "./views/Info.js";
-// import { getRequests, sendFriendRequest } from "./views/Requests.js";
 import { createNotification } from "./views/Notifications.js";
+import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
-import AbstractView from "./views/AbstractView.js";
 import Pong from "./views/Pong.js";
+// import Login from "./views/Login.js";
+// import About from "./views/About.js";
+// import Contact from "./views/Contact.js";
+// import Dashboard from "./views/Dashboard.js";
+// import Requests from "./views/Requests.js";
+// import Room from "./views/Room.js";
+// import { invite_to_play } from "./views/Room.js";
+// import Friends from "./views/Friends.js";
+// import AbstractView from "./views/AbstractView.js";
+// import { getRequests, sendFriendRequest } from "./views/Requests.js";
 // import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, cancelRequest, removeFriend } from "./views/Friends.js"
 
 // function activeLink(page) {
@@ -95,7 +95,7 @@ const router = async () => {
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
         { path: "/requests", view: () => import('./views/Requests.js') },
         { path: "/friends", view: () => import('./views/Friends.js') },
-        // { path: "/user_info", view: () => import('./views/User_Info.js') },
+        { path: "/user_info", view: () => import('./views/User_Info.js') },
         { path: "/online", view: () => import('./views/MatchMaking.js') },
         { path: "/pong", view: () => import('./views/Pong.js') }
 	];
@@ -118,10 +118,18 @@ const router = async () => {
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 	if (!match) {
-		match = {
-			route: routes[0],
-			isMatch: true
-		};
+		if (location.pathname.includes("/user_info")) {
+			var userID = location.pathname.split("_")[2];
+			match = {
+				route: routes[6],
+				isMatch: true
+			};
+		} else {
+			match = {
+				route: routes[0],
+				isMatch: true
+			};
+		}
 	}
 	
 	switch (match.route.path) {
@@ -159,6 +167,11 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const FriendsClass = await match.route.view();
 			view = new FriendsClass.default(user);
+			break;
+		case "/user_info":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const InfoClass = await match.route.view();
+			view = new InfoClass.default(userID, user);
 			break;
 		case "/online":
 			const OnlineClass = await match.route.view();
@@ -266,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		// }
 		if (e.target.matches("#logout-btn")) {
 			ws.close();
-			await logout();
+			await user.logout();
 			navigateTo("/");
 		}
 		// if (e.target.closest(".nav-button")) {

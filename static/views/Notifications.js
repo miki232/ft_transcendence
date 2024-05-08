@@ -8,5 +8,21 @@ export function createNotification(message) {
 	document.body.appendChild(notification);
 	setTimeout(() => {
 		document.body.removeChild(notification);
-	}, 5000);
+	}, 3000);
 }
+
+// export function createNotification(message) {
+// 	const notification = `
+// 		<dialog id="notification">
+// 			<p>${message}</p>
+// 			<ion-icon name="notifications"></ion-icon>
+// 		</dialog>
+// 	`;
+// 	document.body.innerHTML += notification;
+// 	const notificationDialog = document.getElementById("notification");
+// 	notificationDialog.showModal();
+// 	setTimeout(() => {
+// 		notificationDialog.close();
+// 		document.body.removeChild(notification);
+// 	}, 5000);
+// }

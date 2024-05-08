@@ -1,3 +1,5 @@
+import { createNotification } from "./views/Notifications.js";
+
 export function getCookieRegister(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
@@ -49,7 +51,7 @@ export async function register() {
     const csrftoken = getCookieRegister('csrftoken');
 
     if (!username || !password || !email) {
-        alert('Please fill in all fields');
+        createNotification('Please fill in all fields');
         return;
     }
 
@@ -77,7 +79,7 @@ export async function register() {
                 console.error(data.username[0]);
                 throw new Error(data.username[0]);
             }
-            if (data.password && data.password[0]) { ///Parte nuova
+            if (data.password && data.password[0]) {
                 console.error(data.password[0]);
                 throw new Error(data.password[0]);
             }
@@ -85,7 +87,7 @@ export async function register() {
             const data = await response.json();
             console.log(data);
             console.log("Register");
-            alert("Account created successfully");
+            createNotification("Account created successfully");
             usernameInput.value = '';
             passwordInput.value = '';
             emailInput.value = '';
@@ -93,43 +95,41 @@ export async function register() {
         }
     } catch (error) {
         console.error('Error:', error);
-        alert(error.message);
+        createNotification(error.message);
     }
 }
 
 
-export async function logout(){
-	///Csrf_token
-	let csrftoken = await fetch("csrf-token")
-	.then(response => response.json())
-	.then(data => data.csrfToken);
-	console.log(csrftoken);
-	///
-	await fetch('accounts/logout/', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-			'X-CSRFToken': csrftoken,
-		}
-	})
-	.then(response => {
-		if (response.status > 204) {
-			throw new Error(`HTTP status ${response.status}`);
-		}
-		if (response.status === 200) {
-			return response.json();
-		}
-	})
-	.then(data => {
-		console.log("Logged out");
-		// inDashboard = false;
-		// navigateTo('/');
-		console.log(data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
+// export async function logout(){
+// 	///Csrf_token
+// 	let csrftoken = await fetch("csrf-token")
+// 	.then(response => response.json())
+// 	.then(data => data.csrfToken);
+// 	console.log(csrftoken);
+// 	///
+// 	await fetch('accounts/logout/', {
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type' : 'application/json',
+// 			'X-CSRFToken': csrftoken,
+// 		}
+// 	})
+// 	.then(response => {
+// 		if (response.status > 204) {
+// 			throw new Error(`HTTP status ${response.status}`);
+// 		}
+// 		if (response.status === 200) {
+// 			return response.json();
+// 		}
+// 	})
+// 	.then(data => {
+// 		console.log("Logged out");
+// 		console.log(data);
+// 	})
+// 	.catch((error) => {
+// 		console.error('Error:', error);
+// 	});
+// }
 
 export async function deleteUser() {
     const csrftoken = await getCookie('csrftoken');

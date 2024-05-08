@@ -144,6 +144,7 @@ header a img {
 
 .input-box,
 .friend,
+.user,
 .request-line {
 	width: 75%;
 	display: flex;
@@ -416,7 +417,8 @@ div .requests-list {
 	border-radius: 10px;
 }
 
-.friend {
+.friend,
+.user {
 	width: 100%;
 	/* justify-content: start; */
 	align-items: center;
@@ -454,19 +456,24 @@ div .requests-list {
 	height: 40%;
 }
 
-.friend span {
+.friend a,
+.user a {
+	color: white;
 	cursor: pointer;
 }
 
-.friend :nth-child(2) {
+.friend :nth-child(2),
+.user :nth-child(2) {
 	margin-left: 20px;
 }
 
-.friend :nth-child(3) {
+.friend :nth-child(3),
+.user :nth-child(3) {
 	margin-left: auto;
 }
 
 .friend img,
+.user img,
 .request-line img {
 	height: 35px;
 }
@@ -483,7 +490,6 @@ div .requests-list {
 	margin: 10px 0;
 }
 
-.friend-info,
 .settings {
 	transform: translateX(-100%);
 	opacity: 0;

@@ -17,11 +17,11 @@ export default class extends AbstractView {
         this.setTitle("About");
     }
 
-    async getNav() {
+    getNav() {
 		return navHTML;
 	}
 
-    async getContent() {
+    getContent() {
         return aboutHTML;
     }
 }

@@ -12,6 +12,39 @@ export default class User extends AbstractView {
         this.logged = false;
     }
 
+	async logout(){
+		///Csrf_token
+		let csrftoken = await fetch("csrf-token")
+		.then(response => response.json())
+		.then(data => data.csrfToken);
+		console.log(csrftoken);
+		///
+		await fetch('accounts/logout/', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken,
+			}
+		})
+		.then(response => {
+			if (response.status > 204) {
+				throw new Error(`HTTP status ${response.status}`);
+			}
+			if (response.status === 200) {
+				return response.json();
+			}
+		})
+		.then(data => {
+			console.log("Logged out");
+			console.log(data);
+			createNotification("Successfully logged out");
+			this.logged = false;
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+	}
+
     async validateLogin() {
 		try{
 			var username = (document.getElementById('login-user').value);
