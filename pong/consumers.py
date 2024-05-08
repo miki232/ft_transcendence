@@ -3,6 +3,7 @@ import json
 import uuid
 import asyncio
 import random
+import time
 
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
@@ -15,6 +16,58 @@ from django.db.models import Q
 from accounts.models import Match, CustomUser
 from .models import WaitingUser, RoomName
 
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 400
+
+# Paddle settings
+PADDLE_WIDTH = 10
+PADDLE_HEIGHT = 100
+PADDLE_SPEED = 10
+
+# Ball settings
+BALL_SIZE = 5
+
+reaction_delay = 0.5
+counter = 0
+ai_paddle_pos = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
+
+ai_target_pos = ai_paddle_pos
+
+
+def ai_update(ball_pos, ball_velocity):
+    global ai_target_pos, counter
+
+    # Only update the AI's target position every 'reaction_delay' frames
+    counter += 2
+    if counter % reaction_delay != 0:
+        return
+
+    # Calculate the ball's projected position when it reaches the AI paddle side
+    if ball_velocity[0] > 0:  # If ball is moving toward the AI paddle
+        time_to_reach_ai = (SCREEN_WIDTH - PADDLE_WIDTH - BALL_SIZE - ball_pos[0]) / ball_velocity[0]
+        intercept_y = ball_pos[1] + ball_velocity[1] * time_to_reach_ai
+
+        # Handle bounces off top/bottom walls
+        while intercept_y < 0 or intercept_y > SCREEN_HEIGHT:
+            if intercept_y < 0:
+                intercept_y = -intercept_y
+            else:
+                intercept_y = 2 * SCREEN_HEIGHT - intercept_y
+
+        # Set the target position for the AI paddle with some randomness
+        randomness = random.uniform(-50, 50)
+        ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
+
+        # Ensure the target position is within paddle movement limits
+        ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, ai_target_pos))
+        print("AI TARGET POS", ai_target_pos)
+
+def move_paddle(paddle_pos, target_pos, speed):
+    if paddle_pos < target_pos:
+        return min(paddle_pos + speed, target_pos)
+    elif paddle_pos > target_pos:
+        return max(paddle_pos - speed, target_pos)
+    return paddle_pos
 
 class PongConsumer(AsyncWebsocketConsumer):
     players = {}
@@ -236,7 +289,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['paddle2_y'] += 5
 
     async def game_loop(self):
+        last_ai_update_time = time.time()
         while (PongConsumer.status[self.room_name]) == False:
+            current_time = time.time()
+            if current_time - last_ai_update_time >= 1:
+                ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
+                last_ai_update_time = current_time
+            self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], ai_target_pos, 5)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -324,7 +383,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'state': self.state
             }
             )
-            await asyncio.sleep(1)  # Wait for 1 second
+            await asyncio.sleep(1.5)  # Wait for 1 second
             await self.close()
             return
 

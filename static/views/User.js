@@ -14,8 +14,8 @@ export default class User extends AbstractView {
 
     async validateLogin() {
 		try{
-			var username = this.sanitizeInput(document.getElementById('login-user').value);
-			var password = this.sanitizeInput(document.getElementById('login-pass').value);
+			var username = (document.getElementById('login-user').value);
+			var password = (document.getElementById('login-pass').value);
 		} catch (error){
 			console.error(error);
 			return;

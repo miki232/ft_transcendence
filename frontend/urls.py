@@ -12,5 +12,5 @@ urlpatterns = [
     path('rooms_list/', ListRoomView.as_view(), name='rooms_list'),
     path('matchmaking/', MatchmakingView.as_view(), name="matchmaking"),
     # path('rooms/create/', CreateRoomView.as_view(), name='create_room'), #spostato in pong/urls.py
-    path("test/", views.test, name="test")
+    path("test/", views.test, name="test"),
 ]
