@@ -93,6 +93,7 @@ const router = async () => {
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
+        { path: "/settings", view: () => import('./views/Settings.js') },
         { path: "/requests", view: () => import('./views/Requests.js') },
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
@@ -121,7 +122,7 @@ const router = async () => {
 		if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
-				route: routes[6],
+				route: routes[7],
 				isMatch: true
 			};
 		} else {
@@ -157,6 +158,11 @@ const router = async () => {
 			wsConnection();
 			const DashboardClass = await match.route.view();
 			view = new DashboardClass.default(user);
+			break;
+		case "/settings":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const SettingsClass = await match.route.view();
+			view = new SettingsClass.default(user);
 			break;
 		case "/requests":
 			await user.isLogged() === false ? navigateTo("/") : null;

@@ -52,7 +52,7 @@ export default class UserInfo extends AbstractView {
 			const pendingReq = senderObj || receiverObj ? true : false;
 			const friendInfo = `
 				<img src="${data.user.pro_pic}" alt="User pic">
-				<h3 id="Username">${data.user.username}</h3>
+				<h3>${data.user.username}</h3>
 				<h4>${data.user.status_login}</h4>
 				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
 				<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>

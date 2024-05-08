@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
 import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
 
@@ -112,17 +113,6 @@ export default class extends AbstractView {
 		return navHTML;
 	}
 
-	userSettings() {
-		const dashboardElement = document.querySelector(".dashboard");
-		const settingsElement = document.createElement("div");
-		settingsElement.className = "settings";
-		dashboardElement.appendChild(settingsElement);
-		const settingsHTML = `
-				<h1>Settings</h1>
-		`;
-		settingsElement.innerHTML = settingsHTML;
-	}
-
 	getContent() {
 		let dashboardHTML = `
 			<div class="dashboard">
@@ -131,7 +121,7 @@ export default class extends AbstractView {
 					<h3>${this.user.getUser()}</h3>
 					<a href="/history" id="history-btn" class="submit-btn dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</a>
 					<a href="/requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
-					<a href="/settings" id="settings-btn" class="submit-btn dashboard-btn"><ion-icon name="settings-outline"></ion-icon>Settings</a>
+					<a href="/settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 					<button type="button" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>

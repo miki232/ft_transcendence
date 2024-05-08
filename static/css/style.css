@@ -286,6 +286,7 @@ header a img {
 /***************** DASHBOARD *****************/
 
 .profile-card img,
+.settings img,
 .friend-info img {
 	height: 130px;
 }
@@ -322,6 +323,35 @@ header a img {
 		margin-left: 5px;
 }
 
+.user-data {
+	width: 76%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.user-data h1 {
+	margin: 10px 0;
+}
+
+.user-data img {
+	height: 100px;
+}
+
+.settings .input-box {
+	margin: 10px 0;
+}
+
+.settings .input-box ion-icon {
+	margin-left: auto;
+}
+
+.settings .confirm-btn {
+	color: white;
+	background-color: green;
+}
+
 div .requests-list {
 	height: 60%;
 }
@@ -347,7 +377,8 @@ div .requests-list {
 	background-color: green;
 }
 
-.request-line .accept-request:active {
+.request-line .accept-request:active,
+.settings .confirm-btn:active {
 	border: 2px solid rgb(0, 66, 0);
 }
 
@@ -372,11 +403,6 @@ div .requests-list {
 	position: relative;
 	top: 25%;
 	font-size: 16px;
-}
-
-.change-setting .settings {
-	transform: translateX(0%);
-	opacity: 1;
 }
 
 /***************** FRIENDS *****************/
@@ -488,11 +514,6 @@ div .requests-list {
 
 .friends-card h4 {
 	margin: 10px 0;
-}
-
-.settings {
-	transform: translateX(-100%);
-	opacity: 0;
 }
 
 .change-view .friends-card,
