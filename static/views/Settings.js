@@ -24,28 +24,35 @@ export default class Settings extends AbstractView {
 
 	async changeUsername() {
 		const changePicBtn = document.getElementById("change-pic");
-		changePicBtn.style.display = "none";
 		const changePasswordBtn = document.getElementById("change-password");
-		changePasswordBtn.style.display = "none";
 		const deleteAccountBtn = document.getElementById("delete-account");
+		const changeUsernameBtn = document.getElementById("change-username");
+		changePicBtn.style.display = "none";
+		changePasswordBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
-		const changeBtn = document.getElementById("change-username");
-		changeBtn.setAttribute("disabled", "true");
-		const changeUsernameHTML = `
-			<div class="input-box">
+		changeUsernameBtn.setAttribute("disabled", "true");
+		const changePasswordHTML = `
+			<div class="input-box change">
 				<input type="text" placeholder="New Username">
 				<ion-icon name="person-outline"></ion-icon>
-				</div>
-				<button type="button" class="submit-btn dashboard-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
-				<button type="button" class="submit-btn dashboard-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+			</div>
+			<button type="button" class="submit-btn dashboard-btn change confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+			<button type="button" class="submit-btn dashboard-btn change red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 		`;
-		changeBtn.insertAdjacentHTML("afterend", changeUsernameHTML);
+		changeUsernameBtn.insertAdjacentHTML("afterend", changePasswordHTML);
+		const change_all = document.querySelectorAll(".change");
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
-			const newUsername = document.querySelector(".input-box input").value;
+			const input = document.querySelector(".input-box input");
+			const newUsername = input.value;
 			if (newUsername === "") {
 				createNotification("Username cannot be empty!");
+				return;
+			}
+			if (newUsername === this.user.getUser()) {
+				createNotification("Username can't be the same as the old");
+				input.value = "";
 				return;
 			}
 			const csrf = await getCSRFToken();
@@ -65,7 +72,80 @@ export default class Settings extends AbstractView {
 		const cancelBtn = document.querySelector(".red-btn");
 		cancelBtn.addEventListener("click", e => {
 			e.preventDefault();
+			changeUsernameBtn.removeAttribute("disabled");
+			change_all.forEach(e => {
+				e.remove();
+			});
+			changePicBtn.style.display = "block";
+			changePasswordBtn.style.display = "block";
+			deleteAccountBtn.style.display = "block";
+		});
+	}
+
+	async changePassword() {
+		const changePicBtn = document.getElementById("change-pic");
+		const changeUsernameBtn = document.getElementById("change-username");
+		const deleteAccountBtn = document.getElementById("delete-account");
+		const changePasswordBtn = document.getElementById("change-password");
+		changePicBtn.style.display = "none";
+		changeUsernameBtn.style.display = "none";
+		deleteAccountBtn.style.display = "none";
+		changePasswordBtn.setAttribute("disabled", "true");
+		const changePasswordHTML = `
+			<div class="input-box change">
+				<input type="text" placeholder="New Password" id="new-password">
+				<ion-icon name="lock-closed-outline"></ion-icon>
+			</div>
+			<div class="input-box change">
+				<input type="text" placeholder="Confirm Password" id="confirm-password">
+				<ion-icon name="lock-closed-outline"></ion-icon>
+			</div>
+			<button type="button" class="submit-btn dashboard-btn change confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+			<button type="button" class="submit-btn dashboard-btn change red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+		`;
+		changePasswordBtn.insertAdjacentHTML("afterend", changePasswordHTML);
+		const change_all = document.querySelectorAll(".change");
+		const confirmBtn = document.querySelector(".confirm-btn");
+		confirmBtn.addEventListener("click", async e => {
+			e.preventDefault();
+			const inputNew = document.querySelector("#new-password");
+			const inputConfirm = document.querySelector("#confirm-password");
+			const newPassword = inputNew.value;
+			const confirmPassword = inputConfirm.value;
+			if (!newPassword || !confirmPassword) {
+				createNotification("Fields cannot be empty!");
+				return;
+			}
+			if (newPassword !== confirmPassword) {
+				createNotification("Passwords do not match!");
+				inputNew.value = "";
+				inputConfirm.value = "";
+				return;
+			}
+			const csrf = await getCSRFToken();
+			await fetch('/accounts/user_info/', {
+				method: 'PUT',
+				headers: {
+					'Content-Type' : 'application/json',
+					'X-CSRFToken': csrf
+				},
+				body: JSON.stringify({
+					password : inputNew.value,
+				})
+			});
+			await this.user.loadUserData();
 			navigateTo("/settings");
+		});
+		const cancelBtn = document.querySelector(".red-btn");
+		cancelBtn.addEventListener("click", e => {
+			e.preventDefault();
+			changePasswordBtn.removeAttribute("disabled");
+			change_all.forEach(e => {
+				e.remove();
+			});
+			changePicBtn.style.display = "block";
+			changeUsern.style.display = "block";
+			deleteAccountBtn.style.display = "block";
 		});
 	}
 
@@ -78,6 +158,10 @@ export default class Settings extends AbstractView {
 		const changeUsernameBtn = document.getElementById("change-username");
 		changeUsernameBtn.addEventListener("click", () => {
 			this.changeUsername();
+		});
+		const changePasswordBtn = document.getElementById("change-password");
+		changePasswordBtn.addEventListener("click", () => {
+			this.changePassword();
 		});
 	}
 
