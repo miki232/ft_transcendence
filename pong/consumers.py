@@ -4,6 +4,7 @@ import uuid
 import asyncio
 import random
 import time
+import math
 
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
@@ -27,18 +28,20 @@ PADDLE_SPEED = 10
 # Ball settings
 BALL_SIZE = 5
 
-reaction_delay = 0.5
+reaction_delay = 1
 counter = 0
 ai_paddle_pos = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
 
 ai_target_pos = ai_paddle_pos
 
+def map_value(value, start1, stop1, start2, stop2):
+    return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
 
 def ai_update(ball_pos, ball_velocity):
     global ai_target_pos, counter
 
     # Only update the AI's target position every 'reaction_delay' frames
-    counter += 2
+    counter += 1
     if counter % reaction_delay != 0:
         return
 
@@ -55,7 +58,7 @@ def ai_update(ball_pos, ball_velocity):
                 intercept_y = 2 * SCREEN_HEIGHT - intercept_y
 
         # Set the target position for the AI paddle with some randomness
-        randomness = random.uniform(-50, 50)
+        randomness = random.uniform(-65, 65)
         ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
 
         # Ensure the target position is within paddle movement limits
@@ -68,6 +71,7 @@ def move_paddle(paddle_pos, target_pos, speed):
     elif paddle_pos > target_pos:
         return max(paddle_pos - speed, target_pos)
     return paddle_pos
+
 
 class PongConsumer(AsyncWebsocketConsumer):
     players = {}
@@ -84,7 +88,10 @@ class PongConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def getAi(self):
         return RoomName.objects.get(name=self.room_name).opponent
-
+    """
+    When Connection is established, add the user to the group and initialize the game state
+    Check if The opponent Is an AI, if so, add the AI to the group
+    """
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "pong_%s" % self.room_name
@@ -307,6 +314,28 @@ class PongConsumer(AsyncWebsocketConsumer):
             if self.state['paddle2_y'] < 300:
                 self.state['paddle2_y'] += 5
 
+    def check_collision(self):
+        if (
+            self.state['ball_x'] <= 10
+            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+        ):
+            diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
+            rad = math.radians(45)
+            angle = map_value(diff, -50, 50, -rad, rad)
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            self.state['ball_speed_x'] = 5 * math.cos(angle)
+            self.state['ball_speed_y'] = 5 * math.sin(angle)
+        if (
+            self.state['ball_x'] >= 790
+            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+        ):
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
+            angle = map_value(diff, -50, 50, math.radians(255), math.radians(135))
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            self.state['ball_speed_x'] = 5 * math.cos(angle)
+            self.state['ball_speed_y'] = 5 * math.sin(angle)
+
     async def game_loop(self):
         last_ai_update_time = time.time()
         while (PongConsumer.status[self.room_name]) == False:
@@ -358,31 +387,44 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_y'] = -self.state['ball_speed_y']
 
             # # Collision with paddles
-            if (
-                self.state['ball_x'] <= 10
-                and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
-            ):
-                self.state['ball_speed_x'] = -self.state['ball_speed_x']
-            if (
-                self.state['ball_x'] >= 790
-                and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
-            ):
-                self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            self.check_collision()
+            # if (
+            #     self.state['ball_x'] <= 10
+            #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+            # ):
+            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            # if (
+            #     self.state['ball_x'] >= 790
+            #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+            # ):
+            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
+
             # Scoring
             if self.state['ball_x'] <= 0:
                 self.state['score2'] += 1
                 await self.set_score(self.match, self.state['score2'], PongConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
                 self.state['ball_y'] = 200
-                self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
-                self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                # self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
+                # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+
+                self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
+                self.state['ball_speed_y'] = 3
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+
             elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
                 await self.set_score(self.match, self.state['score1'], PongConsumer.players[self.room_name][0])
                 self.state['ball_x'] = 400
                 self.state['ball_y'] = 200
-                self.state['ball_speed_x'] = +self.state['ball_speed_y']
-                self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                # self.state['ball_speed_x'] = +self.state['ball_speed_y']
+                # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+                self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
+                self.state['ball_speed_y'] = -3
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+
             if self.state['score1']  >= 7 or self.state['score2'] >= 7:
                 if self.state['score1'] >= 7:
                     await self.set_winner(self.match, PongConsumer.players[self.room_name][0])
@@ -478,7 +520,7 @@ class MatchMaking(AsyncWebsocketConsumer):
 
         print("Suca", len(waiting_users), self.user, self.time_passed)
         self.time_passed += 1
-        if self.time_passed >= 10:
+        if self.time_passed >= 3:
             self.time_passed = 0
             WaitingUser.objects.filter(user=self.user).delete()
             room_name = str(uuid.uuid1()).replace('-', '')
