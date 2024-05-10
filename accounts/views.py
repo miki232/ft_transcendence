@@ -124,8 +124,9 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def put(self, request):
-        print(request.data, request.user)
-        serializer = UserInfoSerializer(request.user, data=request.data, partial=True)
+        if 'defaultPic' in request.data['pro_pic']:
+            request.data['pro_pic'] = request.user._meta.get_field('pro_pic').get_default()
+        serializer = UserInfoSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -133,10 +134,12 @@ class UserInfoView(APIView):
     def post(self, request):
         url = request.user.pro_pic
         if 'url' in request.POST:
-            print(request.POST)
+            current_pic_path = os.path.join(settings.BASE_DIR, request.user.pro_pic.lstrip('/'))
+            if os.path.isfile(current_pic_path):
+                os.remove(current_pic_path)
             request.user.pro_pic = request.POST['url']
             request.user.save()
-            print(request.user.pro_pic)
+            url = request.user.pro_pic
         elif 'imageFile' in request.FILES:
             uploaded_file = request.FILES['imageFile']
             if imghdr.what(uploaded_file) is None:

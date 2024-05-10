@@ -73,10 +73,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
         """
         pro_pic_path = os.path.join(settings.BASE_DIR, instance.pro_pic.lstrip('/'))
         if (not os.path.exists(pro_pic_path)) and (instance.pro_pic != instance._meta.get_field('pro_pic').get_default()):
+            if ('http' in instance.pro_pic):
+                return
             instance.pro_pic = instance._meta.get_field('pro_pic').get_default()
             instance.save()
 
     def to_representation(self, instance):
+        request = self.context.get('request')
         self.set_default_pic(instance)
         return super().to_representation(instance)
         
@@ -85,10 +88,20 @@ class UserInfoSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
         if 'newpassword' in validated_data:
             if ('confirmpassword' not in validated_data) or (validated_data['newpassword'] != validated_data['confirmpassword']):
                 raise serializers.ValidationError("Passwords do not match.")
             instance.password = make_password(validated_data.pop('newpassword'))
+        if (request and 'pro_pic' in request.data and request.data['pro_pic'] == instance._meta.get_field('pro_pic').get_default()
+            and instance.pro_pic != instance._meta.get_field('pro_pic').get_default()):
+            print("Default Pic")
+            validated_data['pro_pic'] = instance._meta.get_field('pro_pic').get_default()
+            pro_pic_path = os.path.join(settings.BASE_DIR, instance.pro_pic.lstrip('/'))
+            print(pro_pic_path)
+            if os.path.exists(pro_pic_path):
+                print("DELETED")
+                os.remove(pro_pic_path)
         return super().update(instance, validated_data)
     
 class UserMatchHistorySerializer(serializers.ModelSerializer):

@@ -52,7 +52,6 @@ export default class Settings extends AbstractView {
 		const defaultAvatar = document.querySelector(".default-pic");
 		defaultAvatar.addEventListener("click", async e => {
 			e.preventDefault();
-			const defaultPic = "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf";
 			const csrf = await getCSRFToken();
 			await fetch('/accounts/user_info/', {
 				method: 'PUT',
@@ -61,10 +60,10 @@ export default class Settings extends AbstractView {
 					'X-CSRFToken': csrf
 				},
 				body: JSON.stringify({
-					pro_pic : defaultPic,
+					pro_pic : "defaultPic",
 				})
 			});
-			await this.user.loadUserData();
+			// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
 			createNotification("Profile picture changed successfully!");
 			navigateTo("/dashboard");
 		});
@@ -82,17 +81,16 @@ export default class Settings extends AbstractView {
 				return;
 			}
 			const csrf = await getCSRFToken();
+			const formdata = new FormData();
+			formdata.append('url', urlInput);
 			await fetch('/accounts/user_info/', {
-				method: 'PUT',
+				method: 'POST',
 				headers: {
-					'Content-Type' : 'application/json',
 					'X-CSRFToken': csrf
 				},
-				body: JSON.stringify({
-					pro_pic : urlInput,
-				})
+				body: formdata
 			});
-			await this.user.loadUserData();
+			// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
 			createNotification("Profile picture changed successfully!");
 			navigateTo("/dashboard");
 		});
@@ -353,7 +351,7 @@ export default class Settings extends AbstractView {
 							throw new Error(data.Error);
 						}
 						const data = await response.json();
-						await this.user.loadUserData();
+						// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
 						createNotification("Profile picture changed successfully!");
 						navigateTo("/dashboard");
 					} catch (error) {
