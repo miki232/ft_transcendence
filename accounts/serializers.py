@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from .models import CustomUser, Match
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-
+from django.contrib.auth.hashers import make_password
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,10 +56,23 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class UserInfoSerializer(serializers.ModelSerializer):
+    newpassword = serializers.CharField(write_only=True, required=False)
+    confirmpassword = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword')
+    
+    def validate_newpassword(self, value):
+        validate_password(value)
+        return value
+
+    def update(self, instance, validated_data):
+        if 'newpassword' in validated_data:
+            if ('confirmpassword' not in validated_data) or (validated_data['newpassword'] != validated_data['confirmpassword']):
+                raise serializers.ValidationError("Passwords do not match.")
+            instance.password = make_password(validated_data.pop('newpassword'))
+        return super().update(instance, validated_data)
     
 class UserMatchHistorySerializer(serializers.ModelSerializer):
     match_history = serializers.SerializerMethodField()

@@ -130,7 +130,8 @@ export default class Settings extends AbstractView {
 					'X-CSRFToken': csrf
 				},
 				body: JSON.stringify({
-					password : inputNew.value,
+					newpassword : inputNew.value,
+					confirmpassword : confirmPassword
 				})
 			});
 			await this.user.loadUserData();

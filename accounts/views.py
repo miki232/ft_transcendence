@@ -112,7 +112,7 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def put(self, request):
-        print(request.data)
+        print(request.data, request.user)
         serializer = UserInfoSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
