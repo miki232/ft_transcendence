@@ -352,6 +352,13 @@ header a img {
 	background-color: green;
 }
 
+.change-btn {
+	width: 76%;
+	display: flex;
+	justify-content: space-between;
+	gap: 15px;
+}
+
 div .requests-list {
 	height: 60%;
 }
