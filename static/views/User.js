@@ -7,7 +7,7 @@ export default class User extends AbstractView {
         super();
         this.user;
         this.email;
-        this.password;
+        // this.password;
         this.pro_pic;
         this.logged = false;
     }
@@ -53,7 +53,7 @@ export default class User extends AbstractView {
 			console.error(error);
 			return;
 		}
-		var csrftoken = await this.getCSRFToken();
+		const csrftoken = await this.getCSRFToken();
 
 		await fetch('accounts/login/', {
 			method: 'POST',
@@ -74,15 +74,9 @@ export default class User extends AbstractView {
                 createNotification("Wrong username or password");
                 this.logged = false;
             }
-			// if (response.status === 200) {
-			// 	this.isValid = true;
-			// } else {
-			// 	alert('Wrong username or password');
-			// }
-			})
-			.then(data => console.log(data))
-			.catch((error) => {
-				console.error('Error: ', error);
+		}).then(data => console.log(data))
+		.catch((error) => {
+			console.error('Error: ', error);
 		})
 	}
 
@@ -106,7 +100,7 @@ export default class User extends AbstractView {
     }
 
     async loadUserData() {
-		var csrftoken = await this.getCSRFToken();
+		const csrftoken = await this.getCSRFToken();
 
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
@@ -121,7 +115,7 @@ export default class User extends AbstractView {
 				this.setUser(data.username);
 				this.setEmail(data.email);
 				this.setPic(data.pro_pic);
-                this.setPassword(data.password);
+                // this.setPassword(data.password);
 			})
 			.catch((error) => {
 				console.error('Error:', error);

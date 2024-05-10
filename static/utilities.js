@@ -131,25 +131,25 @@ export async function register() {
 // 	});
 // }
 
-export async function deleteUser() {
-    const csrftoken = await getCookie('csrftoken');
+// export async function deleteUser() {
+//     const csrftoken = await getCookie('csrftoken');
 
-    try {
-        const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            },
-            credentials: 'include'
-        });
+//     try {
+//         const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato
+//             method: 'DELETE',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRFToken': csrftoken
+//             },
+//             credentials: 'include'
+//         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
 
-        console.log('User deleted successfully');
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
+//         console.log('User deleted successfully');
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
