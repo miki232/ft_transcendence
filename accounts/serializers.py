@@ -1,9 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import CustomUser, Match
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
+
+import os
+
+from .models import CustomUser, Match
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,6 +67,19 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword')
     
+    def set_default_pic(self, instance):
+        """
+        Prevent the "Not Found" Error, when the User Pic is accidentally deleted.
+        """
+        pro_pic_path = os.path.join(settings.BASE_DIR, instance.pro_pic.lstrip('/'))
+        if (not os.path.exists(pro_pic_path)) and (instance.pro_pic != instance._meta.get_field('pro_pic').get_default()):
+            instance.pro_pic = instance._meta.get_field('pro_pic').get_default()
+            instance.save()
+
+    def to_representation(self, instance):
+        self.set_default_pic(instance)
+        return super().to_representation(instance)
+        
     def validate_newpassword(self, value):
         validate_password(value)
         return value
