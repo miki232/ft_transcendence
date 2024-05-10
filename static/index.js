@@ -87,6 +87,7 @@ function wsConnection() {
 }
 
 const router = async () => {
+	user.loadUserData();
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },

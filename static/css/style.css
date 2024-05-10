@@ -356,9 +356,14 @@ header a img {
 
 .change-btn {
 	width: 76%;
-	margin: 0;
+	margin: 10px 0;
 	display: flex;
 	gap: 15px;
+}
+
+.change-btn button {
+	height: 35px;
+	margin: 0;
 }
 
 div .requests-list {
