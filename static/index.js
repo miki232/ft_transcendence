@@ -96,6 +96,7 @@ const router = async () => {
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
         { path: "/settings", view: () => import('./views/Settings.js') },
         { path: "/requests", view: () => import('./views/Requests.js') },
+		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
         { path: "/online", view: () => import('./views/MatchMaking.js') },
@@ -123,7 +124,7 @@ const router = async () => {
 		if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
-				route: routes[7],
+				route: routes[8],
 				isMatch: true
 			};
 		} else {
@@ -169,6 +170,11 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const RequestsClass = await match.route.view();
 			view = new RequestsClass.default(user);
+			break;
+		case "/local_game":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const LocalClass = await match.route.view();
+			view = new LocalClass.default(user);
 			break;
 		case "/friends":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -300,12 +306,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	let user = document.getElementById("nav-footer-title").innerHTML;
 		// 	await renderDashboard("friend_info", user);
 		// }
-		if (e.target.matches("a[href='/user_info']")){
-			e.preventDefault();
-			let friend_name = e.target.getAttribute('data-username');
-			await renderDashboard("friend_info", friend_name);
-			history.pushState(null, '', '/user_info');
-		}
+		// if (e.target.matches("a[href='/user_info']")){
+		// 	e.preventDefault();
+		// 	let friend_name = e.target.getAttribute('data-username');
+		// 	await renderDashboard("friend_info", friend_name);
+		// 	history.pushState(null, '', '/user_info');
+		// }
 		///////////////////NOUOVA PARTE////////////////////////
 		//// Manda una richiesta POST per creare una room /////
 		//// con "Friend Username" che è il nome dell'amico ///

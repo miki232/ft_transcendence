@@ -43,6 +43,11 @@ img {
 	border-radius: 50%;
 }
 
+h1 {
+	font-size: 48px;
+	margin: 30px 0;
+}
+
 /***************** HEADER *****************/
 
 header {
@@ -127,7 +132,8 @@ header a img {
 .friends-card,
 .friend-info,
 .requests,
-.settings {
+.settings,
+.local-game {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -227,7 +233,8 @@ header a img {
 }
 
 .submit-btn,
-.settings-btn {
+.settings-btn,
+.local-game-btn {
 	width: 76%;
 	height: 38px;
 	cursor: pointer;
@@ -293,12 +300,14 @@ header a img {
 
 .profile-card img,
 .settings img,
-.friend-info img {
+.friend-info img,
+.local-game img {
 	height: 130px;
 	width: 130px;
 }
 
-.profile-card h3 {
+.profile-card h3,
+.local-game h3 {
 	font-size: 28px;
 	margin: 10px 0 15px 0;
 }
@@ -312,7 +321,8 @@ header a img {
 }
 
 .submit-btn ion-icon,
-.settings-btn ion-icon {
+.settings-btn ion-icon,
+.local-game-btn ion-icon {
 	margin-right: 10px;
 }
 
@@ -353,11 +363,13 @@ header a img {
 	margin: 10px 0;
 }
 
-.settings .input-box ion-icon {
+.settings .input-box ion-icon,
+.local-game .input-box ion-icon {
 	margin-left: auto;
 }
 
-.settings .confirm-btn {
+.settings .confirm-btn,
+.local-game .confirm-btn {
 	color: white;
 	background-color: green;
 }
@@ -411,7 +423,8 @@ div .requests-list {
 }
 
 .request-line .accept-request:active,
-.settings .confirm-btn:active {
+.settings .confirm-btn:active,
+.local-game .confirm-btn:active {
 	border: 2px solid rgb(0, 66, 0);
 }
 
@@ -436,6 +449,16 @@ div .requests-list {
 	position: relative;
 	top: 25%;
 	font-size: 16px;
+}
+
+/***************** LOCAL GAME **************/
+
+.local-game {
+	justify-content: start;
+}
+
+#vs-cpu {
+	margin-top: 28px;
 }
 
 /***************** FRIENDS *****************/
@@ -501,10 +524,6 @@ div .requests-list {
 
 .friend-info .cancel-request {
 	margin: 8px 0;
-}
-
-.friends-card h1 {
-	margin: 16px;
 }
 
 .friends-card #search-btn {

@@ -103,7 +103,7 @@ export default class extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
 			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
 			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>

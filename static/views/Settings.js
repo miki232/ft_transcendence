@@ -123,7 +123,7 @@ export default class Settings extends AbstractView {
 		changeUsernameBtn.setAttribute("disabled", "true");
 		changeUsernameBtn.classList.remove("submit-btn");
 		changeUsernameBtn.classList.add("settings-btn");
-		const changePasswordHTML = `
+		const changeUsernameHTML = `
 			<div class="input-box change">
 				<input type="text" placeholder="New Username">
 				<ion-icon name="person-outline"></ion-icon>
@@ -133,8 +133,7 @@ export default class Settings extends AbstractView {
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
-		changeUsernameBtn.insertAdjacentHTML("afterend", changePasswordHTML);
-		const change_all = document.querySelectorAll(".change");
+		changeUsernameBtn.insertAdjacentHTML("afterend", changeUsernameHTML);
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
@@ -183,6 +182,7 @@ export default class Settings extends AbstractView {
 		cancelBtn.addEventListener("click", e => {
 			e.preventDefault();
 			changeUsernameBtn.removeAttribute("disabled");
+			const change_all = document.querySelectorAll(".change");
 			change_all.forEach(e => {
 				e.remove();
 			});
@@ -390,7 +390,7 @@ export default class Settings extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
 			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
 			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
