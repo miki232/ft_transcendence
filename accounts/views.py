@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 import requests
 import imghdr
@@ -140,19 +141,21 @@ class UserInfoView(APIView):
             uploaded_file = request.FILES['imageFile']
             if imghdr.what(uploaded_file) is None:
                 return Response({'Error' : "Uploaded file is not an image!"}, status=status.HTTP_400_BAD_REQUEST)
-            fs = FileSystemStorage(location='media/profile_pics/')
+            fs = FileSystemStorage(location='media/profilepics/')
             ext = uploaded_file.name.split('.')[-1]
             filename = '{}.{}'.format(uuid.uuid4(), ext)
             name = fs.save(filename, uploaded_file)
-            name = 'profile_pics/' + name
+            name = 'profilepics/' + name
             url = fs.url(name)
+            current_pic_path = os.path.join(settings.BASE_DIR, request.user.pro_pic.lstrip('/'))
+            if os.path.isfile(current_pic_path):
+                os.remove(current_pic_path)
             request.user.pro_pic = url
             request.user.save()
         else:
             return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'pro_pic': url}, status=status.HTTP_200_OK)
 
-    
 class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserMatchHistorySerializer
 
