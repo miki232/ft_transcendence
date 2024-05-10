@@ -168,6 +168,19 @@ export default class Settings extends AbstractView {
 		});
 	}
 
+	async deleteAccount() {
+		const csrf = await getCSRFToken();
+		await fetch('/accounts/delete/', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrf
+			}
+		});
+		createNotification("Account deleted successfully!");
+		navigateTo("/");
+	}
+
 	activeBtn() {
 		const backBtn = document.getElementById("back");
 		backBtn.addEventListener("click", e => {
@@ -181,6 +194,10 @@ export default class Settings extends AbstractView {
 		const changePasswordBtn = document.getElementById("change-password");
 		changePasswordBtn.addEventListener("click", () => {
 			this.changePassword();
+		});
+		const deleteAccountBtn = document.getElementById("delete-account");
+		deleteAccountBtn.addEventListener("click", () => {
+			this.deleteAccount();
 		});
 	}
 

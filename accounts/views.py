@@ -104,6 +104,16 @@ class UserLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class UserdeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        if self.request.user.is_authenticated:
+            request.user.delete()
+            return Response({'value' : 'User deleted'}, status=status.HTTP_200_OK)
+        return Response({'value' : 'User not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = (SessionAuthentication,)
