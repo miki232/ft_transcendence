@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 import requests
+import imghdr
 import urllib
 import os
 import uuid
@@ -135,8 +136,10 @@ class UserInfoView(APIView):
             request.user.pro_pic = request.POST['url']
             request.user.save()
             print(request.user.pro_pic)
-        elif 'imageFile' in request.FILE:
+        elif 'imageFile' in request.FILES:
             uploaded_file = request.FILES['imageFile']
+            if imghdr.what(uploaded_file) is None:
+                return Response({'Error' : "Uploaded file is not an image!"}, status=status.HTTP_400_BAD_REQUEST)
             fs = FileSystemStorage(location='media/profile_pics/')
             ext = uploaded_file.name.split('.')[-1]
             filename = '{}.{}'.format(uuid.uuid4(), ext)
