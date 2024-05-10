@@ -31,6 +31,8 @@ export default class Settings extends AbstractView {
 		changePasswordBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
 		changeUsernameBtn.setAttribute("disabled", "true");
+		changePasswordBtn.classList.remove("submit-btn");
+		changePasswordBtn.classList.add("settings-btn");
 		const changePasswordHTML = `
 			<div class="input-box change">
 				<input type="text" placeholder="New Username">
@@ -58,18 +60,34 @@ export default class Settings extends AbstractView {
 				return;
 			}
 			const csrf = await getCSRFToken();
-			await fetch('/accounts/user_info/', {
-				method: 'PUT',
-				headers: {
-					'Content-Type' : 'application/json',
-					'X-CSRFToken': csrf
-				},
-				body: JSON.stringify({
-					username : newUsername,
-				})
-			});
-			await this.user.loadUserData();
-			navigateTo("/settings");
+			try {
+				const response = await fetch('/accounts/user_info/', {
+					method: 'PUT',
+					headers: {
+						'Content-Type' : 'application/json',
+						'X-CSRFToken': csrf
+					},
+					body: JSON.stringify({
+						username : newUsername,
+					})
+				});
+				if (!response.ok) {
+					const data = await response.json();
+					console.log(data);
+					if (data.username && data.username[0]) {
+						console.error(data.username[0]);
+						throw new Error(data.username[0]);
+					}
+				} else {
+					await this.user.loadUserData();
+					createNotification("Username changed successfully!");
+					navigateTo("/dashboard");
+				}
+			} catch (error) {
+				input.value = "";
+				console.error('Error: ', error);
+				createNotification(error.message);
+			}
 		});
 		const cancelBtn = document.querySelector(".red-btn");
 		cancelBtn.addEventListener("click", e => {
@@ -78,6 +96,8 @@ export default class Settings extends AbstractView {
 			change_all.forEach(e => {
 				e.remove();
 			});
+			changePasswordBtn.classList.remove("settings-btn");
+			changePasswordBtn.classList.add("submit-btn");
 			changePicBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
@@ -93,6 +113,8 @@ export default class Settings extends AbstractView {
 		changeUsernameBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
 		changePasswordBtn.setAttribute("disabled", "true");
+		changePasswordBtn.classList.remove("submit-btn");
+		changePasswordBtn.classList.add("settings-btn");
 		const changePasswordHTML = `
 			<div class="input-box change">
 				<input type="password" placeholder="New Password" id="new-password">
@@ -103,8 +125,8 @@ export default class Settings extends AbstractView {
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn dashboard-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
-				<button type="button" class="submit-btn dashboard-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
 		changePasswordBtn.insertAdjacentHTML("afterend", changePasswordHTML);
@@ -162,6 +184,8 @@ export default class Settings extends AbstractView {
 			change_all.forEach(e => {
 				e.remove();
 			});
+			changePasswordBtn.classList.remove("settings-btn");
+			changePasswordBtn.classList.add("submit-btn");
 			changePicBtn.style.display = "block";
 			changeUsernameBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";

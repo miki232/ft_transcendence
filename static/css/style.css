@@ -221,7 +221,8 @@ header a img {
 	display: flex;
 }
 
-.submit-btn {
+.submit-btn,
+.settings-btn {
 	width: 76%;
 	height: 38px;
 	cursor: pointer;
@@ -303,7 +304,8 @@ header a img {
 	/* font-size: 20px; */
 }
 
-.submit-btn ion-icon {
+.submit-btn ion-icon,
+.settings-btn ion-icon {
 	margin-right: 10px;
 }
 
@@ -354,8 +356,8 @@ header a img {
 
 .change-btn {
 	width: 76%;
+	margin: 0;
 	display: flex;
-	justify-content: space-between;
 	gap: 15px;
 }
 
