@@ -39,6 +39,10 @@ body {
 	align-items: center;
 }
 
+img {
+	border-radius: 50%;
+}
+
 /***************** HEADER *****************/
 
 header {
@@ -91,6 +95,7 @@ header h1 {
 
 header a img {
 	height: 42px;
+	width: 42px;
 	vertical-align: middle;
 }
 
@@ -290,6 +295,7 @@ header a img {
 .settings img,
 .friend-info img {
 	height: 130px;
+	width: 130px;
 }
 
 .profile-card h3 {
@@ -340,6 +346,7 @@ header a img {
 
 .user-data img {
 	height: 100px;
+	width: 100px;
 }
 
 .settings .input-box {
@@ -528,6 +535,7 @@ div .requests-list {
 .user img,
 .request-line img {
 	height: 35px;
+	width: 35px;
 }
 
 .friend-online {
