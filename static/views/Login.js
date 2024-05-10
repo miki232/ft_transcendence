@@ -46,6 +46,23 @@ export default class extends AbstractView {
 		const loginBtn = document.getElementById("login-btn");
 		const registerBtn = document.getElementById("register-btn");
 		const form_box = document.querySelector(".form-box");
+
+		const loginSwap = document.querySelector(".login-btn");
+		const registerSwap = document.querySelector(".register-btn");
+		const login_username = document.querySelector("#login-user");
+		const login_pass = document.querySelector("#login-pass");
+
+		loginSwap.addEventListener("click", e => {
+			e.preventDefault();
+			form_box.classList.remove("change-form");
+		});
+
+		registerSwap.addEventListener("click", e => {
+			e.preventDefault();
+			form_box.classList.add("change-form");
+			login_username.value = "";
+			login_pass.value = "";
+		});
 		
 		loginBtn.addEventListener('click', async e => {
 			e.preventDefault();

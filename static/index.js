@@ -218,10 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
-		if (e.target.matches(".register-btn")) {
-			e.preventDefault();
-			form_box.classList.add("change-form");
-		}
 		if (e.target.matches(".info")) {
 			e.preventDefault();
 			dashboard.classList.add("change-view");

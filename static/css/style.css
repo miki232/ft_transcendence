@@ -297,7 +297,8 @@ header a img {
 	margin: 10px 0 15px 0;
 }
 
-.red-btn {
+.red-btn,
+.no-btn {
 	background-color: var(--logout-color);
 	color: white;
 	margin: 0;
@@ -364,6 +365,17 @@ header a img {
 .change-btn button {
 	height: 35px;
 	margin: 0;
+}
+
+.delete-box {
+	width: 76%;
+	text-align: center;
+	font-size: 20px;
+	margin: 30px 0 25px 0;
+}
+
+.delete-box h5 {
+	font-size: 20px;
 }
 
 div .requests-list {

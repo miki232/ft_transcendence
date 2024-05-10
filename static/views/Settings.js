@@ -193,16 +193,54 @@ export default class Settings extends AbstractView {
 	}
 
 	async deleteAccount() {
-		const csrf = await getCSRFToken();
-		await fetch('/accounts/delete/', {
-			method: 'POST',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken': csrf
-			}
+		const changePicBtn = document.getElementById("change-pic");
+		const changeUsernameBtn = document.getElementById("change-username");
+		const changePasswordBtn = document.getElementById("change-password");
+		const deleteAccountBtn = document.getElementById("delete-account");
+		changePicBtn.style.display = "none";
+		changeUsernameBtn.style.display = "none";
+		changePasswordBtn.style.display = "none";
+		deleteAccountBtn.setAttribute("disabled", "true");
+		deleteAccountBtn.classList.remove("red-btn");
+		deleteAccountBtn.classList.remove("submit-btn");
+		deleteAccountBtn.classList.add("no-btn");
+		deleteAccountBtn.classList.add("settings-btn");
+		const deleteAccountHTML = `
+			<div class="delete-box change"><h5>Are you sure you want to delete your account?</h5></div>
+			<div class="change-btn change">
+				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Yes</button>
+				<button type="button" class="submit-btn red-btn no-btn"><ion-icon name="close-outline"></ion-icon>No</button>
+			</div>
+		`;
+		deleteAccountBtn.insertAdjacentHTML("afterend", deleteAccountHTML);
+		const change_all = document.querySelectorAll(".change");
+		const confirmBtn = document.querySelector(".confirm-btn");
+		confirmBtn.addEventListener("click", async e => {
+			e.preventDefault();
+			const csrf = await getCSRFToken();
+			await fetch('/accounts/delete/', {
+				method: 'POST',
+				headers: {
+					'Content-Type' : 'application/json',
+					'X-CSRFToken': csrf
+				}
+			});
+			createNotification("Account deleted successfully!");
+			navigateTo("/");
 		});
-		createNotification("Account deleted successfully!");
-		navigateTo("/");
+		const cancelBtn = document.querySelectorAll(".no-btn");
+		cancelBtn[1].addEventListener("click", e => {
+			e.preventDefault();
+			deleteAccountBtn.removeAttribute("disabled");
+			change_all.forEach(e => {
+				e.remove();
+			});
+			deleteAccountBtn.classList.remove("settings-btn");
+			deleteAccountBtn.classList.add("submit-btn");
+			changePicBtn.style.display = "block";
+			changeUsernameBtn.style.display = "block";
+			changePasswordBtn.style.display = "block";
+		});
 	}
 
 	activeBtn() {
