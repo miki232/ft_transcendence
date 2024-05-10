@@ -243,6 +243,37 @@ export default class Settings extends AbstractView {
 		});
 	}
 
+	async uploadPic() {
+		document.getElementById("file-input").click();
+			document.getElementById("file-input").addEventListener("change", async e => {
+				if (e.target.files.length > 0) {
+					const csrf = await getCSRFToken();
+					const formData = new FormData();
+					formData.append('imageFile', e.target.files[0]);
+					try {
+						const response = await fetch('/accounts/user_info/', {
+							method: 'POST',
+							headers: {
+								'X-CSRFToken': csrf
+							},
+							body: formData
+						});
+						if (!response.ok) {
+							const data = await response.json();
+							throw new Error(data.Error);
+						}
+						const data = await response.json();
+						await this.user.loadUserData();
+						createNotification("Profile picture changed successfully!");
+						navigateTo("/settings");
+					} catch (error) {
+						console.error('Error: ', error);
+						createNotification(error.message);
+					}
+				}
+			});
+	}
+
 	activeBtn() {
 		const backBtn = document.getElementById("back");
 		backBtn.addEventListener("click", e => {
@@ -260,6 +291,10 @@ export default class Settings extends AbstractView {
 		const deleteAccountBtn = document.getElementById("delete-account");
 		deleteAccountBtn.addEventListener("click", () => {
 			this.deleteAccount();
+		});
+		const changePicBtn = document.getElementById("change-pic");
+		changePicBtn.addEventListener("click", () => {
+			this.uploadPic();
 		});
 	}
 
@@ -284,6 +319,7 @@ export default class Settings extends AbstractView {
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<h3>${this.user.getUser()}</h3>
 					</div>
+					<input type="file" id="file-input" style="display: none;" accept="image/*"/>
 					<button type="button" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Upload Avatar Image</button>
 					<button type="button" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
 					<button type="button" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
