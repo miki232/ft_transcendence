@@ -71,6 +71,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     
     def get_exp(self, obj):
         return obj.calculate_exp()
+    
     def get_level(self, obj):
         return obj.calculate_level()
     
