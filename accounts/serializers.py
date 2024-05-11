@@ -63,6 +63,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     newpassword = serializers.CharField(write_only=True, required=False)
     confirmpassword = serializers.CharField(write_only=True, required=False)
     level = serializers.SerializerMethodField()
+    exp = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
