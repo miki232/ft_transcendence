@@ -3,11 +3,13 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
 import os
 
 from .models import CustomUser, Match
+from friends.models import FriendList
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,9 +89,27 @@ class UserInfoSerializer(serializers.ModelSerializer):
             instance.save()
 
     def to_representation(self, instance):
-        request = self.context.get('request')
         self.set_default_pic(instance)
-        return super().to_representation(instance)
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        try:
+            username = request.query_params.get('username', None)
+            if username is None:
+                return representation
+        except AttributeError:
+            return representation
+        print(username, request.user)
+        if request and request.user.is_authenticated:
+            try:
+                friend_list = FriendList.objects.get(user=request.user)
+            except ObjectDoesNotExist:
+                representation.pop('status_login')
+                return representation
+            friend = CustomUser.objects.get(username=username)
+            is_mutual_friend = friend_list.is_mutual_friend(friend)
+            if is_mutual_friend == False:
+                representation.pop('status_login')
+        return representation
         
     def validate_newpassword(self, value):
         validate_password(value)
