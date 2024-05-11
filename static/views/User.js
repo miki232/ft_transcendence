@@ -176,12 +176,12 @@ export default class User extends AbstractView {
 
 	expProgress(){
 		const exp_bar = document.querySelector(".progress-bar");
-		const exp = 145;
-		const level = 11;
+		const exp = this.getExp();
+		const level = this.getLevel();
 		const exp_needed = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
 		const next_level = exp_needed[level + 1];
 		const percentage = (exp / next_level) * 100;
-		console.log(`% ${percentage} exp ${exp} level ${level}`);
+		percentage.toFixed(2);
 		exp_bar.style.width = `${percentage}%`;
 	}
 }
