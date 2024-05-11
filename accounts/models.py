@@ -25,12 +25,45 @@ class CustomUser(AbstractUser): # new
 
         return match_history
     # add additional fields in here
-    def calculate_level(self):
+    def calculate_exp(self):
         match_history = self.get_match_history()
         total_wins = len([match for match in match_history if match['winner__username'] == self.username])
-
-        # Set level equal to total wins
-        level = total_wins
+        total_loses = len([match for match in match_history if match['winner__username'] != self.username])
+        total_exp = total_wins - total_loses
+        return total_exp
+    
+    def calculate_level(self):
+        # match_history = self.get_match_history()
+        exp = {
+            0: 0,
+            1: 1,
+            1: 2,
+            2: 3,
+            3: 4,
+            5: 5,
+            8: 6,
+            13: 7,
+            21: 8,
+            34: 9,
+            55: 10,
+            89: 11,
+            144: 12,
+            233: 13,
+            377: 14,
+            610: 15
+        }
+        # total_wins = len([match for match in match_history if match['winner__username'] == self.username])
+        # total_loses = len([match for match in match_history if match['winner__username'] != self.username])
+        total_exp = 12
+        #self.calculate_exp()
+        if total_exp > 610:
+            total_exp = 610
+        if total_exp < 0:
+            total_exp = 0 
+        # Set level equal to total exp in exp list
+        for i in exp:
+            if total_exp >= i:
+                level = exp[i]
         if self.Ai:
             level = 0
 

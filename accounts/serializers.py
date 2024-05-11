@@ -66,8 +66,10 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp')
     
+    def get_exp(self, obj):
+        return obj.calculate_exp()
     def get_level(self, obj):
         return obj.calculate_level()
     

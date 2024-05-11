@@ -119,6 +119,7 @@ export default class extends AbstractView {
 				<div class="profile-card">
 					<img alt="Profile picture" src="${this.user.getPic()}"/>
 					<h3>${this.user.getUser()}</h3>
+					<h4>Level ${this.user.getLevel()}</h4>
 					<a href="/history" id="history-btn" class="submit-btn dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</a>
 					<a href="/requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
 					<a href="/settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>

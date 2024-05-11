@@ -166,7 +166,7 @@ export default class Settings extends AbstractView {
 						throw new Error(data.username[0]);
 					}
 				} else {
-					await this.user.loadUserData();
+					// await this.user.loadUserData();
 					createNotification("Username changed successfully!");
 					navigateTo("/dashboard");
 				}
@@ -257,7 +257,7 @@ export default class Settings extends AbstractView {
 					}
 				} else {
 					createNotification("Password changed successfully! Please log in again.");
-					await this.user.loadUserData();
+					// await this.user.loadUserData();
 					navigateTo("/");
 				}
 			} catch (error) {

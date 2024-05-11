@@ -3,14 +3,16 @@ import { createNotification } from "./Notifications.js";
 import { getCookie, sanitizeInput } from "../utilities.js";
 
 export default class User extends AbstractView {
-    constructor() {
-        super();
-        this.user;
-        this.email;
-        // this.password;
-        this.pro_pic;
-        this.logged = false;
-    }
+	constructor() {
+		super();
+		this.user;
+		this.email;
+		// this.password;
+		this.pro_pic;
+		this.logged = false;
+		this.level;
+		this.exp;
+	}
 
 	async logout(){
 		///Csrf_token
@@ -45,7 +47,7 @@ export default class User extends AbstractView {
 		});
 	}
 
-    async validateLogin() {
+	async validateLogin() {
 		try{
 			var username = (document.getElementById('login-user').value);
 			var password = (document.getElementById('login-pass').value);
@@ -69,37 +71,37 @@ export default class User extends AbstractView {
 			response.json();
 			console.log(response);
 			if (response.status === 200) {
-                this.logged = true;
-            } else {
-                createNotification("Wrong username or password");
-                this.logged = false;
-            }
+				this.logged = true;
+			} else {
+				createNotification("Wrong username or password");
+				this.logged = false;
+			}
 		}).then(data => console.log(data))
 		.catch((error) => {
 			console.error('Error: ', error);
 		})
 	}
 
-    async isLogged() {
-        var csrftoken = await this.getCSRFToken();
+	async isLogged() {
+		var csrftoken = await this.getCSRFToken();
 
-        return fetch('/accounts/user_info/', {
-            method: 'GET',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken': csrftoken
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-            	return true;
-            } else {
-            	return false;
-            }
-        });
-    }
+		return fetch('/accounts/user_info/', {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		})
+		.then(response => {
+			if (response.ok) {
+				return true;
+			} else {
+				return false;
+			}
+		});
+	}
 
-    async loadUserData() {
+	async loadUserData() {
 		const csrftoken = await this.getCSRFToken();
 
 		await fetch('/accounts/user_info/', {
@@ -115,14 +117,16 @@ export default class User extends AbstractView {
 				this.setUser(data.username);
 				this.setEmail(data.email);
 				this.setPic(data.pro_pic);
-                // this.setPassword(data.password);
+				this.setLevel(data.level);
+				this.setExp(data.exp);
+				// this.setPassword(data.password);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
 			})
 	}
 
-    setPic(data_pic) {
+	setPic(data_pic) {
 		this.pro_pic = data_pic;
 	}
 
@@ -134,9 +138,17 @@ export default class User extends AbstractView {
 		this.email = data_email;
 	}
 
-    setPassword(data_password) {
-        this.password = data_password;
-    }
+	// setPassword(data_password) {
+	//     this.password = data_password;
+	// }
+
+	setLevel(data_level){
+		this.level = data_level;
+	}
+
+	setExp(data_exp){
+		this.exp = data_exp;
+	}
 
 	getUser() {
 		return this.user;
@@ -150,7 +162,15 @@ export default class User extends AbstractView {
 		return this.pro_pic;
 	}
 
-    getPassword() {
-        return this.password;
-    }
+	// getPassword() {
+	//     return this.password;
+	// }
+
+	getLevel(){
+		return this.level;
+	}
+
+	getExp(){
+		return this.exp;
+	}
 }
