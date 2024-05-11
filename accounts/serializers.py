@@ -62,10 +62,14 @@ class LoginSerializer(serializers.Serializer):
 class UserInfoSerializer(serializers.ModelSerializer):
     newpassword = serializers.CharField(write_only=True, required=False)
     confirmpassword = serializers.CharField(write_only=True, required=False)
+    level = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level')
+    
+    def get_level(self, obj):
+        return obj.calculate_level()
     
     def set_default_pic(self, instance):
         """
