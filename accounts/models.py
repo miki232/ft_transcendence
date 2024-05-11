@@ -56,10 +56,7 @@ class CustomUser(AbstractUser): # new
             total_exp = 610
         if total_exp < 0:
             total_exp = 0 
-        # Set level equal to total exp in exp list
-        for i in exp:
-            if total_exp >= i:
-                level = exp[i]
+        level = exp[total_exp]
         if self.Ai:
             level = 0
 
