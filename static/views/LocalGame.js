@@ -12,6 +12,7 @@ export default class LocalGame extends AbstractView {
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		this.activeBtn();
+		this.user.expProgress();
 	}
 
 	activeBtn() {
@@ -66,8 +67,14 @@ export default class LocalGame extends AbstractView {
 			<div class="dashboard">
 				<div class="local-game">
 					<h1>Local Game</h1>
-					<img alt="Profile picture" src="${this.user.getPic()}"/>
-					<h3>${this.user.getUser()}</h3>
+					<div class="user-dashboard">
+						<img alt="Profile picture" src="${this.user.getPic()}"/>
+						<div class="user-info">
+							<h3>${this.user.getUser()}</h3>
+							<h5>Level ${this.user.getLevel()}</h5>
+							<div class="exp-bar"><div class="progress-bar"></div></div>
+						</div>
+					</div>
 					<button type="button" class="submit-btn dashboard-btn" id="vs-cpu"><ion-icon name="desktop-outline"></ion-icon>1P vs CPU</button>
 					<button type="button" class="submit-btn dashboard-btn" id="vs-player"><ion-icon name="people-outline"></ion-icon>1P vs 2P</button>
 				</div>

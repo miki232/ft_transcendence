@@ -306,7 +306,43 @@ header a img {
 	width: 130px;
 }
 
-.profile-card h3,
+.user-dashboard {
+	width: 76%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-bottom: 45px;
+}
+
+.user-info {
+	text-align: center;
+}
+
+.user-info h3 {
+	font-size: 36px;
+	margin-bottom: 15px;
+}
+
+.user-info h5 {
+	margin-bottom: 5px;
+}
+
+.exp-bar {
+	width: 100px;
+	height: 10px;
+	background-color: darkgray;
+	border-radius: 10px;
+	font-size: 8px;
+	color: black;
+}
+
+.exp-bar .progress-bar {
+	width: 0;
+	height: 100%;
+	background-color: white;
+	border-radius: 10px;
+}
+
 .local-game h3 {
 	font-size: 28px;
 	margin: 10px 0 15px 0;
