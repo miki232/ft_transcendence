@@ -296,10 +296,13 @@ export default class Friends extends AbstractView {
 								friendTitle.textContent = "Search Results";
 								friendsSearch.innerHTML += userElement;
 								var friendIcon = document.querySelectorAll(".friend-icon")[k++];
-								if (user.status_login)
-									friendIcon.classList.add("friend-online");
-								else
-									friendIcon.classList.add("friend-offline");
+								if (user.status_login !== undefined) {
+									if (user.status_login) {
+										friendIcon.classList.add("friend-online");
+									} else {
+										friendIcon.classList.add("friend-offline");
+									}
+								}
 							}
     		        	});					
 						friendInput.value = "";
