@@ -224,6 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
+		console.log(e.target);
 		if (e.target.matches(".info")) {
 			e.preventDefault();
 			dashboard.classList.add("change-view");
@@ -247,6 +248,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
+		}
+		if (e.target.matches(".nav-toggle")) {
+			const navLinks = document.querySelector(".nav-links");
+			console.log("SUCAAAAAAAAAAAAAAAAA");
+			navLinks.style.display === "block";
 		}
 		// if (e.target.matches("#login-btn")) {
 		// 	e.preventDefault();

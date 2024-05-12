@@ -104,6 +104,15 @@ header a img {
 	vertical-align: middle;
 }
 
+.nav-toggle {
+	display: none;
+	background-color: transparent;
+	border: none;
+	color: white;
+	font-size: 48px;
+	cursor: pointer;
+}
+
 /***************** MAIN *****************/
 
 /* #container { */
@@ -819,7 +828,30 @@ canvas {
 
 /************ MEDIA QUERIES ************/
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 860px) {
+
+	header {
+		padding: 15px 30px;
+	}
+
+	#logo {
+		margin: 0;
+	}
+
+	.nav-toggle {
+		display: block;
+	}
+
+	.nav-links {
+		display: none;
+		position: relative;
+		backdrop-filter: blur(20px);
+		color: white;
+		font-size: 20px;
+		border: 2px solid white;
+		border-radius: 20px;
+	}
+	
 	.form-box,
 	.dashboard {
 		width: 350px;
@@ -935,4 +967,7 @@ canvas {
 
 	.delete-box {
 		font-size: 18px;
-		margin: 25px
+		margin: 25px;
+	}
+
+}

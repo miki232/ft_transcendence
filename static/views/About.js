@@ -6,9 +6,14 @@ const aboutHTML = `
 `;
 
 const navHTML = `
-    <a href="/" name="index" data-link>Home</a>
-    <a href="/about" name="about" data-link>About</a>
-    <a href="/contact" name="contact" data-link>Contact</a>
+    <div class="nav">
+        <button type="button" class="nav-toggle"><ion-icon class="nav-toggle" name="menu-outline"></ion-icon></button>
+        <div class="nav-links">
+            <a href="/" name="index" data-link>Home</a>
+            <a href="/about" name="about" data-link>About</a>
+            <a href="/contact" name="contact" data-link>Contact</a>
+        </div>
+    </div>
 `;
 
 export default class extends AbstractView {
