@@ -852,10 +852,19 @@ canvas {
 
 	.nav-links {
 		display: none;
-		position: relative;
+		flex-direction: column;
+		padding: 14px;
+		gap: 8px; 
+	}
+
+	.nav-links a {
+		margin: 0;
+	}
+
+	.nav-links-toggle {
 		backdrop-filter: blur(20px);
 		color: white;
-		font-size: 20px;
+		font-size: 24px;
 		border: 2px solid white;
 		border-radius: 20px;
 	}

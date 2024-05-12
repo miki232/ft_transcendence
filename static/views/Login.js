@@ -7,7 +7,7 @@ export default class extends AbstractView {
     constructor(user) {
         super();
 		this.user = user;
-        this.setTitle("ft_transcendence");
+        this.setTitle("ft_The Match");
 		this.is_loggedin = false;
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("nav");

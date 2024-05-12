@@ -251,8 +251,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (e.target.matches(".nav-toggle")) {
 			const navLinks = document.querySelector(".nav-links");
-			console.log("SUCAAAAAAAAAAAAAAAAA");
-			navLinks.style.display === "block";
+			navLinks.classList.add("nav-links-toggle");
+			navLinks.style.display = "flex";
+
 		}
 		// if (e.target.matches("#login-btn")) {
 		// 	e.preventDefault();
