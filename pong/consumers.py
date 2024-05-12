@@ -465,6 +465,84 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event['state']))
 
 
+class Pong_LocalConsumer(AsyncWebsocketConsumer):
+    players = {}
+    async def connect(self):
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = "pong_%s" % self.room_name
+        self.user = self.scope['user']
+        self.loop_task = None
+        print(self.user, self.room_group_name, self.room_name)
+        await self.accept()
+
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        print("connected", self.room_group_name, self.channel_name)
+        self.state = {
+            'ball_x': 400,
+            'ball_y': 200,
+            'ball_speed_x': random.choice([-3, 3]),
+            'ball_speed_y': random.choice([-3, 3]),
+            'paddle1_y': 150,
+            'paddle2_y': 150,
+            'score1': 0,
+            'score2': 0,
+            'up_player_paddle_y': 0,
+            'down_player_paddle_y': 0,
+            'up_player2_paddle_y': 0,
+            'down_player2_paddle_y': 0,
+            'player': self.user.username,
+            'victory' : "none"
+        }
+
+        # await self.start_game()
+        # if len(PongConsumer.players[self.room_name]) == 2:
+        #     print("SUCA2", self.user.Ai)
+        #     # This is the second user, inherit the state from the first user
+        #     self.state = PongConsumer.shared_state
+        #     print(self.user1, self.user2)
+        #     # if (ai.Ai):
+        #     #     if (self.user1 == None):
+        #     #         self.user1 = ai
+        #     #     elif (self.user2 == None):
+        #     #         self.user2 = ai
+        #     print(self.user1, self.user2)
+
+        # elif len(PongConsumer.players[self.room_name]) > 2:
+        #     # This is a spectator
+        #     self.spectators.append(self.user.username)
+        #     self.spectator = True
+
+
+        # if len(PongConsumer.players[self.room_name] or ai) == 2:
+        #     self.loop_task = asyncio.create_task(self.game_loop())
+
+    async def receive(self, text_data):
+        message = json.loads(text_data)
+        print(f"Message from {message['username']}, {message['opponent']}")
+        await self.send(text_data=json.dumps("FUCK YOU"))
+        # if 'action' in message:
+        #     action = message['action']
+        #     if self.user.username == PongConsumer.players[self.room_name][0]:
+        #         if action == 'move_up':
+        #             self.state['up_player_paddle_y'] = 1
+        #         elif action == 'move_down':
+        #             self.state['down_player_paddle_y'] = 1
+        #     else:
+        #         if action == 'move_up':
+        #             self.state['up_player2_paddle_y'] = 1
+        #         elif action == 'move_down':
+        #             self.state['down_player2_paddle_y'] = 1
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+        return super().disconnect(code)
+
 
 
 class MatchMaking(AsyncWebsocketConsumer):

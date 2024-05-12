@@ -201,7 +201,7 @@ class GenericUserInfo(generics.ListAPIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        request.user.status_login = "Offline"
+        request.user.status_login = False
         request.user.save()
         logout(request)
         return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)
@@ -217,16 +217,43 @@ class UserSearchView(generics.ListAPIView):
             return CustomUser.objects.filter(username__icontains=query)
         return CustomUser.objects.none()
 
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #     if not queryset:
+    #         return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+    #     page = self.paginate_queryset(queryset)
+    #     print(page)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         if not queryset:
             return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            data = serializer.data
+            for item in data:
+                friendlist = FriendList.objects.get(user=request.user)
+                user_friend = CustomUser.objects.get(username=item['username'])
+                print("ppp", friendlist.is_mutual_friend(item['username']), friendlist.user.username)
+                if friendlist.is_mutual_friend(item['username']):  # Replace with your actual check
+                    item.pop('status_login', None)
+            return self.get_paginated_response(data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        data = serializer.data
+        for item in data:
+            friendlist = FriendList.objects.get(user=request.user)
+            user_friend = CustomUser.objects.get(username=item['username'])
+            print("aaa", item['username'], user_friend.username, friendlist.is_mutual_friend(user_friend), friendlist.user.username)
+            if friendlist.is_mutual_friend(user_friend) == False:  # Replace with your actual check
+                item.pop('status_login', None)
+        return Response(data)

@@ -14,11 +14,12 @@ export default class LocalGame extends AbstractView {
 		this.activeBtn();
 		this.user.expProgress();
 	}
-
+	
 	activeBtn() {
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
 		two_playerBtn.addEventListener("click", e => {
+			let ws = new WebSocket(`wss://127.0.0.1:8000/ws/local/prova/`);
 			e.preventDefault();
 			cpu_playerBtn.style.display = "none";
 			two_playerBtn.setAttribute("disabled", "true");
@@ -46,6 +47,19 @@ export default class LocalGame extends AbstractView {
 				two_playerBtn.classList.add("submit-btn");
 				cpu_playerBtn.style.display = "block";
 				two_playerBtn.removeAttribute("disabled");
+			})
+			const playBtn = document.querySelector(".confirm-btn");
+			playBtn.addEventListener("click", e => {
+				e.preventDefault();
+				const input = document.querySelector(".input-box input");
+				if (input.value === "") {
+					createNotification("Please enter a username", "error");
+					return;
+				}
+				ws.send(JSON.stringify({
+					"username": this.user.getUser(),
+					"opponent": input.value
+				}));
 			})
 		})
 	}

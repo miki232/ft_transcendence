@@ -7,9 +7,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
 import os
+import time
+import redis
 
 from .models import CustomUser, Match
 from friends.models import FriendList
+
+r = redis.Redis(host='localhost', port=6379, db=0)  # Connect to your Redis instance
 
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +42,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(style={'input_type': 'password'})
-
+    
     def validate(self, data):
         username = data.get('username', None)
         password = data.get('password', None)
@@ -47,7 +51,7 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
             if user:
                 if user.is_active:
-                    user.status_login = "online"
+                    # user.status_login = "online"
                     user.save()
                     data['user'] = user
                 else:
@@ -66,6 +70,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     confirmpassword = serializers.CharField(write_only=True, required=False)
     level = serializers.SerializerMethodField()
     exp = serializers.SerializerMethodField()
+    status_login = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
@@ -88,6 +93,9 @@ class UserInfoSerializer(serializers.ModelSerializer):
             instance.pro_pic = instance._meta.get_field('pro_pic').get_default()
             instance.save()
 
+    def get_status_login(self, obj):
+        return obj.is_user_online(obj.id)
+    
     def to_representation(self, instance):
         self.set_default_pic(instance)
         representation = super().to_representation(instance)
@@ -98,7 +106,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
                 return representation
         except AttributeError:
             return representation
-        print(username, request.user)
+        print("BOOOOOOOOOOOOOOOOOOO ",username, request.user)
         if request and request.user.is_authenticated:
             try:
                 friend_list = FriendList.objects.get(user=request.user)
@@ -109,6 +117,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             is_mutual_friend = friend_list.is_mutual_friend(friend)
             if is_mutual_friend == False:
                 representation.pop('status_login')
+            # else:
+            #     representation['status_login'] = self.is_user_online(friend.id)
         return representation
         
     def validate_newpassword(self, value):

@@ -110,7 +110,7 @@ e inviare direttamente con value modificato.
     "first_name": "",
     "last_name": "",
     "pro_pic": "/media/profile_pics/c5d29d70-3855-4b72-bf14-2e98c1f3766f.svg",
-    "status_login": "online",
+    "status_login": true,
     "is_active": true
     }
     ```
@@ -125,7 +125,7 @@ e inviare direttamente con value modificato.
     "first_name": "",
     "last_name": "",
     "pro_pic": "/media/profile_pics/c5d29d70-3855-4b72-bf14-2e98c1f3766f.svg",
-    "status_login": "online",
+    "status_login": true,
     "is_active": true
     }
     ```
@@ -156,7 +156,7 @@ e inviare direttamente con value modificato.
         "first_name": "",
         "last_name": "",
         "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-        "status_login": "online",
+        "status_login": true,
         "is_active": true
     }
     }
@@ -227,7 +227,7 @@ e inviare direttamente con value modificato.
             "first_name": "",
             "last_name": "",
             "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
-            "status_login": "online",
+            "status_login": true,
             "is_active": true
         },
         {
@@ -236,7 +236,7 @@ e inviare direttamente con value modificato.
             "first_name": "",
             "last_name": "",
             "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-            "status_login": "online",
+            "status_login": true,
             "is_active": true
         },
         {
@@ -245,7 +245,7 @@ e inviare direttamente con value modificato.
             "first_name": "",
             "last_name": "",
             "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-            "status_login": "Offline",
+            "status_login": true,
             "is_active": true
         }
     ]
@@ -285,7 +285,7 @@ e inviare direttamente con value modificato.
             "first_name": "",
             "last_name": "",
             "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
-            "status_login": "online",
+            "status_login": true,
             "is_active": true
         },
         "receiver": {
@@ -294,7 +294,7 @@ e inviare direttamente con value modificato.
             "first_name": "",
             "last_name": "",
             "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-            "status_login": "online",
+            "status_login": true,
             "is_active": true
         },
         "is_active": true,
@@ -336,7 +336,7 @@ e inviare direttamente con value modificato.
                 "first_name": "",
                 "last_name": "",
                 "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
-                "status_login": "online",
+                "status_login": true,
                 "is_active": true
             },
             "receiver": {
@@ -345,7 +345,7 @@ e inviare direttamente con value modificato.
                 "first_name": "",
                 "last_name": "",
                 "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-                "status_login": "online",
+                "status_login": true,
                 "is_active": true
             },
             "is_active": true,
@@ -508,7 +508,7 @@ e inviare direttamente con value modificato.
                 "first_name": "",
                 "last_name": "",
                 "pro_pic": "/media/profile_pics/8f876011-4825-42d9-8a7c-00f2af8aa1d9.svg",
-                "status_login": "online",
+                "status_login": true,
                 "is_active": true
             },
             "friends": [
@@ -518,7 +518,7 @@ e inviare direttamente con value modificato.
                 "first_name": "",
                 "last_name": "",
                 "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-                "status_login": "online",
+                "status_login": true,
                 "is_active": true
                 },
                 {
@@ -527,7 +527,7 @@ e inviare direttamente con value modificato.
                     "first_name": "",
                     "last_name": "",
                     "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
-                    "status_login": "Offline",
+                    "status_login": true,
                     "is_active": true
                 }
             ]
