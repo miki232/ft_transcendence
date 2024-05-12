@@ -251,7 +251,11 @@ class UserSearchView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         data = serializer.data
         for item in data:
-            friendlist = FriendList.objects.get(user=request.user)
+            try:
+                friendlist = FriendList.objects.get(user=request.user)
+            except ObjectDoesNotExist:
+                item.pop('status_login', None)
+                continue
             user_friend = CustomUser.objects.get(username=item['username'])
             print("aaa", item['username'], user_friend.username, friendlist.is_mutual_friend(user_friend), friendlist.user.username)
             if friendlist.is_mutual_friend(user_friend) == False:  # Replace with your actual check
