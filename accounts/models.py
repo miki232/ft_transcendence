@@ -11,7 +11,7 @@ class CustomUser(AbstractUser): # new
     #https://i.pravatar.cc/300
     #https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
     pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
-    # status_login = models.CharField(max_length=50, default="Offline")
+    status_login = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     Ai = models.BooleanField(default=False)
     # wins= models.PositiveIntegerField(default=0)
@@ -72,6 +72,8 @@ class CustomUser(AbstractUser): # new
     def is_user_online(self, user_id):
         last_seen_timestamp = r.zscore('online_users', user_id)
         if last_seen_timestamp is None:
+            return False
+        if self.status_login == False:
             return False
         current_time = int(time.time())
         return (current_time - last_seen_timestamp) <= 300  # 300 seconds = 5 minutes
