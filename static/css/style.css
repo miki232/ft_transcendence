@@ -814,3 +814,125 @@ canvas {
 	align-items: center;
 	width: 100%;
 }
+
+
+
+/************ MEDIA QUERIES ************/
+
+@media screen and (max-width: 1200px) {
+	.form-box,
+	.dashboard {
+		width: 350px;
+		height: 500px;
+	}
+
+	.form-box form h1 {
+		font-size: 30px;
+	}
+
+	.input-box input {
+		font-size: 14px;
+	}
+
+	.input-box label {
+		font-size: 15px;
+	}
+
+	.checkbox h5 {
+		font-size: 12px;
+	}
+
+	.checkbox label {
+		font-size: 14px;
+	}
+
+	.submit-btn,
+	.settings-btn,
+	.local-game-btn {
+		font-size: 14px;
+	}
+
+	.login-register p {
+		font-size: 14px;
+	}
+
+	.login-register a {
+		font-size: 14px;
+	}
+
+	/* .hr {
+		height: 2px;
+		width: 50%;
+		margin: 10px 0 15px 0;
+	} */
+
+	.user-dashboard {
+		margin-bottom: 35px;
+	}
+
+	.user-info h3 {
+		font-size: 30px;
+	}
+
+	.user-info h5 {
+		font-size: 16px;
+	}
+
+	.exp-bar {
+		width: 80px;
+		height: 8px;
+		font-size: 6px;
+	}
+
+	.exp-bar .progress-bar {
+		height: 100%;
+	}
+
+	.local-game h3 {
+		font-size: 24px;
+	}
+
+	.red-btn,
+	.no-btn {
+		font-size: 18px;
+	}
+
+	.submit-btn ion-icon,
+	.settings-btn ion-icon,
+	.local-game-btn ion-icon {
+		margin-right: 8px;
+	}
+
+	.dashboard-btn {
+		margin: 5px 0;
+	}
+
+	.user-data h1 {
+		margin: 8px 0;
+	}
+
+	.settings .input-box {
+		margin: 5px 0;
+	}
+
+	.settings .input-box ion-icon,
+	.local-game .input-box ion-icon {
+		margin-left: auto;
+	}
+
+	.settings .confirm-btn,
+	.local-game .confirm-btn {
+		font-size: 16px;
+	}
+
+	.change-btn {
+		font-size: 12px;
+	}
+
+	.change-btn button {
+		height: 30px;
+	}
+
+	.delete-box {
+		font-size: 18px;
+		margin: 25px

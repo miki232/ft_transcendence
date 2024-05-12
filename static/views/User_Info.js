@@ -53,7 +53,7 @@ export default class UserInfo extends AbstractView {
 			const friendInfo = `
 				<img src="${data.user.pro_pic}" alt="User pic">
 				<h3>${data.user.username}</h3>
-				<h4>${is_friend ? data.user.status_login ? "Online" : "Offline" : null}</h4>
+				${is_friend ? data.user.status_login ? "<h4>Online</h4>" : "<h4>Offline</h4>" : ""}
 				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
 				<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
 				${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 

@@ -44,7 +44,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="link-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
@@ -127,7 +127,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
@@ -213,7 +213,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept modify</button>
+				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
