@@ -15,6 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from accounts.models import Match, CustomUser
+from frontend.models import roomLocal
 from .models import WaitingUser, RoomName
 
 SCREEN_WIDTH = 800
@@ -557,10 +558,20 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                         elif action == 'move_down':
                             self.state['down_player2_paddle_y'] = 1
 
+    @database_sync_to_async
+    def free_room(self, roomname):
+        try:
+            roomLocal.objects.get(roomname=roomname).delete()
+        except:
+            return False
+        return True
         
     async def disconnect(self, code):
         if self.loop_task is not None:
             self.loop_task.cancel()
+
+        result = await self.free_room(self.room_name)
+        # print("DISCONNECTED, ROOM DELETED: ", result)
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name

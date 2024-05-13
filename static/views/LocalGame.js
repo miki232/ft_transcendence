@@ -16,6 +16,8 @@ export default class LocalGame extends AbstractView {
 		this.user.expProgress();
 		this.ws_local = null;
 		this.opponent = null;
+		this.room = null;
+		this.getRoom();
 	}
 	
 	async getWebSocket() {
@@ -40,12 +42,30 @@ export default class LocalGame extends AbstractView {
         }
     }
 
-
+	async getRoom() {
+		await fetch('/room_namelocal/', {
+			method: 'GET'
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				this.room = (data.roomname);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			})
+		return this.room;
+	}
 	activeBtn() {
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
 		two_playerBtn.addEventListener("click", e => {
-			this.ws_local = new WebSocket(`wss://127.0.0.1:8000/ws/local/prova/`);
+			this.ws_local = new WebSocket('wss://'
+			        + window.location.hostname
+			        + ':8000'
+			        + '/ws/local/'
+			        + this.room
+			        + '/');
 			e.preventDefault();
 			cpu_playerBtn.style.display = "none";
 			two_playerBtn.setAttribute("disabled", "true");
@@ -95,7 +115,7 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
-					const view = new LocalPong(this.user, data["opponent"], "prova", this.ws_local);
+					const view = new LocalPong(this.user, data["opponent"], this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();
 					await view.loop();
 					// navigateTo("/game");
