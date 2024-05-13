@@ -30,7 +30,7 @@ html, body {
 }
 
 body {
-	background-image: url(../img/bb.jpeg);
+	background-image: url(../img/bg1.jpg);
 	background-size: cover;
 	/* background: 
 		radial-gradient(circle at 30% 30%, red, transparent 50%),
@@ -806,6 +806,17 @@ div .requests-list {
 	background-position: center -100px;
 	color: var(--quaternary-color);
 	line-height: 1.6;
+}
+
+
+.countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: white;
+    z-index: 1;
 }
 
 canvas {

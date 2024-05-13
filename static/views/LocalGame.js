@@ -2,6 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { navigateTo } from "../index.js";
 import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
+import LocalPong from "./Localpong.js";
 
 export default class LocalGame extends AbstractView {
 	constructor(user) {
@@ -57,10 +58,24 @@ export default class LocalGame extends AbstractView {
 					return;
 				}
 				ws.send(JSON.stringify({
+					"Handling": "lobby",
 					"username": this.user.getUser(),
-					"opponent": input.value
+					"opponent": input.value,
+					"status": "not_ready",
 				}));
+
 			})
+			ws.onmessage = async (e) => {
+				const data = JSON.parse(e.data);
+				console.log(data);
+				if (data["status"] === 0) {
+					const view = new LocalPong(this.user, data["opponent"], "prova", ws);
+					this.content.innerHTML = await view.getContent();
+					await view.loop();
+				} else  {
+					console.log("ERROR")
+				}
+			}
 		})
 	}
 

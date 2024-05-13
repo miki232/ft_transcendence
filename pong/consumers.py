@@ -467,6 +467,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 class Pong_LocalConsumer(AsyncWebsocketConsumer):
     players = {}
+    status = {}
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "pong_%s" % self.room_name
@@ -480,6 +481,8 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        Pong_LocalConsumer.players[self.room_name] = []
+        Pong_LocalConsumer.players[self.room_name].append(self.user.username)
         print("connected", self.room_group_name, self.channel_name)
         self.state = {
             'ball_x': 400,
@@ -522,27 +525,239 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         message = json.loads(text_data)
-        print(f"Message from {message['username']}, {message['opponent']}")
-        await self.send(text_data=json.dumps("FUCK YOU"))
-        # if 'action' in message:
-        #     action = message['action']
-        #     if self.user.username == PongConsumer.players[self.room_name][0]:
-        #         if action == 'move_up':
-        #             self.state['up_player_paddle_y'] = 1
-        #         elif action == 'move_down':
-        #             self.state['down_player_paddle_y'] = 1
-        #     else:
-        #         if action == 'move_up':
-        #             self.state['up_player2_paddle_y'] = 1
-        #         elif action == 'move_down':
-        #             self.state['down_player2_paddle_y'] = 1
+        # print(f"Message from {message['username']}, {message['opponent']}")
+        match message['Handling']:
+            case "lobby":
+                if message['opponent'] != None:
+                    if message['opponent'] not in Pong_LocalConsumer.players[self.room_name]:
+                        Pong_LocalConsumer.players[self.room_name].append(message['opponent'])
+                await self.send(text_data=json.dumps("FUCK YOU"))
+                print(Pong_LocalConsumer.players[self.room_name][0], Pong_LocalConsumer.players[self.room_name][1])
+                if len(Pong_LocalConsumer.players[self.room_name]) == 2:
+                    print("THE GAME CAN START NOW")
+                    await self.send(text_data=json.dumps("THE GAME CAN START NOW"))
+                    if message["status"] == "ready":
+                        Pong_LocalConsumer.status[self.room_name] = False
+                        self.loop_task = asyncio.create_task(self.game_loop())
+                    else :
+                        await self.send(text_data=json.dumps({'status' : 0, 'opponent' : Pong_LocalConsumer.players[self.room_name][1]}))
+            case "ingame":
+                # print("paass")
+                if 'action' in message:
+                    action = message['action']
+                    user = message['user']
+                    if user == Pong_LocalConsumer.players[self.room_name][0]:
+                        if action == 'move_up':
+                            self.state['up_player_paddle_y'] = 1
+                        elif action == 'move_down':
+                            self.state['down_player_paddle_y'] = 1
+                    else:
+                        if action == 'move_up':
+                            self.state['up_player2_paddle_y'] = 1
+                        elif action == 'move_down':
+                            self.state['down_player2_paddle_y'] = 1
+
+        
     async def disconnect(self, code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
         return super().disconnect(code)
+    
+    async def countdown(self):
+        for i in range(3, 0, -1):
+            print(f"Game starts in {i}...")
+            await self.send(text_data=json.dumps({'countdown': i}))
+            await asyncio.sleep(1)
+        await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start'}))
+        await asyncio.sleep(1)
 
+    async def move_paddle_up(self, player):
+        if player == Pong_LocalConsumer.players[self.room_name][0]:
+            print("paddle1_y", self.state['paddle1_y'])
+            if self.state['paddle1_y'] > 0:
+                self.state['paddle1_y'] -= 5
+        else:
+            if self.state['paddle2_y'] > 0:
+                self.state['paddle2_y'] -= 5
+
+    async def move_paddle_down(self, player):
+        if player == Pong_LocalConsumer.players[self.room_name][0]:
+            print("paddle1_y", self.state['paddle1_y'])
+            if self.state['paddle1_y'] < 300:
+                self.state['paddle1_y'] += 5
+        else:
+            if self.state['paddle2_y'] < 300:
+                self.state['paddle2_y'] += 5
+
+    def check_collision(self):
+        if (
+            self.state['ball_x'] <= 10
+            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+        ):
+            diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
+            rad = math.radians(45)
+            angle = map_value(diff, -50, 50, -rad, rad)
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            self.state['ball_speed_x'] = 5 * math.cos(angle)
+            self.state['ball_speed_y'] = 5 * math.sin(angle)
+        if (
+            self.state['ball_x'] >= 790
+            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+        ):
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
+            angle = map_value(diff, -50, 50, math.radians(255), math.radians(135))
+            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            self.state['ball_speed_x'] = 5 * math.cos(angle)
+            self.state['ball_speed_y'] = 5 * math.sin(angle)
+
+
+    async def reset(self):
+        await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': self.state
+                }
+            )
+
+    async def game_loop(self):
+        last_ai_update_time = time.time()
+        await self.countdown()
+        print("GAME LOOP", Pong_LocalConsumer.status[self.room_name])
+        while (Pong_LocalConsumer.status[self.room_name]) == False:
+            current_time = time.time()
+            await asyncio.sleep(0.01)
+            # print(self.user1.Ai, "AI", self.user1.username, self.user2.Ai, "AI2", self.user2.username)
+            """Find who is the AI and move the paddle accordingly"""
+            # if (self.user1.Ai or self.user2.Ai):
+            #     if current_time - last_ai_update_time >= 1:
+            #         ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
+            #         last_ai_update_time = current_time
+            #     if (self.user1.Ai):
+            #         self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], ai_target_pos, 5)
+            #     else:
+            #         self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], ai_target_pos, 5)
+            # await asyncio.sleep(0.01)
+            # if self.spectator:
+            #     await self.channel_layer.group_send(
+            #         self.room_group_name,
+            #         {
+            #             'type': 'game_state',
+            #             'state': self.state
+            #         }
+            #     )
+            #     continue
+            # Move paddles based on player input
+            if self.state['up_player_paddle_y'] == 1:
+                print("up_player_paddle_y")
+                await self.move_paddle_up(Pong_LocalConsumer.players[self.room_name][0])
+                self.state['up_player_paddle_y'] = 0
+            if self.state['down_player_paddle_y'] == 1:
+                await self.move_paddle_down(Pong_LocalConsumer.players[self.room_name][0])
+                self.state['down_player_paddle_y'] = 0
+            if self.state['up_player2_paddle_y'] == 1:
+                await self.move_paddle_up(Pong_LocalConsumer.players[self.room_name][1])
+                self.state['up_player2_paddle_y'] = 0
+            if self.state['down_player2_paddle_y'] == 1:
+                await self.move_paddle_down(Pong_LocalConsumer.players[self.room_name][1])
+                self.state['down_player2_paddle_y'] = 0
+
+
+            # Update ball position
+            self.state['ball_x'] += self.state['ball_speed_x']
+            self.state['ball_y'] += self.state['ball_speed_y']
+
+            # Collision with top and bottom walls
+            if self.state['ball_y'] <= 0:
+                self.state['ball_speed_y'] = -self.state['ball_speed_y']
+            if self.state['ball_y'] >= 400:
+                self.state['ball_speed_y'] = -self.state['ball_speed_y']
+
+            # # Collision with paddles
+            self.check_collision()
+            # if (
+            #     self.state['ball_x'] <= 10
+            #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+            # ):
+            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            # if (
+            #     self.state['ball_x'] >= 790
+            #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+            # ):
+            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
+
+            # Scoring
+            if self.state['ball_x'] <= 0:
+                self.state['score2'] += 1
+                # await self.set_score(self.match, self.state['score2'], Pong_LocalConsumer.players[self.room_name][1])
+                self.state['ball_x'] = 400
+                self.state['ball_y'] = 200
+                # self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
+                # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+
+                self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
+                self.state['ball_speed_y'] = 3
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+                await self.reset()
+                await self.countdown()
+
+            elif self.state['ball_x'] >= 800:
+                self.state['score1'] += 1
+                # await self.set_score(self.match, self.state['score1'], Pong_LocalConsumer.players[self.room_name][0])
+                self.state['ball_x'] = 400
+                self.state['ball_y'] = 200
+                # self.state['ball_speed_x'] = +self.state['ball_speed_y']
+                # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+                self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
+                self.state['ball_speed_y'] = -3
+                print("ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
+                await self.reset()
+                await self.countdown()
+
+
+            if self.state['score1']  >= 7 or self.state['score2'] >= 7:
+                if self.state['score1'] >= 7:
+                    await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][0])
+                elif self.state['score2'] >= 7:
+                    await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][1])
+                Pong_LocalConsumer.status[self.room_name] = True
+                
+            # Send updated game state to all clients
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': self.state
+                }
+            )
+        # if self.room_name in Pong_LocalConsumer.status and Pong_LocalConsumer.status[self.room_name]:
+        #     print("THE winner is", self.match.winner)
+        #     self.state['victory'] = self.match.winner.username
+        #     await self.channel_layer.group_send(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'game_state',
+        #         'state': self.state
+        #     }
+        #     )
+        #     await asyncio.sleep(1.5)  # Wait for 1 second
+        #     await self.close()
+        #     return
+
+    async def handle_message(self, event):
+        message_type = event['type']
+        if message_type == 'game_state':
+            # We already have a handler for the game_state message
+            pass  # Do nothing for now (game state is handled
+
+    async def game_state(self, event):
+        # Send the game state to the client
+        await self.send(text_data=json.dumps(event['state']))
 
 
 class MatchMaking(AsyncWebsocketConsumer):
