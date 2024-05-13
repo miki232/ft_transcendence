@@ -5,6 +5,7 @@ import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
 import Pong from "./views/Pong.js";
 import LocalPong from "./views/Localpong.js";
+import LocalGame from "./views/LocalGame.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -103,7 +104,7 @@ const router = async () => {
         { path: "/user_info", view: () => import('./views/User_Info.js') },
         { path: "/online", view: () => import('./views/MatchMaking.js') },
         { path: "/pong", view: () => import('./views/Pong.js') },
-		{ path: "/game", view: () => import('./views/Localpong.js')}
+		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 	
 	if (view instanceof MatchMaking)
@@ -115,9 +116,9 @@ const router = async () => {
 	{
 		view.closeWebSocket();
 	}
-	if (view instanceof LocalPong)
+	if (view instanceof LocalGame)
 	{
-		view.closeWebSocket();
+		await view.closeWebSocket();
 	}
 	const potentialMatches = routes.map(route => {
 		return {
@@ -182,7 +183,6 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
-			
 			break;
 		case "/friends":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -214,12 +214,12 @@ const router = async () => {
 			container.innerHTML = await view.getContent();
 			await view.loop();
 			break;
-		case "/game":
-			const LocalPongClass = await match.route.view();
-			view = new LocalPongClass.default(localGame_Cache["user"], localGame_Cache["opponent"], "prova", localGame_Cache["ws_connection"]);
-			content.innerHTML = await view.getContent();
-			await view.loop();
-			break;
+		// case "/game":
+		// 	const LocalPongClass = await match.route.view();
+		// 	view = new LocalPongClass.default(localGame_Cache["user"], localGame_Cache["opponent"], "prova", localGame_Cache["ws_connection"]);
+		// 	content.innerHTML = await view.getContent();
+		// 	await view.loop();
+		// 	break;
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}

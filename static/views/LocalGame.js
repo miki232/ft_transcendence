@@ -30,6 +30,17 @@ export default class LocalGame extends AbstractView {
 		return this.opponent;
 	}
 
+	async closeWebSocket() {
+        if (this.ws_local) {
+            //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
+            // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
+            // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
+            this.ws_local.close();
+            console.log("DISCONNECTED FROM WEBSOCKET PONG");
+        }
+    }
+
+
 	activeBtn() {
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
@@ -84,13 +95,11 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
-					// const view = new LocalPong(this.user, data["opponent"], "prova", ws);
-					// this.content.innerHTML = await view.getContent();
-					// await view.loop();
-					navigateTo("/game");
-				} else  {
-					console.log("ERROR")
-				}
+					const view = new LocalPong(this.user, data["opponent"], "prova", this.ws_local);
+					this.content.innerHTML = await view.getContent();
+					await view.loop();
+					// navigateTo("/game");
+				} 
 			}
 		})
 	}
