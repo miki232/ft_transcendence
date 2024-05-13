@@ -1,5 +1,12 @@
-export default class LocalPong{
+import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
+import Room from "./Room.js";
+import { createNotification } from "./Notifications.js";
+
+
+export default class LocalPong extends AbstractView{
     constructor(user, opponent, room_name, ws){
+        super();
         this.room_name = room_name;
         this.game_ws = ws;
         this.ballX = 0;
@@ -106,6 +113,7 @@ export default class LocalPong{
     }
 
     async loop(){
+        console.log('loop', this.game_ws);
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
         document.addEventListener('keydown', (event) => {

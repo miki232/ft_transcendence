@@ -4,6 +4,7 @@ import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
 import Pong from "./views/Pong.js";
+import LocalPong from "./views/Localpong.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -32,6 +33,7 @@ var user = new User();
 let view = null;
 var refreshRoomList;
 var ws;
+var localGame_Cache = {};
 // const room = new Room()
 let room_name;
 let username;
@@ -100,7 +102,8 @@ const router = async () => {
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
         { path: "/online", view: () => import('./views/MatchMaking.js') },
-        { path: "/pong", view: () => import('./views/Pong.js') }
+        { path: "/pong", view: () => import('./views/Pong.js') },
+		{ path: "/game", view: () => import('./views/Localpong.js')}
 	];
 	
 	if (view instanceof MatchMaking)
@@ -109,6 +112,10 @@ const router = async () => {
 		console.log("DISCONNESIONE DALLA WEBSOCKET");
 	}
 	if (view instanceof Pong)
+	{
+		view.closeWebSocket();
+	}
+	if (view instanceof LocalPong)
 	{
 		view.closeWebSocket();
 	}
@@ -175,6 +182,7 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
+			
 			break;
 		case "/friends":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -206,6 +214,12 @@ const router = async () => {
 			container.innerHTML = await view.getContent();
 			await view.loop();
 			break;
+		case "/game":
+			const LocalPongClass = await match.route.view();
+			view = new LocalPongClass.default(localGame_Cache["user"], localGame_Cache["opponent"], "prova", localGame_Cache["ws_connection"]);
+			content.innerHTML = await view.getContent();
+			await view.loop();
+			break;
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
@@ -225,6 +239,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		console.log(e.target);
+		if (e.target.matches(".submit-btn")) {
+			localGame_Cache["ws_connection"] = await view.getWebSocket();
+			localGame_Cache["user"] = view.getUser();
+			localGame_Cache["opponent"] = view.getOpponent();
+		}
 		if (e.target.matches(".info")) {
 			e.preventDefault();
 			dashboard.classList.add("change-view");

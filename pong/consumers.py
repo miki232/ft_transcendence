@@ -559,6 +559,8 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
         
     async def disconnect(self, code):
+        if self.loop_task is not None:
+            self.loop_task.cancel()
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name

@@ -19,7 +19,7 @@ from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic.base import TemplateView # new
-
+from frontend.views import index # new
 urlpatterns = [
     path("", include("frontend.urls")),
     path('admin/', admin.site.urls),
@@ -30,4 +30,4 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")), # new
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += [re_path(r'^.*', include("frontend.urls"), name='index')]
+urlpatterns += [re_path(r'^.*/', include("frontend.urls"), name='index')]
