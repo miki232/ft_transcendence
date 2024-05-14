@@ -115,7 +115,7 @@ while running:
         if player_paddle_pos <= ball_pos[1] <= player_paddle_pos + PADDLE_HEIGHT:
             ball_velocity[0] *= -1
         else:
-            print("AI Wins!")
+            print("","AI Wins!")
             running = False
 
     if ball_pos[0] >= SCREEN_WIDTH - PADDLE_WIDTH - BALL_SIZE:  # AI's paddle

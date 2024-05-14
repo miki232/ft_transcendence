@@ -70,7 +70,6 @@ def callback(request):
     user_info = response.json()
 
     # Check if the user already exists in your database
-    # print(user_info['image']['link'])
     user, created = CustomUser.objects.get_or_create(
         username=user_info['login'],
         pro_pic=user_info['image']['link'],
@@ -211,9 +210,9 @@ class UserSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         query = self.request.query_params.get('q', None)
-        print(query)
+        print("Get Query Set 213", query)
         if query is not None:
-            print(query)
+            print("Get Query Set 215", query)
             return CustomUser.objects.filter(username__icontains=query)
         return CustomUser.objects.none()
 
@@ -223,7 +222,6 @@ class UserSearchView(generics.ListAPIView):
     #         return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     #     page = self.paginate_queryset(queryset)
-    #     print(page)
     #     if page is not None:
     #         serializer = self.get_serializer(page, many=True)
     #         return self.get_paginated_response(serializer.data)
@@ -243,7 +241,7 @@ class UserSearchView(generics.ListAPIView):
             for item in data:
                 friendlist = FriendList.objects.get(user=request.user)
                 user_friend = CustomUser.objects.get(username=item['username'])
-                print("ppp", friendlist.is_mutual_friend(item['username']), friendlist.user.username)
+                print("List 244", friendlist.is_mutual_friend(item['username']), friendlist.user.username)
                 if friendlist.is_mutual_friend(item['username']):  # Replace with your actual check
                     item.pop('status_login', None)
             return self.get_paginated_response(data)
@@ -257,7 +255,7 @@ class UserSearchView(generics.ListAPIView):
                 item.pop('status_login', None)
                 continue
             user_friend = CustomUser.objects.get(username=item['username'])
-            print("aaa", item['username'], user_friend.username, friendlist.is_mutual_friend(user_friend), friendlist.user.username)
+            print("List 258", item['username'], user_friend.username, friendlist.is_mutual_friend(user_friend), friendlist.user.username)
             if friendlist.is_mutual_friend(user_friend) == False:  # Replace with your actual check
                 item.pop('status_login', None)
         return Response(data)

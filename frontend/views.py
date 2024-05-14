@@ -43,7 +43,7 @@ def room_namelocal(request, attempts=0):
         for i in range(10):
             room_name += alphanum[random.randint(0, len(alphanum) - 1)]
         try:
-            print(request.user.username)
+            print("Room namelocal 46", request.user.username)
             users = CustomUser.objects.get(username=request.user.username)
             if len(roomLocal.objects.filter(user=users)) >= 3:
                 users.is_active = False

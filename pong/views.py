@@ -29,7 +29,7 @@ class CreateRoomView(APIView):
             sfidante = request.data.get("to_fight")
             user_to_fight = CustomUser.objects.get(username=sfidante)
             user = CustomUser.objects.get(username=username)
-            print(user_to_fight)
+            print("Create Room View 32", user_to_fight)
             send_save_notification(user_to_fight, f"{username} Want to play with YOU!")
             serializer = RoomNameSerializer(data={
             'created_by': user,
@@ -41,7 +41,7 @@ class CreateRoomView(APIView):
             public = True
             room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
             # Pass the primary keys to the serializer
-            print(CustomUser.calculate_level(user))
+            print("Create Room View 44", CustomUser.calculate_level(user))
             serializer = RoomNameSerializer(data={
                 'created_by': user,
                 'opponent': user_to_fight,
@@ -61,7 +61,6 @@ class ListRoomView(APIView):
     o se è una room pubblica
     """
     def get(self, request, format=None):
-        # print(request.user)
         user = CustomUser.objects.get(username=request.user)
         
         # Filter the RoomName queryset to only include rooms created by the user's friends or by the request.user, and where public is True

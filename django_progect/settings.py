@@ -51,7 +51,8 @@ SECURE_BROWSER_XSS_FILTER = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.4", "10.11.4.4", "127.0.0.1", '192.168.122.1', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
+# ALLOWED_HOSTS = ["192.168.1.4", "10.11.4.4", "127.0.0.1", '192.168.122.1', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

@@ -9,7 +9,7 @@ class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "chat_%s" % self.room_name
-        print(self.scope["user"])
+        print("Connect 12", self.scope["user"])
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -50,7 +50,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(
             f"notifications_{self.user.id}", self.channel_name
         )
-        print(f"Connected and joined group notifications_{self.user.id}")
+        print("Connect 53", f"Connected and joined group notifications_{self.user.id}")
         await self.accept()
 
         notificationslist = await self.get_notifications()
@@ -64,7 +64,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_notifications(self):
-        print("SUCA: ", self.user, " dd ", self.user.id)
+        print("Get Notifications 67", self.user, " dd ", self.user.id)
         return list(Notifications.objects.filter(user=self.user.id))
 
     @database_sync_to_async
@@ -79,15 +79,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         content = text_data_json["action"]
-        print(content)
+        print("Receive 82", content)
         await self.update_notifications()
         # await self.send(text_data=json.dumps({
         #     'message' : content
         # }))
 
     async def notifier(self, event):
-        print("Notifier method called")
-        print(event)
+        print("Notifier 89", "Notifier method called")
+        print("Notifier 90", event)
 
         await self.send(text_data=json.dumps({
             'content' : event['message'],

@@ -106,7 +106,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
                 return representation
         except AttributeError:
             return representation
-        print("BOOOOOOOOOOOOOOOOOOO ",username, request.user)
+        print("To Representation 109", "BOOOOOOOOOOOOOOOOOOO ",username, request.user)
         if request and request.user.is_authenticated:
             try:
                 friend_list = FriendList.objects.get(user=request.user)
@@ -133,12 +133,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
             instance.password = make_password(validated_data.pop('newpassword'))
         if (request and 'pro_pic' in request.data and request.data['pro_pic'] == instance._meta.get_field('pro_pic').get_default()
             and instance.pro_pic != instance._meta.get_field('pro_pic').get_default()):
-            print("Default Pic")
+            print("Update 136", "Default Pic")
             validated_data['pro_pic'] = instance._meta.get_field('pro_pic').get_default()
             pro_pic_path = os.path.join(settings.BASE_DIR, instance.pro_pic.lstrip('/'))
-            print(pro_pic_path)
+            print("Update 139", pro_pic_path)
             if os.path.exists(pro_pic_path):
-                print("DELETED")
+                print("Update 141", "DELETED")
                 os.remove(pro_pic_path)
         return super().update(instance, validated_data)
     
