@@ -40,11 +40,19 @@ def room_namelocal(request, attempts=0):
         
         alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         room_name = ""
+        rooms = None
         for i in range(10):
             room_name += alphanum[random.randint(0, len(alphanum) - 1)]
         try:
             print("Room namelocal 46", request.user.username)
             users = CustomUser.objects.get(username=request.user.username)
+            try:
+                rooms = roomLocal.objects.get(user=users)
+                if rooms is not None:
+                    print(rooms.roomname)
+                    return JsonResponse({'roomname': rooms.roomname})
+            except:
+                pass
             if len(roomLocal.objects.filter(user=users)) >= 3:
                 users.is_active = False
                 users.save()

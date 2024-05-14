@@ -43,18 +43,22 @@ export default class LocalGame extends AbstractView {
     }
 
 	async getRoom() {
-		await fetch('/room_namelocal/', {
-			method: 'GET'
-		})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-				this.room = (data.roomname);
+		if (this.room == null){
+
+			await fetch('/room_namelocal/', {
+				method: 'GET'
 			})
-			.catch((error) => {
-				console.error('Error:', error);
-			})
-		return this.room;
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					this.room = (data.roomname);
+				})
+				.catch((error) => {
+					console.error('Error:', error);
+				})
+				return this.room;
+			}
+		return this.room
 	}
 	activeBtn() {
 		const two_playerBtn = document.getElementById("vs-player");

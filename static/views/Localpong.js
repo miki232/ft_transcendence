@@ -172,18 +172,13 @@ export default class LocalPong extends AbstractView{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            // if (data.score1 !== undefined) {
-            //     if (data.player === users)
-            //         document.getElementById("score1").innerHTML = "Your Score: " + data.score1;
-            //     else
-            //         document.getElementById("score1").innerHTML = "Not your Score: " + data.score1;
-            // }
-            // if (data.score2 !== undefined) {
-            //     if (data.player !== users)
-            //         document.getElementById("score2").innerHTML = "Your Score: " + data.score2;
-            //     else
-            //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
-            // }
+            if (data.score1 !==  this.users.user) {
+                document.getElementById("score2").innerHTML = this.users.user + " Score: " + data.score2;
+
+            }
+            if (data.score2 !==  this.opponent) {
+                document.getElementById("score2").innerHTML = this.opponent + " Score: " + data.score2;
+            }
             // if (data.victory != "none"){
             //     console.log(data.victory);
             //     if (users === data.victory)
@@ -204,6 +199,8 @@ export default class LocalPong extends AbstractView{
         //     console.log(data);
         // };
         return  `
+            <h1 id="score1">Score: 0</h1>
+            <h1 id="score2">Score: 0</h1>
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
