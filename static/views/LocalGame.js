@@ -3,6 +3,7 @@ import { navigateTo } from "../index.js";
 import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
 import LocalPong from "./Localpong.js";
+import PongCpu from "./PongCpu.js";
 
 export default class LocalGame extends AbstractView {
 	constructor(user) {
@@ -124,6 +125,33 @@ export default class LocalGame extends AbstractView {
 					await view.loop();
 					// navigateTo("/game");
 				} 
+			}
+		})
+		cpu_playerBtn.addEventListener("click", e => {
+			e.preventDefault();
+			this.ws_local = new WebSocket('wss://'
+			        + window.location.hostname
+			        + ':8000'
+			        + '/ws/local/'
+			        + this.room
+			        + '/');
+			
+			this.ws_local.onopen = () => {
+				this.ws_local.send(JSON.stringify({
+				"Handling": "lobby",
+				"username": this.user.getUser(),
+				"opponent": "AI",
+				"status": "not_ready",
+				}));	
+			}
+			this.ws_local.onmessage = async (e) => {
+				const data = JSON.parse(e.data);
+				console.log(data);
+				if (data["status"] === 0) {
+					const view = new PongCpu(this.user, "AI", this.room, this.ws_local);
+					this.content.innerHTML = await view.getContent();
+					await view.loop();
+				}
 			}
 		})
 	}
