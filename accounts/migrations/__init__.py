@@ -1,3 +1,3 @@
-from django.core.management.commands import createai
+# from django.core.management.commands import createai
 
-BaseCommand.register_register(createai.Command)
+# BaseCommand.register_register(createai.Command)

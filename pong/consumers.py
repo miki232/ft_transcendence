@@ -29,42 +29,11 @@ PADDLE_SPEED = 10
 # Ball settings
 BALL_SIZE = 5
 
-reaction_delay = 1
-counter = 0
-ai_paddle_pos = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
 
-ai_target_pos = ai_paddle_pos
 
 def map_value(value, start1, stop1, start2, stop2):
     return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
 
-def ai_update(ball_pos, ball_velocity):
-    global ai_target_pos, counter
-
-    # Only update the AI's target position every 'reaction_delay' frames
-    counter += 1
-    if counter % reaction_delay != 0:
-        return
-
-    # Calculate the ball's projected position when it reaches the AI paddle side
-    if ball_velocity[0] > 0:  # If ball is moving toward the AI paddle
-        time_to_reach_ai = (SCREEN_WIDTH - PADDLE_WIDTH - BALL_SIZE - ball_pos[0]) / ball_velocity[0]
-        intercept_y = ball_pos[1] + ball_velocity[1] * time_to_reach_ai
-
-        # Handle bounces off top/bottom walls
-        while intercept_y < 0 or intercept_y > SCREEN_HEIGHT:
-            if intercept_y < 0:
-                intercept_y = -intercept_y
-            else:
-                intercept_y = 2 * SCREEN_HEIGHT - intercept_y
-
-        # Set the target position for the AI paddle with some randomness
-        randomness = random.uniform(-65, 65)
-        ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
-
-        # Ensure the target position is within paddle movement limits
-        ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, ai_target_pos))
-        print("AI Update 67", "AI TARGET POS", ai_target_pos)
 
 def move_paddle(paddle_pos, target_pos, speed):
     if paddle_pos < target_pos:
@@ -85,10 +54,45 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.match = None
         self.user1 = None
         self.user2 = None
+        self.reaction_delay = 1
+        self.counter = 0
+        self.ai_paddle_pos = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
+        self.ai_target_pos = self.ai_paddle_pos
+
+    def ai_update(self, ball_pos, ball_velocity):
+        
+
+        # Only update the AI's target position every 'reaction_delay' frames
+        self.counter += 1
+        if self.counter % self.reaction_delay != 0:
+            return
+
+        # Calculate the ball's projected position when it reaches the AI paddle side
+        if ball_velocity[0] > 0:  # If ball is moving toward the AI paddle
+            time_to_reach_ai = (SCREEN_WIDTH - PADDLE_WIDTH - BALL_SIZE - ball_pos[0]) / ball_velocity[0]
+            intercept_y = ball_pos[1] + ball_velocity[1] * time_to_reach_ai
+
+            # Handle bounces off top/bottom walls
+            while intercept_y < 0 or intercept_y > SCREEN_HEIGHT:
+                if intercept_y < 0:
+                    intercept_y = -intercept_y
+                else:
+                    intercept_y = 2 * SCREEN_HEIGHT - intercept_y
+
+            # Set the target position for the AI paddle with some randomness
+            randomness = random.uniform(-65, 65)
+            self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
+
+            # Ensure the target position is within paddle movement limits
+            self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
+            print("AI Update 67", "AI TARGET POS", self.ai_target_pos)
+
 
     @database_sync_to_async
     def getAi(self):
-        return RoomName.objects.get(name=self.room_name).opponent
+        opponent = RoomName.objects.get(name=self.room_name)
+        print("BBB", opponent.opponent, opponent.name)
+        return opponent.opponent
     """
     When Connection is established, add the user to the group and initialize the game state
     Check if The opponent Is an AI, if so, add the AI to the group
@@ -344,12 +348,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             """Find who is the AI and move the paddle accordingly"""
             if (self.user1.Ai or self.user2.Ai):
                 if current_time - last_ai_update_time >= 1:
-                    ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
+                    self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
                     last_ai_update_time = current_time
                 if (self.user1.Ai):
-                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], ai_target_pos, 5)
+                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 5)
                 else:
-                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], ai_target_pos, 5)
+                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 5)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -817,7 +821,11 @@ class MatchMaking(AsyncWebsocketConsumer):
             self.time_passed = 0
             WaitingUser.objects.filter(user=self.user).delete()
             room_name = str(uuid.uuid1()).replace('-', '')
-            ai_user = CustomUser.objects.get(Ai=True)
+            print("ROOM NAME", room_name)
+            ai_user = CustomUser.objects.filter(Ai=True, Occupied=False).first()
+            ai_user.Occupied = True
+            ai_user.save()
+            print("AI USER", ai_user)
             print("AI USER", ai_user.username)
             room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
 
