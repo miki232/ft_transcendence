@@ -12,6 +12,7 @@ export default class User extends AbstractView {
 		this.logged = false;
 		this.level;
 		this.exp;
+		this.lastURL = null;
 	}
 
 	async logout(){

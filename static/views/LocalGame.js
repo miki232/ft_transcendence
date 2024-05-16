@@ -82,7 +82,7 @@ export default class LocalGame extends AbstractView {
 					<ion-icon name="person-outline"></ion-icon>
 				</div>
 				<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+				<button type="button" id="play-local" class="submit-btn confirm-btn"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 			`;
@@ -111,7 +111,7 @@ export default class LocalGame extends AbstractView {
 				this.ws_local.send(JSON.stringify({
 					"Handling": "lobby",
 					"username": this.user.getUser(),
-					"opponent": input.value,
+					"opponent": this.opponent,
 					"status": "not_ready",
 				}));
 
@@ -120,6 +120,8 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
+					history.replaceState(null, null, "/1P-vs-2P");
+					this.user.lastURL = "/1P-vs-2P";
 					const view = new LocalPong(this.user, data["opponent"], this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();
 					await view.loop();

@@ -129,7 +129,15 @@ const router = async () => {
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 	if (!match) {
-		if (location.pathname.includes("/user_info")) {
+		if (user.lastURL === "/1P-vs-2P") {
+			match = {
+				route: routes[6],
+				isMatch: true
+			};
+			console.log(user.lastURL);
+			createNotification("You have been disconnected from the game", "error");
+			user.lastURL = null;
+		} else if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
 				route: routes[8],
@@ -239,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		console.log(e.target);
-		if (e.target.matches(".submit-btn .confirm-btn")) {
+		if (e.target.matches("#play-local")) {
 			localGame_Cache["ws_connection"] = await view.getWebSocket();
 			localGame_Cache["user"] = view.getUser();
 			localGame_Cache["opponent"] = view.getOpponent();
