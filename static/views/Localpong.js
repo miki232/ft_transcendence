@@ -173,7 +173,7 @@ export default class LocalPong extends AbstractView{
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !==  this.users.user) {
-                document.getElementById("score2").innerHTML = this.users.user + " Score: " + data.score2;
+                document.getElementById("score1").innerHTML = this.users.user + " Score: " + data.score1;
 
             }
             if (data.score2 !==  this.opponent) {
