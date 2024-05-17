@@ -790,6 +790,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
 class MatchMaking(AsyncWebsocketConsumer):
     room_name = ""
+    player = 0
     async def connect(self):
         self.user = self.scope["user"]
         print("MatchMaking 767", self.user)
@@ -809,7 +810,8 @@ class MatchMaking(AsyncWebsocketConsumer):
         print("MatchMaking 781", self.user, "Disconnected")
         self.connected = False
         await self.leave_queue()
-        self.queue_task.cancel()
+        if(self.queue_task):
+            self.queue_task.cancel()
         
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -828,50 +830,39 @@ class MatchMaking(AsyncWebsocketConsumer):
     @database_sync_to_async
     def queue_tournament(self):
         user_level = self.user.calculate_level()
-
-        # existing_room = RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).first()
-        # if existing_room:
-        #     print("MatchMaking 802", self.user.username == existing_room.created_by.username, existing_room.created_by.username, existing_room.opponent.username, self.user)
-        #     if (self.user.username == existing_room.created_by.username):
-        #         opponent = existing_room.opponent.username
-        #     else:
-        #         opponent = existing_room.created_by.username
-        #     return ({"status": 2, "room_name": existing_room.name, "opponent" : opponent, "group_name": f"matchmaking_{existing_room.name}" , "User_self" : self.user.username})
-
+        print(user_level)
         if not Tournament_Waitin.objects.filter(user=self.user).exists():
-            print("MatchMaking 812", "Creating Waiting User")
             Tournament_Waitin.objects.create(user=self.user, level=user_level)
+        waiting_users = Tournament_Waitin.objects.all()
+        print("MatchMaking 814", len(waiting_users), self.user)
+        if len(waiting_users) >= 4:
+            waiting_users.order_by('level')
+            print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
+            waiting_users_list = list(waiting_users)
+            for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
+                print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
+                room_name = str(uuid.uuid4()).replace('-', '')
+                match = Tournament_Match.objects.create(name=room_name, player1=user1.user, player2=user2.user)
+                user1.delete()
+                user2.delete()
+            # for waiting_user in waiting_users:
 
-        waiting_users = Tournament_Waitin.objects.exclude(user=self.user)
+            #     print("840 ", waiting_user.user.username, waiting_user.level)
+        # if len(waiting_users) == 3:
+        #     for waiting_user in waiting_users:
+        #         level_difference = abs(user_level - waiting_user.level)
+        #         self.time_passed = 0
+        #         print("MatchMaking 8sda32", "Room Name", room_name, "Opponent", waiting_user.user.username)
+        #         if level_difference <= 3:
+        #             Tournament_Waitin.objects.filter(user__in=[self.user, waiting_user.user]).delete()
 
-        print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
-        # self.time_passed += 1
-        # if self.time_passed >= 3:
-        #     self.time_passed = 0
-        #     WaitingUser.objects.filter(user=self.user).delete()
-        #     room_name = str(uuid.uuid1()).replace('-', '')
-        #     print("ROOM NAME", room_name)
-        #     ai_user = CustomUser.objects.filter(Ai=True, Occupied=False).first()
-        #     ai_user.Occupied = True
-        #     ai_user.save()
-        #     print("AI USER", ai_user)
-        #     print("AI USER", ai_user.username)
-        #     room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
-
-        #     return({"status": 2, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
-        if len(waiting_users) == 3:
-            for waiting_user in waiting_users:
-                level_difference = abs(user_level - waiting_user.level)
-                self.time_passed = 0
-                print("MatchMaking 8sda32", "Room Name", room_name, "Opponent", waiting_user.user.username)
-                if level_difference <= 3:
-                    Tournament_Waitin.objects.filter(user__in=[self.user, waiting_user.user]).delete()
-
-                    room_name = str(uuid.uuid1()).replace('-', '')
-                    match = Tournament.objects.create(room_name=room_name, created_by=self.user, opponent=waiting_user.user)
-                    # room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=waiting_user.user)
-                    print("MatchMaking 832", "Room Name", room_name, "Opponent", waiting_user.user.username)
-                    return({"status": 2, "room_name": room_name, "opponent" : waiting_user.user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+        #             room_name = str(uuid.uuid1()).replace('-', '')
+        #             match = Tournament_Match(name=room_name, player1=waiting_user[0], player2=waiting_user[1])
+                    
+        #             # match = Tournament.objects.create(room_name=room_name, created_by=self.user, opponent=waiting_user.user)
+        #             # room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=waiting_user.user)
+        #             print("MatchMaking 832", "Room Name", room_name, "Opponent", waiting_user.user.username)
+        #             return({"status": 2, "room_name": room_name, "opponent" : waiting_user.user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
 
 
 
@@ -883,6 +874,7 @@ class MatchMaking(AsyncWebsocketConsumer):
 
     async def turnament_loop(self):
         result = ""
+        print("In loop 875")
         await self.send(text_data=json.dumps({"status" : 1}))
         result = await self.queue_tournament()
         if result:

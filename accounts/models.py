@@ -67,7 +67,6 @@ class CustomUser(AbstractUser): # new
                 level = exp[i]
         if self.Ai:
             level = 0
-
         return level
     
     def is_user_online(self, user_id):

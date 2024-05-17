@@ -30,16 +30,8 @@ html, body {
 }
 
 body {
-	background-image: url(../img/bg1.jpg);
-	background-size: cover;
-	/* background: 
-		radial-gradient(circle at 30% 30%, red, transparent 50%),
-		radial-gradient(circle at 60% 60%, blue, transparent 50%),
-		radial-gradient(circle at 90% 90%, green, transparent 50%); */
-	/* background: 
-        radial-gradient(circle at 30% 30%, #FF4136 10%, transparent 40%),
-        radial-gradient(circle at 50% 50%, #2ECC40 10%, transparent 40%),
-        radial-gradient(circle at 70% 70%, #0074D9 10%, transparent 40%); */
+	background-image: url(../img/bg7.jpeg);
+	background-size:cover;
 	background-color: rgb(1, 1, 5);
 	background-position: center;
 	display: flex;
