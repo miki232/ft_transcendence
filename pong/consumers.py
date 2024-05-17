@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
@@ -78,14 +78,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                     intercept_y = -intercept_y
                 else:
                     intercept_y = 2 * SCREEN_HEIGHT - intercept_y
-
+        else:
+            intercept_y = ball_pos[1]  # Set intercept_y to the current y-coordinate of the ball
             # Set the target position for the AI paddle with some randomness
-            randomness = random.uniform(-65, 65)
-            self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
+        randomness = random.uniform(-65, 65)
+        self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
+        # Ensure the target position is within paddle movement limits
+        self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
+        print("AI Update 67", "AI TARGET POS", self.ai_target_pos)
 
-            # Ensure the target position is within paddle movement limits
-            self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
-            print("AI Update 67", "AI TARGET POS", self.ai_target_pos)
 
 
     @database_sync_to_async
@@ -814,12 +815,85 @@ class MatchMaking(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
         print("MatchMaking 789", action)
-        await self.send(json.dumps({"status": "Joining Queue"}))
         if action == 'join_queue':
+            await self.send(json.dumps({"status": "Joining Queue"}))
             await self.handle_join_queue()
         elif action == 'leave_queue':
             await self.leave_queue()
+        elif action == 'joinTournamentQueue':
+            await self.send(json.dumps({"status": "Joining Queue"}))
+            print("MatchMaking 795", "Joining Tournament Queue")
+            await self.handle_join_tournament()
 
+    @database_sync_to_async
+    def queue_tournament(self):
+        user_level = self.user.calculate_level()
+
+        # existing_room = RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).first()
+        # if existing_room:
+        #     print("MatchMaking 802", self.user.username == existing_room.created_by.username, existing_room.created_by.username, existing_room.opponent.username, self.user)
+        #     if (self.user.username == existing_room.created_by.username):
+        #         opponent = existing_room.opponent.username
+        #     else:
+        #         opponent = existing_room.created_by.username
+        #     return ({"status": 2, "room_name": existing_room.name, "opponent" : opponent, "group_name": f"matchmaking_{existing_room.name}" , "User_self" : self.user.username})
+
+        if not Tournament_Waitin.objects.filter(user=self.user).exists():
+            print("MatchMaking 812", "Creating Waiting User")
+            Tournament_Waitin.objects.create(user=self.user, level=user_level)
+
+        waiting_users = Tournament_Waitin.objects.exclude(user=self.user)
+
+        print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
+        # self.time_passed += 1
+        # if self.time_passed >= 3:
+        #     self.time_passed = 0
+        #     WaitingUser.objects.filter(user=self.user).delete()
+        #     room_name = str(uuid.uuid1()).replace('-', '')
+        #     print("ROOM NAME", room_name)
+        #     ai_user = CustomUser.objects.filter(Ai=True, Occupied=False).first()
+        #     ai_user.Occupied = True
+        #     ai_user.save()
+        #     print("AI USER", ai_user)
+        #     print("AI USER", ai_user.username)
+        #     room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
+
+        #     return({"status": 2, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+        if len(waiting_users) == 3:
+            for waiting_user in waiting_users:
+                level_difference = abs(user_level - waiting_user.level)
+                self.time_passed = 0
+                print("MatchMaking 8sda32", "Room Name", room_name, "Opponent", waiting_user.user.username)
+                if level_difference <= 3:
+                    Tournament_Waitin.objects.filter(user__in=[self.user, waiting_user.user]).delete()
+
+                    room_name = str(uuid.uuid1()).replace('-', '')
+                    match = Tournament.objects.create(room_name=room_name, created_by=self.user, opponent=waiting_user.user)
+                    # room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=waiting_user.user)
+                    print("MatchMaking 832", "Room Name", room_name, "Opponent", waiting_user.user.username)
+                    return({"status": 2, "room_name": room_name, "opponent" : waiting_user.user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+
+
+
+    async def handle_join_tournament(self):
+        # await self.queue_tournament()
+        # print("MatchMaking 801", "User", self.user.username, "Joined Tournament", "len", len(Tournament.objects.all()))
+        self.queue_task = asyncio.create_task(self.turnament_loop())
+
+
+    async def turnament_loop(self):
+        result = ""
+        await self.send(text_data=json.dumps({"status" : 1}))
+        result = await self.queue_tournament()
+        if result:
+            await self.channel_layer.group_add(result["group_name"], self.channel_name)
+             # Send the result to the group
+            await self.channel_layer.group_send(result["group_name"], {
+                "type": "chat.message",
+                "text": json.dumps(result)
+            })
+        await asyncio.sleep(2)
+    
     @database_sync_to_async
     def join_queue(self):
         user_level = self.user.calculate_level()
@@ -855,6 +929,7 @@ class MatchMaking(AsyncWebsocketConsumer):
             return({"status": 2, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
         for waiting_user in waiting_users:
             level_difference = abs(user_level - waiting_user.level)
+            self.time_passed = 0
 
             if level_difference <= 2:
                 WaitingUser.objects.filter(user__in=[self.user, waiting_user.user]).delete()
