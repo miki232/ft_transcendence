@@ -3,15 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views import View
 
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser
+from .models import RoomName, WaitingUser, TournametPlaceHolder
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer
+from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
@@ -116,6 +118,22 @@ class MatchmakingView(View):
         # If no match was found, return 1
         return JsonResponse({"status": 1})
     
+
+class TournamentView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        tournament = None
+        try :
+            tournament = TournametPlaceHolder.objects.get(status=True)
+        except ObjectDoesNotExist:
+            tournament = None
+        serializer = TournamentPlaceHolderSerializer(tournament)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # Create your views here.
 @login_required
 def pong(request, room_name):

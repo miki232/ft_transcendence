@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RoomName
+from .models import RoomName, TournametPlaceHolder
 from accounts.models import CustomUser
 
 class RoomNameSerializer(serializers.ModelSerializer):
@@ -9,3 +9,8 @@ class RoomNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomName
         fields = ['name', 'created_by', 'opponent', 'public', 'level']
+
+class TournamentPlaceHolderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournametPlaceHolder
+        fields = ['playerNumber', 'status']

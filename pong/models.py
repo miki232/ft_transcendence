@@ -36,3 +36,7 @@ class Tournament(models.Model):
     match = models.ForeignKey(Tournament_Match, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
+
+class TournametPlaceHolder(models.Model):
+    playerNumber = models.IntegerField(default=0)
+    status = models.BooleanField(default=False)

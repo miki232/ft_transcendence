@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
@@ -826,6 +826,19 @@ class MatchMaking(AsyncWebsocketConsumer):
             await self.send(json.dumps({"status": "Joining Queue"}))
             print("MatchMaking 795", "Joining Tournament Queue")
             await self.handle_join_tournament()
+        elif action == 'torunametInfo':
+            print("MatchMaking 798", "Tournament Info")
+            numberofplayers = await self.get_tournament_info()
+            await self.channel_layer.group_add("waitingroom", self.channel_name)
+            await self.channel_layer.group_send("waitingroom", {
+                "type": "chat.message",
+                "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": numberofplayers})
+            })
+
+    @database_sync_to_async
+    def get_tournament_info(self):
+        numberofplayers = Tournament_Waitin.objects.all()
+        return len(numberofplayers)
 
     @database_sync_to_async
     def queue_tournament(self):
@@ -835,7 +848,10 @@ class MatchMaking(AsyncWebsocketConsumer):
             Tournament_Waitin.objects.create(user=self.user, level=user_level)
         waiting_users = Tournament_Waitin.objects.all()
         print("MatchMaking 814", len(waiting_users), self.user)
-        if len(waiting_users) >= 4:
+        numberofplayers = TournametPlaceHolder.objects.get(status=True)
+        print("MatchMaking 839", numberofplayers.playerNumber)
+        # self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": len(waiting_users), "numberofplayers-to-reach": numberofplayers}))
+        if len(waiting_users) == numberofplayers.playerNumber:
             waiting_users.order_by('level')
             print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
             waiting_users_list = list(waiting_users)
@@ -846,7 +862,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                 user1.delete()
                 user2.delete()
             # for waiting_user in waiting_users:
-
+        return len(waiting_users), numberofplayers.playerNumber
             #     print("840 ", waiting_user.user.username, waiting_user.level)
         # if len(waiting_users) == 3:
         #     for waiting_user in waiting_users:
@@ -876,14 +892,24 @@ class MatchMaking(AsyncWebsocketConsumer):
         result = ""
         print("In loop 875")
         await self.send(text_data=json.dumps({"status" : 1}))
-        result = await self.queue_tournament()
+        result, numberofplayers = await self.queue_tournament()
+        print("MatchMaking 880", result)
+        print("MatchMaking 883", result, numberofplayers)
+        await self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers}))
         if result:
-            await self.channel_layer.group_add(result["group_name"], self.channel_name)
-             # Send the result to the group
-            await self.channel_layer.group_send(result["group_name"], {
-                "type": "chat.message",
-                "text": json.dumps(result)
-            })
+            if result == numberofplayers:
+                await self.channel_layer.group_add(result["group_name"], self.channel_name)
+                # Send the result to the group
+                await self.channel_layer.group_send(result["group_name"], {
+                    "type": "chat.message",
+                    "text": json.dumps(result)
+                })
+            elif result < numberofplayers:
+                # await self.channel_layer.group_add("waitingroom", self.channel_name)
+                await self.channel_layer.group_send("waitingroom", {
+                    "type": "chat.message",
+                    "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers})
+                })
         await asyncio.sleep(2)
     
     @database_sync_to_async

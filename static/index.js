@@ -4,7 +4,6 @@ import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
 import Pong from "./views/Pong.js";
-import LocalPong from "./views/Localpong.js";
 import LocalGame from "./views/LocalGame.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
@@ -102,8 +101,9 @@ const router = async () => {
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
-        { path: "/online", view: () => import('./views/MatchMaking.js') },
+        { path: "/online", view: () => import('./views/Online.js') },
         { path: "/pong", view: () => import('./views/Pong.js') },
+		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 	
@@ -115,6 +115,12 @@ const router = async () => {
 	if (view instanceof Pong)
 	{
 		view.closeWebSocket();
+		// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
+		if (window.location.pathname === "/matchmaking") {
+			// const canvas = document.getElementById("pongCanvas").remove();
+			// container.insertAdjacentHTML("beforeend", "<div id = 'content'></div>");
+			navigateTo("/online");
+		}
 	}
 	if (view instanceof LocalGame)
 	{
@@ -204,7 +210,11 @@ const router = async () => {
 			break;
 		case "/online":
 			const OnlineClass = await match.route.view();
-			view = new OnlineClass.default();
+			view = new OnlineClass.default(user);
+			break;
+		case "/matchmaking":
+			const MatchMakingClass = await match.route.view();
+			view = new MatchMakingClass.default(user);
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
 			console.log("OSU", room_name);
@@ -212,14 +222,15 @@ const router = async () => {
 			break;
 		case "/pong":
 			///** DA rivisitare */
-			document.body.classList.remove("body");
-			document.body.classList.add("bodypong");
-			document.getElementById("container").classList.add("containerpong");
-			document.getElementById("container").removeAttribute("id");
+			// document.body.classList.remove("body");
+			// document.body.classList.add("bodypong");
+			// document.getElementById("container").classList.add("containerpong");
+			// document.getElementById("container").removeAttribute("id");
 			//***sdassdad */
+			console.log("SUCASD", match.route.view(), match.route.path);
 			const PongClass = await match.route.view();
 			view = new PongClass.default(room_name);
-			container.innerHTML = await view.getContent();
+			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;
 		// case "/game":

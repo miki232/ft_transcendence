@@ -2,6 +2,7 @@
 import json
 from asgiref.sync import async_to_sync, sync_to_async
 from .models import Notifications
+import asyncio
 from channels.db import database_sync_to_async
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
@@ -52,20 +53,32 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
         print("Connect 53", f"Connected and joined group notifications_{self.user.id}")
         await self.accept()
+        self.notificationloop = asyncio.create_task(self.notificationloop())
+        # notificationslist = await self.get_notifications()
+        # for notification in notificationslist:
+        #     await self.send(text_data=json.dumps(
+        #         {
+        #             'content' : notification.content,
+        #             'read' : notification.read
+        #         }
+        #     ))
 
-        notificationslist = await self.get_notifications()
-        for notification in notificationslist:
-            await self.send(text_data=json.dumps(
-                {
-                    'content' : notification.content,
-                    'read' : notification.read
-                }
-            ))
+    async def notificationloop(self):
+        while True:
+            notificationslist = await self.get_notifications()
+            for notification in notificationslist:
+                await self.send(text_data=json.dumps(
+                    {
+                        'content' : notification.content,
+                        'read' : notification.read
+                    }
+                ))
+            await asyncio.sleep(15)
 
     @database_sync_to_async
     def get_notifications(self):
         print("Get Notifications 67", self.user, " dd ", self.user.id)
-        return list(Notifications.objects.filter(user=self.user.id))
+        return list(Notifications.objects.filter(user=self.user.id, read=False))
 
     @database_sync_to_async
     def update_notifications(self):
