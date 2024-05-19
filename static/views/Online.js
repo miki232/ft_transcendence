@@ -35,6 +35,7 @@ export default class Online extends AbstractView {
 		return this.opponent;
 	}
 
+
     async getTournament() {
         const response = await fetch('/tournament/');
         if (!response.ok) {
@@ -99,17 +100,32 @@ export default class Online extends AbstractView {
                 }));
             }            
             this.ws_local.onmessage = async (e) => {
-                const data = JSON.parse(e.data);
-                console.log(data);
-                if (data["status"] === "Waiting for players") {
-                    this.player = await data["numberofplayers_reached"];
-                    console.log(this.player);
-                    const tournamentCounter = document.getElementById("tournamentCounter");
-                    tournamentCounter.textContent = `(${await this.getPlayers()}/${this.tournament.playerNumber})`;
+                if (window.location.pathname === "/online"){
+                    const data = JSON.parse(e.data);
+                    console.log(data);
+                    if (data["status"] === "Waiting for players") {
+                        this.player = await data["numberofplayers_reached"];
+                        console.log(this.player);
+                        const tournamentCounter = document.getElementById("tournamentCounter");
+                        tournamentCounter.textContent = `(${await this.getPlayers()}/${this.tournament.playerNumber})`;
+                    }
                 }
             }
         }
-        Tournamentbtn.setAttribute("disabled", "true");
+        else
+            Tournamentbtn.setAttribute("disabled", "true");
+        Tournamentbtn.addEventListener("click", e => {
+            e.preventDefault();
+            console.log("Tournament");
+            if (this.tournament.status == true) {
+                this.ws_local.send(JSON.stringify({
+                    "action": "joinTournamentQueue",
+                    "username": this.user.getUser(),
+                    "status": "not_ready",
+                }));
+                navigateTo("/tournament");
+            }
+        })
 		// two_playerBtn.addEventListener("click", e => {
 		// 	this.ws_local = new WebSocket('wss://'
 		// 	        + window.location.hostname

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from pong.views import ListRoomView, CreateRoomView, MatchmakingView, TournamentView
+from pong.views import ListRoomView, CreateRoomView, MatchmakingView, TournamentView, WaitingForTournameView, TournamentMatchView
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -14,6 +14,8 @@ urlpatterns = [
     path('room_namelocal/', views.room_namelocal, name='room_namelocal'),
     path('liberate_room/', views.liberate_room, name='liberate_room'),
     path('tournament/', TournamentView.as_view(), name='tournament'),
+    path('waiting_for_tournament/', WaitingForTournameView.as_view(), name='waiting_for_tournament'),
+    path('tournament_match/', TournamentMatchView.as_view(), name='tournament_match'),
     # path('rooms/create/', CreateRoomView.as_view(), name='create_room'), #spostato in pong/urls.py
     path("test/", views.test, name="test"),
 ]

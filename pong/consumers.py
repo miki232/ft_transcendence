@@ -791,6 +791,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 class MatchMaking(AsyncWebsocketConsumer):
     room_name = ""
     player = 0
+    queue_task = None
     async def connect(self):
         self.user = self.scope["user"]
         print("MatchMaking 767", self.user)
@@ -858,11 +859,15 @@ class MatchMaking(AsyncWebsocketConsumer):
             for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                 print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                 room_name = str(uuid.uuid4()).replace('-', '')
-                match = Tournament_Match.objects.create(name=room_name, player1=user1.user, player2=user2.user)
+                match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user)
                 user1.delete()
                 user2.delete()
+            matching_dict = {}
+            for match in RoomName.objects.all():
+                matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]    
+            return len(waiting_users), numberofplayers.playerNumber, matching_dict
             # for waiting_user in waiting_users:
-        return len(waiting_users), numberofplayers.playerNumber
+        return len(waiting_users), numberofplayers.playerNumber, None
             #     print("840 ", waiting_user.user.username, waiting_user.level)
         # if len(waiting_users) == 3:
         #     for waiting_user in waiting_users:
@@ -892,17 +897,17 @@ class MatchMaking(AsyncWebsocketConsumer):
         result = ""
         print("In loop 875")
         await self.send(text_data=json.dumps({"status" : 1}))
-        result, numberofplayers = await self.queue_tournament()
+        result, numberofplayers, matching_dict = await self.queue_tournament()
         print("MatchMaking 880", result)
         print("MatchMaking 883", result, numberofplayers)
-        await self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers}))
         if result:
             if result == numberofplayers:
-                await self.channel_layer.group_add(result["group_name"], self.channel_name)
+                print("MatchMaking 886", "Number of players reached", matching_dict)
+                # await self.channel_layer.group_add(result["group_name"], self.channel_name)
                 # Send the result to the group
-                await self.channel_layer.group_send(result["group_name"], {
+                await self.channel_layer.group_send("waitingroom", {
                     "type": "chat.message",
-                    "text": json.dumps(result)
+                    "text": json.dumps({"status" : "Tournament start", "dict" : matching_dict})
                 })
             elif result < numberofplayers:
                 # await self.channel_layer.group_add("waitingroom", self.channel_name)
@@ -910,6 +915,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                     "type": "chat.message",
                     "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers})
                 })
+        # await self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers}))
         await asyncio.sleep(2)
     
     @database_sync_to_async

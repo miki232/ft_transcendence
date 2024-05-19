@@ -34,8 +34,10 @@ let view = null;
 var refreshRoomList;
 var ws;
 var localGame_Cache = {};
+var Tournament_Cache = {};
 // const room = new Room()
 let room_name;
+let room_match = null;
 let username;
 // const checkRequest = async () => {
 // 	var requestList = await getRequests();
@@ -104,6 +106,8 @@ const router = async () => {
         { path: "/online", view: () => import('./views/Online.js') },
         { path: "/pong", view: () => import('./views/Pong.js') },
 		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
+		{ path: "/tournament", view: () => import('./views/Tournament.js')},
+		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')}
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 	
@@ -211,6 +215,8 @@ const router = async () => {
 		case "/online":
 			const OnlineClass = await match.route.view();
 			view = new OnlineClass.default(user);
+			
+
 			break;
 		case "/matchmaking":
 			const MatchMakingClass = await match.route.view();
@@ -232,6 +238,28 @@ const router = async () => {
 			view = new PongClass.default(room_name);
 			content.innerHTML = await view.getContent();
 			await view.loop();
+			break;
+		case "/pong_tournament":
+			///** DA rivisitare */
+			// document.body.classList.remove("body");
+			// document.body.classList.add("bodypong");
+			// document.getElementById("container").classList.add("containerpong");
+			// document.getElementById("container").removeAttribute("id");
+			//***sdassdad */
+			console.log("SUCASD", match.route.view(), match.route.path);
+			const Pong_tournamentClass = await match.route.view();
+			view = new Pong_tournamentClass.default(room_name);
+			content.innerHTML = await view.getContent();
+			await view.loop();
+			break;
+		case "/tournament":
+			const TournamentClass = await match.route.view();
+			console.log(Tournament_Cache["ws"]);
+			view = new TournamentClass.default(user, Tournament_Cache["ws"]);
+			content.innerHTML = await view.getContent();
+			room_name = await view.getRoom_Match();
+			console.log("OSU", room_name);
+			if (room_name !== null) navigateTo("/pong_tournament");
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();
@@ -262,6 +290,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			localGame_Cache["ws_connection"] = await view.getWebSocket();
 			localGame_Cache["user"] = view.getUser();
 			localGame_Cache["opponent"] = view.getOpponent();
+		}
+		if (e.target.matches("#Tournament")) {
+			Tournament_Cache["ws"] = await view.getWebSocket();
+			console.log(Tournament_Cache["ws"]);
 		}
 		if (e.target.matches(".info")) {
 			e.preventDefault();

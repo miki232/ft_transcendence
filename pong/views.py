@@ -9,14 +9,15 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournametPlaceHolder
+from .models import RoomName, WaitingUser, TournametPlaceHolder, Tournament_Waitin, Tournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer
+from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
+from accounts.serializers import UserInfoSerializer
 
 class CreateRoomView(APIView):
     def post(self, request, format=None):
@@ -133,6 +134,35 @@ class TournamentView(APIView):
         serializer = TournamentPlaceHolderSerializer(tournament)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class WaitingForTournameView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        waiting_queue = None
+        list = {}
+        i = 0
+        try :
+            waiting_queue = Tournament_Waitin.objects.all()
+            for waiting in waiting_queue:
+                serializer = UserInfoSerializer(waiting.user)
+                list[f'{i}'] = [serializer.data, waiting.level]
+                i += 1
+        except ObjectDoesNotExist:
+            tournament = None
+        return JsonResponse(list, status=status.HTTP_200_OK)
+    
+class TournamentMatchView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = CustomUser.objects.get(username=request.user)
+        match = RoomName.objects.get(Q(created_by=user) | Q(opponent=user))
+        serializer = RoomNameSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Create your views here.
 @login_required

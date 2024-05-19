@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
-
+from django.utils import timezone
 
 # Create your models here.
 class RoomName(models.Model):
@@ -10,6 +10,7 @@ class RoomName(models.Model):
     public = models.BooleanField(default=False)
     opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches', null=True)
     level = models.FloatField(max_length=2, default=0)
+    tournament = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -24,13 +25,19 @@ class Tournament_Waitin(models.Model):
     level = models.FloatField(max_length=2, default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+
+# Models Per Singolo torneo, match e partecipanti, Da poter sostituire con il modello già presente Match (accounts.models)
 class Tournament_Match(models.Model):
-    name = models.CharField(max_length=255, unique=True, null=True)
-    player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1')
-    player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2')
-    player1_score = models.IntegerField(default=0)
-    player2_score = models.IntegerField(default=0)
-    result = models.CharField(max_length=255, null=True)
+    room_name = models.CharField(max_length=254, default="None")
+    user1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tournament_matches_as_user1', null=True)
+    user2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tournament_matches_as_user2', null=True)
+    score_user1 = models.PositiveIntegerField(default=0)
+    score_user2 = models.PositiveIntegerField(default=0)
+    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='Turnament_won_matches', null=True)
+    date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Match between {self.user1.username} and {self.user2.username} on {self.date}'
 
 class Tournament(models.Model):
     match = models.ForeignKey(Tournament_Match, on_delete=models.CASCADE)
