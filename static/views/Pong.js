@@ -1,6 +1,8 @@
 export default class Pong{
-    constructor(room_name){
+    constructor(room_name, user){
         this.room_name = room_name;
+        this.user = user;
+        this.userlastURL = "/pong"
         this.game_ws = "null";
         this.ballX = 0;
         this.ballY = 0;

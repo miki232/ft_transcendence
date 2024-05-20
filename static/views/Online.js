@@ -76,11 +76,12 @@ export default class Online extends AbstractView {
 			}
 		return this.room
 	}
+
 	async activeBtn() {
         await this.getTournament();
-		const onevsone = document.getElementById("1vs-1");
-		const Tournamentbtn = document.getElementById("Tournament");
-        onevsone.addEventListener("click", e => {
+		const matchmakingBtn = document.getElementById("o-match");
+		const Tournamentbtn = document.getElementById("o-tournament");
+        matchmakingBtn.addEventListener("click", e => {
             e.preventDefault();
             console.log("1 vs 1");
             navigateTo("/matchmaking");
@@ -235,8 +236,8 @@ export default class Online extends AbstractView {
 	getContent() {
 		let dashboardHTML = `
 			<div class="dashboard">
-				<div class="local-game">
-					<h1>Local Game</h1>
+				<div class="online-game">
+					<h1>Online Game</h1>
 					<div class="user-dashboard">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<div class="user-info">
@@ -245,8 +246,10 @@ export default class Online extends AbstractView {
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<button type="button" class="submit-btn dashboard-btn" id="1vs-1"><ion-icon name="desktop-outline"></ion-icon>1 vs 1</button>
-					<button type="button" class="submit-btn dashboard-btn" id="Tournament"><ion-icon name="people-outline"></ion-icon>Tournament<span id="tournamentCounter">(0/8)</span></button>
+					<button type="button" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
+					<button type="button" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter">(0/8)</span></button>
+					<button type="button" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
+					<button type="button" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
 				</div>
 			</div>
 		`;

@@ -142,7 +142,9 @@ header a img {
 .friend-info,
 .requests,
 .settings,
-.local-game {
+.local-game,
+.online-game,
+.matchmaking {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -310,7 +312,8 @@ header a img {
 .profile-card img,
 .settings img,
 .friend-info img,
-.local-game img {
+.local-game img,
+.online-game img {
 	height: 130px;
 	width: 130px;
 }
@@ -352,7 +355,9 @@ header a img {
 	border-radius: 10px;
 }
 
-.local-game h3 {
+.local-game h3,
+.online-game h3,
+.matchmaking h3 {
 	font-size: 28px;
 	margin: 10px 0 15px 0;
 }
@@ -498,13 +503,24 @@ div .requests-list {
 
 /***************** LOCAL GAME **************/
 
-.local-game {
+.local-game,
+.online-game,
+.matchmaking {
 	justify-content: start;
 }
 
 #vs-cpu {
 	margin-top: 28px;
 }
+
+
+/***************** ONLINE GAME **************/
+
+.matchmaking img {
+	height: 100px;
+	width: 100px;
+}
+
 
 /***************** FRIENDS *****************/
 

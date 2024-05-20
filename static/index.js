@@ -147,6 +147,14 @@ const router = async () => {
 			console.log(user.lastURL);
 			createNotification("You have been disconnected from the game", "error");
 			user.lastURL = null;
+		} else if (user.lastURL === "/pong") {
+			match = {
+				route: routes[9],
+				isMatch: true
+			};
+			console.log(user.lastURL);
+			createNotification("You have been disconnected from the game", "error");
+			user.lastURL = null;
 		} else if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
@@ -213,15 +221,13 @@ const router = async () => {
 			view = new InfoClass.default(userID, user);
 			break;
 		case "/online":
+			await user.isLogged() === false ? navigateTo("/") : null;
 			const OnlineClass = await match.route.view();
 			view = new OnlineClass.default(user);
-			
-
 			break;
 		case "/matchmaking":
 			const MatchMakingClass = await match.route.view();
 			view = new MatchMakingClass.default(user);
-			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
 			console.log("OSU", room_name);
 			if (room_name !== undefined) navigateTo("/pong");
@@ -235,7 +241,7 @@ const router = async () => {
 			//***sdassdad */
 			console.log("SUCASD", match.route.view(), match.route.path);
 			const PongClass = await match.route.view();
-			view = new PongClass.default(room_name);
+			view = new PongClass.default(room_name, user);
 			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;

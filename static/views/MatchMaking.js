@@ -2,14 +2,21 @@ import AbstractView from "./AbstractView.js";
 import {navigateTo} from "../index.js";
 
 export default class MatchMaking extends AbstractView {
-    constructor() {
+    constructor(user) {
         super();
+        this.user = user;
+        this.content = document.querySelector("#content");
+		this.nav = document.querySelector("nav");
+		this.nav.innerHTML = this.getNav();
+		this.content.innerHTML = this.getContent();
         this.selfuser = "undefined";
         this.errro = false;
         this.opponent = "undefined";
+        this.opponent_name = "undefined";
+        this.opponent_lvl = "undefined";
         this.opponent_pic = "undefined";
-        this.username = "undefined";
-        this.pro_pic = "undefined";
+        // this.username = "undefined";
+        // this.pro_pic = "undefined";
         this.roomName = "undefined";
         this.matchmaking_ws  = "none";
         this.game_ws = "none";
@@ -110,7 +117,9 @@ export default class MatchMaking extends AbstractView {
 		}).then(response => response.json())
         .then(data => {
             console.log(data.user);
+            this.opponent_name = data.user.username;
             this.opponent_pic = data.user.pro_pic;
+            this.opponent_lvl = data.user.level;
             // this.setOpponent_pic(data.pro_pic)
         })
         .catch((error) => {
@@ -175,19 +184,30 @@ export default class MatchMaking extends AbstractView {
             this.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
-                    if (data.User_self === this.username){
+                    if (data.User_self === this.user.getUser()){
                         console.log('WebSocket message received:', event.data);
                         console.log('Parsed data:', data);
                         this.setOpponent(data.opponent);
                         await this.getFriendInfo(this.opponent)
                         this.roomName = data.room_name;
-                        let conente_opponent = document.getElementById("opponent")
-                        let img_opponet = document.getElementById("opponent_img")
-                        img_opponet.src = this.opponent_pic;
-                        conente_opponent.innerHTML = this.opponent;
-                        // await this.connect_game(this.roomName);
-                        await new Promise(r => setTimeout(r, 2000));
+                        // let conente_opponent = document.getElementById("opponent")
+                        // let img_opponet = document.getElementById("opponent_img")
+                        // img_opponet.src = this.opponent_pic;
+                        // conente_opponent.innerHTML = this.opponent;
+                        await this.connect_game(this.roomName);
                         console.log("ROOM NAME", this.roomName);
+                        const opponent = document.querySelector(".opponent");
+                        opponent.innerHTML = `
+                            <div class="user-dashboard">
+                                <img alt="Profile picture" src="${this.opponent_pic}"/>
+                                <div class="user-info">
+                                    <h3>${this.opponent_name}</h3>
+                                    <h5>Level ${this.opponent_lvl}</h5>
+                                </div>
+                            </div>
+                        `;
+                        // await new Promise(r => setTimeout(r, 3000));
+                        await new Promise(r => setTimeout(r, 3000));
                         resolve(this.roomName);
                     }
                 } catch (error) {
@@ -201,26 +221,47 @@ export default class MatchMaking extends AbstractView {
                 reject(error);
             };
         });
-}
-    async getContent() {
-        await this.loadUserData();
+    }
+
+    getNav() {
+        const navHTML = `
+			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
+		`;
+		return navHTML;
+    }
+
+    getContent() {
+        // await this.loadUserData();
         // await this.matchmaking();
         // await this.connect(this.generateRoomName(10));
         // this.ws.onmessage = function(event){
         //     const data = JSON.parse(event.data);
         //     console.log(data);
         // };
-        return  `
-            <div class="container">
-                <div class="half">
-                    <img src="${this.pro_pic}" alt="User Image" class="user-image">
-                    <p class="search-text">${this.username}</p>
-                </div>
-                <div class="half">
-                    <img src="${this.opponent_pic}" id="opponent_img" alt="User Image" class="user-image">
-                    <p id="opponent" class="search-text">Search for opponent...</p>
+        const dashboardHTML = `
+            <div class="dashboard">
+                <div class="matchmaking">
+                    <h1>Matchmaking</h1>
+                    <div class="user-dashboard">
+                        <img alt="Profile picture" src="${this.user.getPic()}"/>
+                        <div class="user-info">
+                            <h3>${this.user.getUser()}</h3>
+                            <h5>Level ${this.user.getLevel()}</h5>
+                        </div>
+                    </div>
+                    <span id="vs">VS</span>
+                    <div class="opponent">
+                        <h4>Waiting for opponent... <ion-icon name="refresh-outline"></ion-icon></h3>
+                    </div>
                 </div>
             </div>
         `;
+    
+        return dashboardHTML;
     }
 }
