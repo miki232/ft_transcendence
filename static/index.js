@@ -228,20 +228,11 @@ const router = async () => {
 		case "/matchmaking":
 			const MatchMakingClass = await match.route.view();
 			view = new MatchMakingClass.default(user);
-			room_name = await view.getRoom_Match();
-			console.log("OSU", room_name);
-			if (room_name !== undefined) navigateTo("/pong");
+			// console.log("OSU", room_name);
 			break;
 		case "/pong":
-			///** DA rivisitare */
-			// document.body.classList.remove("body");
-			// document.body.classList.add("bodypong");
-			// document.getElementById("container").classList.add("containerpong");
-			// document.getElementById("container").removeAttribute("id");
-			//***sdassdad */
-			console.log("SUCASD", match.route.view(), match.route.path);
 			const PongClass = await match.route.view();
-			view = new PongClass.default(room_name, user);
+			view = new PongClass.default(user);
 			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;

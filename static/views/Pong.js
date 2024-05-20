@@ -1,9 +1,12 @@
 export default class Pong{
-    constructor(room_name, user){
-        this.room_name = room_name;
+    constructor(user){
         this.user = user;
-        this.userlastURL = "/pong"
+        this.opponent = this.user.online_opponent;
+        this.room_name = this.user.online_room;
+        this.user.lastURL = "/pong"
         this.game_ws = "null";
+        this.score1;
+        this.score2;
         this.ballX = 0;
         this.ballY = 0;
         this.paddle_width = 10;
@@ -14,8 +17,21 @@ export default class Pong{
         this.arrowUpPressed = false;
         this.arrowDownPressed = false;
         this.users = "null";
-
+        this.initialize();
     }
+
+    async initialize(){
+        document.querySelector('header').style.display = 'none';
+        document.querySelector('body').style.backgroundColor = 'black';
+        document.querySelector('body').style.backgroundImage = 'none';
+        const content = document.getElementById('content');
+        content.innerHTML = this.getContent();
+        this.score1 = document.getElementById("score1");
+        this.score2 = document.getElementById("score2");
+        await this.connect_game();
+        await this.loop();
+    }
+
 
     async getCSRFToken() {
 		let csrftoken = await fetch("csrf-token")
@@ -136,6 +152,8 @@ export default class Pong{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
+            this.score1.innerHTML = data.score1;
+            this.score2.innerHTML = data.score2;
             // if (data.score1 !== undefined) {
             //     if (data.player === users)
             //         document.getElementById("score1").innerHTML = "Your Score: " + data.score1;
@@ -160,15 +178,20 @@ export default class Pong{
         }
     }
 
-    async getContent() {
-        await this.loadUserData();
-        await this.connect_game();
+    getContent() {
+        // await this.loadUserData();
+        // await this.connect_game();
         // this.ws.onmessage = function(event){
         //     const data = JSON.parse(event.data);
         //     console.log(data);
         // };
-        return  `
-                <canvas id="pongCanvas" width="800" height="400"></canvas>
+        const pongHTML =  `
+            <div id="scores">
+                <span>${this.user.getUser()}: <span id="score1"></span></span>
+                <span>${this.opponent}: <span id="score2"></span></span>
+            </div>
+            <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
+        return pongHTML;
     }
 }

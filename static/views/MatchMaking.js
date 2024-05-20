@@ -5,10 +5,6 @@ export default class MatchMaking extends AbstractView {
     constructor(user) {
         super();
         this.user = user;
-        this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
-		this.nav.innerHTML = this.getNav();
-		this.content.innerHTML = this.getContent();
         this.selfuser = "undefined";
         this.errro = false;
         this.opponent = "undefined";
@@ -20,6 +16,20 @@ export default class MatchMaking extends AbstractView {
         this.roomName = "undefined";
         this.matchmaking_ws  = "none";
         this.game_ws = "none";
+        this.initialize();
+    }
+
+    async initialize() {
+        this.content = document.querySelector("#content");
+		this.nav = document.querySelector("nav");
+		this.nav.innerHTML = this.getNav();
+		this.content.innerHTML = this.getContent();
+        this.roomName = await this.getRoom_Match();
+        if (this.roomName !== "undefined") {
+            this.user.online_room = this.roomName;
+            this.user.online_opponent = this.opponent;
+            navigateTo("/pong");
+        }
     }
 
     async loadUserData() {
@@ -194,7 +204,7 @@ export default class MatchMaking extends AbstractView {
                         // let img_opponet = document.getElementById("opponent_img")
                         // img_opponet.src = this.opponent_pic;
                         // conente_opponent.innerHTML = this.opponent;
-                        await this.connect_game(this.roomName);
+                        // await this.connect_game(this.roomName);
                         console.log("ROOM NAME", this.roomName);
                         const opponent = document.querySelector(".opponent");
                         opponent.innerHTML = `

@@ -80,7 +80,7 @@ export default class Online extends AbstractView {
 	async activeBtn() {
         await this.getTournament();
 		const matchmakingBtn = document.getElementById("o-match");
-		const Tournamentbtn = document.getElementById("o-tournament");
+		const tournamentBtn = document.getElementById("o-tournament");
         matchmakingBtn.addEventListener("click", e => {
             e.preventDefault();
             console.log("1 vs 1");
@@ -114,8 +114,8 @@ export default class Online extends AbstractView {
             }
         }
         else
-            Tournamentbtn.setAttribute("disabled", "true");
-        Tournamentbtn.addEventListener("click", e => {
+            tournamentBtn.setAttribute("disabled", "true");
+        tournamentBtn.addEventListener("click", e => {
             e.preventDefault();
             console.log("Tournament");
             if (this.tournament.status == true) {

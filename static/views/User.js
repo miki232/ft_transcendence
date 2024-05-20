@@ -12,6 +12,8 @@ export default class User extends AbstractView {
 		this.logged = false;
 		this.level;
 		this.exp;
+		this.online_room;
+		this.online_opponent;
 		this.lastURL = null;
 	}
 
