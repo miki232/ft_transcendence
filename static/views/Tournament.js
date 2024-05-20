@@ -111,6 +111,9 @@ export default class Tournament extends AbstractView {
                         console.log("ROOM NAME", this.roomName);
                         resolve(this.roomName);
                     }
+                    else if (data.status === "Waiting for players") {
+                        this.getWaitingPlayers();
+                    }
                     //  else if (data.User_self === this.username){
                     //     this.setOpponent(data.opponent);
                     //     await this.getFriendInfo(this.opponent)
