@@ -29,6 +29,9 @@ PADDLE_SPEED = 10
 # Ball settings
 BALL_SIZE = 5
 
+# Winning score
+POINTS_TO_WIN = 5
+
 
 
 def map_value(value, start1, stop1, start2, stop2):
@@ -429,10 +432,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_y'] = -3
                 print("Pong Consumer 426","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
-            if self.state['score1']  >= 7 or self.state['score2'] >= 7:
-                if self.state['score1'] >= 7:
+            if self.state['score1']  >= POINTS_TO_WIN or self.state['score2'] >= POINTS_TO_WIN:
+                if self.state['score1'] >= POINTS_TO_WIN:
                     await self.set_winner(self.match, PongConsumer.players[self.room_name][0])
-                elif self.state['score2'] >= 7:
+                elif self.state['score2'] >= POINTS_TO_WIN:
                     await self.set_winner(self.match, PongConsumer.players[self.room_name][1])
                 PongConsumer.status[self.room_name] = True
                 
@@ -749,10 +752,10 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 await self.countdown()
 
 
-            if self.state['score1']  >= 7 or self.state['score2'] >= 7:
-                if self.state['score1'] >= 7:
+            if self.state['score1']  >= POINTS_TO_WIN or self.state['score2'] >= POINTS_TO_WIN:
+                if self.state['score1'] >= POINTS_TO_WIN:
                     await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][0])
-                elif self.state['score2'] >= 7:
+                elif self.state['score2'] >= POINTS_TO_WIN:
                     await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][1])
                 Pong_LocalConsumer.status[self.room_name] = True
                 

@@ -1,3 +1,6 @@
+import { createNotification } from "./Notifications.js";
+import { navigateTo } from "../index.js";
+
 export default class Pong {
     constructor(user){
         this.user = user;
@@ -70,6 +73,7 @@ export default class Pong {
             + this.room_name
             + '/'
         );
+        console.log("GAME_WS:", this.user.game_ws);
     }
 
     async closeWebSocket() {
@@ -80,6 +84,14 @@ export default class Pong {
             await this.user.game_ws.close();
             console.log("DISCONNECTED FROM WEBSOCKET PONG");
         }
+    }
+
+    winner_checker(data) {
+        if (data.victory != "none") {
+            console.log(data.victory);
+            this.user.getUser() === data.victory ? createNotification("YOU WIN!") : createNotification("YOU LOSE!");
+            navigateTo('/online');
+        }   
     }
 
     update(canvas, context) {
@@ -150,6 +162,7 @@ export default class Pong {
             }
             this.score1.innerHTML = data.score1;
             this.score2.innerHTML = data.score2;
+            this.winner_checker(data);
             // if (data.score1 !== undefined) {
             //     if (data.player === users)
             //         document.getElementById("score1").innerHTML = "Your Score: " + data.score1;

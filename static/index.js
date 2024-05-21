@@ -115,8 +115,8 @@ const router = async () => {
 	];
 
 	if (user.game_ws) {
+		console.log("GAME_WS EXIT:", user.game_ws);
 		await closeWebSocket(user);
-		console.log("DISCONNESIONE DALLA WEBSOCKET");
 	}
 	
 	// if (view instanceof MatchMaking)
@@ -165,7 +165,7 @@ const router = async () => {
 		};
 		document.querySelector('header').style.display = 'flex';
 		document.querySelector('body').classList.remove('game-bg');
-		createNotification("You have been disconnected from the game", "error");
+		// createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
 	}
 	if (!match) {

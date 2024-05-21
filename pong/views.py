@@ -105,7 +105,7 @@ class MatchmakingView(View):
             level_difference = abs(user_level - waiting_user.level)
 
             # If the level difference is less than or equal to 2, start the match
-            if level_difference <= 2:
+            if level_difference <= 5:
                 # Remove the users from the waiting list
                 WaitingUser.objects.filter(user__in=[user, waiting_user.user]).delete()
 
