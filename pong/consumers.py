@@ -103,7 +103,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_group_name = "pong_%s" % self.room_name
         self.user = self.scope['user']
         ai = await self.getAi()
-        print("Pong Consumer 101", self.user, "opponent", ai.username, ai.Ai)
+        print("-------------------------------Pong Consumer 101", self.user, "opponent", ai.username, ai.Ai, "-------------------")
         await self.accept()
         self.loop_task = None
 

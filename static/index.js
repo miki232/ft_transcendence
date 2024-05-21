@@ -39,6 +39,8 @@ var Tournament_Cache = {};
 let room_name;
 let room_match = null;
 let username;
+let previousUrl = '';
+
 // const checkRequest = async () => {
 // 	var requestList = await getRequests();
 // 	console.log(requestList);
@@ -46,6 +48,7 @@ let username;
 
 export const navigateTo = async url => {
 	history.pushState(null, null, url);
+	previousUrl = url;
 	await router();
 };
 
@@ -112,32 +115,36 @@ const router = async () => {
 	];
 	
 	if (view instanceof MatchMaking)
-	{
-		view.closeWebSocket();
-		console.log("DISCONNESIONE DALLA WEBSOCKET");
-	}
-	if (view instanceof Pong)
-	{
-		view.closeWebSocket();
-		// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
-		if (window.location.pathname === "/matchmaking") {
-			// const canvas = document.getElementById("pongCanvas").remove();
-			// container.insertAdjacentHTML("beforeend", "<div id = 'content'></div>");
-			navigateTo("/online");
+		{
+			view.closeWebSocket();
+			console.log("DISCONNESIONE DALLA WEBSOCKET");
 		}
+		if (view instanceof Pong)
+			{
+				view.closeWebSocket();
+				// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
+				// if (window.location.pathname === "/matchmaking") {
+					// 	// const canvas = document.getElementById("pongCanvas").remove();
+					// 	// container.insertAdjacentHTML("beforeend", "<div id = 'content'></div>");
+		// 	navigateTo("/online");
+		// }
 	}
 	if (view instanceof LocalGame)
-	{
-		await view.closeWebSocket();
-	}
+		{
+			await view.closeWebSocket();
+		}
 	const potentialMatches = routes.map(route => {
 		return {
 			route: route,
 			isMatch: location.pathname === route.path
-		};
-	});
+	};});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+	if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
+		// history.replaceState(null, null, "/online");
+		history.back();
+		// previousUrl = match.route.path;
+	}
 	if (!match) {
 		if (user.lastURL === "/1P-vs-2P") {
 			match = {
@@ -226,6 +233,8 @@ const router = async () => {
 			view = new OnlineClass.default(user);
 			break;
 		case "/matchmaking":
+			if (previousUrl === "/pong")
+				break;
 			const MatchMakingClass = await match.route.view();
 			view = new MatchMakingClass.default(user);
 			// console.log("OSU", room_name);
@@ -270,7 +279,6 @@ const router = async () => {
 };
 
 window.addEventListener("popstate", router);
-
 //** API per le History Dei Match*/
 // https://127.0.0.1:8001/accounts/match_history/?username=<USERNAME>
 // URL per vedere la history dei match,
