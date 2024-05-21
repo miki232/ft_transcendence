@@ -88,8 +88,8 @@ export default class Pong {
 
     winner_checker(data) {
         if (data.victory != "none") {
-            console.log(data.victory);
             this.user.getUser() === data.victory ? createNotification("YOU WIN!") : createNotification("YOU LOSE!");
+            this.user.disconnected = false;
             navigateTo('/online');
         }   
     }

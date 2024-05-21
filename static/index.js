@@ -165,7 +165,7 @@ const router = async () => {
 		};
 		document.querySelector('header').style.display = 'flex';
 		document.querySelector('body').classList.remove('game-bg');
-		// createNotification("You have been disconnected from the game", "error");
+		user.disconnected === true ? createNotification("You have been disconnected from the game", "error") : user.disconnected = true;
 		user.lastURL = null;
 	}
 	if (!match) {
