@@ -282,6 +282,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        # await self.FreeAi()
         print("Pong Consumer 280",f"User {self.scope['user']} disconnected with code {close_code}")
 
     async def receive(self, text_data):
@@ -446,6 +447,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             )
         if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
             print("Pong Consumer 444","THE winner is", self.match.winner)
+            await self.FreeAi()
             self.state['victory'] = self.match.winner.username
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -457,6 +459,16 @@ class PongConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1.5)  # Wait for 1 second
             await self.close()
             return
+
+    @database_sync_to_async
+    def FreeAi(self):
+        try:
+            print("Pong Consumer 464", PongConsumer.players[self.room_name][1])
+            ai = CustomUser.objects.get(username=PongConsumer.players[self.room_name][1])
+            ai.Occupied = False
+            ai.save()
+        except:
+            print("Pong Consumer 471", "AI NOT FOUND")
 
     async def handle_message(self, event):
         message_type = event['type']
@@ -929,7 +941,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                 opponent = existing_room.opponent.username
             else:
                 opponent = existing_room.created_by.username
-            return ({"status": 2, "room_name": existing_room.name, "opponent" : opponent, "group_name": f"matchmaking_{existing_room.name}" , "User_self" : self.user.username})
+            return ({"status": 4, "room_name": existing_room.name, "opponent" : opponent, "group_name": f"matchmaking_{existing_room.name}" , "User_self" : self.user.username})
 
         if not WaitingUser.objects.filter(user=self.user).exists():
             WaitingUser.objects.create(user=self.user, level=user_level)
@@ -938,19 +950,22 @@ class MatchMaking(AsyncWebsocketConsumer):
 
         print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
         self.time_passed += 1
-        if self.time_passed >= 3:
+        if self.time_passed >= 5:
             self.time_passed = 0
             WaitingUser.objects.filter(user=self.user).delete()
             room_name = str(uuid.uuid1()).replace('-', '')
             print("ROOM NAME", room_name)
-            ai_user = CustomUser.objects.filter(Ai=True, Occupied=False).first()
-            ai_user.Occupied = True
-            ai_user.save()
-            print("AI USER", ai_user)
-            print("AI USER", ai_user.username)
-            room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
+            try:
+                ai_user = CustomUser.objects.filter(Ai=True, Occupied=False).first()
+                ai_user.Occupied = True
+                ai_user.save()
+                print("AI USER", ai_user)
+                print("AI USER", ai_user.username)
+                room = RoomName.objects.create(name=room_name, created_by=self.user, opponent=ai_user)
 
-            return({"status": 2, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+                return({"status": 3, "room_name": room_name, "opponent" : ai_user.username, "group_name": f"matchmaking_{room_name}", "User_self" : self.user.username})
+            except:
+                print("AI USER NOT FOUND")
         for waiting_user in waiting_users:
             level_difference = abs(user_level - waiting_user.level)
             self.time_passed = 0
@@ -976,6 +991,7 @@ class MatchMaking(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"status" : 1}))
             result = await self.join_queue()
             if result:
+                print("MatchMaking 983", result)
                 await self.channel_layer.group_add(result["group_name"], self.channel_name)
                  # Send the result to the group
                 

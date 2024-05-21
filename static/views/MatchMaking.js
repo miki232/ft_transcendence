@@ -205,6 +205,12 @@ export default class MatchMaking extends AbstractView {
                     if (data.User_self === this.user.getUser()){
                         console.log('WebSocket message received:', event.data);
                         console.log('Parsed data:', data);
+                        if (data.status === 4)
+                            console.log("Room Of a Friend");
+                        if (data.status === 3)
+                            console.log("AI Opponent");
+                        if (data.status === 2)
+                            console.log("Normal Opponent");
                         this.setOpponent(data.opponent);
                         await this.getFriendInfo(this.opponent)
                         this.roomName = data.room_name;
