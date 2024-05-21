@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import Pong from "./Pong.js";
 import {navigateTo} from "../index.js";
 
 export default class MatchMaking extends AbstractView {
@@ -26,9 +27,16 @@ export default class MatchMaking extends AbstractView {
 		this.content.innerHTML = this.getContent();
         this.roomName = await this.getRoom_Match();
         if (this.roomName !== "undefined") {
+            console.log("ROOM NAME", this.roomName);
             this.user.online_room = this.roomName;
             this.user.online_opponent = this.opponent;
-            navigateTo("/pong");
+            // navigateTo("/pong");
+            await this.closeWebSocket();
+            history.replaceState(null, null, "/pong");
+            this.user.lastURL = "/pong";
+            const view = new Pong(this.user);
+            await view.connect_game();
+            await view.loop();
         }
     }
 

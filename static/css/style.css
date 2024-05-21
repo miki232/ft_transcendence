@@ -39,6 +39,10 @@ body {
 	align-items: center;
 }
 
+.game-bg {
+	background-image: none;
+}
+
 img {
 	border-radius: 50%;
 }
@@ -525,9 +529,9 @@ div .requests-list {
 #scores {
 	display: flex;
 	justify-content: space-between;
-	width: 800px;
+	width: 100%;
 	font-size: 24px;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 	color: white;
 }
 
@@ -838,11 +842,11 @@ div .requests-list {
 
 canvas {
 	border: 2px solid #FFF;
-	width: 90%; /* Adjust as needed */
+	width: 800px; /* Adjust as needed */
 	max-width: 800px; /* Maximum width of 800 pixels */
 	height: auto; /* Maintain aspect ratio */
 }
-#score1, #score2 {
+/* #score1, #score2 {
 	color: #FFF;
 	position: absolute;
 	top: 10px;
@@ -852,7 +856,7 @@ canvas {
 }
 #score2 {
 	right: 10px;
-}
+} */
 .containerpong {
 	display: flex;
 	flex-direction: column;

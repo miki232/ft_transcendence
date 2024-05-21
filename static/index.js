@@ -1,4 +1,4 @@
-// import { getCookie, register } from "./utilities.js";
+import { getCookie, register, closeWebSocket } from "./utilities.js";
 import User from "./views/User.js";
 import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
@@ -39,7 +39,7 @@ var Tournament_Cache = {};
 let room_name;
 let room_match = null;
 let username;
-let previousUrl = '';
+// let previousUrl = '';
 
 // const checkRequest = async () => {
 // 	var requestList = await getRequests();
@@ -48,7 +48,7 @@ let previousUrl = '';
 
 export const navigateTo = async url => {
 	history.pushState(null, null, url);
-	previousUrl = url;
+	// previousUrl = url;
 	await router();
 };
 
@@ -113,26 +113,30 @@ const router = async () => {
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')}
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
-	
-	if (view instanceof MatchMaking)
-		{
-			view.closeWebSocket();
-			console.log("DISCONNESIONE DALLA WEBSOCKET");
-		}
-		if (view instanceof Pong)
-			{
-				view.closeWebSocket();
-				// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
-				// if (window.location.pathname === "/matchmaking") {
-					// 	// const canvas = document.getElementById("pongCanvas").remove();
-					// 	// container.insertAdjacentHTML("beforeend", "<div id = 'content'></div>");
-		// 	navigateTo("/online");
-		// }
+
+	if (user.game_ws) {
+		await closeWebSocket(user);
+		console.log("DISCONNESIONE DALLA WEBSOCKET");
 	}
-	if (view instanceof LocalGame)
-		{
+	
+	// if (view instanceof MatchMaking)
+	// 	{
+	// 		view.closeWebSocket();
+	// 		console.log("DISCONNESIONE DALLA WEBSOCKET");
+	// 	}
+	// if (view instanceof Pong) {
+	// 	view.closeWebSocket();
+	// 			// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
+	// 			// if (window.location.pathname === "/matchmaking") {
+	// 				// 	// const canvas = document.getElementById("pongCanvas").remove();
+	// 				// 	// container.insertAdjacentHTML("beforeend", "<div id = 'content'></div>");
+	// 	// 	navigateTo("/online");
+	// 	// }
+	// }
+	if (view instanceof LocalGame) {
 			await view.closeWebSocket();
-		}
+	}
+
 	const potentialMatches = routes.map(route => {
 		return {
 			route: route,
@@ -140,29 +144,32 @@ const router = async () => {
 	};});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
-	if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
-		// history.replaceState(null, null, "/online");
-		history.back();
-		// previousUrl = match.route.path;
+	// if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
+	// 	// history.replaceState(null, null, "/online");
+	// 	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+	// 	history.back();
+	// 	// previousUrl = match.route.path;
+	// }
+	if (user.lastURL === "/1P-vs-2P") {
+		match = {
+			route: routes[6],
+			isMatch: true
+		};
+		console.log(user.lastURL);
+		createNotification("You have been disconnected from the game", "error");
+		user.lastURL = null;
+	} else if (user.lastURL === "/pong") {
+		match = {
+			route: routes[9],
+			isMatch: true
+		};
+		document.querySelector('header').style.display = 'flex';
+		document.querySelector('body').classList.remove('game-bg');
+		createNotification("You have been disconnected from the game", "error");
+		user.lastURL = null;
 	}
 	if (!match) {
-		if (user.lastURL === "/1P-vs-2P") {
-			match = {
-				route: routes[6],
-				isMatch: true
-			};
-			console.log(user.lastURL);
-			createNotification("You have been disconnected from the game", "error");
-			user.lastURL = null;
-		} else if (user.lastURL === "/pong") {
-			match = {
-				route: routes[9],
-				isMatch: true
-			};
-			console.log(user.lastURL);
-			createNotification("You have been disconnected from the game", "error");
-			user.lastURL = null;
-		} else if (location.pathname.includes("/user_info")) {
+		if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
 				route: routes[8],
@@ -233,18 +240,19 @@ const router = async () => {
 			view = new OnlineClass.default(user);
 			break;
 		case "/matchmaking":
-			if (previousUrl === "/pong")
-				break;
+			await user.isLogged() === false ? navigateTo("/") : null;
+			// if (previousUrl === "/pong")
+			// 	break;
 			const MatchMakingClass = await match.route.view();
 			view = new MatchMakingClass.default(user);
 			// console.log("OSU", room_name);
 			break;
-		case "/pong":
-			const PongClass = await match.route.view();
-			view = new PongClass.default(user);
-			content.innerHTML = await view.getContent();
-			await view.loop();
-			break;
+		// case "/pong":
+		// 	const PongClass = await match.route.view();
+		// 	view = new PongClass.default(user);
+		// 	content.innerHTML = await view.getContent();
+		// 	await view.loop();
+		// 	break;
 		case "/pong_tournament":
 			///** DA rivisitare */
 			// document.body.classList.remove("body");
@@ -286,7 +294,6 @@ window.addEventListener("popstate", router);
 ///*/
 
 document.addEventListener("DOMContentLoaded", () => {
-
 	document.body.addEventListener("click", async e => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");

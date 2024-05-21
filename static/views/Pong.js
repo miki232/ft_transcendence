@@ -1,10 +1,9 @@
-export default class Pong{
+export default class Pong {
     constructor(user){
         this.user = user;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
-        this.user.lastURL = "/pong"
-        this.game_ws = "null";
+        // this.game_ws = "null";
         this.score1;
         this.score2;
         this.ballX = 0;
@@ -20,16 +19,13 @@ export default class Pong{
         this.initialize();
     }
 
-    async initialize(){
+    initialize(){
         document.querySelector('header').style.display = 'none';
-        document.querySelector('body').style.backgroundColor = 'black';
-        document.querySelector('body').style.backgroundImage = 'none';
+        document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
         content.innerHTML = this.getContent();
         this.score1 = document.getElementById("score1");
         this.score2 = document.getElementById("score2");
-        await this.connect_game();
-        await this.loop();
     }
 
 
@@ -66,7 +62,7 @@ export default class Pong{
 
 
     async connect_game(){
-        this.game_ws = new WebSocket(
+        this.user.game_ws = new WebSocket(
             'wss://'
             + window.location.hostname
             + ':8000'
@@ -77,11 +73,11 @@ export default class Pong{
     }
 
     async closeWebSocket() {
-        if (this.game_ws) {
+        if (this.user.game_ws) {
             //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
             // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
             // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
-            await this.game_ws.close();
+            await this.user.game_ws.close();
             console.log("DISCONNECTED FROM WEBSOCKET PONG");
         }
     }
@@ -108,10 +104,10 @@ export default class Pong{
     updatePaddlePosition() {
         if (this.arrowUpPressed) {
             console.log('sending move_up');
-            this.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.users}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.users}));
         }
         if (this.arrowDownPressed) {
-            this.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.users}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.users}));
         }
     }
 
@@ -137,7 +133,7 @@ export default class Pong{
             }
         });        
         this.update(canvas, context);
-        this.game_ws.onmessage = event => {
+        this.user.game_ws.onmessage = event => {
             const data = JSON.parse(event.data);
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
@@ -187,8 +183,8 @@ export default class Pong{
         // };
         const pongHTML =  `
             <div id="scores">
-                <span>${this.user.getUser()}: <span id="score1"></span></span>
-                <span>${this.opponent}: <span id="score2"></span></span>
+                <p>${this.user.getUser()}: <span id="score1"></span></p>
+                <p>${this.opponent}: <span id="score2"></span></p>
             </div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
