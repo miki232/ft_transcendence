@@ -156,7 +156,6 @@ const router = async () => {
 			route: routes[6],
 			isMatch: true
 		};
-		console.log(user.lastURL);
 		createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
 	} else if (user.lastURL === "/pong") {

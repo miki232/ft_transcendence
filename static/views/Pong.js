@@ -95,7 +95,7 @@ export default class Pong {
                 </div>
             `;
             content.innerHTML = resultHTML;
-            setInterval(() => {
+            setTimeout(async () => {
                 this.user.disconnected = false;
                 navigateTo('/online');
             }, 5000);
