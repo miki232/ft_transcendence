@@ -96,9 +96,9 @@ function getCookie(name) {
 }
 
 function register(){
-	var username = sanitizeInput(document.getElementById('signup-user').value);
-	var password = sanitizeInput(document.getElementById('signup-pass').value);
-	var re_pass = sanitizeInput(document.getElementById('re-pass').value);
+	var username = document.getElementById('signup-user').value;
+	var password = document.getElementById('signup-pass').value;
+	var re_pass = document.getElementById('re-pass').value;
 	var email = document.getElementById('email').value;
 	var csrftoken = getCookie('csrftoken');
 
@@ -126,8 +126,8 @@ function register(){
 }
 
 function login(){
-	var username = sanitizeInput(document.getElementById('login-user').value);
-	var password = sanitizeInput(document.getElementById('login-pass').value);
+	var username = (document.getElementById('login-user').value);
+	var password = (document.getElementById('login-pass').value);
 	var csrftoken = getCookie('csrftoken');
 
 

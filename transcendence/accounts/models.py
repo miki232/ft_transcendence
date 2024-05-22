@@ -2,13 +2,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
+import redis, time
+
+r = redis.Redis(host='redis', port=6379, db=0)  # Connect to your Redis instance
+
 
 class CustomUser(AbstractUser): # new
     #https://i.pravatar.cc/300
     #https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
     pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
-    status_login = models.CharField(max_length=50, default="Offline")
+    status_login = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
+    Ai = models.BooleanField(default=False)
+    Occupied = models.BooleanField(default=False)
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):
@@ -24,6 +30,54 @@ class CustomUser(AbstractUser): # new
 
         return match_history
     # add additional fields in here
+    def calculate_exp(self):
+        match_history = self.get_match_history()
+        total_wins = len([match for match in match_history if match['winner__username'] == self.username])
+        total_loses = len([match for match in match_history if match['winner__username'] != self.username])
+        total_exp = total_wins - total_loses
+        return total_exp
+    
+    def calculate_level(self):
+        exp = {
+            0: 0,
+            1: 1,
+            2: 2,
+            3: 3,
+            5: 4,
+            8: 5,
+            13: 6,
+            21: 7,
+            34: 8,
+            55: 9,
+            89: 10,
+            144: 11,
+            233: 12,
+            377: 13,
+            610: 14,
+            987: 15,
+        }
+        total_exp = self.calculate_exp()
+        if total_exp > 610:
+            total_exp = 610
+        if total_exp < 0:
+            total_exp = 0 
+        # Set level equal to total exp in exp list
+        for i in exp:
+            if total_exp >= i:
+                level = exp[i]
+        if self.Ai:
+            level = 0
+        return level
+    
+    def is_user_online(self, user_id):
+        last_seen_timestamp = r.zscore('online_users', user_id)
+        if last_seen_timestamp is None:
+            return False
+        if self.status_login == False:
+            return False
+        current_time = int(time.time())
+        return (current_time - last_seen_timestamp) <= 300  # 300 seconds = 5 minutes
+
     def __str__(self):
         return self.username
 

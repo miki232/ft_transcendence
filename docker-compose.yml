@@ -32,12 +32,13 @@ services:
     build:
       context: ./transcendence
     # command: bash -c "python manage.py collectstatic --no-input && python manage.py runsslserver --certificate ./ssl/certcert.pem --key ./ssl/certkey.pem 0.0.0.0:8001"
-    command: bash -c "./wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && ./admin.sh"
+    command: bash -c "../sh/wait_for_it.sh my-postgres:5432 -- python manage.py collectstatic --no-input && ../sh/admin.sh"
     ports:
       - 127.0.0.1:8001:8001
     volumes:
-      - ./transcendence/ssl/:/app/ssl
-      - static_volume:/app/static
+      # - ./transcendence/ssl/:/app/ssl
+      - ./transcendence:/app/
+      # - static_volume:/app/static
       - static_volume:/app/staticfiles
     networks:
       - webnet

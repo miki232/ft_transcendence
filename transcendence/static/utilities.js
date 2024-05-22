@@ -1,4 +1,6 @@
-export function getCookie(name) {
+import { createNotification } from "./views/Notifications.js";
+
+export function getCookieRegister(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
 		const cookies = document.cookie.split(';');
@@ -12,6 +14,14 @@ export function getCookie(name) {
 	}
 	return cookieValue;
 }
+
+export async function getCookie() {
+		let csrftoken = await fetch("csrf-token")
+			.then(response => response.json())
+			.then(data => data.csrfToken);
+			console.log(csrftoken);
+		return csrftoken;
+	}
 
 export function sanitizeInput(input) {
 	// Rimuovi markup HTML pericoloso
@@ -31,109 +41,125 @@ export function sanitizeInput(input) {
 }
 
 export async function register() {
-	var username = sanitizeInput(document.getElementById('signup-user').value);
-	var password = sanitizeInput(document.getElementById('signup-pass').value);
-	var email = sanitizeInput(document.getElementById('email').value);
-	var csrftoken = getCookie('csrftoken');
+    const usernameInput = document.getElementById('signup-user');
+    const passwordInput = document.getElementById('signup-pass');
+    const emailInput = document.getElementById('email');
 
-	if (username === '' || password === '' || email === ''){
-		alert('Please fill in all fields');
-		return;
-	}
+    const username = sanitizeInput(usernameInput.value);
+    const password = sanitizeInput(passwordInput.value);
+    const email = sanitizeInput(emailInput.value);
+    const csrftoken = getCookieRegister('csrftoken');
 
-	await fetch('accounts/register/', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-			'X-CSRFToken': csrftoken
-		},
-		body: JSON.stringify({
-			username: username,
-			password: password,
-			email : email
-		}),
-	}).then(response => {
-		if (!response.ok) {
-			return response.json().then(data => {
-				if (data.email && data.email[0]){
-					console.log(data.email[0]);
-					throw new Error(data.email[0]);
-				}
-				if (data.username && data.username[0]){
-					console.log(data.username[0]);
-					throw new Error(data.username[0]);
-				}
-			});
-		}
-		return response.json();
-	}).then(data => {
-		console.log(data);
-		console.log("Register");
-		alert("Account created successfully");
-		var inputs = document.getElementsByTagName('input');
-		for (var i = 0; i < inputs.length; i++) {
-			inputs[i].value = '';
-		}
-		// document.querySelector('input[id="tab-2"]').checked = false;
-		// document.querySelector('input[id="tab-1"]').checked = true;
-	}).catch((error) => {
-		console.error('Error: ', error);
-		alert(error);
-	});
-}
-
-export async function logout(){
-	///Csrf_token
-	let csrftoken = await fetch("csrf-token")
-	.then(response => response.json())
-	.then(data => data.csrfToken);
-	console.log(csrftoken);
-	///
-	await fetch('accounts/logout/', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-			'X-CSRFToken': csrftoken,
-		}
-	})
-	.then(response => {
-		if (response.status > 204) {
-			throw new Error(`HTTP status ${response.status}`);
-		}
-		if (response.status === 200) {
-			return response.json();
-		}
-	})
-	.then(data => {
-		console.log("Logged out");
-		// inDashboard = false;
-		// navigateTo('/');
-		console.log(data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
-
-export async function deleteUser() {
-    const csrftoken = getCookie('csrftoken');
+    if (!username || !password || !email) {
+        createNotification('Please fill in all fields');
+        return;
+    }
 
     try {
-        const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato
-            method: 'DELETE',
+        const response = await fetch('accounts/register/', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken
             },
-            credentials: 'include'
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                email: email
+            })
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            if (data.email && data.email[0]) {
+                console.error(data.email[0]);
+                throw new Error(data.email[0]);
+            }
+            if (data.username && data.username[0]) {
+                console.error(data.username[0]);
+                throw new Error(data.username[0]);
+            }
+            if (data.password && data.password[0]) {
+                console.error(data.password[0]);
+                throw new Error(data.password[0]);
+            }
+        } else {
+            const data = await response.json();
+            console.log(data);
+            console.log("Register");
+            createNotification("Account created successfully");
+            usernameInput.value = '';
+            passwordInput.value = '';
+            emailInput.value = '';
+			return true;
         }
-
-        console.log('User deleted successfully');
     } catch (error) {
         console.error('Error:', error);
+        createNotification(error.message);
     }
 }
+
+export async function closeWebSocket(user) {
+    if (user.game_ws) {
+        //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
+        // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
+        // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
+        await user.game_ws.close();
+        console.log("DISCONNECTED FROM WEBSOCKET PONG");
+    }
+}
+
+
+// export async function logout(){
+// 	///Csrf_token
+// 	let csrftoken = await fetch("csrf-token")
+// 	.then(response => response.json())
+// 	.then(data => data.csrfToken);
+// 	console.log(csrftoken);
+// 	///
+// 	await fetch('accounts/logout/', {
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type' : 'application/json',
+// 			'X-CSRFToken': csrftoken,
+// 		}
+// 	})
+// 	.then(response => {
+// 		if (response.status > 204) {
+// 			throw new Error(`HTTP status ${response.status}`);
+// 		}
+// 		if (response.status === 200) {
+// 			return response.json();
+// 		}
+// 	})
+// 	.then(data => {
+// 		console.log("Logged out");
+// 		console.log(data);
+// 	})
+// 	.catch((error) => {
+// 		console.error('Error:', error);
+// 	});
+// }
+
+// export async function deleteUser() {
+//     const csrftoken = await getCookie('csrftoken');
+
+//     try {
+//         const response = await fetch('/api/delete-user/', {  // Sostituisci con l'URL appropriato
+//             method: 'DELETE',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRFToken': csrftoken
+//             },
+//             credentials: 'include'
+//         });
+
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+
+//         console.log('User deleted successfully');
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }

@@ -8,8 +8,10 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 import requests
+import imghdr
 import urllib
 import os
 import uuid
@@ -68,7 +70,6 @@ def callback(request):
     user_info = response.json()
 
     # Check if the user already exists in your database
-    # print(user_info['image']['link'])
     user, created = CustomUser.objects.get_or_create(
         username=user_info['login'],
         pro_pic=user_info['image']['link'],
@@ -104,6 +105,16 @@ class UserLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class UserdeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        if self.request.user.is_authenticated:
+            request.user.delete()
+            return Response({'value' : 'User deleted'}, status=status.HTTP_200_OK)
+        return Response({'value' : 'User not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = (SessionAuthentication,)
@@ -112,8 +123,9 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def put(self, request):
-        print(request.data)
-        serializer = UserInfoSerializer(request.user, data=request.data, partial=True)
+        if 'defaultPic' in request.data['pro_pic']:
+            request.data['pro_pic'] = request.user._meta.get_field('pro_pic').get_default()
+        serializer = UserInfoSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -121,25 +133,31 @@ class UserInfoView(APIView):
     def post(self, request):
         url = request.user.pro_pic
         if 'url' in request.POST:
-            print(request.POST)
+            current_pic_path = os.path.join(settings.BASE_DIR, request.user.pro_pic.lstrip('/'))
+            if os.path.isfile(current_pic_path):
+                os.remove(current_pic_path)
             request.user.pro_pic = request.POST['url']
             request.user.save()
-            print(request.user.pro_pic)
-        elif 'imageFile' in request.FILE:
+            url = request.user.pro_pic
+        elif 'imageFile' in request.FILES:
             uploaded_file = request.FILES['imageFile']
-            fs = FileSystemStorage(location='media/profile_pics/')
+            if imghdr.what(uploaded_file) is None:
+                return Response({'Error' : "Uploaded file is not an image!"}, status=status.HTTP_400_BAD_REQUEST)
+            fs = FileSystemStorage(location='media/profilepics/')
             ext = uploaded_file.name.split('.')[-1]
             filename = '{}.{}'.format(uuid.uuid4(), ext)
             name = fs.save(filename, uploaded_file)
-            name = 'profile_pics/' + name
+            name = 'profilepics/' + name
             url = fs.url(name)
+            current_pic_path = os.path.join(settings.BASE_DIR, request.user.pro_pic.lstrip('/'))
+            if os.path.isfile(current_pic_path):
+                os.remove(current_pic_path)
             request.user.pro_pic = url
             request.user.save()
         else:
             return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'pro_pic': url}, status=status.HTTP_200_OK)
 
-    
 class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserMatchHistorySerializer
 
@@ -182,7 +200,7 @@ class GenericUserInfo(generics.ListAPIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        request.user.status_login = "Offline"
+        request.user.status_login = False
         request.user.save()
         logout(request)
         return Response({'value' : 'logged out'}, status=status.HTTP_200_OK)
@@ -192,23 +210,52 @@ class UserSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         query = self.request.query_params.get('q', None)
-        print(query)
+        print("Get Query Set 213", query)
         if query is not None:
-            print(query)
+            print("Get Query Set 215", query)
             return CustomUser.objects.filter(username__icontains=query)
         return CustomUser.objects.none()
 
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #     if not queryset:
+    #         return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         if not queryset:
             return Response({"User not Found"}, status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            data = serializer.data
+            for item in data:
+                friendlist = FriendList.objects.get(user=request.user)
+                user_friend = CustomUser.objects.get(username=item['username'])
+                print("List 244", friendlist.is_mutual_friend(item['username']), friendlist.user.username)
+                if friendlist.is_mutual_friend(item['username']):  # Replace with your actual check
+                    item.pop('status_login', None)
+            return self.get_paginated_response(data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
+        data = serializer.data
+        for item in data:
+            try:
+                friendlist = FriendList.objects.get(user=request.user)
+            except ObjectDoesNotExist:
+                item.pop('status_login', None)
+                continue
+            user_friend = CustomUser.objects.get(username=item['username'])
+            print("List 258", item['username'], user_friend.username, friendlist.is_mutual_friend(user_friend), friendlist.user.username)
+            if friendlist.is_mutual_friend(user_friend) == False:  # Replace with your actual check
+                item.pop('status_login', None)
+        return Response(data)

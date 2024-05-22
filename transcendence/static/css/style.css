@@ -30,13 +30,26 @@ html, body {
 }
 
 body {
-	background-color: var(--primary-color);
-	background-image: url(../img/bg1.jpg);
-	background-size: cover;
+	background-image: url(../img/bg2.jpg);
+	background-size:cover;
+	background-color: rgb(1, 1, 5);
 	background-position: center;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.game-bg {
+	background-image: none;
+}
+
+img {
+	border-radius: 50%;
+}
+
+h1 {
+	font-size: 48px;
+	margin: 30px 0;
 }
 
 /***************** HEADER *****************/
@@ -91,7 +104,17 @@ header h1 {
 
 header a img {
 	height: 42px;
+	width: 42px;
 	vertical-align: middle;
+}
+
+.nav-toggle {
+	display: none;
+	background-color: transparent;
+	border: none;
+	color: white;
+	font-size: 48px;
+	cursor: pointer;
 }
 
 /***************** MAIN *****************/
@@ -122,7 +145,10 @@ header a img {
 .friends-card,
 .friend-info,
 .requests,
-.settings {
+.settings,
+.local-game,
+.online-game,
+.matchmaking {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -144,6 +170,7 @@ header a img {
 
 .input-box,
 .friend,
+.user,
 .request-line {
 	width: 75%;
 	display: flex;
@@ -220,10 +247,14 @@ header a img {
 	display: flex;
 }
 
-.submit-btn {
+.submit-btn,
+.settings-btn,
+.local-game-btn {
 	width: 76%;
 	height: 38px;
 	cursor: pointer;
+	background-color: white;
+	color: black;
 	border-radius: 6px;
 	margin: 15px 0 22px 0;
 	border: none;
@@ -283,23 +314,69 @@ header a img {
 /***************** DASHBOARD *****************/
 
 .profile-card img,
-.friend-info img {
+.settings img,
+.friend-info img,
+.local-game img,
+.online-game img {
 	height: 130px;
+	width: 130px;
 }
 
-.profile-card h3 {
+.user-dashboard {
+	width: 76%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-bottom: 45px;
+}
+
+.user-info {
+	text-align: center;
+}
+
+.user-info h3 {
+	font-size: 36px;
+	margin-bottom: 15px;
+}
+
+.user-info h5 {
+	margin-bottom: 5px;
+}
+
+.exp-bar {
+	width: 100px;
+	height: 10px;
+	background-color: darkgray;
+	border-radius: 10px;
+	font-size: 8px;
+	color: black;
+}
+
+.exp-bar .progress-bar {
+	width: 0;
+	height: 100%;
+	background-color: white;
+	border-radius: 10px;
+}
+
+.local-game h3,
+.online-game h3,
+.matchmaking h3 {
 	font-size: 28px;
 	margin: 10px 0 15px 0;
 }
 
-.red-btn {
+.red-btn,
+.no-btn {
 	background-color: var(--logout-color);
 	color: white;
 	margin: 0;
 	/* font-size: 20px; */
 }
 
-.submit-btn ion-icon {
+.submit-btn ion-icon,
+.settings-btn ion-icon,
+.local-game-btn ion-icon {
 	margin-right: 10px;
 }
 
@@ -317,6 +394,61 @@ header a img {
 		font-size: smaller;
 		cursor: pointer;
 		margin-left: 5px;
+}
+
+.user-data {
+	width: 76%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.user-data h1 {
+	margin: 10px 0;
+}
+
+.user-data img {
+	height: 100px;
+	width: 100px;
+}
+
+.settings .input-box {
+	margin: 10px 0;
+}
+
+.settings .input-box ion-icon,
+.local-game .input-box ion-icon {
+	margin-left: auto;
+}
+
+.settings .confirm-btn,
+.local-game .confirm-btn {
+	color: white;
+	background-color: green;
+}
+
+.change-btn {
+	width: 76%;
+	margin: 10px 0;
+	display: flex;
+	gap: 15px;
+}
+
+.change-btn button {
+	height: 35px;
+	margin: 0;
+}
+
+.delete-box {
+	width: 76%;
+	text-align: center;
+	font-size: 20px;
+	margin: 30px 0 25px 0;
+}
+
+.delete-box h5 {
+	font-size: 20px;
 }
 
 div .requests-list {
@@ -344,7 +476,9 @@ div .requests-list {
 	background-color: green;
 }
 
-.request-line .accept-request:active {
+.request-line .accept-request:active,
+.settings .confirm-btn:active,
+.local-game .confirm-btn:active {
 	border: 2px solid rgb(0, 66, 0);
 }
 
@@ -371,9 +505,34 @@ div .requests-list {
 	font-size: 16px;
 }
 
-.change-setting .settings {
-	transform: translateX(0%);
-	opacity: 1;
+/***************** LOCAL GAME **************/
+
+.local-game,
+.online-game,
+.matchmaking {
+	justify-content: start;
+}
+
+#vs-cpu {
+	margin-top: 28px;
+}
+
+
+/***************** ONLINE GAME **************/
+
+.matchmaking img {
+	height: 100px;
+	width: 100px;
+}
+
+
+#scores {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	font-size: 24px;
+	margin-bottom: 20px;
+	color: white;
 }
 
 /***************** FRIENDS *****************/
@@ -414,7 +573,8 @@ div .requests-list {
 	border-radius: 10px;
 }
 
-.friend {
+.friend,
+.user {
 	width: 100%;
 	/* justify-content: start; */
 	align-items: center;
@@ -440,10 +600,6 @@ div .requests-list {
 	margin: 8px 0;
 }
 
-.friends-card h1 {
-	margin: 16px;
-}
-
 .friends-card #search-btn {
 	margin: 5px;
 }
@@ -452,21 +608,27 @@ div .requests-list {
 	height: 40%;
 }
 
-.friend span {
+.friend a,
+.user a {
+	color: white;
 	cursor: pointer;
 }
 
-.friend :nth-child(2) {
+.friend :nth-child(2),
+.user :nth-child(2) {
 	margin-left: 20px;
 }
 
-.friend :nth-child(3) {
+.friend :nth-child(3),
+.user :nth-child(3) {
 	margin-left: auto;
 }
 
 .friend img,
+.user img,
 .request-line img {
 	height: 35px;
+	width: 35px;
 }
 
 .friend-online {
@@ -479,13 +641,6 @@ div .requests-list {
 
 .friends-card h4 {
 	margin: 10px 0;
-}
-
-.friend-info,
-.requests,
-.settings {
-	transform: translateX(-100%);
-	opacity: 0;
 }
 
 .change-view .friends-card,
@@ -632,4 +787,236 @@ div .requests-list {
 
 .single-card .friend-info {
 	text-align: center;
+}
+
+/* CSS PER ONLINE GAME */
+.container {
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    border: 2px solid #000; /* Add a border */
+	background-color: rgba(174, 187, 230, 0.5); /* Add a transparent background color */
+	box-sizing: border-box; /* Make sure the border and padding are included in the element's total width and height */
+	padding: 20px; /* Add some padding */
+}
+
+.half {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-image {
+    max-width: 50%;
+    height: auto;
+}
+
+.search-text {
+    text-align: center;
+}
+
+.bodypong {
+	background-color: #222831;
+	/* background: 
+		linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+		url('../img/bg3.jpg'); */
+	background-size: cover;
+	background-attachment: fixed;
+	background-position: center -100px;
+	color: var(--quaternary-color);
+	line-height: 1.6;
+}
+
+
+.countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: white;
+    z-index: 1;
+}
+
+canvas {
+	border: 2px solid #FFF;
+	width: 800px; /* Adjust as needed */
+	max-width: 800px; /* Maximum width of 800 pixels */
+	height: auto; /* Maintain aspect ratio */
+}
+/* #score1, #score2 {
+	color: #FFF;
+	position: absolute;
+	top: 10px;
+}
+#score1 {
+	left: 10px;
+}
+#score2 {
+	right: 10px;
+} */
+.containerpong {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+
+
+/************ MEDIA QUERIES ************/
+
+@media screen and (max-width: 860px) {
+
+	header {
+		padding: 15px 30px;
+	}
+
+	#logo {
+		margin: 0;
+	}
+
+	.nav-toggle {
+		display: block;
+	}
+
+	.nav-links {
+		display: none;
+		flex-direction: column;
+		padding: 14px;
+		gap: 8px; 
+	}
+
+	.nav-links a {
+		margin: 0;
+	}
+
+	.nav-links-toggle {
+		backdrop-filter: blur(20px);
+		color: white;
+		font-size: 24px;
+		border: 2px solid white;
+		border-radius: 20px;
+	}
+	
+	.form-box,
+	.dashboard {
+		width: 350px;
+		height: 500px;
+	}
+
+	.form-box form h1 {
+		font-size: 30px;
+	}
+
+	.input-box input {
+		font-size: 14px;
+	}
+
+	.input-box label {
+		font-size: 15px;
+	}
+
+	.checkbox h5 {
+		font-size: 12px;
+	}
+
+	.checkbox label {
+		font-size: 14px;
+	}
+
+	.submit-btn,
+	.settings-btn,
+	.local-game-btn {
+		font-size: 14px;
+	}
+
+	.login-register p {
+		font-size: 14px;
+	}
+
+	.login-register a {
+		font-size: 14px;
+	}
+
+	/* .hr {
+		height: 2px;
+		width: 50%;
+		margin: 10px 0 15px 0;
+	} */
+
+	.user-dashboard {
+		margin-bottom: 35px;
+	}
+
+	.user-info h3 {
+		font-size: 30px;
+	}
+
+	.user-info h5 {
+		font-size: 16px;
+	}
+
+	.exp-bar {
+		width: 80px;
+		height: 8px;
+		font-size: 6px;
+	}
+
+	.exp-bar .progress-bar {
+		height: 100%;
+	}
+
+	.local-game h3 {
+		font-size: 24px;
+	}
+
+	.red-btn,
+	.no-btn {
+		font-size: 18px;
+	}
+
+	.submit-btn ion-icon,
+	.settings-btn ion-icon,
+	.local-game-btn ion-icon {
+		margin-right: 8px;
+	}
+
+	.dashboard-btn {
+		margin: 5px 0;
+	}
+
+	.user-data h1 {
+		margin: 8px 0;
+	}
+
+	.settings .input-box {
+		margin: 5px 0;
+	}
+
+	.settings .input-box ion-icon,
+	.local-game .input-box ion-icon {
+		margin-left: auto;
+	}
+
+	.settings .confirm-btn,
+	.local-game .confirm-btn {
+		font-size: 16px;
+	}
+
+	.change-btn {
+		font-size: 12px;
+	}
+
+	.change-btn button {
+		height: 30px;
+	}
+
+	.delete-box {
+		font-size: 18px;
+		margin: 25px;
+	}
+
 }

@@ -1,8 +1,7 @@
-import { getCookie, sanitizeInput } from "../utilities.js";
+import { sanitizeInput } from "../utilities.js";
 
 export default class {
 	constructor() {
-		this.getCookie = getCookie;
 		this.sanitizeInput = sanitizeInput;
 	}
 

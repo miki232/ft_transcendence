@@ -51,7 +51,8 @@ SECURE_BROWSER_XSS_FILTER = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.5", "127.0.0.1", 'localhost', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
+# ALLOWED_HOSTS = ["192.168.1.4", "10.11.4.4", "127.0.0.1", '192.168.122.1', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -80,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.onlinemiddleware.OnlineStatusMiddleware', # ne
 ]
 
 ROOT_URLCONF = 'django_progect.urls'
@@ -114,6 +116,8 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('redis', 6379)],
+            "capacity": 1500,  # default 100
+            "expiry": 10,  # default 60
         },
     },
 }

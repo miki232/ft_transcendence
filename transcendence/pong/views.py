@@ -1,34 +1,57 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views import View
+
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName
+from .models import RoomName, WaitingUser, TournametPlaceHolder, Tournament_Waitin, Tournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer
+from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
+from accounts.models import Match
+from accounts.serializers import UserInfoSerializer
 
 class CreateRoomView(APIView):
     def post(self, request, format=None):
         room_name = request.data.get("name")
+        user_to_fight = None
+        user = None
+        username = request.data.get("created_by")
+        public = False
+
         if room_name == "1":
             room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
-        username = request.data.get("created_by")
-        sfidante = request.data.get("to_fight")
-        user = CustomUser.objects.get(username=username)
-        user_to_fight = CustomUser.objects.get(username=sfidante)
-        print(user_to_fight)
-        send_save_notification(user_to_fight, f"{user} Want to play with YOU!")
-        # Pass the primary keys to the serializer
-        serializer = RoomNameSerializer(data={
+            sfidante = request.data.get("to_fight")
+            user_to_fight = CustomUser.objects.get(username=sfidante)
+            user = CustomUser.objects.get(username=username)
+            print("Create Room View 32", user_to_fight)
+            send_save_notification(user_to_fight, f"{username} Want to play with YOU!")
+            serializer = RoomNameSerializer(data={
             'created_by': user,
             'opponent': user_to_fight,
-            'name': room_name
-        })
+            'name': room_name,
+            'public' : public,
+            })
+        else:
+            public = True
+            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+            # Pass the primary keys to the serializer
+            print("Create Room View 44", CustomUser.calculate_level(user))
+            serializer = RoomNameSerializer(data={
+                'created_by': user,
+                'opponent': user_to_fight,
+                'name': room_name,
+                'public' : public,
+                'level' : CustomUser.calculate_level(user)
+            })
 
         if serializer.is_valid():
             serializer.save()
@@ -41,7 +64,6 @@ class ListRoomView(APIView):
     o se è una room pubblica
     """
     def get(self, request, format=None):
-        # print(request.user)
         user = CustomUser.objects.get(username=request.user)
         
         # Filter the RoomName queryset to only include rooms created by the user's friends or by the request.user, and where public is True
@@ -56,6 +78,91 @@ class ListRoomView(APIView):
         
         serializer = RoomNameSerializer(rooms, many=True)
         return Response(serializer.data)
+
+class MatchmakingView(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_level = user.calculate_level()
+
+        existing_room = RoomName.objects.filter(Q(created_by=user) | Q(opponent=user)).first()
+        if existing_room:
+            opponent = existing_room.created_by.username if user != existing_room.opponent.username else existing_room.opponent.username
+            return JsonResponse({"status": 2, "room_name": existing_room.name, "opponent" : opponent})
+
+
+        # If the user is already in the waiting list, return 1
+        if WaitingUser.objects.filter(user=user).exists():
+            return JsonResponse({"status": 1})
+
+        # Add the user to the waiting list
+        WaitingUser.objects.create(user=user, level=user_level)
+
+        # Get the list of waiting users, excluding the current user
+        waiting_users = WaitingUser.objects.exclude(user=user)
+
+        # Try to find a match for the user
+        for waiting_user in waiting_users:
+            level_difference = abs(user_level - waiting_user.level)
+
+            # If the level difference is less than or equal to 2, start the match
+            if level_difference <= 5:
+                # Remove the users from the waiting list
+                WaitingUser.objects.filter(user__in=[user, waiting_user.user]).delete()
+
+                # Create a new room for the match
+                room_name = str(uuid.uuid4())
+                room = RoomName.objects.create(name=room_name, created_by=user, opponent=waiting_user.user)
+
+                # Return the room name and the status 2
+                return JsonResponse({"status": 2, "room_name": room_name, "opponent" : waiting_user.user.username})
+
+        # If no match was found, return 1
+        return JsonResponse({"status": 1})
+    
+
+class TournamentView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        tournament = None
+        try :
+            tournament = TournametPlaceHolder.objects.get(status=True)
+        except ObjectDoesNotExist:
+            tournament = None
+        serializer = TournamentPlaceHolderSerializer(tournament)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WaitingForTournameView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = request.user
+        waiting_queue = None
+        list = {}
+        i = 0
+        try :
+            waiting_queue = Tournament_Waitin.objects.all()
+            for waiting in waiting_queue:
+                serializer = UserInfoSerializer(waiting.user)
+                list[f'{i}'] = [serializer.data, waiting.level]
+                i += 1
+        except ObjectDoesNotExist:
+            tournament = None
+        return JsonResponse(list, status=status.HTTP_200_OK)
+    
+class TournamentMatchView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        user = CustomUser.objects.get(username=request.user)
+        match = RoomName.objects.get(Q(created_by=user) | Q(opponent=user))
+        serializer = RoomNameSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Create your views here.
 @login_required

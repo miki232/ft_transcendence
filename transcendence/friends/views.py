@@ -17,7 +17,7 @@ from .serializers import FriendRequestSerializer, FriendListSerializer
 def send_friend_request(request):
     user = request.user
     payload = {}
-    print(user.is_authenticated)
+    print("Send Friend Request 20", user.is_authenticated)
     print("SUCAAAAAA")
 
     if request.method == "POST" and user.is_authenticated:
@@ -92,7 +92,7 @@ class SendFriendRequestView(APIView):
     def post(self, request):
         # Check if user is authenticated
 
-        print(request.user.is_authenticated, request.user.username, request.data.get('receiver_user_id'))
+        print("Post - Send Friend Request 95", request.user.is_authenticated, request.user.username, request.data.get('receiver_user_id'))
         if request.user.is_authenticated and request.user.username != request.data.get('receiver_user_id'):
             user = request.user
             receiver_id = request.data.get('receiver_user_id')
@@ -121,12 +121,12 @@ class SendFriendRequestView(APIView):
                         # If no friend request exists, create a new one
                         friend_request = FriendRequest(sender=user, receiver=receiver)
                         friend_request.save()
-                        print(f"Sending message to group notifications_{receiver.id}")
-                        print("SUCAAAAAA", receiver.id)
+                        print("Post - Send Friend Request 124", f"Sending message to group notifications_{receiver.id}")
+                        print("Post - Send Freiend Request 125", receiver.id)
                         send_save_notification(receiver, f"You have a new friend request from {user.username}")
                         # async_to_sync(send_message)(receiver.id)
                                 # break  # If the group_send call succeeds, break out of the loop
-                        print(f"Message sent to group notifications_{receiver.id}")
+                        print("Post - Send Friend Request 129", f"Message sent to group notifications_{receiver.id}")
                         # Serialize the friend request and return it
                         serializer = FriendRequestSerializer(friend_request)
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -152,7 +152,7 @@ def accept_friend_request(request, *args, **kwargs):
      if request.method == "GET" and user.is_authenticated:
          friend_request_id = kwargs.get("friend_request_id")
          receiver = CustomUser.objects.get(username=friend_request_id)
-         print(friend_request_id, receiver)
+         print("Accept Friend Request 155", friend_request_id, receiver)
          if friend_request_id:
             friend_request = FriendRequest.objects.get(sender=receiver, receiver=user)
 			# confirm that is the correct request
@@ -210,7 +210,7 @@ class DeclineFriendRequestView(APIView):
         user = request.user
         if user.is_authenticated:
             friend_request_id_to_decline=  request.data.get('sender_user_id')
-            print(friend_request_id_to_decline)
+            print("Post - Decline Friend Request 213", friend_request_id_to_decline)
             if friend_request_id_to_decline:
                 try:
                     removee = CustomUser.objects.get(username=friend_request_id_to_decline)
@@ -225,7 +225,7 @@ class DeclineFriendRequestView(APIView):
                     else:
                         return Response({"detail" : "This is not your Friend request to decline"}, status=status.HTTP_401_UNAUTHORIZED)
                 except Exception as e:
-                    print(str(e))
+                    print("Post - Decline Friend Request 228", str(e))
                     return Response({"detail" : str(e)}, status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"detail" : "Bro Devi essere Loggato!"}, status=status.HTTP_403_FORBIDDEN)
@@ -236,7 +236,7 @@ class CancelFriendRequestView(APIView):
         user = request.user
         if user.is_authenticated:
             friend_request_id_to_cancel=  request.data.get('receiver_user_id')
-            print(friend_request_id_to_cancel)
+            print("Post - Cancel Friend Request 239", friend_request_id_to_cancel)
             if friend_request_id_to_cancel:
                 try:
                     removee = CustomUser.objects.get(username=friend_request_id_to_cancel)
@@ -251,7 +251,7 @@ class CancelFriendRequestView(APIView):
                     else:
                         return Response({"detail" : "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(str(e))
+                    print("Post - Cancel Friend Request 254", str(e))
                     return Response({"detail" : str(e)}, status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"detail" : "Bro Devi essere Loggato!"}, status=status.HTTP_403_FORBIDDEN)
