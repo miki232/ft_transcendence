@@ -23,7 +23,7 @@ SCREEN_HEIGHT = 400
 
 # Paddle settings
 PADDLE_WIDTH = 10
-PADDLE_HEIGHT = 100
+PADDLE_HEIGHT = 50
 PADDLE_SPEED = 10
 
 # Ball settings
@@ -32,11 +32,13 @@ BALL_SIZE = 5
 # Winning score
 POINTS_TO_WIN = 5
 
-
-
-def map_value(value, start1, stop1, start2, stop2):
-    return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
-
+# def map_value(value, start1, stop1, start2, stop2):
+#     return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
+def map_value(value, from_low, from_high, to_low, to_high):
+    from_range = from_high - from_low
+    to_range = to_high - to_low
+    scaled_value = float(value - from_low) / float(from_range)
+    return to_low + (scaled_value * to_range)
 
 def move_paddle(paddle_pos, target_pos, speed):
     if paddle_pos < target_pos:
@@ -84,7 +86,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         else:
             intercept_y = ball_pos[1]  # Set intercept_y to the current y-coordinate of the ball
             # Set the target position for the AI paddle with some randomness
-        randomness = random.uniform(-65, 65)
+        randomness = random.uniform(-35, 35)
         self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
         # Ensure the target position is within paddle movement limits
         self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
@@ -310,39 +312,58 @@ class PongConsumer(AsyncWebsocketConsumer):
         if player == PongConsumer.players[self.room_name][0]:
             print("Pong Consumer 302","paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] > 0:
-                self.state['paddle1_y'] -= 5
+                self.state['paddle1_y'] -= 10
         else:
             if self.state['paddle2_y'] > 0:
-                self.state['paddle2_y'] -= 5
+                self.state['paddle2_y'] -= 10
 
     async def move_paddle_down(self, player):
         if player == PongConsumer.players[self.room_name][0]:
             print("Pong Consumer 311","paddle1_y", self.state['paddle1_y'])
-            if self.state['paddle1_y'] < 300:
-                self.state['paddle1_y'] += 5
+            if self.state['paddle1_y'] < 350:
+                self.state['paddle1_y'] += 10
         else:
-            if self.state['paddle2_y'] < 300:
-                self.state['paddle2_y'] += 5
+            if self.state['paddle2_y'] < 350:
+                self.state['paddle2_y'] += 10
 
+    # def check_collision(self):
+    #     if (
+    #         self.state['ball_x'] <= 10
+    #         and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+    #     ):
+    #         diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
+    #         print("Left Collision", diff, self.state['ball_speed_x'], self.state['ball_speed_y'])
+    #         rad = math.radians(45)
+    #         angle = map_value(diff, -50, 50, -rad, rad)
+    #         # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+    #         self.state['ball_speed_x'] = 5 * math.cos(angle)
+    #         self.state['ball_speed_y'] = 5 * math.sin(angle)
+    #     if (
+    #         self.state['ball_x'] >= 790
+    #         and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+    #     ):
+    #         # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+    #         diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
+    #         angle = map_value(diff, -50, 50, math.radians(255), math.radians(135))
+    #         # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+    #         self.state['ball_speed_x'] = 5 * math.cos(angle)
+    #         self.state['ball_speed_y'] = 5 * math.sin(angle)
     def check_collision(self):
+        rad = math.radians(45)
         if (
             self.state['ball_x'] <= 10
-            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 50
         ):
             diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
-            rad = math.radians(45)
             angle = map_value(diff, -50, 50, -rad, rad)
-            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
             self.state['ball_speed_x'] = 5 * math.cos(angle)
             self.state['ball_speed_y'] = 5 * math.sin(angle)
         if (
             self.state['ball_x'] >= 790
-            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 50
         ):
-            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
             diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
-            angle = map_value(diff, -50, 50, math.radians(255), math.radians(135))
-            # self.state['ball_speed_x'] = -self.state['ball_speed_x']
+            angle = map_value(diff, -50, 50, -rad, rad) + math.pi
             self.state['ball_speed_x'] = 5 * math.cos(angle)
             self.state['ball_speed_y'] = 5 * math.sin(angle)
 
@@ -356,9 +377,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
                     last_ai_update_time = current_time
                 if (self.user1.Ai):
-                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 5)
+                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 10)
                 else:
-                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 5)
+                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 10)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(

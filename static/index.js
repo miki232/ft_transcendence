@@ -5,6 +5,7 @@ import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
 import Pong from "./views/Pong.js";
 import LocalGame from "./views/LocalGame.js";
+import Online from "./views/Online.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -118,12 +119,12 @@ const router = async () => {
 		console.log("GAME_WS EXIT:", user.game_ws);
 		await closeWebSocket(user);
 	}
-	
-	// if (view instanceof MatchMaking)
-	// 	{
-	// 		view.closeWebSocket();
-	// 		console.log("DISCONNESIONE DALLA WEBSOCKET");
-	// 	}
+	// Added for Close websocekt when Tournament is Available but the user choose the 1v1
+	if (view instanceof Online)
+		{
+			view.closeWebSocket();
+			console.log("DISCONNESIONE DALLA WEBSOCKET");
+		}
 	// if (view instanceof Pong) {
 	// 	view.closeWebSocket();
 	// 			// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong

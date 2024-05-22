@@ -12,7 +12,7 @@ export default class Pong {
         this.ballX = 0;
         this.ballY = 0;
         this.paddle_width = 10;
-        this.paddle_height = 100;
+        this.paddle_height = 50;
         this.ball_radius = 5;
         this.playerPaddleY = 400 / 2 - this.paddle_height / 2;
         this.opponentPaddleY = 400 / 2 - this.paddle_height / 2;
