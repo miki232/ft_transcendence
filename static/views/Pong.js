@@ -88,9 +88,17 @@ export default class Pong {
 
     winner_checker(data) {
         if (data.victory != "none") {
-            this.user.getUser() === data.victory ? createNotification("YOU WIN!") : createNotification("YOU LOSE!");
-            this.user.disconnected = false;
-            navigateTo('/online');
+            const content = document.getElementById('content');
+            const resultHTML = `
+                <div class="result" style="display: flex; justify-content: center; width: 800px; height: 400px;">
+                    <img ${data.victory === this.user.getUser() ? 'src="static/img/win.jpg"' : 'src="static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
+                </div>
+            `;
+            content.innerHTML = resultHTML;
+            setInterval(() => {
+                this.user.disconnected = false;
+                navigateTo('/online');
+            }, 5000);
         }   
     }
 
