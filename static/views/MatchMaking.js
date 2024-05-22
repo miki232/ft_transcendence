@@ -29,9 +29,7 @@ export default class MatchMaking extends AbstractView {
         if (this.roomName !== "undefined") {
             console.log("ROOM NAME", this.roomName);
             this.user.online_room = this.roomName;
-            this.user.online_opponent = this.opponent;
-            // navigateTo("/pong");
-            await this.closeWebSocket();
+            this.user.online_opponent = this.opponent_name;
             history.replaceState(null, null, "/pong");
             this.user.lastURL = "/pong";
             const view = new Pong(this.user);
@@ -91,7 +89,7 @@ export default class MatchMaking extends AbstractView {
 
 
     async connect(roomName){
-        this.matchmaking_ws = new WebSocket(
+        this.user.matchmaking_ws = new WebSocket(
             'wss://'
         + window.location.hostname
         + ':8000'
@@ -101,11 +99,11 @@ export default class MatchMaking extends AbstractView {
 
     
     async closeWebSocket() {
-        if (this.matchmaking_ws) {
+        if (this.user.matchmaking_ws) {
             //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
             // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
             // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
-            await this.matchmaking_ws.close();
+            await this.user.matchmaking_ws.close();
             console.log("DENTRO");
         }
     }
@@ -158,13 +156,13 @@ export default class MatchMaking extends AbstractView {
 
     async get_queue_resolve()
     {
-        this.matchmaking_ws.onopen = () => {
+        this.user.matchmaking_ws.onopen = () => {
             console.log('WebSocket connection opened');
             console.log("CONNECTED");
-            this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
+            this.user.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
         };
         
-        this.matchmaking_ws.onmessage = async event => {
+        this.user.matchmaking_ws.onmessage = async event => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.User_self === this.username){
@@ -185,7 +183,7 @@ export default class MatchMaking extends AbstractView {
             }
         };
     
-        this.matchmaking_ws.onerror = error => {
+        this.user.matchmaking_ws.onerror = error => {
             console.error('WebSocket error:', error);
         };
     }
@@ -193,13 +191,13 @@ export default class MatchMaking extends AbstractView {
     async getRoom_Match() {
         await this.connect();
         return new Promise((resolve, reject) => {
-            this.matchmaking_ws.onopen = () => {
+            this.user.matchmaking_ws.onopen = () => {
                 console.log('WebSocket connection opened');
                 console.log("CONNECTED");
-                this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
+                this.user.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
             };
 
-            this.matchmaking_ws.onmessage = async event => {
+            this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
                     if (data.User_self === this.user.getUser()){
@@ -212,6 +210,7 @@ export default class MatchMaking extends AbstractView {
                         if (data.status === 2)
                             console.log("Normal Opponent");
                         this.setOpponent(data.opponent);
+                        console.log("OPPONENT", this.opponent);
                         await this.getFriendInfo(this.opponent)
                         this.roomName = data.room_name;
                         // let conente_opponent = document.getElementById("opponent")
@@ -240,7 +239,7 @@ export default class MatchMaking extends AbstractView {
                 }
             };
 
-            this.matchmaking_ws.onerror = error => {
+            this.user.matchmaking_ws.onerror = error => {
                 console.error('WebSocket error:', error);
                 reject(error);
             };

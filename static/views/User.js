@@ -16,6 +16,7 @@ export default class User extends AbstractView {
 		this.online_opponent;
 		this.disconnected = true;
 		this.game_ws = null;
+		this.matchmaking_ws = null;
 		this.lastURL = null;
 	}
 

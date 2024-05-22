@@ -298,11 +298,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         if 'action' in message:
             action = message['action']
             if self.user.username == PongConsumer.players[self.room_name][0]:
+                print("Player 1 = ", PongConsumer.players[self.room_name][0])
                 if action == 'move_up':
                     self.state['up_player_paddle_y'] = 1
                 elif action == 'move_down':
                     self.state['down_player_paddle_y'] = 1
             else:
+                print("Player 2 = ", PongConsumer.players[self.room_name][1])
                 if action == 'move_up':
                     self.state['up_player2_paddle_y'] = 1
                 elif action == 'move_down':

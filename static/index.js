@@ -108,7 +108,6 @@ const router = async () => {
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
         { path: "/online", view: () => import('./views/Online.js') },
-        { path: "/pong", view: () => import('./views/Pong.js') },
 		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')}

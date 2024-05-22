@@ -6,7 +6,8 @@ export default class Pong {
         this.user = user;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
-        // this.game_ws = "null";
+        this.player1 = undefined;
+        this.player2 = undefined;
         this.score1;
         this.score2;
         this.ballX = 0;
@@ -22,13 +23,14 @@ export default class Pong {
         this.initialize();
     }
 
-    initialize(){
+    async initialize() {
         document.querySelector('header').style.display = 'none';
         document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
         content.innerHTML = this.getContent();
         this.score1 = document.getElementById("score1");
         this.score2 = document.getElementById("score2");
+        await this.closeWebSocket(this.user.matchmaking_ws);
     }
 
 
@@ -73,15 +75,14 @@ export default class Pong {
             + this.room_name
             + '/'
         );
-        console.log("GAME_WS:", this.user.game_ws);
     }
 
-    async closeWebSocket() {
-        if (this.user.game_ws) {
+    async closeWebSocket(ws) {
+        if (ws) {
             //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
             // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
             // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
-            await this.user.game_ws.close();
+            await ws.close();
             console.log("DISCONNECTED FROM WEBSOCKET PONG");
         }
     }
@@ -124,10 +125,10 @@ export default class Pong {
     updatePaddlePosition() {
         if (this.arrowUpPressed) {
             console.log('sending move_up');
-            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.users}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.user}));
         }
         if (this.arrowDownPressed) {
-            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.users}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.user}));
         }
     }
 
@@ -151,10 +152,25 @@ export default class Pong {
             } else if (event.key === 'ArrowDown') {
                 this.arrowDownPressed = false;
             }
-        });        
+        });
         this.update(canvas, context);
         this.user.game_ws.onmessage = event => {
             const data = JSON.parse(event.data);
+            if (this.player1 === undefined) {
+                if (data.player === this.user.getUser()) {
+                    this.player1 = this.user.getUser();
+                    this.player2 = this.opponent;
+                } else {
+                    this.player1 = this.opponent;
+                    this.player2 = this.user.getUser();
+                }
+                console.log('player1', this.player1);
+                console.log('player2', this.player2);
+                const player1 = document.getElementById('player1');
+                const player2 = document.getElementById('player2');
+                player1.innerHTML = `${this.player1}: `;
+                player2.innerHTML = `${this.player2}: `;
+            }
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
             }
@@ -204,8 +220,8 @@ export default class Pong {
         // };
         const pongHTML =  `
             <div id="scores">
-                <p>${this.user.getUser()}: <span id="score1"></span></p>
-                <p>${this.opponent}: <span id="score2"></span></p>
+                <p id="player1"><span id="score1"></span></p>
+                <p id="player2"><span id="score2"></span></p>
             </div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
