@@ -226,8 +226,8 @@ export default class Pong {
         // };
         const pongHTML =  `
             <div id="scores">
-                <p id="player1"><span id="score1"></span></p>
-                <p id="player2"><span id="score2"></span></p>
+                <p id="player1"></p><span id="score1"></span>
+                <p id="player2"></p><span id="score2"></span>
             </div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
