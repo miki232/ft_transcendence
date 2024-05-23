@@ -149,7 +149,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'up_player2_paddle_y': 0,
                 'down_player2_paddle_y': 0,
                 'player': self.user.username,
-                'victory' : "none"
+                'victory' : "none",
+                'countdown' : 'none',
+                'status' : 'none',
+                'Game' : 'none'
             }
             PongConsumer.shared_state = self.state  # Store the state in the class variable
             if ai.Ai:
@@ -329,12 +332,31 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['paddle2_y'] += 10
 
     async def countdown(self):
-            for i in range(3, 0, -1):
-                print("Pong Local Consumer 576", f"Game starts in {i}...")
-                await self.send(text_data=json.dumps({'countdown': i}))
-                await asyncio.sleep(1)
-            await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start'}))
+        for i in range(3, 0, -1):
+            print("Pong Local Consumer 576", f"Game starts in {i}...")
+            self.state['countdown'] = i
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': self.state
+                }
+            )
             await asyncio.sleep(1)
+        self.state['status'] = 1
+        self.state['Game'] = 'Start'
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'game_state',
+                'state': self.state
+            }
+        )
+        await asyncio.sleep(1)
+        self.state['Game'] = 'none'
+        self.state['status'] = 0
+        self.state['countdown'] = None
+        
 
     # def check_collision(self):
     #     if (
