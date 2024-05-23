@@ -9,9 +9,9 @@ export default class MatchMaking extends AbstractView {
         this.selfuser = "undefined";
         this.errro = false;
         this.opponent = "undefined";
-        this.opponent_name = "undefined";
-        this.opponent_lvl = "undefined";
-        this.opponent_pic = "undefined";
+        this.user.online_opponent.username = "undefined";
+        this.user.online_opponent.pro_pic = "undefined";
+        this.user.online_opponent.level = "undefined";
         // this.username = "undefined";
         // this.pro_pic = "undefined";
         this.roomName = "undefined";
@@ -29,7 +29,6 @@ export default class MatchMaking extends AbstractView {
         if (this.roomName !== "undefined") {
             console.log("ROOM NAME", this.roomName);
             this.user.online_room = this.roomName;
-            this.user.online_opponent = this.opponent_name;
             history.replaceState(null, null, "/pong");
             this.user.lastURL = "/pong";
             const view = new Pong(this.user);
@@ -133,9 +132,9 @@ export default class MatchMaking extends AbstractView {
 		}).then(response => response.json())
         .then(data => {
             console.log(data.user);
-            this.opponent_name = data.user.username;
-            this.opponent_pic = data.user.pro_pic;
-            this.opponent_lvl = data.user.level;
+            this.user.online_opponent.username = data.user.username;
+            this.user.online_opponent.pro_pic = data.user.pro_pic;
+            this.user.online_opponent.level = data.user.level;
             // this.setOpponent_pic(data.pro_pic)
         })
         .catch((error) => {
@@ -222,10 +221,10 @@ export default class MatchMaking extends AbstractView {
                         const opponent = document.querySelector(".opponent");
                         opponent.innerHTML = `
                             <div class="user-dashboard">
-                                <img alt="Profile picture" src="${this.opponent_pic}"/>
+                                <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
                                 <div class="user-info">
-                                    <h3>${this.opponent_name}</h3>
-                                    <h5>Level ${this.opponent_lvl}</h5>
+                                    <h3>${this.user.online_opponent.username}</h3>
+                                    <h5>Level ${this.user.online_opponent.level}</h5>
                                 </div>
                             </div>
                         `;

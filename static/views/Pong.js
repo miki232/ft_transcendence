@@ -8,6 +8,8 @@ export default class Pong {
         this.room_name = this.user.online_room;
         this.player1 = undefined;
         this.player2 = undefined;
+        this.player1_pic = undefined;
+        this.player2_pic = undefined;
         this.score1;
         this.score2;
         this.ballX = 0;
@@ -28,8 +30,6 @@ export default class Pong {
         document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
         content.innerHTML = this.getContent();
-        this.score1 = document.getElementById("score1");
-        this.score2 = document.getElementById("score2");
         await this.closeWebSocket(this.user.matchmaking_ws);
     }
 
@@ -87,6 +87,32 @@ export default class Pong {
         }
     }
 
+    scoreTabMaker(data) {
+        if (data.player === this.user.getUser()) {
+            this.player1 = this.user.getUser();
+            this.player2 = this.user.online_opponent.username;
+            this.player1_pic = this.user.getPic();
+            this.player2_pic = this.user.online_opponent.pro_pic;
+        } else {
+            this.player1 = this.user.online_opponent.username;
+            this.player2 = this.user.getUser();
+            this.player1_pic = this.user.online_opponent.pro_pic;
+            this.player2_pic = this.user.getPic();
+        }
+        const playerOneTab = document.getElementById('player1-score');
+        const playerTwoTab = document.getElementById('player2-score');
+        const playerOneHTML = `
+            <img src="${this.player1_pic}"/><p>${this.player1}</p><p id="score1"></p>
+        `;
+        const playerTwoHTML = `
+            <img src="${this.player2_pic}"/><p>${this.player2}</p><p id="score2"></p>
+        `;
+        playerOneTab.innerHTML = playerOneHTML;
+        playerTwoTab.innerHTML = playerTwoHTML;
+        this.score1 = document.getElementById("score1");
+        this.score2 = document.getElementById("score2");
+    }
+
     winner_checker(data) {
         if (data.victory != "none" && data.victory != undefined) {
             const content = document.getElementById('content');
@@ -96,7 +122,7 @@ export default class Pong {
                 </div>
             `;
             content.innerHTML = resultHTML;
-            setTimeout(async () => {
+            setTimeout(() => {
                 this.user.disconnected = false;
                 navigateTo('/online');
             }, 5000);
@@ -157,19 +183,7 @@ export default class Pong {
         this.user.game_ws.onmessage = event => {
             const data = JSON.parse(event.data);
             if (this.player1 === undefined) {
-                if (data.player === this.user.getUser()) {
-                    this.player1 = this.user.getUser();
-                    this.player2 = this.opponent;
-                } else {
-                    this.player1 = this.opponent;
-                    this.player2 = this.user.getUser();
-                }
-                console.log('player1', this.player1);
-                console.log('player2', this.player2);
-                const player1 = document.getElementById('player1');
-                const player2 = document.getElementById('player2');
-                player1.innerHTML = `${this.player1}: `;
-                player2.innerHTML = `${this.player2}: `;
+                this.scoreTabMaker(data);
             }
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
@@ -226,8 +240,9 @@ export default class Pong {
         // };
         const pongHTML =  `
             <div id="scores">
-                <p id="player1"></p><span id="score1"></span>
-                <p id="player2"></p><span id="score2"></span>
+                <div id="player1-score"></div>
+                <div id="the-match"><h1>THE MATCH</h1></div>
+                <div id="player2-score"></div>
             </div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;
