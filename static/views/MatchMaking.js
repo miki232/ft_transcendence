@@ -220,15 +220,16 @@ export default class MatchMaking extends AbstractView {
                         console.log("ROOM NAME", this.roomName);
                         const opponent = document.querySelector(".opponent");
                         opponent.innerHTML = `
-                            <div class="user-dashboard">
-                                <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
-                                <div class="user-info">
-                                    <h3>${this.user.online_opponent.username}</h3>
-                                    <h5>Level ${this.user.online_opponent.level}</h5>
-                                </div>
+                            <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                            <div class="user-info">
+                                <h3>${this.user.online_opponent.username}</h3>
+                                <h5>Level ${this.user.online_opponent.level}</h5>
                             </div>
                         `;
-                        // await new Promise(r => setTimeout(r, 3000));
+                        opponent.classList.add('user-dashboard');
+                        opponent.classList.remove('opponent');
+                        opponent.style.marginTop = '45px';
+                        opponent.style.marginBottom = '0px';
                         await new Promise(r => setTimeout(r, 3000));
                         resolve(this.roomName);
                     }
@@ -258,13 +259,6 @@ export default class MatchMaking extends AbstractView {
     }
 
     getContent() {
-        // await this.loadUserData();
-        // await this.matchmaking();
-        // await this.connect(this.generateRoomName(10));
-        // this.ws.onmessage = function(event){
-        //     const data = JSON.parse(event.data);
-        //     console.log(data);
-        // };
         const dashboardHTML = `
             <div class="dashboard">
                 <div class="matchmaking">
@@ -278,12 +272,12 @@ export default class MatchMaking extends AbstractView {
                     </div>
                     <span id="vs">VS</span>
                     <div class="opponent">
-                        <h4>Waiting for opponent... <ion-icon name="refresh-outline"></ion-icon></h3>
+                        <h4>Waiting for opponent...</h3>
+                        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                     </div>
                 </div>
             </div>
         `;
-    
         return dashboardHTML;
     }
 }

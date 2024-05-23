@@ -125,7 +125,7 @@ export default class Pong {
             setTimeout(() => {
                 this.user.disconnected = false;
                 navigateTo('/online');
-            }, 5000);
+            }, 3000);
         }   
     }
 
