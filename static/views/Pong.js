@@ -184,10 +184,10 @@ export default class Pong {
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            if (data.countdown !== undefined) {
+            if (data.countdown !== undefined && data.countdown > 0) {
                 createNotification(data.countdown);
             }
-            if (data.status === 1) {
+            if (data.status === 1 && data.Game !== 'none') {
                 createNotification(data.Game);
             }
             this.score1.innerHTML = data.score1;
