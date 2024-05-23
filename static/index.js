@@ -1,4 +1,4 @@
-import { getCookie, register, closeWebSocket } from "./utilities.js";
+// import { getCookie, register, closeWebSocket } from "./utilities.js";
 import User from "./views/User.js";
 import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
@@ -116,7 +116,11 @@ const router = async () => {
 
 	if (user.game_ws) {
 		console.log("GAME_WS EXIT:", user.game_ws);
-		await closeWebSocket(user);
+		await user.game_ws.close();
+	}
+	if (user.matchmaking_ws) {
+		console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
+		await user.matchmaking_ws.close();
 	}
 	// Added for Close websocekt when Tournament is Available but the user choose the 1v1
 	if (view instanceof Online)
