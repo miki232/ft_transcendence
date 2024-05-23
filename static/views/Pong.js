@@ -88,7 +88,7 @@ export default class Pong {
     }
 
     winner_checker(data) {
-        if (data.victory != "none") {
+        if (data.victory != "none" && data.victory != undefined) {
             const content = document.getElementById('content');
             const resultHTML = `
                 <div class="result" style="display: flex; justify-content: center; width: 800px; height: 400px;">
@@ -184,7 +184,12 @@ export default class Pong {
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            console.log(data.score1, data.score2);
+            if (data.countdown !== undefined) {
+                createNotification(data.countdown);
+            }
+            if (data.status === 1) {
+                createNotification(data.Game);
+            }
             this.score1.innerHTML = data.score1;
             this.score2.innerHTML = data.score2;
             this.winner_checker(data);

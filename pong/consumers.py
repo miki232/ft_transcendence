@@ -328,6 +328,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             if self.state['paddle2_y'] < 350:
                 self.state['paddle2_y'] += 10
 
+    async def countdown(self):
+            for i in range(3, 0, -1):
+                print("Pong Local Consumer 576", f"Game starts in {i}...")
+                await self.send(text_data=json.dumps({'countdown': i}))
+                await asyncio.sleep(1)
+            await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start'}))
+            await asyncio.sleep(1)
+
     # def check_collision(self):
     #     if (
     #         self.state['ball_x'] <= 10
@@ -442,6 +450,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
+                if self.state['score2'] < POINTS_TO_WIN:
+                    await self.countdown()
                 print("Pong Consumer 414","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
             elif self.state['ball_x'] >= 800:
@@ -454,6 +464,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 print("Pong Consumer 423","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
                 self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = -3
+                if self.state['score1'] < POINTS_TO_WIN:
+                    await self.countdown()
                 print("Pong Consumer 426","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
             if self.state['score1']  >= POINTS_TO_WIN or self.state['score2'] >= POINTS_TO_WIN:
@@ -747,17 +759,6 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
             # # Collision with paddles
             self.check_collision()
-            # if (
-            #     self.state['ball_x'] <= 10
-            #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
-            # if (
-            #     self.state['ball_x'] >= 790
-            #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
-
             # Scoring
             if self.state['ball_x'] <= 0:
                 self.state['score2'] += 1
