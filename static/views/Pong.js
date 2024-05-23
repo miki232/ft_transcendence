@@ -125,10 +125,10 @@ export default class Pong {
     updatePaddlePosition() {
         if (this.arrowUpPressed) {
             console.log('sending move_up');
-            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.user}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.user.user}));
         }
         if (this.arrowDownPressed) {
-            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.user}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.user.user}));
         }
     }
 
@@ -184,6 +184,7 @@ export default class Pong {
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
+            console.log(data.score1, data.score2);
             this.score1.innerHTML = data.score1;
             this.score2.innerHTML = data.score2;
             this.winner_checker(data);
