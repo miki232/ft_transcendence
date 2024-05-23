@@ -105,7 +105,7 @@ export default class Pong {
             <img src="${this.player1_pic}"/><p>${this.player1}</p><p id="score1"></p>
         `;
         const playerTwoHTML = `
-            <img src="${this.player2_pic}"/><p>${this.player2}</p><p id="score2"></p>
+            <p id="score2"></p><p>${this.player2}</p><img src="${this.player2_pic}"/>
         `;
         playerOneTab.innerHTML = playerOneHTML;
         playerTwoTab.innerHTML = playerTwoHTML;
@@ -240,9 +240,9 @@ export default class Pong {
         // };
         const pongHTML =  `
             <div id="scores">
-                <div id="player1-score"></div>
+                <div id="player1-score" class="score-info"></div>
                 <div id="the-match"><h1>THE MATCH</h1></div>
-                <div id="player2-score"></div>
+                <div id="player2-score" class="score-info"></div>
             </div>
             <canvas id="pongCanvas" width="800" height="400"></canvas>
         `;

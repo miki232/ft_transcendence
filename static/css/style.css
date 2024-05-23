@@ -544,10 +544,28 @@ div .requests-list {
 #scores {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	width: 100%;
 	font-size: 24px;
-	margin-bottom: 20px;
+	margin-bottom: 30px;
 	color: white;
+}
+
+.score-info {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	gap: 35px;
+	flex-grow: 1.5;
+}
+
+#player2-score {
+	justify-content: end;
+}
+
+.score-info img {
+	height: 40px;
+	width: 40px;
 }
 
 /***************** FRIENDS *****************/
