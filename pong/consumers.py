@@ -591,7 +591,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
         else:
             intercept_y = ball_pos[1]  # Set intercept_y to the current y-coordinate of the ball
             # Set the target position for the AI paddle with some randomness
-        randomness = random.uniform(-65, 65)
+        randomness = random.uniform(-55, 55)
         self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
         # Ensure the target position is within paddle movement limits
         self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
@@ -709,29 +709,34 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
     def check_collision(self):
         rad = math.radians(45)
-        ball_radius = 20
-        paddle_width = 20
-        paddle_height = 100
-
+        # if (
+        #     self.state['ball_x'] <= 50
+        #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+        # ):
         if (
-            self.state['ball_x'] - ball_radius <= paddle_width
-            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + paddle_height
+            self.state['ball_x'] - 20 <= 20
+            and self.state['ball_x'] + 20 >= 0
+            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
         ):
-            diff = self.state['ball_y'] - (self.state['paddle1_y'] + paddle_height / 2)
+            diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
             if self.speed_increase < 2:
                 self.speed_increase += 0.05
-            angle = map_value(diff, -paddle_height / 2, paddle_height / 2, -rad, rad)
+            angle = map_value(diff, -50, 50, -rad, rad)
             self.state['ball_speed_x'] = 4 * math.cos(angle) * self.speed_increase
             self.state['ball_speed_y'] = 4 * math.sin(angle) * self.speed_increase
-
+        # if (
+        #     self.state['ball_x'] >= 750
+        #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
+        # ):
         if (
-            self.state['ball_x'] + ball_radius >= 800 - paddle_width
-            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + paddle_height
+            self.state['ball_x'] + 20 >= 800 - 20
+            and self.state['ball_x'] - 20 <= 800
+            and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
         ):
-            diff = self.state['ball_y'] - (self.state['paddle2_y'] + paddle_height / 2)
+            diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
             if self.speed_increase < 2:
                 self.speed_increase += 0.05
-            angle = map_value(diff, -paddle_height / 2, paddle_height / 2, -rad, rad) + math.pi
+            angle = map_value(diff, -50, 50, -rad, rad) + math.pi
             self.state['ball_speed_x'] = 4 * math.cos(angle) * self.speed_increase
             self.state['ball_speed_y'] = 4 * math.sin(angle) * self.speed_increase
 
@@ -757,7 +762,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
                     print("Seconds since last AI update:", current_time - last_ai_update_time)  # Print the time elapsed since the last AI update 
                     last_ai_update_time = current_time
-                self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 5)
+                self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 10)
 
             # Move paddles based on player input
             if self.state['up_player_paddle_y'] == 1:
@@ -800,7 +805,8 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_y'] = 3
                 print("Pong Local Consumer 709", "ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
                 await self.reset()
-                await self.countdown()
+                if self.state['score2'] < POINTS_TO_WIN:
+                    await self.countdown()
 
             elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
@@ -812,14 +818,15 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = -3
                 await self.reset()
-                await self.countdown()
+                if self.state['score2'] < POINTS_TO_WIN:
+                    await self.countdown()
 
 
             if self.state['score1']  >= POINTS_TO_WIN or self.state['score2'] >= POINTS_TO_WIN:
                 if self.state['score1'] >= POINTS_TO_WIN:
-                    await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][0])
+                    self.state['victory'] = Pong_LocalConsumer.players[self.room_name][0]
                 elif self.state['score2'] >= POINTS_TO_WIN:
-                    await self.set_winner(self.match, Pong_LocalConsumer.players[self.room_name][1])
+                    self.state['victory'] = Pong_LocalConsumer.players[self.room_name][1]
                 Pong_LocalConsumer.status[self.room_name] = True
                 
             # Send updated game state to all clients
@@ -830,18 +837,17 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     'state': self.state
                 }
             )
-        # if self.room_name in Pong_LocalConsumer.status and Pong_LocalConsumer.status[self.room_name]:
-        #     self.state['victory'] = self.match.winner.username
-        #     await self.channel_layer.group_send(
-        #     self.room_group_name,
-        #     {
-        #         'type': 'game_state',
-        #         'state': self.state
-        #     }
-        #     )
-        #     await asyncio.sleep(1.5)  # Wait for 1 second
-        #     await self.close()
-        #     return
+        if self.room_name in Pong_LocalConsumer.status and Pong_LocalConsumer.status[self.room_name]:
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'game_state',
+                'state': self.state
+            }
+            )
+            await asyncio.sleep(1.5)  # Wait for 1 second
+            await self.close()
+            return
 
     async def handle_message(self, event):
         message_type = event['type']
