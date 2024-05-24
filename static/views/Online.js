@@ -87,20 +87,21 @@ export default class Online extends AbstractView {
             navigateTo("/matchmaking");
         })
         if (this.tournament.status == true) {
-            this.ws_local = new WebSocket(
+            this.user.matchmaking_ws = new WebSocket(
                 'wss://'
                 + window.location.hostname
                 + ':8000'
                 + '/ws/matchmaking/'
                 );
-            this.ws_local.onopen = () => {
-                this.ws_local.send(JSON.stringify({
+			
+            this.user.matchmaking_ws.onopen = () => {
+                this.user.matchmaking_ws.send(JSON.stringify({
                     "action": "torunametInfo",
                     "username": this.user.getUser(),
                     "status": "not_ready",
                 }));
             }            
-            this.ws_local.onmessage = async (e) => {
+            this.user.matchmaking_ws.onmessage = async (e) => {
                 if (window.location.pathname === "/online"){
                     const data = JSON.parse(e.data);
                     console.log(data);
@@ -119,7 +120,7 @@ export default class Online extends AbstractView {
             e.preventDefault();
             console.log("Tournament");
             if (this.tournament.status == true) {
-                this.ws_local.send(JSON.stringify({
+                this.user.matchmaking_ws.send(JSON.stringify({
                     "action": "joinTournamentQueue",
                     "username": this.user.getUser(),
                     "status": "not_ready",
