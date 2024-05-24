@@ -87,7 +87,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         else:
             intercept_y = ball_pos[1]  # Set intercept_y to the current y-coordinate of the ball
             # Set the target position for the AI paddle with some randomness
-        randomness = random.uniform(-35, 35)
+        randomness = random.uniform(-55, 55)
         self.ai_target_pos = intercept_y - PADDLE_HEIGHT // 2 + randomness
         # Ensure the target position is within paddle movement limits
         self.ai_target_pos = max(0, min(SCREEN_HEIGHT - PADDLE_HEIGHT, self.ai_target_pos))
