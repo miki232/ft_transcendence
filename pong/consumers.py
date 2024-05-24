@@ -782,7 +782,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             # # Collision with paddles
             self.check_collision()
             # Scoring
-            if self.state['ball_x'] <= 20:
+            if self.state['ball_x'] <= 0:
                 self.state['score2'] += 1
                 # await self.set_score(self.match, self.state['score2'], Pong_LocalConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
@@ -797,7 +797,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 await self.reset()
                 await self.countdown()
 
-            elif self.state['ball_x'] >= 780:
+            elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
                 # await self.set_score(self.match, self.state['score1'], Pong_LocalConsumer.players[self.room_name][0])
                 self.state['ball_x'] = 400

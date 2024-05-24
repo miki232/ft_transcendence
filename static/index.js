@@ -102,6 +102,7 @@ const router = async () => {
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
+		{ path: "/history", view: () => import('./views/History.js')},
         { path: "/settings", view: () => import('./views/Settings.js') },
         { path: "/requests", view: () => import('./views/Requests.js') },
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
@@ -165,7 +166,7 @@ const router = async () => {
 		user.lastURL = null;
 	} else if (user.lastURL === "/pong") {
 		match = {
-			route: routes[9],
+			route: routes[10],
 			isMatch: true
 		};
 		document.querySelector('header').style.display = 'flex';
@@ -177,7 +178,7 @@ const router = async () => {
 		if (location.pathname.includes("/user_info")) {
 			var userID = location.pathname.split("_")[2];
 			match = {
-				route: routes[8],
+				route: routes[9],
 				isMatch: true
 			};
 		} else {
@@ -213,6 +214,11 @@ const router = async () => {
 			wsConnection();
 			const DashboardClass = await match.route.view();
 			view = new DashboardClass.default(user);
+			break;
+		case "/history":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const HistoryClass = await match.route.view();
+			view = new HistoryClass.default(user);
 			break;
 		case "/settings":
 			await user.isLogged() === false ? navigateTo("/") : null;

@@ -108,8 +108,8 @@ export default class LocalPong extends AbstractView{
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         this.drawNet(context, canvas, "#FFFFFF");
-        this.drawRect(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
-        this.drawRect(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawRect(context, 10, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawRect(context, canvas.width - this.paddle_width -10, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FFDE59');
         // Draw player paddle
         // context.fillStyle = '#FFFFFF';
