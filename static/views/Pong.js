@@ -12,13 +12,15 @@ export default class Pong {
         this.player2_pic = undefined;
         this.score1;
         this.score2;
-        this.ballX = 0;
-        this.ballY = 0;
-        this.paddle_width = 10;
-        this.paddle_height = 50;
-        this.ball_radius = 5;
-        this.playerPaddleY = 400 / 2 - this.paddle_height / 2;
-        this.opponentPaddleY = 400 / 2 - this.paddle_height / 2;
+        this.ball_size = 20;
+        this.ballX = 800 / 2 - this.ball_size / 2;
+        this.ballY = 600 / 2 - this.ball_size / 2;
+        this.paddle_width = 20;
+        this.paddle_height = 100;
+        this.net_width = 4;
+        this.net_height = 20;
+        this.playerPaddleY = 600 / 2 - this.paddle_height / 2;
+        this.opponentPaddleY = 600 / 2 - this.paddle_height / 2;
         this.arrowUpPressed = false;
         this.arrowDownPressed = false;
         this.users = "null";
@@ -129,23 +131,50 @@ export default class Pong {
         }   
     }
 
+    drawPaddle(ctx, x, y, width, height, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.fillRect(x, y, width, height);
+    }
+
+    drawBall(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    drawNet(ctx, canvas) {
+        for (let i = 0; i < canvas.height + this.net_height; i += this.net_height * 2) {
+            this.drawPaddle(ctx, canvas.width / 2 - this.net_width / 2, i, this.net_width, this.net_height, '#e10088');
+        }
+    }
+
     update(canvas, context) {
         this.updatePaddlePosition();
         // Clear the previous frame
         context.clearRect(0, 0, canvas.width, canvas.height);
 
+        this.drawNet(context, canvas);
+        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
-        context.fillStyle = '#FFFFFF';
-        context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
+        // context.fillStyle = '#FFFFFF';
+        // context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
 
         // Draw opponent paddle
-        context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
+        // context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
 
-        context.beginPath();
-        context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
-        context.fillStyle = '#FFFFFF';
-        context.fill();
-        context.closePath();
+        // context.beginPath();
+        // context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
+        // context.fillStyle = '#FFFFFF';
+        // context.fill();
+        // context.closePath();
     }
 
     updatePaddlePosition() {
@@ -207,44 +236,18 @@ export default class Pong {
             this.score1.innerHTML = data.score1;
             this.score2.innerHTML = data.score2;
             this.winner_checker(data);
-            // if (data.score1 !== undefined) {
-            //     if (data.player === users)
-            //         document.getElementById("score1").innerHTML = "Your Score: " + data.score1;
-            //     else
-            //         document.getElementById("score1").innerHTML = "Not your Score: " + data.score1;
-            // }
-            // if (data.score2 !== undefined) {
-            //     if (data.player !== users)
-            //         document.getElementById("score2").innerHTML = "Your Score: " + data.score2;
-            //     else
-            //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
-            // }
-            // if (data.victory != "none"){
-            //     console.log(data.victory);
-            //     if (users === data.victory)
-            //         alert("YOU WIN!" + users)
-            //     else
-            //         alert("AHAHAH hai PERSO")
-            // }
-
             this.update(canvas, context);
         }
     }
 
     getContent() {
-        // await this.loadUserData();
-        // await this.connect_game();
-        // this.ws.onmessage = function(event){
-        //     const data = JSON.parse(event.data);
-        //     console.log(data);
-        // };
         const pongHTML =  `
             <div id="scores">
                 <div id="player1-score" class="score-info"></div>
                 <div id="the-match"><h1>THE MATCH</h1></div>
                 <div id="player2-score" class="score-info"></div>
             </div>
-            <canvas id="pongCanvas" width="800" height="400"></canvas>
+            <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
         return pongHTML;
     }

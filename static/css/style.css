@@ -568,6 +568,12 @@ div .requests-list {
 	width: 40px;
 }
 
+#pongCanvas {
+	background: linear-gradient(45deg, #141414, #1b1b1b);
+	border: 4px solid #E4080A;
+	box-shadow: 0 0 20px #E4080A, inset 0 0 20px #E4080A;
+}
+
 /***************** FRIENDS *****************/
 
 /* .friends-card {
@@ -872,13 +878,13 @@ div .requests-list {
     color: white;
     z-index: 1;
 }
-
+/* 
 canvas {
 	border: 2px solid #FFF;
-	width: 800px; /* Adjust as needed */
-	max-width: 800px; /* Maximum width of 800 pixels */
-	height: auto; /* Maintain aspect ratio */
-}
+	width: 800px;
+	max-width: 800px;
+	height: auto;
+} */
 /* #score1, #score2 {
 	color: #FFF;
 	position: absolute;
