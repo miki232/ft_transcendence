@@ -859,6 +859,8 @@ class MatchMaking(AsyncWebsocketConsumer):
         await self.accept()
         self.time_passed = 0
         self.connected = True
+        self.freeroom = True
+        self.group_name = ""
         # notificationslist = await self.get_notifications()
         # for notification in notificationslist:
         #     await self.send(text_data=json.dumps(
@@ -869,11 +871,15 @@ class MatchMaking(AsyncWebsocketConsumer):
         #     ))
 
     async def disconnect(self, close_code):
-        print("MatchMaking 781", self.user, "Disconnected")
+        print("MatchMaking 781", self.user, "Disconnected", self.group_name)
         self.connected = False
         await self.leave_queue()
         if(self.queue_task):
             self.queue_task.cancel()
+        await self.channel_layer.group_discard(
+                    self.group_name,
+                    self.channel_name
+                )
         
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -896,6 +902,8 @@ class MatchMaking(AsyncWebsocketConsumer):
                 "type": "chat.message",
                 "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": numberofplayers})
             })
+        elif action == 'to-pong':
+            self.freeroom = False
 
     @database_sync_to_async
     def get_tournament_info(self):
@@ -1029,10 +1037,35 @@ class MatchMaking(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def leave_queue(self):
+        print("MatchMaking 853", "User", self.user.username, "Left Queue")
+        try:
+            if self.freeroom:
+                RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).delete()
+                print("MatchMaking 856", "Room Deleted")
+        except:
+            print("MatchMaking 858", "Room Not Found")
         WaitingUser.objects.filter(user=self.user).delete()
     
     async def handle_join_queue(self):
         self.queue_task = asyncio.create_task(self.queue_loop())
+
+    async def sendAdvisor(self, result):
+        print("MatchMaking Sending ADVISOR")
+        if result['status'] == 2 or result['status'] == 3 or result['status'] == 4:
+            result['status'] = 5
+            await self.channel_layer.group_send(result["group_name"], {
+                    "type": "chat.message",
+                    "text": json.dumps(result)
+                })
+            await asyncio.sleep(5)
+    
+    @database_sync_to_async
+    def getroom(self, roomname):
+        try:
+            RoomName.objects.get(name=roomname)
+            return True
+        except:
+            return False
 
     async def queue_loop(self):
         result = ""
@@ -1042,8 +1075,21 @@ class MatchMaking(AsyncWebsocketConsumer):
             if result:
                 print("MatchMaking 983", result)
                 await self.channel_layer.group_add(result["group_name"], self.channel_name)
+                self.group_name = result["group_name"]
                  # Send the result to the group
-                
+                await self.sendAdvisor(result)
+                try:
+                    print("MatchMaking 989", self.user, "Room Name", result["room_name"], await self.getroom(result["room_name"]))
+                    if await self.getroom(result["room_name"]) == False:
+                        await self.channel_layer.group_send(result["group_name"], {
+                                "type": "chat.message",
+                                "text": json.dumps({"status" : 6, "user" : result['opponent']})
+                            })
+                        print("MatchMaking 994 Restarting queue")
+                        continue
+                except:
+                    print("MatchMaking 991", "Room Name", result["room_name"])
+                result['status'] = 2
                 await self.channel_layer.group_send(result["group_name"], {
                     "type": "chat.message",
                     "text": json.dumps(result)
@@ -1051,10 +1097,10 @@ class MatchMaking(AsyncWebsocketConsumer):
                 break
             await asyncio.sleep(2)  # Wait for 1 second
         print("MatchMaking 858")
-        await self.channel_layer.group_discard(
-            result["group_name"],
-            self.channel_name
-        )
+        # await self.channel_layer.group_discard(
+        #     result["group_name"],
+        #     self.channel_name
+        # )
 
     async def chat_message(self, event):
     # Send a message to the WebSocket

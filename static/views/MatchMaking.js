@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import Pong from "./Pong.js";
 import {navigateTo} from "../index.js";
+import { createNotification } from "./Notifications.js";
 
 export default class MatchMaking extends AbstractView {
     constructor(user) {
@@ -86,6 +87,9 @@ export default class MatchMaking extends AbstractView {
 		return this.pro_pic;
 	}
 
+    async getroomname(){
+        return this.roomName;
+    }
 
     async connect(roomName){
         this.user.matchmaking_ws = new WebSocket(
@@ -199,7 +203,41 @@ export default class MatchMaking extends AbstractView {
             this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
-                    if (data.User_self === this.user.getUser()){
+                    //  Quando riceve status 6 vuol dire che l'opponete si è disconnesso
+                    if (data.status === 6){
+                        createNotification("Matchmaking Opponent Disconnected");
+                        const reset = document.querySelectorAll(".user-dashboard");
+                        reset[1].innerHTML = `<h4>Waiting for opponent...</h3>
+                        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        `;
+                        reset[1].classList.remove('user-dashboard');
+                        reset[1].classList.add('opponent');
+                        // Da resettare la pagina in modo da rendere di nuovo "Waiting for opponent..."
+                        // con la rotellina che gira
+                    }
+                    if (data.status === 5){ /// Quando riceve status 5 vuol dire che è stato trovato un match, Setto l'opponent e la room
+                        console.log("ADV") /// Ma prima di fare il resolve, dobbiamo fare un controllo per vedere se l'utente è ancora online
+                        this.setOpponent(data.opponent);
+                        console.log("OPPONENT", this.opponent);
+                        await this.getFriendInfo(this.opponent)
+                        this.roomName = data.room_name;
+                        const opponent = document.querySelector(".opponent");
+                        if (opponent !== null){
+                            opponent.innerHTML = `
+                                <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                                <div class="user-info">
+                                    <h3>${this.user.online_opponent.username}</h3>
+                                    <h5>Level ${this.user.online_opponent.level}</h5>
+                                </div>
+                            `;
+                            opponent.classList.add('user-dashboard');
+                            opponent.classList.remove('opponent');
+                            opponent.style.marginTop = '45px';
+                            opponent.style.marginBottom = '0px';
+                        }
+                    }
+                    else if (data.User_self === this.user.getUser() && data.status === 2){
+                        await this.user.matchmaking_ws.send(JSON.stringify({'action': 'to-pong'}));
                         console.log('WebSocket message received:', event.data);
                         console.log('Parsed data:', data);
                         if (data.status === 4)
@@ -208,29 +246,29 @@ export default class MatchMaking extends AbstractView {
                             console.log("AI Opponent");
                         if (data.status === 2)
                             console.log("Normal Opponent");
-                        this.setOpponent(data.opponent);
-                        console.log("OPPONENT", this.opponent);
-                        await this.getFriendInfo(this.opponent)
-                        this.roomName = data.room_name;
-                        // let conente_opponent = document.getElementById("opponent")
-                        // let img_opponet = document.getElementById("opponent_img")
-                        // img_opponet.src = this.opponent_pic;
-                        // conente_opponent.innerHTML = this.opponent;
-                        // await this.connect_game(this.roomName);
-                        console.log("ROOM NAME", this.roomName);
-                        const opponent = document.querySelector(".opponent");
-                        opponent.innerHTML = `
-                            <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
-                            <div class="user-info">
-                                <h3>${this.user.online_opponent.username}</h3>
-                                <h5>Level ${this.user.online_opponent.level}</h5>
-                            </div>
-                        `;
-                        opponent.classList.add('user-dashboard');
-                        opponent.classList.remove('opponent');
-                        opponent.style.marginTop = '45px';
-                        opponent.style.marginBottom = '0px';
-                        await new Promise(r => setTimeout(r, 3000));
+                        // this.setOpponent(data.opponent);
+                        // console.log("OPPONENT", this.opponent);
+                        // await this.getFriendInfo(this.opponent)
+                        // this.roomName = data.room_name;
+                        // // let conente_opponent = document.getElementById("opponent")
+                        // // let img_opponet = document.getElementById("opponent_img")
+                        // // img_opponet.src = this.opponent_pic;
+                        // // conente_opponent.innerHTML = this.opponent;
+                        // // await this.connect_game(this.roomName);
+                        // console.log("ROOM NAME", this.roomName);
+                        // const opponent = document.querySelector(".opponent");
+                        // opponent.innerHTML = `
+                        //     <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                        //     <div class="user-info">
+                        //         <h3>${this.user.online_opponent.username}</h3>
+                        //         <h5>Level ${this.user.online_opponent.level}</h5>
+                        //     </div>
+                        // `;
+                        // opponent.classList.add('user-dashboard');
+                        // opponent.classList.remove('opponent');
+                        // opponent.style.marginTop = '45px';
+                        // opponent.style.marginBottom = '0px';
+                        await new Promise(r => setTimeout(r, 0));
                         resolve(this.roomName);
                     }
                 } catch (error) {
