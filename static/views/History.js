@@ -23,7 +23,6 @@ export default class History extends AbstractView {
 		this.content.innerHTML = this.getContent();
 		const historyElement = document.querySelector('.history');
 		const data = await getHistoryList(this.user.getUser());
-		console.log(data[0].match_history[102]);
 		data[0].match_history.length === 0 ? this.noHistory(historyElement) : await this.hisoryList(data, historyElement);
 	}
 
@@ -36,33 +35,85 @@ export default class History extends AbstractView {
 
 	async hisoryList (data, historyElement) {
 		const sort_data = data[0].match_history.sort((a, b) => new Date(b.date) - new Date(a.date));
-		console.log(sort_data);
-		var opponent;
 		const matchListElement = document.createElement("div");
 		matchListElement.className = "match-list";
 		historyElement.appendChild(matchListElement);
 		for (let i = 0; i < sort_data.length; i++) {
 			const match = sort_data[i];
-			match.user1__username === this.user.getUser() ? opponent = await this.getUserInfo(match.user2__username) : opponent = await this.getUserInfo(match.user1__username);
+			if (match.user1__username === this.user.getUser()) {
+				var opponent = await this.getUserInfo(match.user2__username);
+				var user1 = {
+					username: this.user.getUser(),
+					pro_pic: this.user.pro_pic,
+					score: match.score_user1
+				};
+				var user2 = {
+					username: opponent.username,
+					pro_pic: opponent.pro_pic,
+					score: match.score_user2
+				};
+			} else {
+				var opponent = await this.getUserInfo(match.user1__username);
+				var user2 = {
+					username: this.user.getUser(),
+					pro_pic: this.user.pro_pic,
+					score: match.score_user2
+				};
+				var user1 = {
+					username: opponent.username,
+					pro_pic: opponent.pro_pic,
+					score: match.score_user1
+				};
+			}
 			const matchHTML = `
 				<div class="match-line">
-
-
-
+					<div class="user1">
+						<div class="icon">
+							${match.winner__username === user1.username ? '<ion-icon name="trophy-outline"></ion-icon>' : '<ion-icon name="thumbs-down-outline"></ion-icon>'}
+						</div>
+						<div class="user1-info">
+							<img src="${user1.pro_pic}"/>
+							<p>${user1.username}</p>
+							<p>${user1.score}</p>
+						</div>
+					</div>
+					<div class="vs-text"><span>VS</span></div>
+					<div class="user2">
+						<div class="icon">
+							${match.winner__username === user2.username ? '<ion-icon name="trophy-outline"></ion-icon>' : '<ion-icon name="thumbs-down-outline"></ion-icon>'}
+						</div>
+						<div class="user2-info">
+							<p>${user2.score}</p>
+							<p>${user2.username}</p>
+							<img src="${user2.pro_pic}"/>
+						</div>
+					</div>
+				</div>
 			`;
+			matchListElement.innerHTML += matchHTML;
 		};
 	}
 
 	async getUserInfo(username) {
-		const opponent = {
-			username: "null",
-			pro_pic: "null"
-		};
-		const response = await fetch('/accounts/user_info/?username=' + username);
-		const data = await response.json();
-		opponent.username = data.username;
-		opponent.pro_pic = data.pro_pic;
-		return opponent;
+		var csrfToken = await getCSRFToken();
+		return fetch('/accounts/guser_info/?username=' + username, {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrfToken
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				const opponent = {
+					username: data.user.username,
+					pro_pic: data.user.pro_pic
+				};
+				return opponent;
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			})
 	}
 
 	getNav() {
@@ -78,13 +129,13 @@ export default class History extends AbstractView {
 	}
 
 	getContent() {
-		const requestHTML = `
+		const historyHTML = `
 			<div class="dashboard">
 				<div class="history">
 					<h2>Match History</h2>
 				</div>
 			</div>
 		`;
-		return requestHTML;
+		return historyHTML;
 	}
 }

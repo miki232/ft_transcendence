@@ -9,13 +9,15 @@ export default class PongCpu extends AbstractView{
         super();
         this.room_name = room_name;
         this.game_ws = ws;
-        this.ballX = 0;
-        this.ballY = 0;
-        this.paddle_width = 10;
+        this.ball_size = 20;
+        this.ballX = 800/2;
+        this.ballY = 600/2 - this.ball_size/2;
+        this.paddle_width = 20;
         this.paddle_height = 100;
-        this.ball_radius = 5;
-        this.playerPaddleY = 400 / 2 - this.paddle_height / 2;
-        this.opponentPaddleY = 400 / 2 - this.paddle_height / 2;
+        this.net_width = 4;
+        this.net_height = 20;
+        this.playerPaddleY = 600 / 2 - this.paddle_height / 2;
+        this.opponentPaddleY = 600 / 2 - this.paddle_height / 2;
         this.arrowUpPressed = false;
         this.arrowDownPressed = false;
         this.users = user;
@@ -77,23 +79,49 @@ export default class PongCpu extends AbstractView{
         }
     }
 
+    drawRect(ctx, x, y, width, height, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.fillRect(x, y, width, height);
+    }
+
+    drawBall(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    drawNet(ctx, canvas, color) {
+        for (let i = 0; i <= canvas.height; i += this.net_height * 1.5) {
+            this.drawRect(ctx, canvas.width / 2 - this.net_width / 2, i, this.net_width, this.net_height, color);
+        }
+    }
+
     update(canvas, context) {
         this.updatePaddlePosition();
         // Clear the previous frame
         context.clearRect(0, 0, canvas.width, canvas.height);
-
+        this.drawNet(context, canvas, "#FFFFFF");
+        this.drawRect(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawRect(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FFDE59');
         // Draw player paddle
-        context.fillStyle = '#FFFFFF';
-        context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
+        // context.fillStyle = '#FFFFFF';
+        // context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
 
-        // Draw opponent paddle
-        context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
+        // // Draw opponent paddle
+        // context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
 
-        context.beginPath();
-        context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
-        context.fillStyle = '#FFFFFF';
-        context.fill();
-        context.closePath();
+        // context.beginPath();
+        // context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
+        // context.fillStyle = '#FFFFFF';
+        // context.fill();
+        // context.closePath();
     }
 
     updatePaddlePosition() {
@@ -196,7 +224,7 @@ export default class PongCpu extends AbstractView{
             <h1 id="score1">Score: 0</h1>
             <h1 id="score2">Score: 0</h1>
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
-            <canvas id="pongCanvas" width="800" height="400"></canvas>
+            <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
     }
 }
