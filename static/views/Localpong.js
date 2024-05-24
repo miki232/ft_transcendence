@@ -208,6 +208,9 @@ export default class LocalPong extends AbstractView{
             if (data.score2 !==  this.opponent) {
                 document.getElementById("score2").innerHTML = this.opponent + " Score: " + data.score2;
             }
+            if (data.ball_speed_x !== undefined) {
+                document.getElementById("speed").innerHTML = "Speed: " + data.ball_speed_x;
+            }
             // if (data.victory != "none"){
             //     console.log(data.victory);
             //     if (users === data.victory)
@@ -230,6 +233,7 @@ export default class LocalPong extends AbstractView{
         return  `
             <h1 id="score1">Score: 0</h1>
             <h1 id="score2">Score: 0</h1>
+            <h1 id="speed" style="color: white;"></h1>
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
