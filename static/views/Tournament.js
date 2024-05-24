@@ -88,14 +88,13 @@ export default class Tournament extends AbstractView {
             //     console.log("CONNECTED");
             //     this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
             // };
-    
-            this.ws.onmessage = async event => {
+            this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
                     if (data.status === "Tournament start") {
-                        this.ws.close(); // Close the WebSocket
+                        this.user.matchmaking_ws.close(); // Close the WebSocket
                         // Fetch the match data from the API
                         const response = await fetch('/tournament_match/');
                         const matchData = await response.json();
@@ -133,7 +132,7 @@ export default class Tournament extends AbstractView {
                 }
             };
     
-            this.ws.onerror = error => {
+            this.user.matchmaking_ws.onerror = error => {
                 console.error('WebSocket error:', error);
                 reject(error);
             };

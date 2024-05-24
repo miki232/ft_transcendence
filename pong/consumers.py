@@ -898,6 +898,7 @@ class MatchMaking(AsyncWebsocketConsumer):
             print("MatchMaking 798", "Tournament Info")
             numberofplayers = await self.get_tournament_info()
             await self.channel_layer.group_add("waitingroom", self.channel_name)
+            self.group_name = "waitingroom"
             await self.channel_layer.group_send("waitingroom", {
                 "type": "chat.message",
                 "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": numberofplayers})
@@ -1044,6 +1045,12 @@ class MatchMaking(AsyncWebsocketConsumer):
                 print("MatchMaking 856", "Room Deleted")
         except:
             print("MatchMaking 858", "Room Not Found")
+        try:
+            if self.group_name == "waitingroom":
+                Tournament_Waitin.objects.filter(user=self.user).delete()
+                print("MatchMaking 862", "Tournament User Deleted")
+        except:
+            pass
         WaitingUser.objects.filter(user=self.user).delete()
     
     async def handle_join_queue(self):

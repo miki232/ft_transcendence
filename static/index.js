@@ -118,16 +118,9 @@ const router = async () => {
 		console.log("GAME_WS EXIT:", user.game_ws);
 		await user.game_ws.close();
 	}
-	if (user.matchmaking_ws) {
-		console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
-		await user.matchmaking_ws.close();
-	}
+	
 	// Added for Close websocekt when Tournament is Available but the user choose the 1v1
-	if (view instanceof Online)
-		{
-			view.closeWebSocket();
-			console.log("DISCONNESIONE DALLA WEBSOCKET");
-		}
+	
 	// if (view instanceof Pong) {
 	// 	view.closeWebSocket();
 	// 			// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
@@ -148,6 +141,15 @@ const router = async () => {
 	};});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+	if (view instanceof Online && match.route.path !== "/tournament")
+		{
+			view.closeWebSocket();
+			console.log("DISCONNESIONE DALLA WEBSOCKET");
+		}
+	if (user.matchmaking_ws && match.route.path !== "/tournament"){
+		console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
+		await user.matchmaking_ws.close();
+	}
 	// if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
 	// 	// history.replaceState(null, null, "/online");
 	// 	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -271,8 +273,8 @@ const router = async () => {
 			break;
 		case "/tournament":
 			const TournamentClass = await match.route.view();
-			console.log(Tournament_Cache["ws"]);
-			view = new TournamentClass.default(user, Tournament_Cache["ws"]);
+			console.log(user.matchmaking_ws);
+			view = new TournamentClass.default(user, user.matchmaking_ws);
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
 			console.log("OSU", room_name);
