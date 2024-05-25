@@ -656,6 +656,9 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                             self.state['up_player_paddle_y'] = 1
                         elif action == 'move_down':
                             self.state['down_player_paddle_y'] = 1
+                        elif action == 'mouse_move':
+                            self.state['ball_x'] = message['x']
+                            self.state['ball_y'] = message['y']
                     else:
                         if action == 'move_up':
                             self.state['up_player2_paddle_y'] = 1
@@ -707,30 +710,21 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             if self.state['paddle2_y'] < 500:
                 self.state['paddle2_y'] += 10
 
-    def check_collision(self):
+    async def check_collision(self):
         rad = math.radians(45)
-        # if (
-        #     self.state['ball_x'] <= 50
-        #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
-        # ):
         if (
-            self.state['ball_x'] - 20 <= 20
-            and self.state['ball_x'] + 20 >= 0
-            and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
+            self.state['ball_x'] <= 50 and self.state['ball_x'] >= 25
+            and (self.state['paddle1_y'] - 10) <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
         ):
             diff = self.state['ball_y'] - (self.state['paddle1_y'] + 50)
             if self.speed_increase < 2:
                 self.speed_increase += 0.05
             angle = map_value(diff, -50, 50, -rad, rad)
+            await self.send(text_data=json.dumps({'hit': "paddleRight", 'angle': angle, 'stop' : 0}))
             self.state['ball_speed_x'] = 4 * math.cos(angle) * self.speed_increase
             self.state['ball_speed_y'] = 4 * math.sin(angle) * self.speed_increase
-        # if (
-        #     self.state['ball_x'] >= 750
-        #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
-        # ):
         if (
-            self.state['ball_x'] + 20 >= 800 - 20
-            and self.state['ball_x'] - 20 <= 800
+            self.state['ball_x'] >= 750  and self.state['ball_x'] <= 775
             and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
         ):
             diff = self.state['ball_y'] - (self.state['paddle2_y'] + 50)
@@ -785,14 +779,14 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
             # Collision with top and bottom walls
             if self.state['ball_y'] - 10 <= 0:
-                self.state['ball_speed_y'] = -self.state['ball_speed_y']
+                self.state['ball_speed_y'] = abs(self.state['ball_speed_y']) + 0.1
             if self.state['ball_y'] + 10 >= 600:
-                self.state['ball_speed_y'] = -self.state['ball_speed_y']
+                self.state['ball_speed_y'] = -abs(self.state['ball_speed_y']) - 0.1
 
             # # Collision with paddles
-            self.check_collision()
+            await self.check_collision()
             # Scoring
-            if self.state['ball_x'] <= 0:
+            if self.state['ball_x'] <= 5:
                 self.state['score2'] += 1
                 # await self.set_score(self.match, self.state['score2'], Pong_LocalConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
@@ -808,7 +802,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 if self.state['score2'] < POINTS_TO_WIN:
                     await self.countdown()
 
-            elif self.state['ball_x'] >= 800:
+            elif self.state['ball_x'] >= 795:
                 self.state['score1'] += 1
                 # await self.set_score(self.match, self.state['score1'], Pong_LocalConsumer.players[self.room_name][0])
                 self.state['ball_x'] = 400

@@ -137,6 +137,15 @@ export default class PongCpu extends AbstractView{
         console.log('loop', this.game_ws);
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
+        // const stop = 1;
+        /// FOR DEBUG--------------------------------- 
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'mouse_move', 'x': x, 'y': y, 'user': this.users.user}));
+        });
+        /// DEBUG -------------------------------------
         document.addEventListener('keydown', (event) => {
             // console.log('keydown', event.key);
             this.keysPressed[event.key] = true;
@@ -201,6 +210,11 @@ export default class PongCpu extends AbstractView{
             if (data.score2 !==  this.opponent) {
                 document.getElementById("score2").innerHTML = this.opponent + " Score: " + data.score2;
             }
+            /// DEBUG -------------------------------------
+            if (data.hit !== undefined) {
+                document.getElementById("hit").innerText = data.hit + data.angle;
+            }
+            /// DEBUG -------------------------------------
             // if (data.victory != "none"){
             //     console.log(data.victory);
             //     if (users === data.victory)
@@ -220,9 +234,11 @@ export default class PongCpu extends AbstractView{
         //     const data = JSON.parse(event.data);
         //     console.log(data);
         // };
+        // ID HIT FOR DEBUG 
         return  `
             <h1 id="score1">Score: 0</h1>
             <h1 id="score2">Score: 0</h1>
+            <h1 id="hit" style="color: white;"></h1> 
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;

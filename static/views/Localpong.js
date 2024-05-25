@@ -145,6 +145,7 @@ export default class LocalPong extends AbstractView{
         console.log('loop', this.game_ws);
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
+        
         document.addEventListener('keydown', (event) => {
             // console.log('keydown', event.key);
             this.keysPressed[event.key] = true;
