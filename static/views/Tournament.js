@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { createNotification } from "./Notifications.js";
 
 export default class Tournament extends AbstractView {
     constructor(user, ws) {
@@ -93,7 +94,14 @@ export default class Tournament extends AbstractView {
                     const data = JSON.parse(event.data);
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
-                    if (data.status === "Tournament start") {
+                    console.log(data.status)
+                    if (data.status === "6"){
+                        const response = await fetch('/tournament_match/');
+                        const matchData = await response.json();
+                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
+                    }
+                    else if (data.status === "Tournament start") {
                         this.user.matchmaking_ws.close(); // Close the WebSocket
                         // Fetch the match data from the API
                         const response = await fetch('/tournament_match/');

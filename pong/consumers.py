@@ -898,6 +898,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         elif action == 'joinTournamentQueue':
             await self.send(json.dumps({"status": "Joining Queue"}))
             print("MatchMaking 795", "Joining Tournament Queue")
+            self.freeroom = False
             await self.handle_join_tournament()
         elif action == 'torunametInfo':
             print("MatchMaking 798", "Tournament Info")
@@ -978,6 +979,12 @@ class MatchMaking(AsyncWebsocketConsumer):
         if result:
             if result == numberofplayers:
                 print("MatchMaking 886", "Number of players reached", matching_dict)
+                #ADV
+                await self.channel_layer.group_send("waitingroom", {
+                    "type": "chat.message",
+                    "text": json.dumps({"status" : "6", "dict" : matching_dict})
+                })
+                await asyncio.sleep(5)
                 # await self.channel_layer.group_add(result["group_name"], self.channel_name)
                 # Send the result to the group
                 await self.channel_layer.group_send("waitingroom", {
