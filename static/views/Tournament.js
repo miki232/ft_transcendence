@@ -95,7 +95,7 @@ export default class Tournament extends AbstractView {
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
                     console.log(data.status)
-                    if (data.status === "6"){
+                    if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
                         const response = await fetch('/tournament_match/');
                         const matchData = await response.json();
                         console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
