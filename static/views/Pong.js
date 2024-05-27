@@ -90,6 +90,7 @@ export default class Pong {
     }
 
     scoreTabMaker(data) {
+        console.log(data, this.user.getUser());
         if (data.player === this.user.getUser()) {
             this.player1 = this.user.getUser();
             this.player2 = this.user.online_opponent.username;

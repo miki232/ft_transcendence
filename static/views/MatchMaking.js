@@ -218,22 +218,24 @@ export default class MatchMaking extends AbstractView {
                     if (data.status === 5){ /// Quando riceve status 5 vuol dire che è stato trovato un match, Setto l'opponent e la room
                         console.log("ADV") /// Ma prima di fare il resolve, dobbiamo fare un controllo per vedere se l'utente è ancora online
                         this.setOpponent(data.opponent);
-                        console.log("OPPONENT", this.opponent);
-                        await this.getFriendInfo(this.opponent)
-                        this.roomName = data.room_name;
-                        const opponent = document.querySelector(".opponent");
-                        if (opponent !== null){
-                            opponent.innerHTML = `
-                                <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
-                                <div class="user-info">
-                                    <h3>${this.user.online_opponent.username}</h3>
-                                    <h5>Level ${this.user.online_opponent.level}</h5>
-                                </div>
-                            `;
-                            opponent.classList.add('user-dashboard');
-                            opponent.classList.remove('opponent');
-                            opponent.style.marginTop = '45px';
-                            opponent.style.marginBottom = '0px';
+                        console.log("OPPONENT", this.opponent, data.User_self !== this.user.getUser());
+                        if (data.User_self === this.user.getUser()){
+                            await this.getFriendInfo(this.opponent)
+                            this.roomName = data.room_name;
+                            const opponent = document.querySelector(".opponent");
+                            if (opponent !== null){
+                                opponent.innerHTML = `
+                                    <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                                    <div class="user-info">
+                                        <h3>${this.user.online_opponent.username}</h3>
+                                        <h5>Level ${this.user.online_opponent.level}</h5>
+                                    </div>
+                                `;
+                                opponent.classList.add('user-dashboard');
+                                opponent.classList.remove('opponent');
+                                opponent.style.marginTop = '45px';
+                                opponent.style.marginBottom = '0px';
+                            }
                         }
                     }
                     else if (data.User_self === this.user.getUser() && data.status === 2){

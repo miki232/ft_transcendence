@@ -25,10 +25,11 @@ SCREEN_HEIGHT = 600
 PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 PADDLE_SPEED = 10
+PADDLE_DEFAULT_POS = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
 
 # Ball settings
 BALL_SIZE = 20
-
+BALL_DEFAULT_POS = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - BALL_SIZE // 2)
 # Winning score
 POINTS_TO_WIN = 5
 
@@ -622,12 +623,12 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
         Pong_LocalConsumer.players[self.room_name].append(self.user.username)
         print("Pong Local Consumer 486","connected", self.room_group_name, self.channel_name)
         self.state = {
-            'ball_x': 400,
-            'ball_y': 290,
+            'ball_x': BALL_DEFAULT_POS[0],
+            'ball_y': BALL_DEFAULT_POS[1],
             'ball_speed_x': random.choice([-3, 3]),
             'ball_speed_y': random.choice([-3, 3]),
-            'paddle1_y': 250,
-            'paddle2_y': 250,
+            'paddle1_y': PADDLE_DEFAULT_POS,
+            'paddle2_y': PADDLE_DEFAULT_POS,
             'score1': 0,
             'score2': 0,
             'up_player_paddle_y': 0,
@@ -695,9 +696,9 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
     async def countdown(self):
         for i in range(3, 0, -1):
             print("Pong Local Consumer 576", f"Game starts in {i}...")
-            await self.send(text_data=json.dumps({'countdown': i}))
+            await self.send(text_data=json.dumps({'countdown': i, 'score1': self.state['score1'], 'score2': self.state['score2']}))
             await asyncio.sleep(1)
-        await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start'}))
+        await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start', 'score1': self.state['score1'], 'score2': self.state['score2']}))
         await asyncio.sleep(1)
 
     async def move_paddle_up(self, player):
@@ -742,6 +743,10 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
     async def reset(self):
         self.speed_increase = 1.10
+        self.state['ball_x'] = BALL_DEFAULT_POS[0]
+        self.state['ball_y'] = BALL_DEFAULT_POS[1]
+        self.state['paddle1_y'] = PADDLE_DEFAULT_POS
+        self.state['paddle2_y'] = PADDLE_DEFAULT_POS
         await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -802,16 +807,10 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             # Scoring
             if self.state['ball_x'] <= 5:
                 self.state['score2'] += 1
-                # await self.set_score(self.match, self.state['score2'], Pong_LocalConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
                 self.state['ball_y'] = 290
-                # self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
-                # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
-                print("Pong Local Consumer 705", "ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
-
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
-                print("Pong Local Consumer 709", "ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
                 await self.reset()
                 if self.state['score2'] < POINTS_TO_WIN:
                     await self.countdown()
