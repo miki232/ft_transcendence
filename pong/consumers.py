@@ -414,6 +414,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.state['ball_speed_x'] = 4 * math.cos(angle) * self.speed_increase
             self.state['ball_speed_y'] = 4 * math.sin(angle) * self.speed_increase
 
+    def simulate_input(self, paddle, player, new_paddle_pos):
+            if self.state[paddle] < new_paddle_pos - PADDLE_SPEED:
+                self.state[f'down_{player}_paddle_y'] = 1
+                self.state[f'up_{player}_paddle_y'] = 0
+            elif self.state[paddle] > new_paddle_pos + PADDLE_SPEED:
+                self.state[f'up_{player}_paddle_y'] = 1
+                self.state[f'down_{player}_paddle_y'] = 0
+
     async def game_loop(self):
         last_ai_update_time = time.time()
         while (PongConsumer.status[self.room_name]) == False:
@@ -424,9 +432,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
                     last_ai_update_time = current_time
                 if (self.user1.Ai):
-                    self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 10)
+                    self.simulate_input("paddle1_y", "player", self.ai_target_pos)
                 else:
-                    self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 10)
+                    self.simulate_input("paddle2_y", "player2", self.ai_target_pos)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -694,21 +702,19 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
 
     async def move_paddle_up(self, player):
         if player == Pong_LocalConsumer.players[self.room_name][0]:
-            print("Pong Local Consumer 584", "paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] > 0:
-                self.state['paddle1_y'] -= 10
+                self.state['paddle1_y'] -= PADDLE_SPEED
         else:
             if self.state['paddle2_y'] > 0:
-                self.state['paddle2_y'] -= 10
+                self.state['paddle2_y'] -= PADDLE_SPEED
 
     async def move_paddle_down(self, player):
         if player == Pong_LocalConsumer.players[self.room_name][0]:
-            print("Pong Local Consumer 593", "paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] < 500:
-                self.state['paddle1_y'] += 10
+                self.state['paddle1_y'] += PADDLE_SPEED
         else:
             if self.state['paddle2_y'] < 500:
-                self.state['paddle2_y'] += 10
+                self.state['paddle2_y'] += PADDLE_SPEED
 
     async def check_collision(self):
         rad = math.radians(45)
@@ -743,6 +749,14 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     'state': self.state
                 }
             )
+        
+    def simulate_input(self, new_paddle_pos):
+        if self.state['paddle2_y'] < new_paddle_pos - PADDLE_SPEED:
+            self.state['down_player2_paddle_y'] = 1
+            self.state['up_player2_paddle_y'] = 0
+        elif self.state['paddle2_y'] > new_paddle_pos + PADDLE_SPEED:
+            self.state['up_player2_paddle_y'] = 1
+            self.state['down_player2_paddle_y'] = 0
 
     async def game_loop(self):
         last_ai_update_time = time.time()
@@ -756,7 +770,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
                     print("Seconds since last AI update:", current_time - last_ai_update_time)  # Print the time elapsed since the last AI update 
                     last_ai_update_time = current_time
-                self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 10)
+                self.simulate_input(self.ai_target_pos)
 
             # Move paddles based on player input
             if self.state['up_player_paddle_y'] == 1:

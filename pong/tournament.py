@@ -299,15 +299,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         print(f"Room: {self.room_name}, State: {TournamentConsumer.shared_state[self.room_name]}")
         while (TournamentConsumer.status[self.room_name]) == False:
             current_time = time.time()
-            """Find who is the AI and move the paddle accordingly"""
-            # if (self.user1.Ai or self.user2.Ai):
-            #     if current_time - last_ai_update_time >= 1:
-            #         self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
-            #         last_ai_update_time = current_time
-            #     if (self.user1.Ai):
-            #         self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 5)
-            #     else:
-            #         self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 5)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -410,6 +401,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1.5)  # Wait for 1 second
             await self.close()
             return
+
+
 
     async def handle_message(self, event):
         message_type = event['type']
