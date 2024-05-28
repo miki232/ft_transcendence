@@ -259,6 +259,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if (self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]):
             return
         if self.user.username in PongConsumer.players[self.room_name]:
+            await self.FreeAi()
             PongConsumer.players[self.room_name].remove(self.user.username)
         # If there are no players left in the room, set status[self.room_name] to True
         if not PongConsumer.players[self.room_name]:
@@ -266,6 +267,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if self.loop_task is not None:
             self.loop_task.cancel()
+
 
         # If there's only one player left, stop the game and send a "Victory" message
         if len(PongConsumer.players[self.room_name]) == 1:
