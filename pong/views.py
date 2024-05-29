@@ -25,10 +25,11 @@ class CreateRoomView(APIView):
         user_to_fight = None
         user = None
         username = request.data.get("created_by")
-        public = False
+        friendly = False
 
         if room_name == "1":
-            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+            friendly = True
+            room_name = str(uuid.uuid1()).replace('-', '')
             sfidante = request.data.get("to_fight")
             user_to_fight = CustomUser.objects.get(username=sfidante)
             user = CustomUser.objects.get(username=username)
@@ -38,18 +39,17 @@ class CreateRoomView(APIView):
             'created_by': user,
             'opponent': user_to_fight,
             'name': room_name,
-            'public' : public,
+            'friendly' : friendly,
             })
         else:
-            public = True
-            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+            room_name = str(uuid.uuid1()).replace('-', '')
             # Pass the primary keys to the serializer
             print("Create Room View 44", CustomUser.calculate_level(user))
             serializer = RoomNameSerializer(data={
                 'created_by': user,
                 'opponent': user_to_fight,
                 'name': room_name,
-                'public' : public,
+                'friendly' : friendly,
                 'level' : CustomUser.calculate_level(user)
             })
 
@@ -70,9 +70,9 @@ class ListRoomView(APIView):
         try:
             friendslist = FriendList.objects.get(user=user)
             friends = friendslist.friends.all()
-            rooms = RoomName.objects.filter(Q(opponent__in=friends) | Q(opponent=user) | Q(public=True))
+            rooms = RoomName.objects.filter(Q(opponent__in=friends) | Q(opponent=user) | Q(friendly=False))
         except ObjectDoesNotExist:
-            rooms = RoomName.objects.filter(Q(opponent=user) | Q(public=True))
+            rooms = RoomName.objects.filter(Q(opponent=user) | Q(friendly=False))
 
 
         

@@ -142,14 +142,18 @@ const router = async () => {
 	};});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
-	if (view instanceof Online && match.route.path !== "/tournament")
-		{
-			view.closeWebSocket();
-			console.log("DISCONNESIONE DALLA WEBSOCKET");
+	try {
+		if (view instanceof Online && match.route.path !== "/tournament")
+			{
+				view.closeWebSocket();
+				console.log("DISCONNESIONE DALLA WEBSOCKET");
+			}
+		if (user.matchmaking_ws && match.route.path !== "/tournament"){
+			console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
+			await user.matchmaking_ws.close();
 		}
-	if (user.matchmaking_ws && match.route.path !== "/tournament"){
-		console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
-		await user.matchmaking_ws.close();
+	} catch {
+		console.log("THERE IS NO MATCHMAKING_WS");
 	}
 	// if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
 	// 	// history.replaceState(null, null, "/online");
@@ -419,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		///////////////////////////////////////////////////////
 		if (e.target.matches('#game'))
 		{
-			let Friend_username = document.getElementById("Username").innerHTML;
+			let Friend_username = document.querySelector(".user-info h3").innerHTML;
 			console.log(Friend_username);
 			let selfuser = await getusename() // Per ora lascio Admin, ma è solo per provare, è da sostituire con l'username reale di chi sta cliccand PLAY
 			console.log(selfuser);
