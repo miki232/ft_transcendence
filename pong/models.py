@@ -7,7 +7,8 @@ class RoomName(models.Model):
     name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    public = models.BooleanField(default=False)
+    friendly = models.BooleanField(default=False)
+
     opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='matches', null=True)
     level = models.FloatField(max_length=2, default=0)
     tournament = models.BooleanField(default=False)

@@ -8,7 +8,7 @@ class RoomNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomName
-        fields = ['name', 'created_by', 'opponent', 'public', 'level']
+        fields = ['name', 'created_by', 'opponent', 'friendly', 'level']
 
 class TournamentPlaceHolderSerializer(serializers.ModelSerializer):
     class Meta:

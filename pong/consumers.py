@@ -1157,7 +1157,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         print("MatchMaking 853", "User", self.user.username, "Left Queue")
         try:
             if self.freeroom:
-                RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).delete()
+                RoomName.objects.filter(Q(created_by=self.user) (friendly=False) | Q(opponent=self.user) (friendly=False)).delete()
                 print("MatchMaking 856", "Room Deleted")
         except:
             print("MatchMaking 858", "Room Not Found")
