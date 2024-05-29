@@ -159,7 +159,7 @@ const router = async () => {
 	// }
 	if (user.lastURL === "/1P-vs-2P") {
 		match = {
-			route: routes[6],
+			route: routes[7],
 			isMatch: true
 		};
 		createNotification("You have been disconnected from the game", "error");

@@ -23,7 +23,7 @@ export default class History extends AbstractView {
 		this.content.innerHTML = this.getContent();
 		const historyElement = document.querySelector('.history');
 		const data = await getHistoryList(this.user.getUser());
-		data[0].match_history.length === 0 ? this.noHistory(historyElement) : await this.hisoryList(data, historyElement);
+		data[0].match_history.length === 0 ? this.noHistory(historyElement) : await this.historyList(data, historyElement);
 	}
 
 	noHistory (historyElement) {
@@ -33,7 +33,7 @@ export default class History extends AbstractView {
 		historyElement.appendChild(noEntries);
 	}
 
-	async hisoryList (data, historyElement) {
+	async historyList (data, historyElement) {
 		const sort_data = data[0].match_history.sort((a, b) => new Date(b.date) - new Date(a.date));
 		const matchListElement = document.createElement("div");
 		matchListElement.className = "match-list";
