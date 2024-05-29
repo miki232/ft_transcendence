@@ -459,10 +459,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             return new_speed_x * self.speed_increase, new_speed_y * self.speed_increase
         
         # Collision with paddle 1
-        if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH:
+        if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH and self.state['ball_x'] >= 20:
             if self.state['paddle1_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle1_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle1_y'], 20, self.state['ball_x'], self.state['ball_y'])
-        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
+        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
             if self.state['paddle2_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle2_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle2_y'], SCREEN_WIDTH - (PADDLE_WIDTH + 20), self.state['ball_x'], self.state['ball_y'])
     
@@ -518,10 +518,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.state['ball_y'] += self.state['ball_speed_y']
 
             # Collision with top and bottom walls
-            if self.state['ball_y'] <= 0:
-                self.state['ball_speed_y'] = -self.state['ball_speed_y']
-            if self.state['ball_y'] >= 600:
-                self.state['ball_speed_y'] = -self.state['ball_speed_y']
+            if self.state['ball_y'] - BALL_SIZE / 2 <= 0:
+                self.state['ball_y'] = BALL_SIZE / 2
+                self.state['ball_speed_y'] = abs(self.state['ball_speed_y']) + 0.1
+            if self.state['ball_y'] + BALL_SIZE / 2 >= 600:
+                self.state['ball_y'] = 600 - BALL_SIZE / 2
+                self.state['ball_speed_y'] = -abs(self.state['ball_speed_y']) - 0.1
 
             # # Collision with paddles
             self.check_collision()
@@ -537,7 +539,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
 
             # Scoring
-            if self.state['ball_x'] <= 15:
+            if self.state['ball_x'] <= 0:
                 self.state['score2'] += 1
                 await self.set_score(self.match, self.state['score2'], PongConsumer.players[self.room_name][1])
                 self.state['ball_x'] = 400
@@ -553,7 +555,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     await self.countdown()
                 print("Pong Consumer 414","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
-            elif self.state['ball_x'] >= 795:
+            elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
                 await self.set_score(self.match, self.state['score1'], PongConsumer.players[self.room_name][0])
                 self.state['ball_x'] = 400
@@ -823,10 +825,10 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             return new_speed_x * self.speed_increase, new_speed_y * self.speed_increase
         
         # Collision with paddle 1
-        if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH:
+        if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH and self.state['ball_x'] >= 20:
             if self.state['paddle1_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle1_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle1_y'], 20, self.state['ball_x'], self.state['ball_y'])
-        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
+        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
             if self.state['paddle2_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle2_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle2_y'], SCREEN_WIDTH - (PADDLE_WIDTH + 20), self.state['ball_x'], self.state['ball_y'])
     
@@ -885,9 +887,11 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             self.state['ball_y'] += self.state['ball_speed_y']
 
             # Collision with top and bottom walls
-            if self.state['ball_y'] - 10 <= 0:
+            if self.state['ball_y'] - BALL_SIZE / 2 <= 0:
+                self.state['ball_y'] = BALL_SIZE / 2
                 self.state['ball_speed_y'] = abs(self.state['ball_speed_y']) + 0.1
-            if self.state['ball_y'] + 10 >= 600:
+            if self.state['ball_y'] + BALL_SIZE / 2 >= 600:
+                self.state['ball_y'] = 600 - BALL_SIZE / 2
                 self.state['ball_speed_y'] = -abs(self.state['ball_speed_y']) - 0.1
 
             # # Collision with paddles
@@ -900,7 +904,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
                 await self.reset()
-                if self.state['score2'] < POINTS_TO_WIN:
+                if self.state['score1'] < POINTS_TO_WIN:
                     await self.countdown()
 
             elif self.state['ball_x'] >= 795:
@@ -1120,7 +1124,7 @@ class MatchMaking(AsyncWebsocketConsumer):
 
         print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
         self.time_passed += 1
-        if self.time_passed >= 5:
+        if self.time_passed >= 5: # TO DO INCREASE TO 10
             self.time_passed = 0
             WaitingUser.objects.filter(user=self.user).delete()
             room_name = str(uuid.uuid1()).replace('-', '')
