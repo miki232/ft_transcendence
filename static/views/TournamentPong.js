@@ -1,5 +1,5 @@
 export default class Pong{
-    constructor(room_name){
+    constructor(user, room_name){
         this.room_name = room_name;
         this.game_ws = "null";
         this.ballX = 0;
@@ -34,7 +34,7 @@ export default class Pong{
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				console.error(data);
 				this.setUser(data.username);
 			})
 			.catch((error) => {
@@ -119,7 +119,7 @@ export default class Pong{
             }
         });        
         this.update(canvas, context);
-        this.game_ws.onmessage = event => {
+        this.game_ws.onmessage = async event => {
             const data = JSON.parse(event.data);
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
@@ -146,15 +146,18 @@ export default class Pong{
             //     else
             //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
             // }
-            // if (data.victory != "none"){
-            //     console.log(data.victory);
-            //     if (users === data.victory)
-            //         alert("YOU WIN!" + users)
-            //     else
-            //         alert("AHAHAH hai PERSO")
-            // }
+            if (data.victory != "none"){
+                console.log(data.victory, this.users);
+                if (this.users === data.victory)
+                    alert("YOU WIN!" + this.users)
+                else
+                {
+                    alert("AHAHAH hai PERSO")
+                    await this.closeWebSocket();
+                }
+            }
 
-            this.update(canvas, context);
+            await this.update(canvas, context);
         }
     }
 

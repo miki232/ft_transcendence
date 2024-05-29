@@ -275,9 +275,9 @@ const router = async () => {
 			// document.getElementById("container").classList.add("containerpong");
 			// document.getElementById("container").removeAttribute("id");
 			//***sdassdad */
-			console.log("SUCASD", match.route.view(), match.route.path);
+			console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
 			const Pong_tournamentClass = await match.route.view();
-			view = new Pong_tournamentClass.default(room_name);
+			view = new Pong_tournamentClass.default(user, room_name);
 			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;

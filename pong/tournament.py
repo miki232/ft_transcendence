@@ -336,16 +336,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
             # # Collision with paddles
             self.check_collision()
-            # if (
-            #     self.state['ball_x'] <= 10
-            #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
-            # if (
-            #     self.state['ball_x'] >= 790
-            #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
 
             # Scoring
             if TournamentConsumer.shared_state[self.room_name]['ball_x'] <= 0:
@@ -399,7 +389,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             }
             )
             await asyncio.sleep(1.5)  # Wait for 1 second
-            await self.close()
+            # await self.close()
             return
 
 
