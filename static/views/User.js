@@ -22,6 +22,7 @@ export default class User extends AbstractView {
 		this.game_ws = null;
 		this.matchmaking_ws = null;
 		this.lastURL = null;
+		this.room_nextround = null;
 	}
 
 	async logout(){

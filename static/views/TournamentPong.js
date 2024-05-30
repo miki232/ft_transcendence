@@ -2,8 +2,10 @@ import AbstractView from "./AbstractView.js";
 import { navigateTo } from "../index.js";
 import Tournament from "./Tournament.js";
 
-export default class Pong{
+export default class Pong extends AbstractView{
     constructor(user, room_name){
+        super();
+        this.user =  user;
         this.room_name = room_name;
         this.game_ws = "null";
         this.ballX = 0;
@@ -151,24 +153,27 @@ export default class Pong{
             //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
             // }
             if (data.victory != "none"){
-                console.log(data.victory, this.users);
-                if (this.users === data.victory){
+                console.log(data.victory, this.user.user);
+                if (this.user.user === data.victory){
                     console.log("HAI VINTO");
                     const content = document.querySelector("#content");
                     await this.closeWebSocket();
-                    let ws = new WebSocket(
+                    this.user.matchmaking_ws = new WebSocket(
                         'wss://'
                         + window.location.hostname
                         + ':8000'
                         + '/ws/matchmaking/'
                         )
-                    ws.onopen = async () => {
-                        const view = new Tournament(this.users, ws);
+                    this.user.matchmaking_ws.onopen = async () => {
+                        const view = new Tournament(this.user, this.user.matchmaking_ws);
                         content.innerHTML =  view.getContent();
                         await view.sendJoin(); 
+                        let room = await view.getRoom_Match();
                         console.log("JOINING TOURNAMENT");
-                        room = await view.getRoom_Match();
                         console.log("JOINING TOURNAMENT", room);
+                        this.room_name = room;
+                        content.innerHTML =  await this.getContent();
+                        await this.loop();
                     };
                     // const view = new Tournament(this.users, ws);
                     // content.innerHTML =  view.getContent();
@@ -191,6 +196,7 @@ export default class Pong{
     async getContent() {
         await this.loadUserData();
         await this.connect_game();
+        console.log("PROVA USER", this.user.user);
         // this.ws.onmessage = function(event){
         //     const data = JSON.parse(event.data);
         //     console.log(data);

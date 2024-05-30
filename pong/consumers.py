@@ -970,6 +970,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         self.connected = True
         self.freeroom = True
         self.group_name = ""
+        self.next_match = False
         # notificationslist = await self.get_notifications()
         # for notification in notificationslist:
         #     await self.send(text_data=json.dumps(
@@ -993,6 +994,7 @@ class MatchMaking(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
+        status = text_data_json['status']
         print("MatchMaking 789", action)
         if action == 'join_queue':
             await self.send(json.dumps({"status": "Joining Queue"}))
@@ -1003,6 +1005,9 @@ class MatchMaking(AsyncWebsocketConsumer):
             await self.send(json.dumps({"status": "Joining Queue"}))
             print("MatchMaking 795", "Joining Tournament Queue")
             self.freeroom = False
+            if (status == "not_ready_nextmatch"):
+                self.next_match = True
+                await self.channel_layer.group_add("waitingroom", self.channel_name)
             await self.handle_join_tournament()
         elif action == 'torunametInfo':
             print("MatchMaking 798", "Tournament Info")
@@ -1047,6 +1052,24 @@ class MatchMaking(AsyncWebsocketConsumer):
                 matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]    
             return len(waiting_users), numberofplayers.playerNumber, matching_dict
             # for waiting_user in waiting_users:
+        if (self.next_match):
+            print("MatchMaking 839", "Next Match")
+            self.next_match = False
+            numberofplayers_nextmatch = numberofplayers.playerNumber / 2
+            print("MatchMaking 839", numberofplayers_nextmatch)
+            if len(waiting_users) == numberofplayers_nextmatch:
+                waiting_users_list = list(waiting_users)
+                for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
+                    print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
+                    room_name = str(uuid.uuid4()).replace('-', '')
+                    match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user)
+                    user1.delete()
+                    user2.delete()
+                matching_dict = {}
+                for match in RoomName.objects.all():
+                    matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]
+            return len(waiting_users), numberofplayers_nextmatch, matching_dict
+            #     print("840 ", waiting_user.user.username, waiting_user.level)
         return len(waiting_users), numberofplayers.playerNumber, None
             #     print("840 ", waiting_user.user.username, waiting_user.level)
         # if len(waiting_users) == 3:

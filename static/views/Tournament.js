@@ -83,6 +83,7 @@ export default class Tournament extends AbstractView {
 
     async getRoom_Match() {
         // await this.connect();
+        this.getWaitingPlayers();
         return new Promise((resolve, reject) => {
             // this.matchmaking_ws.onopen = () => {
             //     console.log('WebSocket connection opened');
@@ -170,10 +171,10 @@ export default class Tournament extends AbstractView {
 
 
     async sendJoin() {
-        this.ws.send(JSON.stringify({
+        this.user.matchmaking_ws.send(JSON.stringify({
             "action": "joinTournamentQueue",
-            "username": this.user,
-            "status": "not_ready",
+            "username": this.user.user,
+            "status": "not_ready_nextmatch",
         }));
     }
 
