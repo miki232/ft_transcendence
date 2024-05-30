@@ -388,10 +388,23 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 'state': TournamentConsumer.shared_state[self.room_name]
             }
             )
-            await asyncio.sleep(1.5)  # Wait for 1 second
-            # await self.close()
+            await asyncio.sleep(5.5)  # Wait for 1 second
+            await self.close()
             return
-
+        # print("Pong Consumer 456","Game Ended")
+        # await self.remove_losers_from_room()
+        # print("Pong Consumer 457 Starting next match", TournamentConsumer.players[self.room_name])
+        
+    async def remove_losers_from_room(self):
+        for player in TournamentConsumer.players[self.room_name]:
+            if player not in [self.match.winner.username]:
+                print("Pong Consumer 463", player, " Removed from room")
+                TournamentConsumer.players[self.room_name].remove(player)
+        print("Pong Consumer 465", "Players in room", TournamentConsumer.players[self.room_name])
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
 
 
     async def handle_message(self, event):

@@ -169,6 +169,15 @@ export default class Tournament extends AbstractView {
     }
 
 
+    async sendJoin() {
+        this.ws.send(JSON.stringify({
+            "action": "joinTournamentQueue",
+            "username": this.user,
+            "status": "not_ready",
+        }));
+    }
+
+
     getNav() {
         // Implement navigation bar here
     }

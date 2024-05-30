@@ -1,3 +1,7 @@
+import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
+import Tournament from "./Tournament.js";
+
 export default class Pong{
     constructor(user, room_name){
         this.room_name = room_name;
@@ -148,8 +152,31 @@ export default class Pong{
             // }
             if (data.victory != "none"){
                 console.log(data.victory, this.users);
-                if (this.users === data.victory)
-                    alert("YOU WIN!" + this.users)
+                if (this.users === data.victory){
+                    console.log("HAI VINTO");
+                    const content = document.querySelector("#content");
+                    await this.closeWebSocket();
+                    let ws = new WebSocket(
+                        'wss://'
+                        + window.location.hostname
+                        + ':8000'
+                        + '/ws/matchmaking/'
+                        )
+                    ws.onopen = async () => {
+                        const view = new Tournament(this.users, ws);
+                        content.innerHTML =  view.getContent();
+                        await view.sendJoin(); 
+                        console.log("JOINING TOURNAMENT");
+                        room = await view.getRoom_Match();
+                        console.log("JOINING TOURNAMENT", room);
+                    };
+                    // const view = new Tournament(this.users, ws);
+                    // content.innerHTML =  view.getContent();
+                    // await view.sendJoin(); 
+                    // console.log("JOINING TOURNAMENT");
+                    // room = await view.getRoom();
+                    // console.log("JOINING TOURNAMENT", room);
+                }
                 else
                 {
                     alert("AHAHAH hai PERSO")
