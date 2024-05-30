@@ -994,7 +994,10 @@ class MatchMaking(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
-        status = text_data_json['status']
+        try:
+            status = text_data_json['status']
+        except:
+            pass
         print("MatchMaking 789", action)
         if action == 'join_queue':
             await self.send(json.dumps({"status": "Joining Queue"}))

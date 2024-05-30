@@ -17,6 +17,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 KEY_BINDINGS: dict[str, Key | KeyCode] = {
     "quit": Key.esc,
+    "quit2": KeyCode(char="q"),
+    "rematch": KeyCode(char="r"),
     "up": Key.up,
     "up2": KeyCode(char="w"),
     "down": Key.down,
@@ -69,7 +71,13 @@ class GameEngine:
             sslopt={"cert_reqs": ssl.CERT_NONE}
         )
         self.ws.close()
-        self.game_state = json.loads(self.ws_pong.recv())
+        self.game_state = self.ws_pong.recv()
+        if self.game_state:
+            self.game_state = json.loads(self.game_state)
+            print('Connected to pong websocket')
+        else:
+            print('Failed to connect to pong websocket')
+            print(self.game_state)
 
     def run(self):
         curses.wrapper(self._run)
@@ -139,18 +147,38 @@ class GameEngine:
                     screen.clear()
                     screen.addstr(10, 0, 'You win!')
                     screen.refresh()
-                    
                     break
                 elif self.game_state['victory'] == self.opp_username:
                     screen.clear()
                     screen.addstr(10, 0, 'You lose!')
                     screen.refresh()
-
                     break
                 # Update game_state based on pressed_keys...
-
+            self.waiting_input(screen, pressed_keys)
         finally:
             listener.stop()
+
+    def waiting_input(self, screen, pressed_keys):
+        sat = False
+        while True:
+            q = (
+                pressed_keys[KEY_BINDINGS["quit"]]
+                or pressed_keys[KEY_BINDINGS["quit2"]]
+            )
+            r = pressed_keys[KEY_BINDINGS["rematch"]]
+            if not sat:
+                screen.addstr(0, 0, 'Press q/esc to quit')
+                screen.addstr(1, 0, 'Press r to rematch')
+                screen.refresh()
+            if q:
+                exit(0)
+            if r and not sat:
+                screen.clear()
+                screen.addstr(0, 0, 'Rematching...')
+                screen.refresh()
+                sat = True
+                self.connect_matchmaking_websocket()
+                self.run()
 
     def print_game_state(self, game_state, screen):
         screen.clear()
