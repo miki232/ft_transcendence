@@ -95,25 +95,18 @@ export default class History extends AbstractView {
 	}
 
 	async getUserInfo(username) {
-		var csrfToken = await getCSRFToken();
-		return fetch('/accounts/guser_info/?username=' + username, {
-			method: 'GET',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken': csrfToken
-			}
-		})
-			.then(response => response.json())
-			.then(data => {
-				const opponent = {
-					username: data.user.username,
-					pro_pic: data.user.pro_pic
-				};
-				return opponent;
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			})
+		// var csrfToken = await getCSRFToken();
+		try {
+			const response = await fetch('/accounts/guser_info/?username=' + username);
+			const data = await response.json();
+			const opponent = {
+				username: data.user.username,
+				pro_pic: data.user.pro_pic
+			};
+			return opponent;
+		} catch (error) {
+			console.error('Error:', error);
+		}
 	}
 
 	getNav() {

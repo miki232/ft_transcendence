@@ -27,6 +27,26 @@ import Online from "./views/Online.js";
 // 	newActive.classList.add('active');
 // }
 
+/*
+
+LANGUAGE SWITCHER
+
+<p id="greeting" data-en="Hello" data-it="Ciao"></p>
+<p id="farewell" data-en="Goodbye" data-it="Addio"></p>
+
+
+function setLanguage(lang) {
+    document.querySelectorAll('[data-en]').forEach(el => {
+        el.innerText = el.getAttribute(`data-${lang}`);
+    });
+}
+
+// Imposta la lingua in base alla preferenza dell'utente
+const userLanguage = navigator.language.startsWith('it') ? 'it' : 'en';
+setLanguage(userLanguage);
+
+*/
+
 const container = document.querySelector("#container");
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
@@ -198,7 +218,7 @@ const router = async () => {
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
-		{ path: "/history", view: () => import('./views/History.js')},
+		{ path: "/dashboard/history", view: () => import('./views/History.js')},
         { path: "/settings", view: () => import('./views/Settings.js') },
         { path: "/requests", view: () => import('./views/Requests.js') },
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
@@ -315,7 +335,7 @@ const router = async () => {
 			const DashboardClass = await match.route.view();
 			view = new DashboardClass.default(user);
 			break;
-		case "/history":
+		case "/dashboard/history":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const HistoryClass = await match.route.view();
 			view = new HistoryClass.default(user);

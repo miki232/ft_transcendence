@@ -66,7 +66,7 @@ export default class User extends AbstractView {
 			console.error(error);
 			return;
 		}
-		const csrftoken = await this.getCSRFToken();
+		const csrftoken = this.getCSRFToken('csrftoken');
 
 		await fetch('accounts/login/', {
 			method: 'POST',
@@ -94,22 +94,14 @@ export default class User extends AbstractView {
 	}
 
 	async isLogged() {
-		var csrftoken = await this.getCSRFToken();
+		// var csrftoken = await this.getCSRFToken();
 
-		return fetch('/accounts/user_info/', {
-			method: 'GET',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken': csrftoken
-			}
-		})
-		.then(response => {
-			if (response.ok) {
-				return true;
-			} else {
-				return false;
-			}
-		});
+		const response = await fetch('/accounts/user_info/');
+		if (response.ok) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	async loadUserData() {
