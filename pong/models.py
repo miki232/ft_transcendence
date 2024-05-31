@@ -40,11 +40,28 @@ class Tournament_Match(models.Model):
     def __str__(self):
         return f'Match between {self.user1.username} and {self.user2.username} on {self.date}'
 
+class TournamentRoomName(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user1 =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, related_name='user1')
+    user2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True , related_name='user2')
+    level = models.FloatField(max_length=2, default=0)
+    tournament = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
 class Tournament(models.Model):
-    match = models.ForeignKey(Tournament_Match, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique=True, null=True)
+    matches = models.ManyToManyField(Tournament_Match)
     timestamp = models.DateTimeField(auto_now_add=True)
     winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
 
 class TournametPlaceHolder(models.Model):
     playerNumber = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
+    round = models.IntegerField(default=0)
+    name = models.CharField(max_length=255, unique=True, null=True)
+
+class TournamentPartecipants(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)

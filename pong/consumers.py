@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder, TournamentPartecipants
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -986,10 +986,13 @@ class MatchMaking(AsyncWebsocketConsumer):
         await self.leave_queue()
         if(self.queue_task):
             self.queue_task.cancel()
-        await self.channel_layer.group_discard(
-                    self.group_name,
-                    self.channel_name
-                )
+        print("MatchMaking 785", self.user, "Disconnected", self.group_name)
+        if self.group_name:
+            await self.channel_layer.group_discard(
+                        self.group_name,
+                        self.channel_name
+                    )
+        
         
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -1032,48 +1035,76 @@ class MatchMaking(AsyncWebsocketConsumer):
     @database_sync_to_async
     def queue_tournament(self):
         user_level = self.user.calculate_level()
+        tournamName = TournametPlaceHolder.objects.get(Q(status=True) | Q(status=False))
+        print("MatchMaking 1039", tournamName.name)
+        tournament, created = Tournament.objects.get_or_create(name=tournamName.name)
+        divided = 2
         print(user_level)
         if not Tournament_Waitin.objects.filter(user=self.user).exists():
             Tournament_Waitin.objects.create(user=self.user, level=user_level)
         waiting_users = Tournament_Waitin.objects.all()
         print("MatchMaking 814", len(waiting_users), self.user)
-        numberofplayers = TournametPlaceHolder.objects.get(status=True)
+        try:
+            numberofplayers = TournametPlaceHolder.objects.get(status=True)
+        except:
+            numberofplayers = TournametPlaceHolder.objects.get(status=False)
         print("MatchMaking 839", numberofplayers.playerNumber)
         # self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": len(waiting_users), "numberofplayers-to-reach": numberofplayers}))
         if len(waiting_users) == numberofplayers.playerNumber:
             waiting_users.order_by('level')
+            TournametPlaceHolder.objects.update(status=False)
             print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
             waiting_users_list = list(waiting_users)
             for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                 print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                 room_name = str(uuid.uuid4()).replace('-', '')
-                match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user)
+                match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
+                print("MatchMaking 1061", "Room Name", room_name, "Opponent", user2.user.username)
+                tournament.matches.add(tmatch)
+                print("MatchMaking 1063", "Room Name", room_name, "Opponent", user2.user.username)
                 user1.delete()
                 user2.delete()
             matching_dict = {}
-            for match in RoomName.objects.all():
+            for match in RoomName.objects.filter(tournament=True):
                 matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]    
-            return len(waiting_users), numberofplayers.playerNumber, matching_dict
+            lenround = len(RoomName.objects.filter(tournament=True))
+            if lenround >= 4:
+                lenround -= 1
+            TournametPlaceHolder.objects.update(round=lenround)
+            return len(waiting_users), numberofplayers.playerNumber, matching_dict, None
             # for waiting_user in waiting_users:
         if (self.next_match):
             print("MatchMaking 839", "Next Match")
             self.next_match = False
-            numberofplayers_nextmatch = numberofplayers.playerNumber / 2
+            if (TournametPlaceHolder.objects.get(status=False).round == 1):
+                print("MatchMaking 1069", "Tournamet finish", self.user.username)
+                Tournament_Waitin.objects.all().delete()
+                return None, None, None, self.user.username
+            if (TournametPlaceHolder.objects.get(status=False).round == 2 and TournametPlaceHolder.objects.get(status=False).playerNumber == 8):
+                divided = 4
+            numberofplayers_nextmatch = numberofplayers.playerNumber // divided
             print("MatchMaking 839", numberofplayers_nextmatch)
             if len(waiting_users) == numberofplayers_nextmatch:
                 waiting_users_list = list(waiting_users)
                 for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                     print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                     room_name = str(uuid.uuid4()).replace('-', '')
-                    match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user)
+                    match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                    tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
+                    tournament.matches.add(tmatch)
                     user1.delete()
                     user2.delete()
                 matching_dict = {}
-                for match in RoomName.objects.all():
+                for match in RoomName.objects.filter(tournament=True):
                     matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]
-            return len(waiting_users), numberofplayers_nextmatch, matching_dict
+                lenround = len(RoomName.objects.filter(tournament=True))
+                if lenround >= 4:
+                    lenround -= 1
+                TournametPlaceHolder.objects.update(round=lenround)
+            return len(waiting_users), numberofplayers_nextmatch, matching_dict, None
             #     print("840 ", waiting_user.user.username, waiting_user.level)
-        return len(waiting_users), numberofplayers.playerNumber, None
+        return len(waiting_users), numberofplayers.playerNumber, None, None
             #     print("840 ", waiting_user.user.username, waiting_user.level)
         # if len(waiting_users) == 3:
         #     for waiting_user in waiting_users:
@@ -1103,7 +1134,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         result = ""
         print("In loop 875")
         await self.send(text_data=json.dumps({"status" : 1}))
-        result, numberofplayers, matching_dict = await self.queue_tournament()
+        result, numberofplayers, matching_dict, victory = await self.queue_tournament()
         print("MatchMaking 880", result)
         print("MatchMaking 883", result, numberofplayers)
         if result:
@@ -1127,6 +1158,11 @@ class MatchMaking(AsyncWebsocketConsumer):
                     "type": "chat.message",
                     "text": json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers})
                 })
+        if victory:
+            await self.channel_layer.group_send("waitingroom", {
+                "type": "chat.message",
+                "text": json.dumps({"status": "Tournament Finish", "winner": victory})
+            })
         # await self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": result, "numberofplayers-to-reach": numberofplayers}))
         await asyncio.sleep(2)
     

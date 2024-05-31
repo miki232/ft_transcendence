@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { navigateTo } from "../index.js";
 import Tournament from "./Tournament.js";
+import { createNotification } from "./Notifications.js";
 
 export default class Pong extends AbstractView{
     constructor(user, room_name){
@@ -158,6 +159,11 @@ export default class Pong extends AbstractView{
                     console.log("HAI VINTO");
                     const content = document.querySelector("#content");
                     await this.closeWebSocket();
+                    let win = await this.getround();
+                    if (win){
+                        content.innerHTML = `<h1>YOU WON</h1>`;
+                        return;
+                    }
                     this.user.matchmaking_ws = new WebSocket(
                         'wss://'
                         + window.location.hostname
@@ -184,13 +190,40 @@ export default class Pong extends AbstractView{
                 }
                 else
                 {
-                    alert("AHAHAH hai PERSO")
+                    // alert("AHAHAH hai PERSO")
+                    createNotification("YOU LOST");
                     await this.closeWebSocket();
                 }
             }
 
             await this.update(canvas, context);
         }
+    }
+
+    async getround(){
+		var csrftoken = await this.getCSRFToken()
+        let win = false;
+        await fetch('/round/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("ROUND", data);
+            if (data.round === 1){
+                win = true;
+            }
+            else{
+                win = false;
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+        return win;
     }
 
     async getContent() {

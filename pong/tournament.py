@@ -131,7 +131,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         self.user2 = await self.get_user(TournamentConsumer.players[self.room_name][1])
         print("User2", self.user2.username, "AI", self.user2.Ai)
         await self.get_room_istance_delete(self.room_name)
-        self.match = await self.create_match(self.user1, self.user2)
+        self.match = await self.get_create_match(self.user1, self.user2)
         print("CREA MATHC " , self.match.id)
 
     @database_sync_to_async
@@ -153,7 +153,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             # Query the Match model for a match with the given room name
             # Get the last istance created, if for any reason there is multiple istance with same room_name
             # But based on the way is treated a room it shouldn't happen
-            match = Match.objects.filter(room_name=room_name).latest('date')
+            match = Tournament_Match.objects.filter(room_name=room_name).latest('date')
 
             # Return the winner's username
             return match.winner.username
@@ -173,28 +173,33 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def set_winner(self, match, winner):
         print("Pong Consumer 218", winner, "Set winner", self.room_name, self.room_group_name)
-        prova = CustomUser.objects.get(username=winner)
-        print("GET USER ", prova)
+        winner = CustomUser.objects.get(username=winner)
+        print("GET USER ", winner)
         print("MATCH: ", match)
-        match.winner = prova
+        match.winner = winner
         print("FROME MATCH.WINNER " , match.winner.username)
         match.save()
-
+        round = TournametPlaceHolder.objects.get(status=False)
+        print("Pong Consumer 183", round.round, round.name, match.winner.username)
+        if round.round== 1:
+            toot = Tournament.objects.get(name=round.name)
+            toot.winner = match.winner
+            toot.save()
 
     @database_sync_to_async
     def get_user(self, username):
         return CustomUser.objects.get(username=username)
 
     @database_sync_to_async
-    def create_match(self, user1, user2):
-        matchs = Match(room_name=self.room_name, user1=user1, user2=user2, score_user1=0, score_user2=0)
-        matchs.save()
+    def get_create_match(self, user1, user2):
+        print("TPURN Consumer 190", user1, user2, self.room_name)
+        matchs = Tournament_Match.objects.get(room_name=self.room_name)
         return matchs
 
     @database_sync_to_async
     def get_match_from_db(self, roomname):
         print("Pong Consumer 239", roomname)
-        return Match.objects.get(room_name=roomname)
+        return Tournament_Match.objects.get(room_name=roomname)
 
     async def disconnect(self, close_code):
         # Remove the disconnected user from the players list and cancel the game loop task

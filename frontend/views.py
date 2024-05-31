@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-
+from django.utils.translation import gettext as _
 import random
 
 from accounts.models import CustomUser

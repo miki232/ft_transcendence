@@ -80,8 +80,8 @@ export default class extends AbstractView {
 	getNav() {
 		const navHTML = `
 			<a href="/" name="index" data-link>Home</a>
-			<a href="/about" name="about" data-link>About</a>
-			<a href="/contact" name="contact" data-link>Contact</a>
+			<a href="/about" name="about" data-link>About Us</a>
+			<a href="/contact" name="contact" data-link data-translate="contact">Contact</a>
 		`;
 		return navHTML;
 	}
@@ -93,33 +93,33 @@ export default class extends AbstractView {
 					<h1>Login</h1>
 					<div class="input-box">
 						<input type="text" id="login-user" required>
-						<label>Username</label>
+						<label data-translate="username">Username</label>
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="input-box">
 						<input type="password" id="login-pass" required>
-						<label>Password</label>
+						<label  data-translate="password">Password</label>
 						<ion-icon name="lock-closed-outline"></ion-icon>
 					</div>
 					<div class="checkbox">
 						<span>
 							<input type="checkbox" id="login-checkbox">
-							<label for="login-checkbox">Remember me</label>
+							<label data-translate="rememberme" for="login-checkbox">Remember me</label>
 						</span>
-						<h5>Forgot password?</h5>
+						<h5 data-translate="forgotpass" >Forgot password?</h5>
 					</div>
-					<button type="submit" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon>Login</button>
+					<button type="submit" data-translate="login" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon">Login</button>
 					<div class="login-register">
-						<p>Don't have an account? <a href="#" class="register-btn">Register</a></p>
+						<p data-translate="noaccount" >Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
 					</div>
 					<div class="hr" style="width: 75%; margin: 25px 0 30px 0;"></div>
-					<a href="accounts/authorize/" id="school-login">Login with 42 intra account</a>
+					<a href="accounts/authorize/" id="school-login" data-translate="login42">Login with 42 intra account</a>
 				</form>
 				<form class="register-form">
-					<h1>Registration</h1>
+					<h1 data-translate="registration">Registration</h1>
 					<div class="input-box">
 						<input type="text" id="signup-user" required>
-						<label>Username</label>
+						<label data-translate="signupuser">Username</label>
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="input-box">
@@ -129,16 +129,16 @@ export default class extends AbstractView {
 					</div>
 					<div class="input-box">
 						<input type="password" id="signup-pass" required>
-						<label>Password</label>
+						<label data-translate="signuppass">Password</label>
 						<ion-icon name="lock-closed-outline"></ion-icon>
 					</div>
 					<div class="checkbox">
 						<input type="checkbox" id="register-checkbox">
 						<label for="register-checkbox">I agree to the terms & conditions</label>
 					</div>
-					<button type="submit" id="register-btn" class="submit-btn">Register</button>
+					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register</button>
 					<div class="login-register">
-						<p>Already have an account? <a href="#" class="login-btn">Login</a></p>
+						<p data-translate="alreadyacc">Already have an account? <a href="#" class="login-btn" data-translate="fromregtologin">Login</a></p>
 					</div>
 				</form>
 			</div>

@@ -114,10 +114,10 @@ export default class extends AbstractView {
 		var data = await getRequests();
 		const requestsElement = document.querySelector(".requests");
 		const requestsHTML = `
-			<h2>Requests</h2>
+			<h2 data-translate="requests">Requests</h2>
 			<div class="requests-list"></div>
 			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-			<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+			<button type="button" class="submit-btn dashboard-btn" data-translate="back" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 		`;
 		requestsElement.innerHTML = requestsHTML;
 		const backBtn = document.getElementById("back");
@@ -129,7 +129,7 @@ export default class extends AbstractView {
 		const requestsListElement = document.querySelector(".requests-list");
 		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
-		noEntries.textContent = "No requests found.";
+		noEntries.textContent = "No requests";
 		requestsListElement.appendChild(noEntries);
 		for (let i = 0; i < data.length; i++) {
 			const request = data[i];

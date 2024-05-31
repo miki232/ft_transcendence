@@ -402,17 +402,17 @@ export default class Settings extends AbstractView {
 		const user_infoHTML = `
 			<div class="dashboard">
 				<div class="settings">
-					<h1>Settings</h1>
+					<h1 data-translate="settings">Settings</h1>
 					<div class="user-data">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<h3>${this.user.getUser()}</h3>
 					</div>
-					<button type="button" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
-					<button type="button" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
-					<button type="button" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
-					<button type="button" class="submit-btn dashboard-btn red-btn" id="delete-account"><ion-icon name="trash-outline"></ion-icon>Delete Account</button>
+					<button type="button" data-translate="changeavatar" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
+					<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
+					<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
+					<button type="button" data-translate="delaccount" class="submit-btn dashboard-btn red-btn" id="delete-account"><ion-icon name="trash-outline"></ion-icon>Delete Account</button>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 				</div>
 			</div>
 		`;

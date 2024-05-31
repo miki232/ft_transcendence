@@ -1,0 +1,30 @@
+const translations = {
+    username: "Nome utente",
+    password: "Password",
+    rememberme: "Ricordati di me",
+    forgotpass: "Hai dimenticato la password?",
+    noaccount: "Non hai un account? ",
+    register: "Registrati",
+    login: "Accedi",
+    login42: "Accedi con l'account intra 42",
+    contact: "Contatti",
+    signupuser: "Nome utente",
+    signuppass: "Password",
+    makeregister: "Registrati",
+    alreadyacc: "Hai già un account? ",
+    fromregtologin: "Accedi",
+    level: "Livello ${user.getLevel()}",
+    ranking: "Classifica",
+    history: "Partite giocate",
+    requests: "Richieste",
+    settings: "Impostazioni",
+    back: "Indietro",
+    logout: "Esci",
+    changeavatar: "Cambia Immagine",
+    changeuser: "Cambia Nome",
+    changepass: "Cambia Password",
+    delaccount: "Elimina Account",
+    // Add more translations here...
+};
+
+export default translations;

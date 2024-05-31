@@ -119,6 +119,15 @@ class MatchmakingView(View):
         # If no match was found, return 1
         return JsonResponse({"status": 1})
     
+class RoundTorunament(View):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    def get(self, request):
+        try:
+            round = TournametPlaceHolder.objects.get(status=False)
+        except ObjectDoesNotExist:
+            return JsonResponse({"round": "No round"})
+        return JsonResponse({"round": round.round})
 
 class TournamentView(APIView):
     permission_classes = [IsAuthenticated]

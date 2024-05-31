@@ -53,26 +53,120 @@ export const navigateTo = async url => {
 	await router();
 };
 
+document.getElementById('languageSwitcher').addEventListener('change', (event) => {
+    changeLanguage(event.target.value);
+});
 
-// const is_loggedin = async () => {
-//     var csrftoken = getCookie('csrftoken');
+// Set initial language based on user preference or default
 
-//     return fetch('/accounts/user_info/', {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type' : 'application/json',
-//             'X-CSRFToken': csrftoken
-//         }
-//     })
-//     .then(response => {
-//         if (response.ok) {
-//             return true;
-//         } else {
-//             return false;
-//         }
-//     });
-// };
+async function changeLanguage(language) {
+    localStorage.setItem('language', language);
+    console.log(language);
 
+    try {
+        const module = await import(`./languagepak/${language}.lang.js`);
+        const translations = module.default;
+
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            let translation = translations[key];
+
+            if (translation) {
+                // Replace placeholders in the translation with dynamic content if any
+                translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+                    try {
+                        return eval(expression);
+                    } catch (error) {
+                        console.error(`Error evaluating expression: ${expression}`, error);
+                        return '';
+                    }
+                });
+
+                // Replace only text nodes while preserving the order of other nodes
+                let childNodes = Array.from(element.childNodes);
+                let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+                let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+                // Update text nodes
+                if (textNodes.length > 0) {
+                    textNodes.forEach(textNode => {
+                        textNode.nodeValue = translation;
+                    });
+                } else {
+                    const textNode = document.createTextNode(translation);
+                    if (nonTextNodes.length > 0) {
+                        element.insertBefore(textNode, nonTextNodes[0]);
+                    } else {
+                        element.appendChild(textNode);
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error(`Error loading language pack: ${error}`);
+    }
+}
+
+
+// async function changeLanguage(language) {
+//     localStorage.setItem('language', language);
+//     console.log(language);
+
+//     try {
+//         const module = await import(`./languagepak/${language}.lang.js`);
+//         const translations = module.default;
+
+//         document.querySelectorAll('[data-translate]').forEach(element => {
+//             const key = element.getAttribute('data-translate');
+//             let translation = translations[key];
+
+//             if (translation) {
+//                 // Replace placeholders in the translation with dynamic content if any
+//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+                    // try {
+                    //     return eval(expression);
+                    // } catch (error) {
+                    //     console.error(`Error evaluating expression: ${expression}`, error);
+                    //     return '';
+                    // }
+//                 });
+
+//                 // Update only text nodes, preserve other elements (e.g., icons)
+//                 element.childNodes.forEach(child => {
+//                     if (child.nodeType === Node.TEXT_NODE) {
+//                         child.nodeValue = translation;
+//                     }
+//                 });
+//             }
+//         });
+//     } catch (error) {
+//         console.error(`Error loading language pack: ${error}`);
+//     }
+// }
+
+	
+const userLang = localStorage.getItem('language') || 'en';
+changeLanguage(userLang);
+document.getElementById('languageSwitcher').value = userLang;
+	// const is_loggedin = async () => {
+		//     var csrftoken = getCookie('csrftoken');
+		
+		//     return fetch('/accounts/user_info/', {
+			//         method: 'GET',
+			//         headers: {
+				//             'Content-Type' : 'application/json',
+				//             'X-CSRFToken': csrftoken
+				//         }
+				//     })
+				//     .then(response => {
+					//         if (response.ok) {
+						//             return true;
+						//         } else {
+							//             return false;
+							//         }
+							//     });
+							// };
+							
 function wsConnection() {
 	if (!ws){
 		ws	= new WebSocket('wss://'
@@ -96,6 +190,8 @@ function wsConnection() {
 
 const router = async () => {
 	user.loadUserData();
+	const userLang = localStorage.getItem('language') || 'en';
+
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
@@ -299,6 +395,7 @@ const router = async () => {
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
+	changeLanguage(userLang);
 };
 
 window.addEventListener("popstate", router);
