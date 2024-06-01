@@ -224,10 +224,10 @@ export default class Online extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;
@@ -238,19 +238,19 @@ export default class Online extends AbstractView {
 		let dashboardHTML = `
 			<div class="dashboard">
 				<div class="online-game">
-					<h1>Online Game</h1>
+					<h1 data-translate="online">Online Game</h1>
 					<div class="user-dashboard">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<div class="user-info">
 							<h3>${this.user.getUser()}</h3>
-							<h5>Level ${this.user.getLevel()}</h5>
+							<h5 data-translate="level">Level ${this.user.getLevel()}</h5>
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<button type="button" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
-					<button type="button" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter">(0/8)</span></button>
-					<button type="button" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
-					<button type="button" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
+					<button type="button" data-translate="matchmaking" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
+					<button type="button" data-translate="tournament" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter">(0/8)</span></button>
+					<button type="button" data-translate="friendly" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
+					<button type="button" data-translate="friendlytournament" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
 				</div>
 			</div>
 		`;

@@ -1,7 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { createNotification } from "./Notifications.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 
 export async function getRequests() {
 	var response = await fetch("friend/request/list/");
@@ -177,14 +177,16 @@ export default class extends AbstractView {
 				});
 			});
 		}
+		const lang = localStorage.getItem('language') || 'en';
+		changeLanguage(lang);
 	}
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.pro_pic}"/></a>
 		`;

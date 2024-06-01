@@ -160,10 +160,10 @@ export default class LocalGame extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;
@@ -174,12 +174,12 @@ export default class LocalGame extends AbstractView {
 		let dashboardHTML = `
 			<div class="dashboard">
 				<div class="local-game">
-					<h1>Local Game</h1>
+					<h1 data-translate="local">Local Game</h1>
 					<div class="user-dashboard">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<div class="user-info">
 							<h3>${this.user.getUser()}</h3>
-							<h5>Level ${this.user.getLevel()}</h5>
+							<h5 data-translate="level">Level ${this.user.getLevel()}</h5>
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>

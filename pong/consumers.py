@@ -1036,7 +1036,7 @@ class MatchMaking(AsyncWebsocketConsumer):
     def queue_tournament(self):
         user_level = self.user.calculate_level()
         tournamName = TournametPlaceHolder.objects.get(Q(status=True) | Q(status=False))
-        print("MatchMaking 1039", tournamName.name)
+        print("MatchMaking 1041", tournamName.name)
         tournament, created = Tournament.objects.get_or_create(name=tournamName.name)
         divided = 2
         print(user_level)

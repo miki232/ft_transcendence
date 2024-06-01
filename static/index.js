@@ -79,7 +79,7 @@ document.getElementById('languageSwitcher').addEventListener('change', (event) =
 
 // Set initial language based on user preference or default
 
-async function changeLanguage(language) {
+export async function changeLanguage(language) {
     localStorage.setItem('language', language);
     console.log(language);
 
@@ -308,7 +308,6 @@ const router = async () => {
 			};
 		}
 	}
-	
 	switch (match.route.path) {
 		case "/":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
@@ -415,7 +414,8 @@ const router = async () => {
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
-	changeLanguage(userLang);
+	await changeLanguage(userLang);
+
 };
 
 window.addEventListener("popstate", router);

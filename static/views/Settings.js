@@ -1,7 +1,7 @@
 import { getCSRFToken } from "./Info.js";
 import { createNotification } from "./Notifications.js";
 import AbstractView from "./AbstractView.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -18,6 +18,7 @@ export default class Settings extends AbstractView {
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("nav");
 		this.nav.innerHTML = this.getNav();
+		this.lang = localStorage.getItem('language') || 'en';
 		this.content.innerHTML = this.getContent();
 		this.activeBtn();
 	}
@@ -35,17 +36,17 @@ export default class Settings extends AbstractView {
 		changePicBtn.classList.add("settings-btn");
 		const changePicHTML = `
 			<div class="change-btn change">
-				<button type="button" class="submit-btn default-pic"><ion-icon name="image-outline"></ion-icon>Default avatar</button>
+				<button type="button" data-translate="defaultImage" class="submit-btn default-pic"><ion-icon name="image-outline"></ion-icon>Default avatar</button>
 				<input type="file" id="file-input" style="display: none;" accept="image/*"/>
-				<button type="button" class="submit-btn upload-file"><ion-icon name="cloud-upload-outline"></ion-icon>Upload File</button>
+				<button type="button" data-translate="uploadImage" class="submit-btn upload-file"><ion-icon name="cloud-upload-outline"></ion-icon>Upload File</button>
 			</div>
 			<div class="input-box change">
-				<input type="text" placeholder="Insert avatar URL">
+				<input type="text" data-translate="insertAvatarURL" placeholder="Insert avatar URL">
 				<ion-icon name="link-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
 		changePicBtn.insertAdjacentHTML("afterend", changePicHTML);
@@ -108,6 +109,7 @@ export default class Settings extends AbstractView {
 			changePasswordBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
 		});
+		await changeLanguage(this.lang);
 	}
 
 	async changeUsername() {
@@ -127,8 +129,8 @@ export default class Settings extends AbstractView {
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
 		changeUsernameBtn.insertAdjacentHTML("afterend", changeUsernameHTML);
@@ -190,6 +192,7 @@ export default class Settings extends AbstractView {
 			changePasswordBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
 		});
+		await changeLanguage(this.lang);
 	}
 
 	async changePassword() {
@@ -213,8 +216,8 @@ export default class Settings extends AbstractView {
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 		`;
 		changePasswordBtn.insertAdjacentHTML("afterend", changePasswordHTML);
@@ -278,6 +281,7 @@ export default class Settings extends AbstractView {
 			changeUsernameBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
 		});
+		await changeLanguage(this.lang);
 	}
 
 	async deleteAccount() {
@@ -329,6 +333,7 @@ export default class Settings extends AbstractView {
 			changeUsernameBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 		});
+		await changeLanguage(this.lang);
 	}
 
 	async uploadPic() {
@@ -384,14 +389,15 @@ export default class Settings extends AbstractView {
 		changePicBtn.addEventListener("click", () => {
 			this.changeAvatar();
 		});
+		
 	}
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;

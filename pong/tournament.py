@@ -179,12 +179,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         match.winner = winner
         print("FROME MATCH.WINNER " , match.winner.username)
         match.save()
-        round = TournametPlaceHolder.objects.get(status=False)
-        print("Pong Consumer 183", round.round, round.name, match.winner.username)
-        if round.round== 1:
-            toot = Tournament.objects.get(name=round.name)
-            toot.winner = match.winner
-            toot.save()
+        try:
+            round = TournametPlaceHolder.objects.get(status=False)
+            print("Pong Consumer 183", round.round, round.name, match.winner.username)
+            if round.round== 1:
+                toot = Tournament.objects.get(name=round.name)
+                toot.winner = match.winner
+                toot.save()
+        except:
+            pass
 
     @database_sync_to_async
     def get_user(self, username):
@@ -201,7 +204,20 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         print("Pong Consumer 239", roomname)
         return Tournament_Match.objects.get(room_name=roomname)
 
+    @database_sync_to_async
+    def delete_place_holder(self):
+        try:
+            placehorde = TournametPlaceHolder.objects.get(status=False)
+            print("Pong Consumer 245", placehorde.name, self.user)
+            tournament = Tournament.objects.get(name=placehorde.name, winner=self.user)
+            if tournament:
+                placehorde.delete()
+        except:
+            print("Pong Consumer 249", "No tournament to delete")
+
     async def disconnect(self, close_code):
+        
+        await self.delete_place_holder()
         # Remove the disconnected user from the players list and cancel the game loop task
         if (self.room_name in TournamentConsumer.status and TournamentConsumer.status[self.room_name]):
             return

@@ -4,7 +4,7 @@ import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
 import { getRequests, acceptFriendRequest, declineFriendRequest, sendFriendRequest, cancelRequest } from "./Requests.js";
 import AbstractView from "./AbstractView.js";
-import { navigateTo } from "../index.js";
+import { navigateTo, changeLanguage } from "../index.js";
 
 // export async function getCSRFToken() {
 // 	let csrftoken = await fetch("csrf-token")
@@ -31,6 +31,9 @@ export default class UserInfo extends AbstractView {
 
 	async initialize(userID) {
 		await this.getUserInfo(userID);
+		const lang = localStorage.getItem('language');
+		await changeLanguage(lang);
+
 	};
 
 	async getUserInfo(userID) {
@@ -56,18 +59,18 @@ export default class UserInfo extends AbstractView {
 					<div class="user-info">
 						<h3>${data.user.username}</h3>
 						${is_friend ? data.user.status_login ? "<h4>Online</h4>" : "<h4>Offline</h4>" : ""}
-						${is_friend ? "<h5>Level " + data.user.level + "</h5>" : ""}
+						${is_friend ? "<h5> <span data-translate=\"level2\" Level></span>" + data.user.level + "</h5>" : ""}
 					</div>
 				</div>
-				<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-				<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
-				${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
-					!pendingReq ? `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
+				<button type="button" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
+				<button type="button" data-translate="history" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
+				${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
+					!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
 					senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
-					receiverObj ? `<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
-				${is_friend ? `<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
+					receiverObj ? `<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
+				${is_friend ? `<button type="button" data-translate="remove" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
 				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-				<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+				<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 			`;
 			friendInfoElement.innerHTML = friendInfo;
 			const backBtn = document.getElementById("back");
@@ -126,10 +129,10 @@ export default class UserInfo extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.userObj.getPic()}"/></a>
 		`;

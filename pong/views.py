@@ -173,6 +173,32 @@ class TournamentMatchView(APIView):
         serializer = RoomNameSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class TournamentCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        number = request.data.get("playerNumber", None)
+        name = request.data.get("name", None)
+        try:
+            placeholder = TournametPlaceHolder.objects.get(Q(status=True) | Q(status=False))
+            if placeholder is not None:
+                return Response({"Status" : "Tournament already exists. Only one Tournament at a time is permitted."}, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            pass
+        serializer = TournamentPlaceHolderSerializer(data={
+            "playerNumber": number,
+            "status": True,
+            "round": 0,
+            "name": name
+        })
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 # Create your views here.
 @login_required
 def pong(request, room_name):

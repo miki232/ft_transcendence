@@ -61,7 +61,7 @@ class TournametPlaceHolder(models.Model):
     playerNumber = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
     round = models.IntegerField(default=0)
-    name = models.CharField(max_length=255, unique=True, null=True)
+    name = models.CharField(max_length=255, unique=True, default="None")
 
 class TournamentPartecipants(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)

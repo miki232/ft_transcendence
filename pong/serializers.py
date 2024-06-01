@@ -13,7 +13,7 @@ class RoomNameSerializer(serializers.ModelSerializer):
 class TournamentPlaceHolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournametPlaceHolder
-        fields = ['playerNumber', 'status']
+        fields = ['playerNumber', 'status', 'round', 'name']
 
 class TournametMatchSerializer(serializers.ModelSerializer):
     player1 = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())

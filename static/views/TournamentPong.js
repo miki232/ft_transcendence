@@ -158,8 +158,8 @@ export default class Pong extends AbstractView{
                 if (this.user.user === data.victory){
                     console.log("HAI VINTO");
                     const content = document.querySelector("#content");
-                    await this.closeWebSocket();
                     let win = await this.getround();
+                    await this.closeWebSocket();
                     if (win){
                         content.innerHTML = `<h1>YOU WON</h1>`;
                         return;
