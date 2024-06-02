@@ -219,8 +219,8 @@ const router = async () => {
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
-        { path: "/settings", view: () => import('./views/Settings.js') },
-        { path: "/requests", view: () => import('./views/Requests.js') },
+        { path: "/dashboard/settings", view: () => import('./views/Settings.js') },
+        { path: "/dashboard/requests", view: () => import('./views/Requests.js') },
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
@@ -339,12 +339,12 @@ const router = async () => {
 			const HistoryClass = await match.route.view();
 			view = new HistoryClass.default(user);
 			break;
-		case "/settings":
+		case "/dashboard/settings":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const SettingsClass = await match.route.view();
 			view = new SettingsClass.default(user);
 			break;
-		case "/requests":
+		case "/dashboard/requests":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const RequestsClass = await match.route.view();
 			view = new RequestsClass.default(user);

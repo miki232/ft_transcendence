@@ -127,8 +127,8 @@ export default class extends AbstractView {
 						</div>
 					</div>
 					<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
-					<a href="/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
-					<a href="/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
+					<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
+					<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 					<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>

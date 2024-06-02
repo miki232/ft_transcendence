@@ -4,8 +4,8 @@ import { createNotification } from "./Notifications.js";
 import { changeLanguage, navigateTo } from "../index.js";
 
 export async function getRequests() {
-	var response = await fetch("friend/request/list/");
-	var data = await response.json();
+	const response = await fetch("/friend/request/list/");
+	const data = await response.json();
 	return data;
 }
 
@@ -38,7 +38,7 @@ export async function declineFriendRequest(userId) {
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/request/decline/";
+	var url = "/friend/request/decline/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);
@@ -61,7 +61,7 @@ export function acceptFriendRequest(userId) {
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/accept/" + userId + "/";
+	var url = "/friend/accept/" + userId + "/";
 
 	// Set the request method to GET
 	xhr.open("GET", url, true);
@@ -123,7 +123,6 @@ export default class extends AbstractView {
 		const backBtn = document.getElementById("back");
 			backBtn.addEventListener("click", e => {
 				e.preventDefault();
-				console.log("request back");
 				navigateTo("/dashboard");
 			});
 		const requestsListElement = document.querySelector(".requests-list");
@@ -196,7 +195,8 @@ export default class extends AbstractView {
 	getContent() {
 		const requestHTML = `
 			<div class="dashboard">
-				<div class="requests"></div>
+				<div class="requests">
+				</div>
 			</div>
 		`;
 		return requestHTML;
