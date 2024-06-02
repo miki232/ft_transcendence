@@ -101,6 +101,12 @@ class UserLoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             login(request, user)
+            if not request.data.get('remember_me', False):
+                # If "remember_me" is not true, set the session to expire when the browser closes
+                request.session.set_expiry(0)
+            else:
+                # If "remember_me" is true, set the session to expire in 2 weeks (1209600 seconds)
+                request.session.set_expiry(1209600)
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

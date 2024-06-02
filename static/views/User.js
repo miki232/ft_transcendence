@@ -62,6 +62,7 @@ export default class User extends AbstractView {
 		try{
 			var username = (document.getElementById('login-user').value);
 			var password = (document.getElementById('login-pass').value);
+			var rememberme = (document.getElementById('login-checkbox').checked);
 		} catch (error){
 			console.error(error);
 			return;
@@ -77,6 +78,7 @@ export default class User extends AbstractView {
 			body: JSON.stringify({
 				username: username,
 				password: password,
+				remember_me : rememberme
 			}),
 		}).then(response => {
 			response.json();

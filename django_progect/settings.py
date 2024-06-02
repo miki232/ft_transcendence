@@ -22,7 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443']
 SECRET_KEY = 'django-insecure-xo%h1)ejm%b&&7j-6f6scrl60$g@lblj1mv23-p@gm_b!)$i+^'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Use a secure cookie for the session cookie
 CSRF_COOKIE_SAMESITE = None
