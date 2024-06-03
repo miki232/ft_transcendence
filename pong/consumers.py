@@ -17,7 +17,7 @@ from django.db.models import Q
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
 from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
-
+from chat.notifier import send_save_notification_async
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
@@ -62,6 +62,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.user2 = None
         self.reaction_delay = 1
         self.counter = 0
+        self.opponent = None
         self.speed_increase = 1.10
         self.ai_paddle_pos = SCREEN_HEIGHT // 2 - PADDLE_HEIGHT // 2
         self.ai_target_pos = self.ai_paddle_pos
@@ -157,9 +158,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'Game' : 'none'
             }
             PongConsumer.shared_state = self.state  # Store the state in the class variable
+
             if ai.Ai:
                 print("Pong Consumer 146", ai.username, len(PongConsumer.players[self.room_name]))
                 PongConsumer.players[self.room_name].append(ai.username)
+            else:
+                print("Pong Consumer 166", self.user.username, len(PongConsumer.players[self.room_name]))
+                self.opponent, friendly = await self.get_opponent_from_room(self.room_name)
+                print("Pong Consumer 168", self.opponent)
+                if friendly:
+                    await send_save_notification_async(self.opponent, f"{self.user.username} is waiting for you in the room {self.room_name}")
             
             print("Pong Consumer 149", len(PongConsumer.players[self.room_name]))
         if len(PongConsumer.players[self.room_name]) == 2:
@@ -191,6 +199,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.get_room_istance_delete(self.room_name)
         self.match = await self.create_match(self.user1, self.user2)
         print("CREA MATHC " , self.match.id)
+
+    @database_sync_to_async
+    def get_opponent_from_room(self, room_name):
+        room = RoomName.objects.get(name=room_name)
+        if self.user.username == room.created_by.username:
+            return room.opponent, room.friendly
+        return room.created_by, room.friendly
 
     @database_sync_to_async
     def get_room_istance_delete(self, roomname):
@@ -1170,7 +1185,7 @@ class MatchMaking(AsyncWebsocketConsumer):
     def join_queue(self):
         user_level = self.user.calculate_level()
 
-        existing_room = RoomName.objects.filter(Q(created_by=self.user) | Q(opponent=self.user)).first()
+        existing_room = RoomName.objects.filter(Q(created_by=self.user, friendly=False) | Q(opponent=self.user, friendly=False)).first()
         if existing_room:
             print("MatchMaking 802", self.user.username == existing_room.created_by.username, existing_room.created_by.username, existing_room.opponent.username, self.user)
             if (self.user.username == existing_room.created_by.username):
