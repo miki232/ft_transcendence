@@ -51,5 +51,5 @@
 
 ## Server-Side Pong 10/20
 - [x] Major: Replacing Basic Pong with Server-Side Pong and Implementing an API.
-- [ ] Major: Enabling Pong Gameplay via CLI against Web Users with API Integration.
+- [X] Major: Enabling Pong Gameplay via CLI against Web Users with API Integration.
 

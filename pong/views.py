@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournametPlaceHolder, Tournament_Waitin, Tournament_Match
+from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
@@ -124,7 +124,7 @@ class RoundTorunament(View):
     authentication_classes = (SessionAuthentication,)
     def get(self, request):
         try:
-            round = TournametPlaceHolder.objects.get(status=False)
+            round = TournamentPlaceHolder.objects.get(status=False)
         except ObjectDoesNotExist:
             return JsonResponse({"round": "No round"})
         return JsonResponse({"round": round.round})
@@ -137,7 +137,7 @@ class TournamentView(APIView):
         user = request.user
         tournament = None
         try :
-            tournament = TournametPlaceHolder.objects.get(status=True)
+            tournament = TournamentPlaceHolder.objects.get(status=True)
         except ObjectDoesNotExist:
             tournament = None
         serializer = TournamentPlaceHolderSerializer(tournament)
@@ -182,7 +182,7 @@ class TournamentCreateView(APIView):
         number = request.data.get("playerNumber", None)
         name = request.data.get("name", None)
         try:
-            placeholder = TournametPlaceHolder.objects.get(Q(status=True) | Q(status=False))
+            placeholder = TournamentPlaceHolder.objects.get(Q(status=True) | Q(status=False))
             if placeholder is not None:
                 return Response({"Status" : "Tournament already exists. Only one Tournament at a time is permitted."}, status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
@@ -195,6 +195,7 @@ class TournamentCreateView(APIView):
         })
         if serializer.is_valid():
             serializer.save()
+            send_save_notification("all", f"{request.user.username} has created a tournament!") # Send a notification to the All user, to fix
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

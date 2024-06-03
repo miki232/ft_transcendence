@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     'friends',
     'pong',
     'daphne', # new
+    'django_crontab', # new
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,17 +72,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  # add this line
+    'django_prometheus', # For prometheus to delete
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware', #For prometheus to delete
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.onlinemiddleware.OnlineStatusMiddleware', # new
+    'django_prometheus.middleware.PrometheusAfterMiddleware', #For prometheus to delete
 ]
 
 ROOT_URLCONF = 'django_progect.urls'
@@ -203,6 +208,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.CustomUser" # new
 
+
+CRONJOBS = [
+    ('*/5 * * * *', 'django_progect.crons.createtournament', '>> ./logfile.log')
+]
 
 # {
 #     "username": "Suca",

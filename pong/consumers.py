@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder, TournamentPartecipants
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -1035,7 +1035,7 @@ class MatchMaking(AsyncWebsocketConsumer):
     @database_sync_to_async
     def queue_tournament(self):
         user_level = self.user.calculate_level()
-        tournamName = TournametPlaceHolder.objects.get(Q(status=True) | Q(status=False))
+        tournamName = TournamentPlaceHolder.objects.get(Q(status=True) | Q(status=False))
         print("MatchMaking 1041", tournamName.name)
         tournament, created = Tournament.objects.get_or_create(name=tournamName.name)
         divided = 2
@@ -1045,14 +1045,14 @@ class MatchMaking(AsyncWebsocketConsumer):
         waiting_users = Tournament_Waitin.objects.all()
         print("MatchMaking 814", len(waiting_users), self.user)
         try:
-            numberofplayers = TournametPlaceHolder.objects.get(status=True)
+            numberofplayers = TournamentPlaceHolder.objects.get(status=True)
         except:
-            numberofplayers = TournametPlaceHolder.objects.get(status=False)
+            numberofplayers = TournamentPlaceHolder.objects.get(status=False)
         print("MatchMaking 839", numberofplayers.playerNumber)
         # self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": len(waiting_users), "numberofplayers-to-reach": numberofplayers}))
         if len(waiting_users) == numberofplayers.playerNumber:
             waiting_users.order_by('level')
-            TournametPlaceHolder.objects.update(status=False)
+            TournamentPlaceHolder.objects.update(status=False)
             print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
             waiting_users_list = list(waiting_users)
             for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
@@ -1071,17 +1071,17 @@ class MatchMaking(AsyncWebsocketConsumer):
             lenround = len(RoomName.objects.filter(tournament=True))
             if lenround >= 4:
                 lenround -= 1
-            TournametPlaceHolder.objects.update(round=lenround)
+            TournamentPlaceHolder.objects.update(round=lenround)
             return len(waiting_users), numberofplayers.playerNumber, matching_dict, None
             # for waiting_user in waiting_users:
         if (self.next_match):
             print("MatchMaking 839", "Next Match")
             self.next_match = False
-            if (TournametPlaceHolder.objects.get(status=False).round == 1):
+            if (TournamentPlaceHolder.objects.get(status=False).round == 1):
                 print("MatchMaking 1069", "Tournamet finish", self.user.username)
                 Tournament_Waitin.objects.all().delete()
                 return None, None, None, self.user.username
-            if (TournametPlaceHolder.objects.get(status=False).round == 2 and TournametPlaceHolder.objects.get(status=False).playerNumber == 8):
+            if (TournamentPlaceHolder.objects.get(status=False).round == 2 and TournamentPlaceHolder.objects.get(status=False).playerNumber == 8):
                 divided = 4
             numberofplayers_nextmatch = numberofplayers.playerNumber // divided
             print("MatchMaking 839", numberofplayers_nextmatch)
@@ -1101,7 +1101,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                 lenround = len(RoomName.objects.filter(tournament=True))
                 if lenround >= 4:
                     lenround -= 1
-                TournametPlaceHolder.objects.update(round=lenround)
+                TournamentPlaceHolder.objects.update(round=lenround)
             return len(waiting_users), numberofplayers_nextmatch, matching_dict, None
             #     print("840 ", waiting_user.user.username, waiting_user.level)
         return len(waiting_users), numberofplayers.playerNumber, None, None

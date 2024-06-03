@@ -30,7 +30,6 @@ export default class User extends AbstractView {
 		let csrftoken = await fetch("csrf-token")
 		.then(response => response.json())
 		.then(data => data.csrfToken);
-		console.log(csrftoken);
 		///
 		await fetch('accounts/logout/', {
 			method: 'POST',
@@ -67,7 +66,7 @@ export default class User extends AbstractView {
 			console.error(error);
 			return;
 		}
-		const csrftoken = this.getCSRFToken('csrftoken');
+		const csrftoken = this.getCookie('csrftoken');
 
 		await fetch('accounts/login/', {
 			method: 'POST',
@@ -96,7 +95,7 @@ export default class User extends AbstractView {
 	}
 
 	async isLogged() {
-		// var csrftoken = await this.getCSRFToken();
+		// var csrftoken = await this.getCookie();
 
 		const response = await fetch('/accounts/user_info/');
 		if (response.ok) {
@@ -107,7 +106,7 @@ export default class User extends AbstractView {
 	}
 
 	async loadUserData() {
-		const csrftoken = await this.getCSRFToken();
+		const csrftoken = await this.getCookie("csrftoken");
 
 		await fetch('/accounts/user_info/', {
 			method: 'GET',

@@ -29,7 +29,7 @@ SERVER_URL = 'https://127.0.0.1:8001'
 WSS_URL = 'https://127.0.0.1:8000'
 
 parser = argparse.ArgumentParser(description='CLI for playing Pong.')
-parser.add_argument('--username', type=str, help='Your username')
+parser.add_argument('--username', '-u', type=str, help='Your username')
 args = parser.parse_args()
 
 class GameEngine:
@@ -45,13 +45,17 @@ class GameEngine:
 
     def authenticate(self):
         print('Authenticating... for user:', self.username)
-        response = requests.post(f'{SERVER_URL}/accounts/login/?next=/csrf-token', data={'username': self.username, 'password': self.password}, verify=False)
-        if response.status_code == 200:
-            print('Successfully authenticated!')
-            self.cookie_str = '; '.join([f'{key}={value}' for key, value in response.cookies.items()])
-            return response.cookies
-        else:
-            print('Failed to authenticate.')
+        try:
+            response = requests.post(f'{SERVER_URL}/accounts/login/?next=/csrf-token', data={'username': self.username, 'password': self.password}, verify=False)
+            if response.status_code == 200:
+                print('Successfully authenticated!')
+                self.cookie_str = '; '.join([f'{key}={value}' for key, value in response.cookies.items()])
+                return response.cookies
+            else:
+                print('Failed to authenticate')
+                exit(1)
+        except Exception as e:
+            print('Connection error. Please check your internet connection.')
             exit(1)
 
     def connect_matchmaking_websocket(self):
