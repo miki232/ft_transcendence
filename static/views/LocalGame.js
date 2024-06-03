@@ -102,12 +102,12 @@ export default class LocalGame extends AbstractView {
 			const playBtn = document.querySelector(".confirm-btn");
 			playBtn.addEventListener("click", e => {
 				e.preventDefault();
-				const input = document.querySelector(".input-box input");
-				if (input.value === "") {
+				const input = this.sanitizeInput(document.querySelector(".input-box input").value);
+				if (input === "") {
 					createNotification("Please enter a username", "error");
 					return;
 				}
-				this.opponent = input.value;
+				this.opponent = input;
 				this.ws_local.send(JSON.stringify({
 					"Handling": "lobby",
 					"username": this.user.getUser(),
