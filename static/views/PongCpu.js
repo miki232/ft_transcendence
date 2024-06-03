@@ -27,7 +27,7 @@ export default class PongCpu extends AbstractView{
     }
 
     async getCSRFToken() {
-		let csrftoken = await fetch("csrf-token")
+		let csrftoken = await fetch("/csrf-token")
 			.then(response => response.json())
 			.then(data => data.csrfToken);
 			console.log(csrftoken);
@@ -126,10 +126,10 @@ export default class PongCpu extends AbstractView{
 
     updatePaddlePosition() {
         if (this.keysPressed['w']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.users.user}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.users.username}));
         }
         if (this.keysPressed['s']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.user}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.username}));
         }
     }
 
@@ -143,7 +143,7 @@ export default class PongCpu extends AbstractView{
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'mouse_move', 'x': x, 'y': y, 'user': this.users.user}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'mouse_move', 'x': x, 'y': y, 'user': this.users.username}));
         });
         /// DEBUG -------------------------------------
         document.addEventListener('keydown', (event) => {
@@ -163,8 +163,8 @@ export default class PongCpu extends AbstractView{
             // }
             if (event.key === 'Enter' && !this.gamestarted) {
                 this.gamestarted = true;
-                console.log('sending ready', this.users.user, this.opponent);
-                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.users.user, 'opponent':  this.opponent}));
+                console.log('sending ready', this.users.username, this.opponent);
+                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.users.username, 'opponent':  this.opponent}));
             }
             
         });
@@ -203,8 +203,8 @@ export default class PongCpu extends AbstractView{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            if (data.score1 !==  this.users.user) {
-                document.getElementById("score2").innerHTML = this.users.user + " Score: " + data.score2;
+            if (data.score1 !==  this.users.username) {
+                document.getElementById("score2").innerHTML = this.users.username + " Score: " + data.score2;
 
             }
             if (data.score2 !==  this.opponent) {

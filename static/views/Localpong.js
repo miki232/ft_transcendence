@@ -134,10 +134,10 @@ export default class LocalPong extends AbstractView{
             this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.opponent}));
         }
         if (this.keysPressed['w']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.users.user}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.users.username}));
         }
         if (this.keysPressed['s']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.user}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.username}));
         }
     }
 
@@ -163,7 +163,7 @@ export default class LocalPong extends AbstractView{
             // }
             if (event.key === 'Enter' && !this.gamestarted) {
                 this.gamestarted = true;
-                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.users.user, 'opponent':  this.opponent}));
+                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.users.username, 'opponent':  this.opponent}));
             }
             
         });
@@ -202,8 +202,8 @@ export default class LocalPong extends AbstractView{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            if (data.score1 !==  this.users.user) {
-                document.getElementById("score1").innerHTML = this.users.user + " Score: " + data.score1;
+            if (data.score1 !==  this.users.username) {
+                document.getElementById("score1").innerHTML = this.users.username + " Score: " + data.score1;
 
             }
             if (data.score2 !==  this.opponent) {
