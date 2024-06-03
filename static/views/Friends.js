@@ -242,7 +242,7 @@ export default class Friends extends AbstractView {
 				const friendElement = `
 					<div class="friend">
 						<img src="${friendPic}" alt="User pic">
-						<a href="/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
+						<a href="/friends/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
 						<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 					</div>
 				`;
@@ -289,7 +289,7 @@ export default class Friends extends AbstractView {
 							var userElement = `
 								<div class="user">
 									<img src="${user.pro_pic}" alt="User pic">
-									<a href="/user_info_${user.username}" class="info" data-link">${user.username}</a>
+									<a href="/friends/user_info_${user.username}" class="info" data-link">${user.username}</a>
 									<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 								</div>
 							`;

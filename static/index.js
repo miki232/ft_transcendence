@@ -224,6 +224,7 @@ const router = async () => {
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
         { path: "/user_info", view: () => import('./views/User_Info.js') },
+        { path: "/user_info", view: () => import('./views/History.js') },
         { path: "/online", view: () => import('./views/Online.js') },
 		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
@@ -296,11 +297,21 @@ const router = async () => {
 	}
 	if (!match) {
 		if (location.pathname.includes("/user_info")) {
-			var userID = location.pathname.split("_")[2];
-			match = {
-				route: routes[9],
-				isMatch: true
-			};
+			let count = location.pathname.split("/").length - 1;
+			if (count === 2) {
+				var userID = location.pathname.split("_")[2];
+				match = {
+					route: routes[9],
+					isMatch: true
+				};
+			} else if (count === 3) {
+				var userID = location.pathname.split("_")[2].split("/")[0];
+				match = {
+					route: routes[10],
+					isMatch: true
+				};
+				match.route.path = "/friends/user_info";
+			}
 		} else {
 			match = {
 				route: routes[0],
@@ -337,7 +348,7 @@ const router = async () => {
 		case "/dashboard/history":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const HistoryClass = await match.route.view();
-			view = new HistoryClass.default(user);
+			view = new HistoryClass.default(user, user);
 			break;
 		case "/dashboard/settings":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -363,6 +374,11 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const InfoClass = await match.route.view();
 			view = new InfoClass.default(userID, user);
+			break;
+		case "/friends/user_info":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const UserInfoHistoryClass = await match.route.view();
+			view = new UserInfoHistoryClass.default(userID, user);
 			break;
 		case "/online":
 			await user.isLogged() === false ? navigateTo("/") : null;

@@ -10,19 +10,23 @@ export async function getHistoryList(user) {
 }
 
 export default class History extends AbstractView {
-	constructor(user) {
+	constructor(user, userObj) {
 	    super();
 		this.user = user;
+		this.userObj = userObj;
 		this.initialize();
 	}
 
 	async initialize() {
+		let type = typeof this.user;
+		if (type === "string")
+			this.user = await this.getUserInfo(this.user);
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("nav");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		const historyElement = document.querySelector('.history');
-		const data = await getHistoryList(this.user.getUser());
+		const data = await getHistoryList(this.user.username);
 		data[0].match_history.length === 0 ? this.noHistory(historyElement) : await this.historyList(data, historyElement);
 	}
 
@@ -40,10 +44,10 @@ export default class History extends AbstractView {
 		historyElement.appendChild(matchListElement);
 		for (let i = 0; i < sort_data.length; i++) {
 			const match = sort_data[i];
-			if (match.user1__username === this.user.getUser()) {
+			if (match.user1__username === this.user.username) {
 				var opponent = await this.getUserInfo(match.user2__username);
 				var user1 = {
-					username: this.user.getUser(),
+					username: this.user.username,
 					pro_pic: this.user.pro_pic,
 					score: match.score_user1
 				};
@@ -55,7 +59,7 @@ export default class History extends AbstractView {
 			} else {
 				var opponent = await this.getUserInfo(match.user1__username);
 				var user2 = {
-					username: this.user.getUser(),
+					username: this.user.username,
 					pro_pic: this.user.pro_pic,
 					score: match.score_user2
 				};
@@ -99,11 +103,11 @@ export default class History extends AbstractView {
 		try {
 			const response = await fetch('/accounts/guser_info/?username=' + username);
 			const data = await response.json();
-			const opponent = {
+			const user = {
 				username: data.user.username,
 				pro_pic: data.user.pro_pic
 			};
-			return opponent;
+			return user;
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -116,7 +120,7 @@ export default class History extends AbstractView {
 			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.pro_pic}"/></a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.userObj.pro_pic}"/></a>
 		`;
 		return navHTML;
 	}

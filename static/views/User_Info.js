@@ -15,9 +15,9 @@ import { navigateTo, changeLanguage } from "../index.js";
 // }
 
 export default class UserInfo extends AbstractView {
-	constructor(userID, userObj) {
+	constructor(userID, user) {
 		super();
-		this.userObj = userObj;
+		this.user = user;
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("nav");
 		this.nav.innerHTML = this.getNav();
@@ -47,6 +47,9 @@ export default class UserInfo extends AbstractView {
 		})
 		.then(response => response.json())
 		.then(async data => {
+			this.user.user_info_history.username = data.user.username;
+			this.user.user_info_history.pro_pic = data.user.pro_pic;
+			this.user.user_info_history.level = data.user.level;
 			const requestList = await getRequests();
 			const friendInfoElement = document.querySelector(".friend-info");
 			const is_friend = data.is_mutual_friend;
@@ -62,8 +65,8 @@ export default class UserInfo extends AbstractView {
 						${is_friend ? "<h5> <span data-translate=\"level2\" Level></span>" + data.user.level + "</h5>" : ""}
 					</div>
 				</div>
-				<button type="button" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-				<button type="button" data-translate="history" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
+				<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
+				<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</a>
 				${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
 					!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
 					senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
@@ -134,7 +137,7 @@ export default class UserInfo extends AbstractView {
 			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.userObj.getPic()}"/></a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;
 		return navHTML;
 	}

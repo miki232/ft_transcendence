@@ -5,7 +5,7 @@ import { getCookie, sanitizeInput } from "../utilities.js";
 export default class User extends AbstractView {
 	constructor() {
 		super();
-		this.user;
+		this.username;
 		this.email;
 		// this.password;
 		this.pro_pic;
@@ -23,6 +23,11 @@ export default class User extends AbstractView {
 		this.matchmaking_ws = null;
 		this.lastURL = null;
 		this.room_nextround = null;
+		this.user_info_history = {
+			username: "null",
+			pro_pic: "null",
+			level: "null",
+		};
 	}
 
 	async logout(){
@@ -135,7 +140,7 @@ export default class User extends AbstractView {
 	}
 
 	setUser(data_user) {
-		this.user = data_user;
+		this.username = data_user;
 	}
 	
 	setEmail (data_email) {
@@ -155,7 +160,7 @@ export default class User extends AbstractView {
 	}
 
 	getUser() {
-		return this.user;
+		return this.username;
 	}
 
 	getEmail() {
