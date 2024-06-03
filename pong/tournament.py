@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
@@ -180,7 +180,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         print("FROME MATCH.WINNER " , match.winner.username)
         match.save()
         try:
-            round = TournametPlaceHolder.objects.get(status=False)
+            round = TournamentPlaceHolder.objects.get(status=False)
             print("Pong Consumer 183", round.round, round.name, match.winner.username)
             if round.round== 1:
                 toot = Tournament.objects.get(name=round.name)
@@ -207,7 +207,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def delete_place_holder(self):
         try:
-            placehorde = TournametPlaceHolder.objects.get(status=False)
+            placehorde = TournamentPlaceHolder.objects.get(status=False)
             print("Pong Consumer 245", placehorde.name, self.user)
             tournament = Tournament.objects.get(name=placehorde.name, winner=self.user)
             if tournament:

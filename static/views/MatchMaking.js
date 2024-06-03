@@ -39,7 +39,7 @@ export default class MatchMaking extends AbstractView {
     }
 
     async loadUserData() {
-		var csrftoken = await this.getCSRFToken('csrftoken')
+		var csrftoken = await this.getCSRFToken();
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {

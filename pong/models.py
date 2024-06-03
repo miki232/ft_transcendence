@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import CustomUser
 from django.utils import timezone
+from chat.notifier import send_save_notification
 
 # Create your models here.
 class RoomName(models.Model):
@@ -57,11 +58,20 @@ class Tournament(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
 
-class TournametPlaceHolder(models.Model):
+class TournamentPlaceHolder(models.Model):
     playerNumber = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
     round = models.IntegerField(default=0)
     name = models.CharField(max_length=255, unique=True, default="None")
+
+    @classmethod
+    def createifnotexists(cls):
+
+        print("Create if not existsasdasdasdasdasdsad")
+        if not cls.objects.exists():
+            print("Create if not existsssssssssssssssssssssssssssssssssss")
+            send_save_notification("all", "The Tournament system has created a Tournament")
+            cls.objects.create(playerNumber=4, status=True, round=0, name="Tournament")
 
 class TournamentPartecipants(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)

@@ -5,7 +5,16 @@ export default class {
 		this.sanitizeInput = sanitizeInput;
 	}
 
-	getCSRFToken(name) {
+	async getCSRFToken() {
+		let csrftoken = await fetch("csrf-token")
+			.then(response => response.json())
+			.then(data => data.csrfToken);
+			// console.log(csrftoken);
+		return csrftoken;
+	}
+	
+
+	getCookie(name) {
 		let cookieValue = null;
     	if (document.cookie && document.cookie !== '') {
     	    const cookies = document.cookie.split(';');

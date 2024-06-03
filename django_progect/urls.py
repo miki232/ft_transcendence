@@ -21,6 +21,7 @@ from django.conf import settings
 from django.views.generic.base import TemplateView # new
 from frontend.views import index # new
 
+# from django_prometheus import exports # new For prometheus to delete
 
 urlpatterns = [
     path("", include("frontend.urls")),
@@ -30,6 +31,7 @@ urlpatterns = [
     path("pong/", include("pong.urls")), # new
     path("accounts/", include("accounts.urls")), # new
     path("accounts/", include("django.contrib.auth.urls")), # new
+    # path('metrics', exports.ExportToDjangoView, name='prometheus-django-metrics'), # For prometheus to delete
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [re_path(r'^.*', include("frontend.urls"), name='index')]
