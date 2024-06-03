@@ -6,7 +6,7 @@ export default class {
 	}
 
 	async getCSRFToken() {
-		let csrftoken = await fetch("csrf-token")
+		let csrftoken = await fetch("/csrf-token")
 			.then(response => response.json())
 			.then(data => data.csrfToken);
 			// console.log(csrftoken);
