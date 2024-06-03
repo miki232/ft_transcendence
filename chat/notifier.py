@@ -2,7 +2,7 @@
 Per mandare una notifica
 """
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from chat.models import Notifications
 from channels.db import database_sync_to_async
 from accounts.models import CustomUser
@@ -29,6 +29,17 @@ def send_save_notification(receiver, message):
         notification = Notifications.objects.create(user=receiver, content=message)    
         channel_layer = get_channel_layer()
         async_to_sync(send_message)(receiver.id, channel_layer, notification)
+
+@database_sync_to_async
+def create_notification(receiver, message):
+    return Notifications.objects.create(user=receiver, content=message)
+
+async def send_save_notification_async(receiver, message):
+    #save notifications
+    notification = await create_notification(receiver, message)
+    channel_layer = get_channel_layer()
+    await send_message(receiver.id, channel_layer, notification)
+
 
 @database_sync_to_async
 def get_db(notification):

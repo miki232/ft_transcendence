@@ -81,6 +81,12 @@ export default class Online extends AbstractView {
         await this.getTournament();
 		const matchmakingBtn = document.getElementById("o-match");
 		const tournamentBtn = document.getElementById("o-tournament");
+		const friendlyBtn = document.getElementById("f-match");
+		friendlyBtn.addEventListener("click", e => {
+			e.preventDefault();
+			console.log("Friendly Match");
+			navigateTo("/friendly_match");
+		})
         matchmakingBtn.addEventListener("click", e => {
             e.preventDefault();
             console.log("1 vs 1");

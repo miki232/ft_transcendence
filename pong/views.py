@@ -70,7 +70,7 @@ class ListRoomView(APIView):
         try:
             friendslist = FriendList.objects.get(user=user)
             friends = friendslist.friends.all()
-            rooms = RoomName.objects.filter(Q(opponent__in=friends) | Q(opponent=user) | Q(friendly=False))
+            rooms = RoomName.objects.filter(friendly=True).filter(Q(created_by__in=friends) | Q(created_by=user) | Q(opponent=user))
         except ObjectDoesNotExist:
             rooms = RoomName.objects.filter(Q(opponent=user) | Q(friendly=False))
 
