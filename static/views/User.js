@@ -23,11 +23,6 @@ export default class User extends AbstractView {
 		this.matchmaking_ws = null;
 		this.lastURL = null;
 		this.room_nextround = null;
-		this.user_info_history = {
-			username: "null",
-			pro_pic: "null",
-			level: "null",
-		};
 	}
 
 	async logout(){

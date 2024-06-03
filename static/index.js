@@ -212,6 +212,15 @@ const router = async () => {
 	user.loadUserData();
 	const userLang = localStorage.getItem('language') || 'en';
 
+	if (location.pathname.includes("/user_info")) {
+		let count = location.pathname.split("/").length - 1;
+		if (count === 2) {
+			var userID = location.pathname.split("_")[2];
+		} else if (count === 3) {
+			var userID = location.pathname.split("_")[2].split("/")[0];
+		}
+	}
+
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
@@ -223,8 +232,8 @@ const router = async () => {
         { path: "/dashboard/requests", view: () => import('./views/Requests.js') },
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
-        { path: "/user_info", view: () => import('./views/User_Info.js') },
-        { path: "/user_info", view: () => import('./views/History.js') },
+        { path: "/friends/user_info_" + userID, view: () => import('./views/User_Info.js') },
+        { path: "/friends/user_info_" + userID + "/history", view: () => import('./views/History.js') },
         { path: "/online", view: () => import('./views/Online.js') },
 		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
@@ -257,7 +266,8 @@ const router = async () => {
 		return {
 			route: route,
 			isMatch: location.pathname === route.path
-	};});
+		};
+	});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 	try {
@@ -297,29 +307,12 @@ const router = async () => {
 		user.lastURL = null;
 	}
 	if (!match) {
-		if (location.pathname.includes("/user_info")) {
-			let count = location.pathname.split("/").length - 1;
-			if (count === 2) {
-				var userID = location.pathname.split("_")[2];
-				match = {
-					route: routes[9],
-					isMatch: true
-				};
-			} else if (count === 3) {
-				var userID = location.pathname.split("_")[2].split("/")[0];
-				match = {
-					route: routes[10],
-					isMatch: true
-				};
-				match.route.path = "/friends/user_info";
-			}
-		} else {
-			match = {
-				route: routes[0],
-				isMatch: true
-			};
-		}
+		match = {
+			route: routes[0],
+			isMatch: true
+		};
 	}
+
 	switch (match.route.path) {
 		case "/":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
@@ -371,12 +364,12 @@ const router = async () => {
 			const FriendsClass = await match.route.view();
 			view = new FriendsClass.default(user);
 			break;
-		case "/user_info":
+		case `/friends/user_info_${userID}`:
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const InfoClass = await match.route.view();
 			view = new InfoClass.default(userID, user);
 			break;
-		case "/friends/user_info":
+		case `/friends/user_info_${userID}/history`:
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const UserInfoHistoryClass = await match.route.view();
 			view = new UserInfoHistoryClass.default(userID, user);
