@@ -22,7 +22,7 @@ export async function removeFriend(user){
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/remove/";
+	var url = "/friend/remove/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);
