@@ -36,7 +36,7 @@ class CustomUser(AbstractUser): # new
         total_wins = len([match for match in match_history if match['winner__username'] == self.username])
         total_loses = len([match for match in match_history if match['winner__username'] != self.username])
         total_exp = total_wins - total_loses
-        return total_exp
+        return max(total_exp, total_wins)
     
     def calculate_level(self):
         exp = {
