@@ -71,6 +71,7 @@ export default class FriendlyMatch extends AbstractView {
 		    noEntries.textContent = "No invites";
             roomsList.appendChild(noEntries);
             rooms.forEach(room => {
+                noEntries.remove();
                 const roomView = `
                     <div class="request-line">
                         <span class="info" data-username="${room.created_by}">${room.created_by} vs </span>
