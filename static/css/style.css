@@ -474,7 +474,7 @@ div .rooms-list {
 
 .request-line .accept-request,
 .friend-info .accept-request {
-	margin-right: 12px;
+	/* margin-right: 12px; */
 	color: white;
 	background-color: green;
 }
@@ -671,7 +671,7 @@ div .rooms-list {
 .friends-list,
 .requests-list,
 .rooms-list {
-	width: 75%;
+	width: 85%;
 	height: 50%;
 	margin-bottom: 40px;
 	text-align: center;
@@ -692,6 +692,10 @@ div .rooms-list {
 .rooms-list::-webkit-scrollbar-thumb {
 	background: white;
 	border-radius: 10px;
+}
+
+.rooms-list .cancel-request {
+	margin-left: 8px;
 }
 
 .friend,

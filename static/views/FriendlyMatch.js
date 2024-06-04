@@ -96,6 +96,7 @@ export default class FriendlyMatch extends AbstractView {
                         
                         <span class="info" data-username2="${room.opponent}">${room.opponent}</span>
                         <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
+                        ${room.created_by === this.user.username ? `<button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>Cancel</button>` : ""}
                     </div>
                 `;
                 roomsList.innerHTML += roomView;
@@ -124,6 +125,15 @@ export default class FriendlyMatch extends AbstractView {
                     const view = new Pong(this.user);
                     await view.connect_game();
                     await view.loop();
+                });
+            });
+            const cancelButtons = document.querySelectorAll(".cancel-request");
+            cancelButtons.forEach(button => {
+                button.addEventListener("click", async (event) => {
+                    const roomName = event.target.getAttribute('data-room-name');
+                    console.log('Cancelling room:', roomName);
+                    await this.cancelroom(roomName);
+                    navigateTo("/friendly_match");
                 });
             });
             const lang = localStorage.getItem('language') || 'en';
