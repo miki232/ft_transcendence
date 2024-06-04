@@ -13,7 +13,11 @@ export default class FriendlyMatch extends AbstractView {
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
         this.roomName = "undefined";
-        this.getFriendlyMatchList();
+        this.initialize();
+    }
+
+    async initialize() {
+        await this.getFriendlyMatchList();
     }
 
     async getFriendlyMatchList() {
