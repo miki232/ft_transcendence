@@ -15,7 +15,7 @@ export async function cancelRequest(user){
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/request/cancel/";
+	var url = "/friend/request/cancel/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);

@@ -149,7 +149,8 @@ header a img {
 .settings,
 .local-game,
 .online-game,
-.matchmaking {
+.matchmaking,
+.friendlymatch {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -452,7 +453,8 @@ header a img {
 	font-size: 20px;
 }
 
-div .requests-list {
+div .requests-list,
+div .rooms-list {
 	height: 60%;
 }
 
@@ -667,7 +669,8 @@ div .requests-list {
 }
 
 .friends-list,
-.requests-list {
+.requests-list,
+.rooms-list {
 	width: 75%;
 	height: 50%;
 	margin-bottom: 40px;
@@ -675,15 +678,18 @@ div .requests-list {
 	overflow-y: auto;
 }
 
-.friends-list::-webkit-scrollbar {
+.friends-list::-webkit-scrollbar,
+.rooms-list::-webkit-scrollbar {
 	width: 10px;
 }
 
-.friends-list::-webkit-scrollbar-track {
+.friends-list::-webkit-scrollbar-track,
+.rooms-list::-webkit-scrollbar-track {
 	background: transparent;
 }
 
-.friends-list::-webkit-scrollbar-thumb {
+.friends-list::-webkit-scrollbar-thumb,
+.rooms-list::-webkit-scrollbar-thumb {
 	background: white;
 	border-radius: 10px;
 }

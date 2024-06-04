@@ -90,7 +90,7 @@ export default class Pong {
     }
 
     scoreTabMaker(data) {
-        console.log(data, this.user.getUser());
+        console.log(data, this.user.getUser(), this.user.online_opponent.username);
         if (data.player === this.user.getUser()) {
             this.player1 = this.user.getUser();
             this.player2 = this.user.online_opponent.username;
@@ -181,10 +181,10 @@ export default class Pong {
     updatePaddlePosition() {
         if (this.arrowUpPressed) {
             console.log('sending move_up');
-            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.user.user}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.user.username}));
         }
         if (this.arrowDownPressed) {
-            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.user.user}));
+            this.user.game_ws.send(JSON.stringify({'action': 'move_down', 'user': this.user.username}));
         }
     }
 
