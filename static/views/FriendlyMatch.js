@@ -47,6 +47,24 @@ export default class FriendlyMatch extends AbstractView {
         })
     }
 
+    async cancelroom(name) {
+        var csrftoken = await getCSRFToken();
+        await fetch('/delete_room/', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({name: name})
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        })
+    }
+
     async getFriendlyMatchList() {
         try {
             const response = await fetch('/rooms_list/');

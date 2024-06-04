@@ -19,6 +19,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
 from accounts.serializers import UserInfoSerializer
 
+class DeleteRoomView(APIView):
+    def post(self, request, format=None):
+        room_name = request.data.get("name")
+        try:
+            room = RoomName.objects.get(name=room_name)
+            room.delete()
+            return Response({"status": "Room deleted"}, status=status.HTTP_200_OK)
+        except RoomName.DoesNotExist:
+            return Response({"status": "Room not found"}, status=status.HTTP_404_NOT_FOUND)
+
 class CreateRoomView(APIView):
     def post(self, request, format=None):
         room_name = request.data.get("name")
@@ -34,6 +44,9 @@ class CreateRoomView(APIView):
             user_to_fight = CustomUser.objects.get(username=sfidante)
             user = CustomUser.objects.get(username=username)
             print("Create Room View 32", user_to_fight)
+            exist_room = RoomName.objects.filter(Q(created_by=user, opponent=user_to_fight) | Q(created_by=user_to_fight, opponent=user)).first()
+            if exist_room:
+                return Response({"status": "Room already exists"}, status=status.HTTP_306_RESERVED)
             send_save_notification(user_to_fight, f"{username} Want to play with YOU!")
             serializer = RoomNameSerializer(data={
             'created_by': user,

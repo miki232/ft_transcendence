@@ -588,7 +588,12 @@ async function send_game_request(receiver, selfuser)
 		},
 		body: JSON.stringify(data)
 	})
-	.then(response => response.json())
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.json();
+	})
 	.then(data => {
 		// Handle the respons
 		console.log(data.name);
@@ -596,7 +601,7 @@ async function send_game_request(receiver, selfuser)
 	})
 	.catch(error => {
 		// Handle the error
-		console.error(error);
+		createNotification("Alredy sent a request to this user");
 	});
 }
 
