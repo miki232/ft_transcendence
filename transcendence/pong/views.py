@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournametPlaceHolder, Tournament_Waitin, Tournament_Match
+from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
@@ -19,37 +19,50 @@ from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
 from accounts.serializers import UserInfoSerializer
 
+class DeleteRoomView(APIView):
+    def post(self, request, format=None):
+        room_name = request.data.get("name")
+        try:
+            room = RoomName.objects.get(name=room_name)
+            room.delete()
+            return Response({"status": "Room deleted"}, status=status.HTTP_200_OK)
+        except RoomName.DoesNotExist:
+            return Response({"status": "Room not found"}, status=status.HTTP_404_NOT_FOUND)
+
 class CreateRoomView(APIView):
     def post(self, request, format=None):
         room_name = request.data.get("name")
         user_to_fight = None
         user = None
         username = request.data.get("created_by")
-        public = False
+        friendly = False
 
         if room_name == "1":
-            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+            friendly = True
+            room_name = str(uuid.uuid1()).replace('-', '')
             sfidante = request.data.get("to_fight")
             user_to_fight = CustomUser.objects.get(username=sfidante)
             user = CustomUser.objects.get(username=username)
             print("Create Room View 32", user_to_fight)
+            exist_room = RoomName.objects.filter(Q(created_by=user, opponent=user_to_fight) | Q(created_by=user_to_fight, opponent=user)).first()
+            if exist_room:
+                return Response({"status": "Room already exists"}, status=status.HTTP_306_RESERVED)
             send_save_notification(user_to_fight, f"{username} Want to play with YOU!")
             serializer = RoomNameSerializer(data={
             'created_by': user,
             'opponent': user_to_fight,
             'name': room_name,
-            'public' : public,
+            'friendly' : friendly,
             })
         else:
-            public = True
-            room_name = str(uuid.uuid4()) ##Genera un nome per la room random.
+            room_name = str(uuid.uuid1()).replace('-', '')
             # Pass the primary keys to the serializer
             print("Create Room View 44", CustomUser.calculate_level(user))
             serializer = RoomNameSerializer(data={
                 'created_by': user,
                 'opponent': user_to_fight,
                 'name': room_name,
-                'public' : public,
+                'friendly' : friendly,
                 'level' : CustomUser.calculate_level(user)
             })
 
@@ -70,9 +83,9 @@ class ListRoomView(APIView):
         try:
             friendslist = FriendList.objects.get(user=user)
             friends = friendslist.friends.all()
-            rooms = RoomName.objects.filter(Q(opponent__in=friends) | Q(opponent=user) | Q(public=True))
+            rooms = RoomName.objects.filter(friendly=True).filter(Q(created_by__in=friends, opponent=user) | Q(created_by=user) | Q(opponent=user))
         except ObjectDoesNotExist:
-            rooms = RoomName.objects.filter(Q(opponent=user) | Q(public=True))
+            rooms = RoomName.objects.filter(Q(opponent=user) | Q(friendly=False))
 
 
         
@@ -119,6 +132,15 @@ class MatchmakingView(View):
         # If no match was found, return 1
         return JsonResponse({"status": 1})
     
+class RoundTorunament(View):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    def get(self, request):
+        try:
+            round = TournamentPlaceHolder.objects.get(status=False)
+        except ObjectDoesNotExist:
+            return JsonResponse({"round": "No round"})
+        return JsonResponse({"round": round.round})
 
 class TournamentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -128,7 +150,7 @@ class TournamentView(APIView):
         user = request.user
         tournament = None
         try :
-            tournament = TournametPlaceHolder.objects.get(status=True)
+            tournament = TournamentPlaceHolder.objects.get(status=True)
         except ObjectDoesNotExist:
             tournament = None
         serializer = TournamentPlaceHolderSerializer(tournament)
@@ -164,6 +186,33 @@ class TournamentMatchView(APIView):
         serializer = RoomNameSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class TournamentCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        number = request.data.get("playerNumber", None)
+        name = request.data.get("name", None)
+        try:
+            placeholder = TournamentPlaceHolder.objects.get(Q(status=True) | Q(status=False))
+            if placeholder is not None:
+                return Response({"Status" : "Tournament already exists. Only one Tournament at a time is permitted."}, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            pass
+        serializer = TournamentPlaceHolderSerializer(data={
+            "playerNumber": number,
+            "status": True,
+            "round": 0,
+            "name": name
+        })
+        if serializer.is_valid():
+            serializer.save()
+            send_save_notification("all", f"{request.user.username} has created a tournament!") # Send a notification to the All user, to fix
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 # Create your views here.
 @login_required
 def pong(request, room_name):

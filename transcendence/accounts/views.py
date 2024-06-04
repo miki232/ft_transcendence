@@ -4,13 +4,18 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
-from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.db import IntegrityError
 from django.conf import settings
+from django.utils.html import escape
 
 import requests
+import re
 import imghdr
 import urllib
 import os
@@ -101,6 +106,12 @@ class UserLoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             login(request, user)
+            if not request.data.get('remember_me', False):
+                # If "remember_me" is not true, set the session to expire when the browser closes
+                request.session.set_expiry(0)
+            else:
+                # If "remember_me" is true, set the session to expire in 2 weeks (1209600 seconds)
+                request.session.set_expiry(1209600)
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -123,8 +134,11 @@ class UserInfoView(APIView):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def put(self, request):
-        if 'defaultPic' in request.data['pro_pic']:
-            request.data['pro_pic'] = request.user._meta.get_field('pro_pic').get_default()
+        try:
+            if 'defaultPic' in request.data['pro_pic']:
+                request.data['pro_pic'] = request.user._meta.get_field('pro_pic').get_default()
+        except KeyError:
+            pass
         serializer = UserInfoSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -133,10 +147,18 @@ class UserInfoView(APIView):
     def post(self, request):
         url = request.user.pro_pic
         if 'url' in request.POST:
+            image_url = request.POST['url']
+            if re.search('<.*?>', image_url):
+                return JsonResponse({'error': 'Invalid input'}, status=400)
+            validate = URLValidator()
+            try:
+                validate(image_url)
+            except ValidationError:
+                return JsonResponse({'error': 'Invalid URL'}, status=400)
             current_pic_path = os.path.join(settings.BASE_DIR, request.user.pro_pic.lstrip('/'))
             if os.path.isfile(current_pic_path):
                 os.remove(current_pic_path)
-            request.user.pro_pic = request.POST['url']
+            request.user.pro_pic = escape(image_url)
             request.user.save()
             url = request.user.pro_pic
         elif 'imageFile' in request.FILES:

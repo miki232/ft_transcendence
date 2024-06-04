@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,9 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443']
+CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443', 'https://127.0.0.1:8443', 'https://localhost:8443']
 SECRET_KEY = 'django-insecure-xo%h1)ejm%b&&7j-6f6scrl60$g@lblj1mv23-p@gm_b!)$i+^'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Use a secure cookie for the session cookie
 CSRF_COOKIE_SAMESITE = None
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'friends',
     'pong',
     'daphne', # new
+    'django_crontab', # new
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,17 +72,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  # add this line
+    'django_prometheus', # For prometheus to delete
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware', #For prometheus to delete
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.onlinemiddleware.OnlineStatusMiddleware', # ne
+    'accounts.onlinemiddleware.OnlineStatusMiddleware', # new
+    'django_prometheus.middleware.PrometheusAfterMiddleware', #For prometheus to delete
 ]
 
 ROOT_URLCONF = 'django_progect.urls'
@@ -180,9 +184,7 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
-
-USE_TZ = True
+USE_I18N = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -206,6 +208,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.CustomUser" # new
 
+
+CRONJOBS = [
+    ('*/5 * * * *', 'django_progect.crons.createtournament')
+]
 
 # {
 #     "username": "Suca",

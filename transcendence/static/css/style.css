@@ -30,7 +30,7 @@ html, body {
 }
 
 body {
-	background-image: url(../img/bg2.jpg);
+	background-image: url(../img/bg7.jpeg);
 	background-size:cover;
 	background-color: rgb(1, 1, 5);
 	background-position: center;
@@ -144,11 +144,13 @@ header a img {
 .profile-card,
 .friends-card,
 .friend-info,
+.history,
 .requests,
 .settings,
 .local-game,
 .online-game,
-.matchmaking {
+.matchmaking,
+.friendlymatch {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -451,7 +453,8 @@ header a img {
 	font-size: 20px;
 }
 
-div .requests-list {
+div .requests-list,
+div .rooms-list {
 	height: 60%;
 }
 
@@ -505,6 +508,81 @@ div .requests-list {
 	font-size: 16px;
 }
 
+/**************** HISTORY ****************/
+
+.match-list {
+	width: 85%;
+	height: 75%;
+	margin-top: 40px;
+	padding-right: 10px;
+	overflow-y: auto;
+	font-size: 20px;
+}
+
+.match-list::-webkit-scrollbar {
+	width: 10px;
+}
+
+.match-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.match-list::-webkit-scrollbar-thumb {
+	background: white;
+	border-radius: 10px;
+}
+
+.match-line {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.match-line:not(:last-child) {
+	border-bottom: 2px solid white;
+	margin-bottom: 25px;
+}
+
+.user1,
+.user2,
+.vs-text {
+	height: 80px;
+}
+
+.vs-text {
+	display: flex;
+	align-items: center;
+	font-size: 32px;
+}
+
+.user1,
+.user2 {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.user1-info {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	gap: 15px;
+}
+
+.user2-info {
+	display: flex;
+	justify-content: end;
+	align-items: center;
+	gap: 15px;
+}
+
+.user1-info img,
+.user2-info img {
+	height: 40px;
+	width: 40px;
+}
+
 /***************** LOCAL GAME **************/
 
 .local-game,
@@ -525,14 +603,53 @@ div .requests-list {
 	width: 100px;
 }
 
+.matchmaking h1 {
+	margin-bottom: 45px;
+}
+
+.matchmaking h4 {
+	font-size: 24px;
+}
+
+.opponent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin-top: 45px;
+}
 
 #scores {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	width: 100%;
 	font-size: 24px;
-	margin-bottom: 20px;
+	margin-bottom: 30px;
 	color: white;
+}
+
+.score-info {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	gap: 35px;
+	flex-grow: 1.5;
+}
+
+#player2-score {
+	justify-content: end;
+}
+
+.score-info img {
+	height: 40px;
+	width: 40px;
+}
+
+#pongCanvas {
+	background: linear-gradient(45deg, #141414, #1b1b1b);
+	border: 4px solid #E4080A;
+	box-shadow: 0 0 20px #E4080A, inset 0 0 20px #E4080A;
 }
 
 /***************** FRIENDS *****************/
@@ -552,7 +669,8 @@ div .requests-list {
 }
 
 .friends-list,
-.requests-list {
+.requests-list,
+.rooms-list {
 	width: 75%;
 	height: 50%;
 	margin-bottom: 40px;
@@ -560,15 +678,18 @@ div .requests-list {
 	overflow-y: auto;
 }
 
-.friends-list::-webkit-scrollbar {
+.friends-list::-webkit-scrollbar,
+.rooms-list::-webkit-scrollbar {
 	width: 10px;
 }
 
-.friends-list::-webkit-scrollbar-track {
+.friends-list::-webkit-scrollbar-track,
+.rooms-list::-webkit-scrollbar-track {
 	background: transparent;
 }
 
-.friends-list::-webkit-scrollbar-thumb {
+.friends-list::-webkit-scrollbar-thumb,
+.rooms-list::-webkit-scrollbar-thumb {
 	background: white;
 	border-radius: 10px;
 }
@@ -839,13 +960,13 @@ div .requests-list {
     color: white;
     z-index: 1;
 }
-
+/* 
 canvas {
 	border: 2px solid #FFF;
-	width: 800px; /* Adjust as needed */
-	max-width: 800px; /* Maximum width of 800 pixels */
-	height: auto; /* Maintain aspect ratio */
-}
+	width: 800px;
+	max-width: 800px;
+	height: auto;
+} */
 /* #score1, #score2 {
 	color: #FFF;
 	position: absolute;
@@ -864,6 +985,94 @@ canvas {
 	width: 100%;
 }
 
+
+/************* LOADING SPINNER *************/
+
+
+.lds-spinner,
+.lds-spinner div,
+.lds-spinner div:after {
+  box-sizing: border-box;
+}
+.lds-spinner {
+  color: currentColor;
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-top: 30px;
+}
+.lds-spinner div {
+  transform-origin: 40px 40px;
+  animation: lds-spinner 1.2s linear infinite;
+}
+.lds-spinner div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 3.2px;
+  left: 36.8px;
+  width: 6.4px;
+  height: 17.6px;
+  border-radius: 20%;
+  background: currentColor;
+}
+.lds-spinner div:nth-child(1) {
+  transform: rotate(0deg);
+  animation-delay: -1.1s;
+}
+.lds-spinner div:nth-child(2) {
+  transform: rotate(30deg);
+  animation-delay: -1s;
+}
+.lds-spinner div:nth-child(3) {
+  transform: rotate(60deg);
+  animation-delay: -0.9s;
+}
+.lds-spinner div:nth-child(4) {
+  transform: rotate(90deg);
+  animation-delay: -0.8s;
+}
+.lds-spinner div:nth-child(5) {
+  transform: rotate(120deg);
+  animation-delay: -0.7s;
+}
+.lds-spinner div:nth-child(6) {
+  transform: rotate(150deg);
+  animation-delay: -0.6s;
+}
+.lds-spinner div:nth-child(7) {
+  transform: rotate(180deg);
+  animation-delay: -0.5s;
+}
+.lds-spinner div:nth-child(8) {
+  transform: rotate(210deg);
+  animation-delay: -0.4s;
+}
+.lds-spinner div:nth-child(9) {
+  transform: rotate(240deg);
+  animation-delay: -0.3s;
+}
+.lds-spinner div:nth-child(10) {
+  transform: rotate(270deg);
+  animation-delay: -0.2s;
+}
+.lds-spinner div:nth-child(11) {
+  transform: rotate(300deg);
+  animation-delay: -0.1s;
+}
+.lds-spinner div:nth-child(12) {
+  transform: rotate(330deg);
+  animation-delay: 0s;
+}
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 
 
 /************ MEDIA QUERIES ************/

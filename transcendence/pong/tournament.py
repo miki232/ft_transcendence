@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournametPlaceHolder
+from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
@@ -131,7 +131,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         self.user2 = await self.get_user(TournamentConsumer.players[self.room_name][1])
         print("User2", self.user2.username, "AI", self.user2.Ai)
         await self.get_room_istance_delete(self.room_name)
-        self.match = await self.create_match(self.user1, self.user2)
+        self.match = await self.get_create_match(self.user1, self.user2)
         print("CREA MATHC " , self.match.id)
 
     @database_sync_to_async
@@ -153,7 +153,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             # Query the Match model for a match with the given room name
             # Get the last istance created, if for any reason there is multiple istance with same room_name
             # But based on the way is treated a room it shouldn't happen
-            match = Match.objects.filter(room_name=room_name).latest('date')
+            match = Tournament_Match.objects.filter(room_name=room_name).latest('date')
 
             # Return the winner's username
             return match.winner.username
@@ -173,30 +173,51 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def set_winner(self, match, winner):
         print("Pong Consumer 218", winner, "Set winner", self.room_name, self.room_group_name)
-        prova = CustomUser.objects.get(username=winner)
-        print("GET USER ", prova)
+        winner = CustomUser.objects.get(username=winner)
+        print("GET USER ", winner)
         print("MATCH: ", match)
-        match.winner = prova
+        match.winner = winner
         print("FROME MATCH.WINNER " , match.winner.username)
         match.save()
-
+        try:
+            round = TournamentPlaceHolder.objects.get(status=False)
+            print("Pong Consumer 183", round.round, round.name, match.winner.username)
+            if round.round== 1:
+                toot = Tournament.objects.get(name=round.name)
+                toot.winner = match.winner
+                toot.save()
+        except:
+            pass
 
     @database_sync_to_async
     def get_user(self, username):
         return CustomUser.objects.get(username=username)
 
     @database_sync_to_async
-    def create_match(self, user1, user2):
-        matchs = Match(room_name=self.room_name, user1=user1, user2=user2, score_user1=0, score_user2=0)
-        matchs.save()
+    def get_create_match(self, user1, user2):
+        print("TPURN Consumer 190", user1, user2, self.room_name)
+        matchs = Tournament_Match.objects.get(room_name=self.room_name)
         return matchs
 
     @database_sync_to_async
     def get_match_from_db(self, roomname):
         print("Pong Consumer 239", roomname)
-        return Match.objects.get(room_name=roomname)
+        return Tournament_Match.objects.get(room_name=roomname)
+
+    @database_sync_to_async
+    def delete_place_holder(self):
+        try:
+            placehorde = TournamentPlaceHolder.objects.get(status=False)
+            print("Pong Consumer 245", placehorde.name, self.user)
+            tournament = Tournament.objects.get(name=placehorde.name, winner=self.user)
+            if tournament:
+                placehorde.delete()
+        except:
+            print("Pong Consumer 249", "No tournament to delete")
 
     async def disconnect(self, close_code):
+        
+        await self.delete_place_holder()
         # Remove the disconnected user from the players list and cancel the game loop task
         if (self.room_name in TournamentConsumer.status and TournamentConsumer.status[self.room_name]):
             return
@@ -299,15 +320,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         print(f"Room: {self.room_name}, State: {TournamentConsumer.shared_state[self.room_name]}")
         while (TournamentConsumer.status[self.room_name]) == False:
             current_time = time.time()
-            """Find who is the AI and move the paddle accordingly"""
-            # if (self.user1.Ai or self.user2.Ai):
-            #     if current_time - last_ai_update_time >= 1:
-            #         self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
-            #         last_ai_update_time = current_time
-            #     if (self.user1.Ai):
-            #         self.state['paddle1_y'] = move_paddle(self.state['paddle1_y'], self.ai_target_pos, 5)
-            #     else:
-            #         self.state['paddle2_y'] = move_paddle(self.state['paddle2_y'], self.ai_target_pos, 5)
             await asyncio.sleep(0.01)
             if self.spectator:
                 await self.channel_layer.group_send(
@@ -345,16 +357,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
             # # Collision with paddles
             self.check_collision()
-            # if (
-            #     self.state['ball_x'] <= 10
-            #     and self.state['paddle1_y'] <= self.state['ball_y'] <= self.state['paddle1_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
-            # if (
-            #     self.state['ball_x'] >= 790
-            #     and self.state['paddle2_y'] <= self.state['ball_y'] <= self.state['paddle2_y'] + 100
-            # ):
-            #     self.state['ball_speed_x'] = -self.state['ball_speed_x']
 
             # Scoring
             if TournamentConsumer.shared_state[self.room_name]['ball_x'] <= 0:
@@ -407,9 +409,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 'state': TournamentConsumer.shared_state[self.room_name]
             }
             )
-            await asyncio.sleep(1.5)  # Wait for 1 second
+            await asyncio.sleep(5.5)  # Wait for 1 second
             await self.close()
             return
+        # print("Pong Consumer 456","Game Ended")
+        # await self.remove_losers_from_room()
+        # print("Pong Consumer 457 Starting next match", TournamentConsumer.players[self.room_name])
+        
+    async def remove_losers_from_room(self):
+        for player in TournamentConsumer.players[self.room_name]:
+            if player not in [self.match.winner.username]:
+                print("Pong Consumer 463", player, " Removed from room")
+                TournamentConsumer.players[self.room_name].remove(player)
+        print("Pong Consumer 465", "Players in room", TournamentConsumer.players[self.room_name])
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
 
     async def handle_message(self, event):
         message_type = event['type']

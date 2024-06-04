@@ -1,5 +1,12 @@
-export default class Pong{
-    constructor(room_name){
+import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
+import Tournament from "./Tournament.js";
+import { createNotification } from "./Notifications.js";
+
+export default class Pong extends AbstractView{
+    constructor(user, room_name){
+        super();
+        this.user =  user;
         this.room_name = room_name;
         this.game_ws = "null";
         this.ballX = 0;
@@ -34,7 +41,7 @@ export default class Pong{
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				console.error(data);
 				this.setUser(data.username);
 			})
 			.catch((error) => {
@@ -119,7 +126,7 @@ export default class Pong{
             }
         });        
         this.update(canvas, context);
-        this.game_ws.onmessage = event => {
+        this.game_ws.onmessage = async event => {
             const data = JSON.parse(event.data);
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
@@ -146,21 +153,83 @@ export default class Pong{
             //     else
             //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
             // }
-            // if (data.victory != "none"){
-            //     console.log(data.victory);
-            //     if (users === data.victory)
-            //         alert("YOU WIN!" + users)
-            //     else
-            //         alert("AHAHAH hai PERSO")
-            // }
+            if (data.victory != "none"){
+                console.log(data.victory, this.user.user);
+                if (this.user.user === data.victory){
+                    console.log("HAI VINTO");
+                    const content = document.querySelector("#content");
+                    let win = await this.getround();
+                    await this.closeWebSocket();
+                    if (win){
+                        content.innerHTML = `<h1>YOU WON</h1>`;
+                        return;
+                    }
+                    this.user.matchmaking_ws = new WebSocket(
+                        'wss://'
+                        + window.location.hostname
+                        + ':8000'
+                        + '/ws/matchmaking/'
+                        )
+                    this.user.matchmaking_ws.onopen = async () => {
+                        const view = new Tournament(this.user, this.user.matchmaking_ws);
+                        content.innerHTML =  view.getContent();
+                        await view.sendJoin(); 
+                        let room = await view.getRoom_Match();
+                        console.log("JOINING TOURNAMENT");
+                        console.log("JOINING TOURNAMENT", room);
+                        this.room_name = room;
+                        content.innerHTML =  await this.getContent();
+                        await this.loop();
+                    };
+                    // const view = new Tournament(this.users, ws);
+                    // content.innerHTML =  view.getContent();
+                    // await view.sendJoin(); 
+                    // console.log("JOINING TOURNAMENT");
+                    // room = await view.getRoom();
+                    // console.log("JOINING TOURNAMENT", room);
+                }
+                else
+                {
+                    // alert("AHAHAH hai PERSO")
+                    createNotification("YOU LOST");
+                    await this.closeWebSocket();
+                }
+            }
 
-            this.update(canvas, context);
+            await this.update(canvas, context);
         }
+    }
+
+    async getround(){
+		var csrftoken = await this.getCSRFToken()
+        let win = false;
+        await fetch('/round/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("ROUND", data);
+            if (data.round === 1){
+                win = true;
+            }
+            else{
+                win = false;
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+        return win;
     }
 
     async getContent() {
         await this.loadUserData();
         await this.connect_game();
+        console.log("PROVA USER", this.user.user);
         // this.ws.onmessage = function(event){
         //     const data = JSON.parse(event.data);
         //     console.log(data);

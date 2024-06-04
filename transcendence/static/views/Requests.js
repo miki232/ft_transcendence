@@ -1,11 +1,11 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { createNotification } from "./Notifications.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 
 export async function getRequests() {
-	var response = await fetch("friend/request/list/");
-	var data = await response.json();
+	const response = await fetch("/friend/request/list/");
+	const data = await response.json();
 	return data;
 }
 
@@ -15,7 +15,7 @@ export async function cancelRequest(user){
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/request/cancel/";
+	var url = "/friend/request/cancel/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);
@@ -38,7 +38,7 @@ export async function declineFriendRequest(userId) {
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/request/decline/";
+	var url = "/friend/request/decline/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);
@@ -61,7 +61,7 @@ export function acceptFriendRequest(userId) {
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/accept/" + userId + "/";
+	var url = "/friend/accept/" + userId + "/";
 
 	// Set the request method to GET
 	xhr.open("GET", url, true);
@@ -74,6 +74,7 @@ export async function sendFriendRequest(user) {
 
 	// Get the username from the input field
 	var csrf = await getCSRFToken();
+	console.log(csrf)
 	// var username = document.getElementById("friendNameInput").value;
 	// Create a new XMLHttpRequest object
 	var xhr = new XMLHttpRequest();
@@ -114,22 +115,21 @@ export default class extends AbstractView {
 		var data = await getRequests();
 		const requestsElement = document.querySelector(".requests");
 		const requestsHTML = `
-			<h2>Requests</h2>
+			<h2 data-translate="requests">Requests</h2>
 			<div class="requests-list"></div>
 			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-			<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+			<button type="button" class="submit-btn dashboard-btn" data-translate="back" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 		`;
 		requestsElement.innerHTML = requestsHTML;
 		const backBtn = document.getElementById("back");
 			backBtn.addEventListener("click", e => {
 				e.preventDefault();
-				console.log("request back");
 				navigateTo("/dashboard");
 			});
 		const requestsListElement = document.querySelector(".requests-list");
 		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
-		noEntries.textContent = "No requests found.";
+		noEntries.textContent = "No requests";
 		requestsListElement.appendChild(noEntries);
 		for (let i = 0; i < data.length; i++) {
 			const request = data[i];
@@ -177,14 +177,16 @@ export default class extends AbstractView {
 				});
 			});
 		}
+		const lang = localStorage.getItem('language') || 'en';
+		changeLanguage(lang);
 	}
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.pro_pic}"/></a>
 		`;
@@ -194,7 +196,8 @@ export default class extends AbstractView {
 	getContent() {
 		const requestHTML = `
 			<div class="dashboard">
-				<div class="requests"></div>
+				<div class="requests">
+				</div>
 			</div>
 		`;
 		return requestHTML;

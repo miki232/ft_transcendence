@@ -1,10 +1,10 @@
 import AbstractView from "./AbstractView.js";
 
 export async function getCSRFToken() {
-	let csrftoken = await fetch("csrf-token")
+	let csrftoken = await fetch("/csrf-token")
 		.then(response => response.json())
 		.then(data => data.csrfToken);
-		console.log(csrftoken);
+		// console.log(csrftoken);
 	return csrftoken;
 }
 

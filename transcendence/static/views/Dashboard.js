@@ -104,10 +104,10 @@ export default class extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-linkdata-translate="ranking">Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
 		`;
@@ -122,15 +122,15 @@ export default class extends AbstractView {
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<div class="user-info">
 							<h3>${this.user.getUser()}</h3>
-							<h5>Level ${this.user.getLevel()}</h5>
+							<h5 data-translate="level">Level${this.user.getLevel()}</h5>
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<a href="/history" id="history-btn" class="submit-btn dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</a>
-					<a href="/requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
-					<a href="/settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
+					<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
+					<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
+					<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
 					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<button type="button" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+					<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
 				</div>
 			</div>
 		`;

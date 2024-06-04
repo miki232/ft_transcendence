@@ -15,6 +15,7 @@ class CustomUser(AbstractUser): # new
     email = models.EmailField(unique=True)
     Ai = models.BooleanField(default=False)
     Occupied = models.BooleanField(default=False)
+    language = models.CharField(max_length=254, default="en")
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):

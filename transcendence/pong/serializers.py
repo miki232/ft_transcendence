@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RoomName, TournametPlaceHolder, Tournament_Match
+from .models import RoomName, TournamentPlaceHolder, Tournament_Match
 from accounts.models import CustomUser
 
 class RoomNameSerializer(serializers.ModelSerializer):
@@ -8,12 +8,12 @@ class RoomNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomName
-        fields = ['name', 'created_by', 'opponent', 'public', 'level']
+        fields = ['name', 'created_by', 'opponent', 'friendly', 'level']
 
 class TournamentPlaceHolderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TournametPlaceHolder
-        fields = ['playerNumber', 'status']
+        model = TournamentPlaceHolder
+        fields = ['playerNumber', 'status', 'round', 'name']
 
 class TournametMatchSerializer(serializers.ModelSerializer):
     player1 = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())

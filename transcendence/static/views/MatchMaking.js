@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import Pong from "./Pong.js";
 import {navigateTo} from "../index.js";
+import { createNotification } from "./Notifications.js";
 
 export default class MatchMaking extends AbstractView {
     constructor(user) {
@@ -9,9 +10,9 @@ export default class MatchMaking extends AbstractView {
         this.selfuser = "undefined";
         this.errro = false;
         this.opponent = "undefined";
-        this.opponent_name = "undefined";
-        this.opponent_lvl = "undefined";
-        this.opponent_pic = "undefined";
+        this.user.online_opponent.username = "undefined";
+        this.user.online_opponent.pro_pic = "undefined";
+        this.user.online_opponent.level = "undefined";
         // this.username = "undefined";
         // this.pro_pic = "undefined";
         this.roomName = "undefined";
@@ -29,9 +30,6 @@ export default class MatchMaking extends AbstractView {
         if (this.roomName !== "undefined") {
             console.log("ROOM NAME", this.roomName);
             this.user.online_room = this.roomName;
-            this.user.online_opponent = this.opponent;
-            // navigateTo("/pong");
-            await this.closeWebSocket();
             history.replaceState(null, null, "/pong");
             this.user.lastURL = "/pong";
             const view = new Pong(this.user);
@@ -41,7 +39,7 @@ export default class MatchMaking extends AbstractView {
     }
 
     async loadUserData() {
-		var csrftoken = await this.getCSRFToken('csrftoken')
+		var csrftoken = await this.getCSRFToken();
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
 			headers: {
@@ -89,9 +87,12 @@ export default class MatchMaking extends AbstractView {
 		return this.pro_pic;
 	}
 
+    async getroomname(){
+        return this.roomName;
+    }
 
     async connect(roomName){
-        this.matchmaking_ws = new WebSocket(
+        this.user.matchmaking_ws = new WebSocket(
             'wss://'
         + window.location.hostname
         + ':8000'
@@ -101,11 +102,11 @@ export default class MatchMaking extends AbstractView {
 
     
     async closeWebSocket() {
-        if (this.matchmaking_ws) {
+        if (this.user.matchmaking_ws) {
             //FAcciamo che una volta assegnato l'utente sfidante e la room, c'è un conto alla rovescia, e finchè
             // non finisce, stiamo connessi alla socket e se uno dei 2 esce prima dello scadere del conto alla rovescia
             // chiude la connesione e maagari elimina la room o elimina il suo username dal campo della room 
-            await this.matchmaking_ws.close();
+            await this.user.matchmaking_ws.close();
             console.log("DENTRO");
         }
     }
@@ -135,9 +136,9 @@ export default class MatchMaking extends AbstractView {
 		}).then(response => response.json())
         .then(data => {
             console.log(data.user);
-            this.opponent_name = data.user.username;
-            this.opponent_pic = data.user.pro_pic;
-            this.opponent_lvl = data.user.level;
+            this.user.online_opponent.username = data.user.username;
+            this.user.online_opponent.pro_pic = data.user.pro_pic;
+            this.user.online_opponent.level = data.user.level;
             // this.setOpponent_pic(data.pro_pic)
         })
         .catch((error) => {
@@ -158,13 +159,13 @@ export default class MatchMaking extends AbstractView {
 
     async get_queue_resolve()
     {
-        this.matchmaking_ws.onopen = () => {
+        this.user.matchmaking_ws.onopen = () => {
             console.log('WebSocket connection opened');
             console.log("CONNECTED");
-            this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
+            this.user.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
         };
         
-        this.matchmaking_ws.onmessage = async event => {
+        this.user.matchmaking_ws.onmessage = async event => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.User_self === this.username){
@@ -185,7 +186,7 @@ export default class MatchMaking extends AbstractView {
             }
         };
     
-        this.matchmaking_ws.onerror = error => {
+        this.user.matchmaking_ws.onerror = error => {
             console.error('WebSocket error:', error);
         };
     }
@@ -193,16 +194,52 @@ export default class MatchMaking extends AbstractView {
     async getRoom_Match() {
         await this.connect();
         return new Promise((resolve, reject) => {
-            this.matchmaking_ws.onopen = () => {
+            this.user.matchmaking_ws.onopen = () => {
                 console.log('WebSocket connection opened');
                 console.log("CONNECTED");
-                this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
+                this.user.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
             };
 
-            this.matchmaking_ws.onmessage = async event => {
+            this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
-                    if (data.User_self === this.user.getUser()){
+                    //  Quando riceve status 6 vuol dire che l'opponete si è disconnesso
+                    if (data.status === 6){
+                        createNotification("Matchmaking Opponent Disconnected");
+                        const reset = document.querySelectorAll(".user-dashboard");
+                        reset[1].innerHTML = `<h4>Waiting for opponent...</h3>
+                        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        `;
+                        reset[1].classList.remove('user-dashboard');
+                        reset[1].classList.add('opponent');
+                        // Da resettare la pagina in modo da rendere di nuovo "Waiting for opponent..."
+                        // con la rotellina che gira
+                    }
+                    if (data.status === 5){ /// Quando riceve status 5 vuol dire che è stato trovato un match, Setto l'opponent e la room
+                        console.log("ADV") /// Ma prima di fare il resolve, dobbiamo fare un controllo per vedere se l'utente è ancora online
+                        this.setOpponent(data.opponent);
+                        console.log("OPPONENT", this.opponent, data.User_self !== this.user.getUser());
+                        if (data.User_self === this.user.getUser()){
+                            await this.getFriendInfo(this.opponent)
+                            this.roomName = data.room_name;
+                            const opponent = document.querySelector(".opponent");
+                            if (opponent !== null){
+                                opponent.innerHTML = `
+                                    <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                                    <div class="user-info">
+                                        <h3>${this.user.online_opponent.username}</h3>
+                                        <h5>Level ${this.user.online_opponent.level}</h5>
+                                    </div>
+                                `;
+                                opponent.classList.add('user-dashboard');
+                                opponent.classList.remove('opponent');
+                                opponent.style.marginTop = '45px';
+                                opponent.style.marginBottom = '0px';
+                            }
+                        }
+                    }
+                    else if (data.User_self === this.user.getUser() && data.status === 2){
+                        await this.user.matchmaking_ws.send(JSON.stringify({'action': 'to-pong'}));
                         console.log('WebSocket message received:', event.data);
                         console.log('Parsed data:', data);
                         if (data.status === 4)
@@ -211,27 +248,29 @@ export default class MatchMaking extends AbstractView {
                             console.log("AI Opponent");
                         if (data.status === 2)
                             console.log("Normal Opponent");
-                        this.setOpponent(data.opponent);
-                        await this.getFriendInfo(this.opponent)
-                        this.roomName = data.room_name;
-                        // let conente_opponent = document.getElementById("opponent")
-                        // let img_opponet = document.getElementById("opponent_img")
-                        // img_opponet.src = this.opponent_pic;
-                        // conente_opponent.innerHTML = this.opponent;
-                        // await this.connect_game(this.roomName);
-                        console.log("ROOM NAME", this.roomName);
-                        const opponent = document.querySelector(".opponent");
-                        opponent.innerHTML = `
-                            <div class="user-dashboard">
-                                <img alt="Profile picture" src="${this.opponent_pic}"/>
-                                <div class="user-info">
-                                    <h3>${this.opponent_name}</h3>
-                                    <h5>Level ${this.opponent_lvl}</h5>
-                                </div>
-                            </div>
-                        `;
-                        // await new Promise(r => setTimeout(r, 3000));
-                        await new Promise(r => setTimeout(r, 3000));
+                        // this.setOpponent(data.opponent);
+                        // console.log("OPPONENT", this.opponent);
+                        // await this.getFriendInfo(this.opponent)
+                        // this.roomName = data.room_name;
+                        // // let conente_opponent = document.getElementById("opponent")
+                        // // let img_opponet = document.getElementById("opponent_img")
+                        // // img_opponet.src = this.opponent_pic;
+                        // // conente_opponent.innerHTML = this.opponent;
+                        // // await this.connect_game(this.roomName);
+                        // console.log("ROOM NAME", this.roomName);
+                        // const opponent = document.querySelector(".opponent");
+                        // opponent.innerHTML = `
+                        //     <img alt="Profile picture" src="${this.user.online_opponent.pro_pic}"/>
+                        //     <div class="user-info">
+                        //         <h3>${this.user.online_opponent.username}</h3>
+                        //         <h5>Level ${this.user.online_opponent.level}</h5>
+                        //     </div>
+                        // `;
+                        // opponent.classList.add('user-dashboard');
+                        // opponent.classList.remove('opponent');
+                        // opponent.style.marginTop = '45px';
+                        // opponent.style.marginBottom = '0px';
+                        await new Promise(r => setTimeout(r, 0));
                         resolve(this.roomName);
                     }
                 } catch (error) {
@@ -240,7 +279,7 @@ export default class MatchMaking extends AbstractView {
                 }
             };
 
-            this.matchmaking_ws.onerror = error => {
+            this.user.matchmaking_ws.onerror = error => {
                 console.error('WebSocket error:', error);
                 reject(error);
             };
@@ -260,13 +299,6 @@ export default class MatchMaking extends AbstractView {
     }
 
     getContent() {
-        // await this.loadUserData();
-        // await this.matchmaking();
-        // await this.connect(this.generateRoomName(10));
-        // this.ws.onmessage = function(event){
-        //     const data = JSON.parse(event.data);
-        //     console.log(data);
-        // };
         const dashboardHTML = `
             <div class="dashboard">
                 <div class="matchmaking">
@@ -280,12 +312,12 @@ export default class MatchMaking extends AbstractView {
                     </div>
                     <span id="vs">VS</span>
                     <div class="opponent">
-                        <h4>Waiting for opponent... <ion-icon name="refresh-outline"></ion-icon></h3>
+                        <h4>Waiting for opponent...</h3>
+                        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                     </div>
                 </div>
             </div>
         `;
-    
         return dashboardHTML;
     }
 }

@@ -5,7 +5,7 @@ import { getCookie, sanitizeInput } from "../utilities.js";
 export default class User extends AbstractView {
 	constructor() {
 		super();
-		this.user;
+		this.username;
 		this.email;
 		// this.password;
 		this.pro_pic;
@@ -13,10 +13,16 @@ export default class User extends AbstractView {
 		this.level;
 		this.exp;
 		this.online_room;
-		this.online_opponent;
+		this.online_opponent = {
+			username: "null",
+			pro_pic: "null",
+			level: "null",
+		};
 		this.disconnected = true;
 		this.game_ws = null;
+		this.matchmaking_ws = null;
 		this.lastURL = null;
+		this.room_nextround = null;
 	}
 
 	async logout(){
@@ -24,7 +30,6 @@ export default class User extends AbstractView {
 		let csrftoken = await fetch("csrf-token")
 		.then(response => response.json())
 		.then(data => data.csrfToken);
-		console.log(csrftoken);
 		///
 		await fetch('accounts/logout/', {
 			method: 'POST',
@@ -56,11 +61,12 @@ export default class User extends AbstractView {
 		try{
 			var username = (document.getElementById('login-user').value);
 			var password = (document.getElementById('login-pass').value);
+			var rememberme = (document.getElementById('login-checkbox').checked);
 		} catch (error){
 			console.error(error);
 			return;
 		}
-		const csrftoken = await this.getCSRFToken();
+		const csrftoken = this.getCookie('csrftoken');
 
 		await fetch('accounts/login/', {
 			method: 'POST',
@@ -71,6 +77,7 @@ export default class User extends AbstractView {
 			body: JSON.stringify({
 				username: username,
 				password: password,
+				remember_me : rememberme
 			}),
 		}).then(response => {
 			response.json();
@@ -88,26 +95,18 @@ export default class User extends AbstractView {
 	}
 
 	async isLogged() {
-		var csrftoken = await this.getCSRFToken();
+		// var csrftoken = await this.getCookie();
 
-		return fetch('/accounts/user_info/', {
-			method: 'GET',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken': csrftoken
-			}
-		})
-		.then(response => {
-			if (response.ok) {
-				return true;
-			} else {
-				return false;
-			}
-		});
+		const response = await fetch('/accounts/user_info/');
+		if (response.ok) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	async loadUserData() {
-		const csrftoken = await this.getCSRFToken();
+		const csrftoken = await this.getCookie("csrftoken");
 
 		await fetch('/accounts/user_info/', {
 			method: 'GET',
@@ -136,7 +135,7 @@ export default class User extends AbstractView {
 	}
 
 	setUser(data_user) {
-		this.user = data_user;
+		this.username = data_user;
 	}
 	
 	setEmail (data_email) {
@@ -156,7 +155,7 @@ export default class User extends AbstractView {
 	}
 
 	getUser() {
-		return this.user;
+		return this.username;
 	}
 
 	getEmail() {

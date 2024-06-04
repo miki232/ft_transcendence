@@ -1,4 +1,4 @@
-import { getCookie, register, closeWebSocket } from "./utilities.js";
+// import { getCookie, register, closeWebSocket } from "./utilities.js";
 import User from "./views/User.js";
 import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
@@ -27,6 +27,26 @@ import Online from "./views/Online.js";
 // 	newActive.classList.add('active');
 // }
 
+/*
+
+LANGUAGE SWITCHER
+
+<p id="greeting" data-en="Hello" data-it="Ciao"></p>
+<p id="farewell" data-en="Goodbye" data-it="Addio"></p>
+
+
+function setLanguage(lang) {
+    document.querySelectorAll('[data-en]').forEach(el => {
+        el.innerText = el.getAttribute(`data-${lang}`);
+    });
+}
+
+// Imposta la lingua in base alla preferenza dell'utente
+const userLanguage = navigator.language.startsWith('it') ? 'it' : 'en';
+setLanguage(userLanguage);
+
+*/
+
 const container = document.querySelector("#container");
 const nav = document.querySelector("nav");
 const content = document.querySelector("#content");
@@ -53,26 +73,120 @@ export const navigateTo = async url => {
 	await router();
 };
 
+document.getElementById('languageSwitcher').addEventListener('change', (event) => {
+    changeLanguage(event.target.value);
+});
 
-// const is_loggedin = async () => {
-//     var csrftoken = getCookie('csrftoken');
+// Set initial language based on user preference or default
 
-//     return fetch('/accounts/user_info/', {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type' : 'application/json',
-//             'X-CSRFToken': csrftoken
-//         }
-//     })
-//     .then(response => {
-//         if (response.ok) {
-//             return true;
-//         } else {
-//             return false;
-//         }
-//     });
-// };
+export async function changeLanguage(language) {
+    localStorage.setItem('language', language);
+    console.log(language);
 
+    try {
+        const module = await import(`./languagepak/${language}.lang.js`);
+        const translations = module.default;
+
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            let translation = translations[key];
+
+            if (translation) {
+                // Replace placeholders in the translation with dynamic content if any
+                translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+                    try {
+                        return eval(expression);
+                    } catch (error) {
+                        console.error(`Error evaluating expression: ${expression}`, error);
+                        return '';
+                    }
+                });
+
+                // Replace only text nodes while preserving the order of other nodes
+                let childNodes = Array.from(element.childNodes);
+                let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+                let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+                // Update text nodes
+                if (textNodes.length > 0) {
+                    textNodes.forEach(textNode => {
+                        textNode.nodeValue = translation;
+                    });
+                } else {
+                    const textNode = document.createTextNode(translation);
+                    if (nonTextNodes.length > 0) {
+                        element.insertBefore(textNode, nonTextNodes[0]);
+                    } else {
+                        element.appendChild(textNode);
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error(`Error loading language pack: ${error}`);
+    }
+}
+
+
+// async function changeLanguage(language) {
+//     localStorage.setItem('language', language);
+//     console.log(language);
+
+//     try {
+//         const module = await import(`./languagepak/${language}.lang.js`);
+//         const translations = module.default;
+
+//         document.querySelectorAll('[data-translate]').forEach(element => {
+//             const key = element.getAttribute('data-translate');
+//             let translation = translations[key];
+
+//             if (translation) {
+//                 // Replace placeholders in the translation with dynamic content if any
+//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+                    // try {
+                    //     return eval(expression);
+                    // } catch (error) {
+                    //     console.error(`Error evaluating expression: ${expression}`, error);
+                    //     return '';
+                    // }
+//                 });
+
+//                 // Update only text nodes, preserve other elements (e.g., icons)
+//                 element.childNodes.forEach(child => {
+//                     if (child.nodeType === Node.TEXT_NODE) {
+//                         child.nodeValue = translation;
+//                     }
+//                 });
+//             }
+//         });
+//     } catch (error) {
+//         console.error(`Error loading language pack: ${error}`);
+//     }
+// }
+
+	
+const userLang = localStorage.getItem('language') || 'en';
+changeLanguage(userLang);
+document.getElementById('languageSwitcher').value = userLang;
+	// const is_loggedin = async () => {
+		//     var csrftoken = getCookie('csrftoken');
+		
+		//     return fetch('/accounts/user_info/', {
+			//         method: 'GET',
+			//         headers: {
+				//             'Content-Type' : 'application/json',
+				//             'X-CSRFToken': csrftoken
+				//         }
+				//     })
+				//     .then(response => {
+					//         if (response.ok) {
+						//             return true;
+						//         } else {
+							//             return false;
+							//         }
+							//     });
+							// };
+							
 function wsConnection() {
 	if (!ws){
 		ws	= new WebSocket('wss://'
@@ -96,35 +210,45 @@ function wsConnection() {
 
 const router = async () => {
 	user.loadUserData();
+	const userLang = localStorage.getItem('language') || 'en';
+
+	if (location.pathname.includes("/user_info")) {
+		let count = location.pathname.split("/").length - 1;
+		if (count === 2) {
+			var userID = location.pathname.split("_")[2];
+		} else if (count === 3) {
+			var userID = location.pathname.split("_")[2].split("/")[0];
+		}
+	}
+
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
-        { path: "/settings", view: () => import('./views/Settings.js') },
-        { path: "/requests", view: () => import('./views/Requests.js') },
+		{ path: "/dashboard/history", view: () => import('./views/History.js')},
+        { path: "/dashboard/settings", view: () => import('./views/Settings.js') },
+        { path: "/dashboard/requests", view: () => import('./views/Requests.js') },
 		{ path: "/local_game", view: () => import('./views/LocalGame.js')},
         { path: "/friends", view: () => import('./views/Friends.js') },
-        { path: "/user_info", view: () => import('./views/User_Info.js') },
+        { path: "/friends/user_info_" + userID, view: () => import('./views/User_Info.js') },
+        { path: "/friends/user_info_" + userID + "/history", view: () => import('./views/History.js') },
         { path: "/online", view: () => import('./views/Online.js') },
-        { path: "/pong", view: () => import('./views/Pong.js') },
 		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
-		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')}
+		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
+		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 
 	if (user.game_ws) {
 		console.log("GAME_WS EXIT:", user.game_ws);
-		await closeWebSocket(user);
+		await user.game_ws.close();
 	}
+	
 	// Added for Close websocekt when Tournament is Available but the user choose the 1v1
-	if (view instanceof Online)
-		{
-			view.closeWebSocket();
-			console.log("DISCONNESIONE DALLA WEBSOCKET");
-		}
+	
 	// if (view instanceof Pong) {
 	// 	view.closeWebSocket();
 	// 			// Ho fatto questo per non far rimanere il canvas di pong quando si torna da pong
@@ -142,9 +266,23 @@ const router = async () => {
 		return {
 			route: route,
 			isMatch: location.pathname === route.path
-	};});
+		};
+	});
 	
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+	try {
+		if (view instanceof Online && match.route.path !== "/tournament")
+			{
+				view.closeWebSocket();
+				console.log("DISCONNESIONE DALLA WEBSOCKET");
+			}
+		if (user.matchmaking_ws && match.route.path !== "/tournament"){
+			console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
+			await user.matchmaking_ws.close();
+		}
+	} catch {
+		console.log("THERE IS NO MATCHMAKING_WS");
+	}
 	// if (previousUrl === "/pong" && match.route.path === "/matchmaking") {
 	// 	// history.replaceState(null, null, "/online");
 	// 	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -153,15 +291,14 @@ const router = async () => {
 	// }
 	if (user.lastURL === "/1P-vs-2P") {
 		match = {
-			route: routes[6],
+			route: routes[7],
 			isMatch: true
 		};
-		console.log(user.lastURL);
 		createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
 	} else if (user.lastURL === "/pong") {
 		match = {
-			route: routes[9],
+			route: routes[3],
 			isMatch: true
 		};
 		document.querySelector('header').style.display = 'flex';
@@ -170,20 +307,12 @@ const router = async () => {
 		user.lastURL = null;
 	}
 	if (!match) {
-		if (location.pathname.includes("/user_info")) {
-			var userID = location.pathname.split("_")[2];
-			match = {
-				route: routes[8],
-				isMatch: true
-			};
-		} else {
-			match = {
-				route: routes[0],
-				isMatch: true
-			};
-		}
+		match = {
+			route: routes[0],
+			isMatch: true
+		};
 	}
-	
+
 	switch (match.route.path) {
 		case "/":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
@@ -210,12 +339,17 @@ const router = async () => {
 			const DashboardClass = await match.route.view();
 			view = new DashboardClass.default(user);
 			break;
-		case "/settings":
+		case "/dashboard/history":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const HistoryClass = await match.route.view();
+			view = new HistoryClass.default(user, user);
+			break;
+		case "/dashboard/settings":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const SettingsClass = await match.route.view();
 			view = new SettingsClass.default(user);
 			break;
-		case "/requests":
+		case "/dashboard/requests":
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const RequestsClass = await match.route.view();
 			view = new RequestsClass.default(user);
@@ -230,10 +364,15 @@ const router = async () => {
 			const FriendsClass = await match.route.view();
 			view = new FriendsClass.default(user);
 			break;
-		case "/user_info":
+		case `/friends/user_info_${userID}`:
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const InfoClass = await match.route.view();
 			view = new InfoClass.default(userID, user);
+			break;
+		case `/friends/user_info_${userID}/history`:
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const UserInfoHistoryClass = await match.route.view();
+			view = new UserInfoHistoryClass.default(userID, user);
 			break;
 		case "/online":
 			await user.isLogged() === false ? navigateTo("/") : null;
@@ -248,6 +387,11 @@ const router = async () => {
 			view = new MatchMakingClass.default(user);
 			// console.log("OSU", room_name);
 			break;
+		case "/friendly_match":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const FriendlyMatchClass = await match.route.view();
+			view = new FriendlyMatchClass.default(user);
+			break;
 		// case "/pong":
 		// 	const PongClass = await match.route.view();
 		// 	view = new PongClass.default(user);
@@ -261,16 +405,16 @@ const router = async () => {
 			// document.getElementById("container").classList.add("containerpong");
 			// document.getElementById("container").removeAttribute("id");
 			//***sdassdad */
-			console.log("SUCASD", match.route.view(), match.route.path);
+			console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
 			const Pong_tournamentClass = await match.route.view();
-			view = new Pong_tournamentClass.default(room_name);
+			view = new Pong_tournamentClass.default(user, room_name);
 			content.innerHTML = await view.getContent();
 			await view.loop();
 			break;
 		case "/tournament":
 			const TournamentClass = await match.route.view();
-			console.log(Tournament_Cache["ws"]);
-			view = new TournamentClass.default(user, Tournament_Cache["ws"]);
+			console.log(user.matchmaking_ws);
+			view = new TournamentClass.default(user, user.matchmaking_ws);
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
 			console.log("OSU", room_name);
@@ -285,6 +429,8 @@ const router = async () => {
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
+	await changeLanguage(userLang);
+
 };
 
 window.addEventListener("popstate", router);
@@ -409,7 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		///////////////////////////////////////////////////////
 		if (e.target.matches('#game'))
 		{
-			let Friend_username = document.getElementById("Username").innerHTML;
+			let Friend_username = document.querySelector(".user-info h3").innerHTML;
 			console.log(Friend_username);
 			let selfuser = await getusename() // Per ora lascio Admin, ma è solo per provare, è da sostituire con l'username reale di chi sta cliccand PLAY
 			console.log(selfuser);
@@ -442,7 +588,12 @@ async function send_game_request(receiver, selfuser)
 		},
 		body: JSON.stringify(data)
 	})
-	.then(response => response.json())
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.json();
+	})
 	.then(data => {
 		// Handle the respons
 		console.log(data.name);
@@ -450,7 +601,7 @@ async function send_game_request(receiver, selfuser)
 	})
 	.catch(error => {
 		// Handle the error
-		console.error(error);
+		createNotification("Alredy sent a request to this user");
 	});
 }
 

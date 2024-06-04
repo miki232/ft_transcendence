@@ -22,7 +22,7 @@ export async function removeFriend(user){
 	var xhr = new XMLHttpRequest();
 
 	// Set the request URL
-	var url = "friend/remove/";
+	var url = "/friend/remove/";
 
 	// Set the request method to POST
 	xhr.open("POST", url, true);
@@ -229,6 +229,7 @@ export default class Friends extends AbstractView {
 		var noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "You don't have any friends yet.";
+		noEntries.setAttribute("data-translate", "noFriends");
 		friendListElement.appendChild(noEntries);
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
@@ -241,7 +242,7 @@ export default class Friends extends AbstractView {
 				const friendElement = `
 					<div class="friend">
 						<img src="${friendPic}" alt="User pic">
-						<a href="/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
+						<a href="/friends/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
 						<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 					</div>
 				`;
@@ -288,7 +289,7 @@ export default class Friends extends AbstractView {
 							var userElement = `
 								<div class="user">
 									<img src="${user.pro_pic}" alt="User pic">
-									<a href="/user_info_${user.username}" class="info" data-link">${user.username}</a>
+									<a href="/friends/user_info_${user.username}" class="info" data-link">${user.username}</a>
 									<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
 								</div>
 							`;
@@ -496,10 +497,10 @@ export default class Friends extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
+			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
+			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
+			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
+			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
 			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.userObj.getPic()}"/></a>
 		`;
@@ -510,16 +511,16 @@ export default class Friends extends AbstractView {
 		const friendHTML = `
 			<div class="dashboard">
 				<div class="friends-card">
-					<h1>Friends</h1>
-					<h4>Search friends</h4>
+					<h1 data-translate="friends">Friends</h1>
+					<h4 data-translate="searchfriends">Search friends</h4>
 					<div class="input-box add-friend">
 						<input type="text" id="friendNameInput" required>
-						<label>Find User</label>
+						<label data-translate="finduser">Find User</label>
 						<ion-icon name="search-outline"></ion-icon>
 					</div>
-					<button type="submit" class="submit-btn dashboard-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
+					<button type="submit" data-translate="search" class="submit-btn dashboard-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
 					<div class="hr" style="width: 75%; margin: 10px 0 10px 0;"></div>
-					<h4 id="friend-title">Friends List</h4>
+					<h4 id="friend-title" data-translate="friendlist">Friends List</h4>
 					<div class="friends-list"></div>
 				</div>
 			</div>

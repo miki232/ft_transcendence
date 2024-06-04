@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { createNotification } from "./Notifications.js";
 
 export default class Tournament extends AbstractView {
     constructor(user, ws) {
@@ -82,20 +83,27 @@ export default class Tournament extends AbstractView {
 
     async getRoom_Match() {
         // await this.connect();
+        this.getWaitingPlayers();
         return new Promise((resolve, reject) => {
             // this.matchmaking_ws.onopen = () => {
             //     console.log('WebSocket connection opened');
             //     console.log("CONNECTED");
             //     this.matchmaking_ws.send(JSON.stringify({'action': 'join_queue'}));
             // };
-    
-            this.ws.onmessage = async event => {
+            this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
-                    if (data.status === "Tournament start") {
-                        this.ws.close(); // Close the WebSocket
+                    console.log(data.status)
+                    if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
+                        const response = await fetch('/tournament_match/');
+                        const matchData = await response.json();
+                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
+                    }
+                    else if (data.status === "Tournament start") {
+                        this.user.matchmaking_ws.close(); // Close the WebSocket
                         // Fetch the match data from the API
                         const response = await fetch('/tournament_match/');
                         const matchData = await response.json();
@@ -133,7 +141,7 @@ export default class Tournament extends AbstractView {
                 }
             };
     
-            this.ws.onerror = error => {
+            this.user.matchmaking_ws.onerror = error => {
                 console.error('WebSocket error:', error);
                 reject(error);
             };
@@ -159,6 +167,15 @@ export default class Tournament extends AbstractView {
         } catch (error) {
             console.error('Error:', error);
         }
+    }
+
+
+    async sendJoin() {
+        this.user.matchmaking_ws.send(JSON.stringify({
+            "action": "joinTournamentQueue",
+            "username": this.user.user,
+            "status": "not_ready_nextmatch",
+        }));
     }
 
 
