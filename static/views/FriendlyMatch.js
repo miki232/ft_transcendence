@@ -13,7 +13,34 @@ export default class FriendlyMatch extends AbstractView {
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
         this.roomName = "undefined";
+        this.opponent = "undefined";
         this.getFriendlyMatchList();
+    }
+
+    async setOpponent(opponent)
+    {
+        this.opponent = opponent;
+    }
+
+    async getFriendInfo(user) {
+        var csrftoken = this.getCSRFToken();
+		await fetch('/accounts/guser_info/?username=' + user, {
+            method: 'GET',
+			headers: {
+                'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		}).then(response => response.json())
+        .then(data => {
+            console.log(data.user);
+            this.user.online_opponent.username = data.user.username;
+            this.user.online_opponent.pro_pic = data.user.pro_pic;
+            this.user.online_opponent.level = data.user.level;
+            // this.setOpponent_pic(data.pro_pic)
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        })
     }
 
     async getFriendlyMatchList() {
@@ -28,8 +55,8 @@ export default class FriendlyMatch extends AbstractView {
                     <div class="request-line">
                         <span class="info" data-username="${room.created_by}">${room.created_by} vs </span>
                         
-                        <span class="info" data-username="${room.opponent}">${room.opponent}</span>
-                        <button type="button" class="submit-btn accept-request" data-room-name="${room.name}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
+                        <span class="info" data-username2="${room.opponent}">${room.opponent}</span>
+                        <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
                     </div>
                 `;
                 roomsElement.innerHTML += roomView;
@@ -39,10 +66,20 @@ export default class FriendlyMatch extends AbstractView {
             joinButtons.forEach(button => {
                 button.addEventListener("click", async (event) => {
                     const roomName = event.target.getAttribute('data-room-name');
-                    console.log('Joining room:', roomName);
+                    const createby = event.target.getAttribute('data-username');
+                    const opponent = event.target.getAttribute('data-username2');
+                    console.log('Joining room:', roomName, createby, opponent);
+                    if (this.user.username === createby) {
+                        this.setOpponent(opponent);
+                    }
+                    else {
+                        this.setOpponent(createby);
+                    }
+                    await this.getFriendInfo(this.opponent)
                     this.roomName = roomName;
                     console.log("ROOM NAME", this.roomName);
                     this.user.online_room = this.roomName;
+                    console.log("USER ROOM", this.user.online_room);
                     history.replaceState(null, null, "/pong");
                     this.user.lastURL = "/pong";
                     const view = new Pong(this.user);
