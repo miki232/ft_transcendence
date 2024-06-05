@@ -104,7 +104,7 @@ export default class FriendlyMatch extends AbstractView {
                         </div>
                         <div class="room-btns">
                             <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
-                            ${room.created_by === this.user.username ? `<button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>Cancel</button>` : ""}
+                            <button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>${room.created_by === this.user.username ? "Cancel" : "Decline"}</button>
                         </div>
                     </div>
                 `;
