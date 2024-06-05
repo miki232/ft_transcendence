@@ -473,15 +473,21 @@ div .rooms-list {
 }
 
 .request-line .accept-request,
-.friend-info .accept-request {
+.friend-info .accept-request,
+.room-btns .accept-request {
 	/* margin-right: 12px; */
 	color: white;
 	background-color: green;
 }
 
+.request-line .decline-request {
+	margin-left: 8px;
+}
+
 .request-line .accept-request:active,
 .settings .confirm-btn:active,
-.local-game .confirm-btn:active {
+.local-game .confirm-btn:active,
+.room-btns .accept-request:active {
 	border: 2px solid rgb(0, 66, 0);
 }
 
@@ -578,7 +584,8 @@ div .rooms-list {
 }
 
 .user1-info img,
-.user2-info img {
+.user2-info img,
+.room-info img {
 	height: 40px;
 	width: 40px;
 }
@@ -673,7 +680,7 @@ div .rooms-list {
 .rooms-list {
 	width: 85%;
 	height: 50%;
-	margin-bottom: 40px;
+	margin-bottom: 20px;
 	text-align: center;
 	overflow-y: auto;
 }
@@ -694,8 +701,28 @@ div .rooms-list {
 	border-radius: 10px;
 }
 
-.rooms-list .cancel-request {
-	margin-left: 8px;
+.match-line:first-child {
+	margin-top: 20px;
+}
+
+.room-info,
+.room-btns {
+	flex-grow: 2;
+}
+
+
+.room-btns {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: end;
+	gap: 8px;
+	padding-bottom: 10px;
+}
+
+.room-btns button {
+	margin: 0;
+	height: 30px;
 }
 
 .friend,

@@ -89,14 +89,23 @@ export default class FriendlyMatch extends AbstractView {
 		    noEntries.textContent = "No invites";
             roomsList.appendChild(noEntries);
             rooms.forEach(room => {
+                console.log(room);
                 noEntries.remove();
                 const roomView = `
-                    <div class="request-line">
-                        <span class="info" data-username="${room.created_by}">${room.created_by} vs </span>
-                        
-                        <span class="info" data-username2="${room.opponent}">${room.opponent}</span>
-                        <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
-                        ${room.created_by === this.user.username ? `<button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>Cancel</button>` : ""}
+                    <div class="match-line">
+                        <div class="room-info">
+                            <img src="${room.pro_pic_created_by}"/>
+                            <p class="info" data-username="${room.created_by}">${room.created_by}</p>
+					    </div>
+                        <div class="vs-text"><span>VS</span></div>
+                        <div class="room-info">
+                            <img src="${room.pro_pic_opponent}"/>
+                            <p class="info" data-username2="${room.opponent}">${room.opponent}</p>
+                        </div>
+                        <div class="room-btns">
+                            <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
+                            ${room.created_by === this.user.username ? `<button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>Cancel</button>` : ""}
+                        </div>
                     </div>
                 `;
                 roomsList.innerHTML += roomView;
