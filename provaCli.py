@@ -11,10 +11,11 @@ import os
 from time import monotonic
 import json
 import ssl
-from websocket import create_connection
+from websocket import create_connection, WebSocketException
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Key bindings for game controls
 KEY_BINDINGS: dict[str, Key | KeyCode] = {
     "quit": Key.esc,
     "quit2": KeyCode(char="q"),
@@ -44,6 +45,7 @@ class GameEngine:
         self.ws_pong = None
 
     def authenticate(self):
+        """Authenticate user with the server and obtain session cookies."""
         print('Authenticating... for user:', self.username)
         try:
             response = requests.post(f'{SERVER_URL}/accounts/login/?next=/csrf-token', data={'username': self.username, 'password': self.password}, verify=False)
@@ -54,36 +56,46 @@ class GameEngine:
             else:
                 print('Failed to authenticate')
                 exit(1)
-        except Exception as e:
-            print('Connection error. Please check your internet connection.')
+        except requests.RequestException as e:
+            print(f'Connection error: {e}. Please check your internet connection.')
             exit(1)
 
     def connect_matchmaking_websocket(self):
-        self.ws = create_connection(
-            f"{WSS_URL.replace('https', 'wss')}/ws/matchmaking/",
-            cookie=self.cookie_str,
-            sslopt={"cert_reqs": ssl.CERT_NONE}
-        )
-        self.ws.send(json.dumps({"action": "join_queue"}))
-        self.result = json.loads(self.ws.recv())
-
+        """Connect to the matchmaking websocket and join the queue."""
+        try:
+            self.ws = create_connection(
+                f"{WSS_URL.replace('https', 'wss')}/ws/matchmaking/",
+                cookie=self.cookie_str,
+                sslopt={"cert_reqs": ssl.CERT_NONE}
+            )
+            self.ws.send(json.dumps({"action": "join_queue"}))
+            self.result = json.loads(self.ws.recv())
+        except (WebSocketException, json.JSONDecodeError) as e:
+            print(f'Error connecting to matchmaking websocket: {e}')
+            exit(1)
 
     def connect_to_pong_websocket(self):
-        self.ws_pong = create_connection(
-            f"{WSS_URL.replace('https', 'wss')}/ws/pong/{self.room_name}/",
-            cookie=self.cookie_str,
-            sslopt={"cert_reqs": ssl.CERT_NONE}
-        )
-        self.ws.close()
-        self.game_state = self.ws_pong.recv()
-        if self.game_state:
-            self.game_state = json.loads(self.game_state)
-            print('Connected to pong websocket')
-        else:
-            print('Failed to connect to pong websocket')
-            print(self.game_state)
+        """Connect to the Pong game websocket once a match is found."""
+        try:
+            self.ws_pong = create_connection(
+                f"{WSS_URL.replace('https', 'wss')}/ws/pong/{self.room_name}/",
+                cookie=self.cookie_str,
+                sslopt={"cert_reqs": ssl.CERT_NONE}
+            )
+            self.ws.close()
+            self.game_state = self.ws_pong.recv()
+            if self.game_state:
+                self.game_state = json.loads(self.game_state)
+                print('Connected to pong websocket')
+            else:
+                print('Failed to connect to pong websocket')
+                print(self.game_state)
+        except (WebSocketException, json.JSONDecodeError) as e:
+            print(f'Error connecting to Pong websocket: {e}')
+            exit(1)
 
     def run(self):
+        """Main game loop using curses for terminal display."""
         curses.wrapper(self._run)
 
     def _run(self, screen):
@@ -159,10 +171,13 @@ class GameEngine:
                     break
                 # Update game_state based on pressed_keys...
             self.waiting_input(screen, pressed_keys)
+        except (WebSocketException, json.JSONDecodeError) as e:
+            print(f'Error during game loop: {e}')
         finally:
             listener.stop()
 
     def waiting_input(self, screen, pressed_keys):
+        """Handle input waiting after game ends for rematch or quit."""
         sat = False
         while True:
             q = (
@@ -185,6 +200,7 @@ class GameEngine:
                 self.run()
 
     def print_game_state(self, game_state, screen):
+        """Render the game state on the screen."""
         screen.clear()
         height, width = screen.getmaxyx()
         ball_size = int(min(width, height) * 0.05)
@@ -230,14 +246,24 @@ class GameEngine:
                 screen.addch(paddle2_y, width-paddle_distance - 1, '|')
 
         screen.refresh()
-
-if __name__ == "__main__":
-    password = getpass.getpass('Password: ')
-    game_engine = GameEngine(args.username, password)
-    game_engine.authenticate()
-    game_engine.connect_matchmaking_websocket()
-    game_thread = threading.Thread(target=game_engine.run())
-    game_thread.daemon = True
-    game_thread.start()
     
-    # game_engine.run()
+if __name__ == "__main__":
+    try:
+        if not args.username:
+            args.username = input('Username: ')
+        password = getpass.getpass('Password: ')
+        game_engine = GameEngine(args.username, password)
+        game_engine.authenticate()
+        game_engine.connect_matchmaking_websocket()
+        game_thread = threading.Thread(target=game_engine.run())
+        game_thread.daemon = True
+        game_thread.start()
+
+        while game_thread.is_alive():
+            game_thread.join(1)
+    except KeyboardInterrupt:
+        print("\nGame interrupted. Exiting...")
+        exit(0)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        exit(1)
