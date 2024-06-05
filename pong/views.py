@@ -87,8 +87,6 @@ class ListRoomView(APIView):
         except ObjectDoesNotExist:
             rooms = RoomName.objects.filter(Q(opponent=user) | Q(friendly=False))
 
-
-        
         serializer = RoomNameSerializer(rooms, many=True)
         return Response(serializer.data)
 
