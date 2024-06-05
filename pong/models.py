@@ -67,9 +67,7 @@ class TournamentPlaceHolder(models.Model):
     @classmethod
     def createifnotexists(cls):
 
-        print("Create if not existsasdasdasdasdasdsad")
         if not cls.objects.exists():
-            print("Create if not existsssssssssssssssssssssssssssssssssss")
             send_save_notification("all", "The Tournament system has created a Tournament")
             cls.objects.create(playerNumber=4, status=True, round=0, name="Tournament")
 

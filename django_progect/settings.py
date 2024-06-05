@@ -210,7 +210,7 @@ AUTH_USER_MODEL = "accounts.CustomUser" # new
 
 
 CRONJOBS = [
-    ('*/5 * * * *', 'django_progect.crons.createtournament', '>> ./logfile.log')
+    ('*/5 * * * *', 'django_progect.crons.createtournament')
 ]
 
 # {
