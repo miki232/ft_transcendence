@@ -474,7 +474,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	e.preventDefault();
 		// 	navigateTo("/dashboard");
 		// }
-		if (e.target.matches("[data-link]")) {
+		if (e.target.matches("[home-link]")) {
+			e.preventDefault();
+			e.stopPropagation();
+			navigateTo("/dashboard");
+		} else if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}
