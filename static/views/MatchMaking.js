@@ -293,7 +293,7 @@ export default class MatchMaking extends AbstractView {
 			<a href="/ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
 			<a href="/friends" name="friends" class="dashboard-nav" data-link>Friends</a>
 			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
+			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}" home-link/></a>
 		`;
 		return navHTML;
     }

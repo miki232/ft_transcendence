@@ -58,8 +58,8 @@ class CustomUser(AbstractUser): # new
             987: 15,
         }
         total_exp = self.calculate_exp()
-        if total_exp > 610:
-            total_exp = 610
+        if total_exp > 987:
+            total_exp = 987
         if total_exp < 0:
             total_exp = 0 
         # Set level equal to total exp in exp list
