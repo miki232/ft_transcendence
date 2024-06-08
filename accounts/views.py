@@ -60,7 +60,7 @@ def callback(request):
     data = {
         'grant_type': 'authorization_code',
         'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'client_secret': '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',
+        'client_secret': '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',
         'code': code,
         'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
     }
@@ -83,7 +83,9 @@ def callback(request):
 
     # Log the user in
     login(request, user)
-
+    if (user.is_active):
+        user.status_login = True
+        user.save()
     # Redirect the user to a success page or any other appropriate page
     return redirect('/')
 

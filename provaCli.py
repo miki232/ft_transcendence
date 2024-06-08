@@ -11,6 +11,7 @@ import os
 from time import monotonic
 import json
 import ssl
+import select
 from websocket import create_connection, WebSocketException
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -39,10 +40,12 @@ class GameEngine:
         self.password = password
         self.cookie_str = ''
         self.game_state = {}
-        self.room_name = ''
+        self.room_name = None
         self.result = None
+        self.notification = None
         self.ws = None
         self.ws_pong = None
+        self.ws_notifications = None
 
     def authenticate(self):
         """Authenticate user with the server and obtain session cookies."""
@@ -73,8 +76,21 @@ class GameEngine:
         except (WebSocketException, json.JSONDecodeError) as e:
             print(f'Error connecting to matchmaking websocket: {e}')
             exit(1)
+    
+    def connect_notfications_websocket(self):
+        """Connect to the notifications websocket."""
+        try:
+            self.ws_notifications = create_connection(
+                f"{WSS_URL.replace('https', 'wss')}/ws/notifications/",
+                cookie=self.cookie_str,
+                sslopt={"cert_reqs": ssl.CERT_NONE}
+            )
+            # self.notification = json.loads(self.ws_notifications.recv())
+        except (WebSocketException, json.JSONDecodeError) as e:
+            print(f'Error connecting to matchmaking websocket: {e}')
+            exit(1)
 
-    def connect_to_pong_websocket(self):
+    def connect_to_pong_websocket(self, screen):
         """Connect to the Pong game websocket once a match is found."""
         try:
             self.ws_pong = create_connection(
@@ -82,7 +98,10 @@ class GameEngine:
                 cookie=self.cookie_str,
                 sslopt={"cert_reqs": ssl.CERT_NONE}
             )
-            self.ws.close()
+            try:
+                self.ws.close()
+            except:
+                pass
             self.game_state = self.ws_pong.recv()
             if self.game_state:
                 self.game_state = json.loads(self.game_state)
@@ -94,8 +113,147 @@ class GameEngine:
             print(f'Error connecting to Pong websocket: {e}')
             exit(1)
 
+    def _pre_gameinput(self, screen):
+        """Display pre-game instructions and wait for user input."""
+        # self.connect_notfications_websocket()
+        state = 0
+        while state == 0:
+            screen.clear()
+            screen.addstr(0, 0, 'Press g to start the game...')
+            screen.addstr(2, 0, 'Press f to invite a friend to play')
+            screen.addstr(4, 0, 'Press m to play a friendly match')
+            screen.addstr(6, 0, 'Press q/esc to quit')
+
+            screen.refresh()
+            while True:
+                key = screen.getch()
+                if key in (ord('q'), ord('Q'), 27):  # ESC key is 27
+                    exit(0)
+                elif key in (ord('f'), ord('F')):
+                    state = self.invite_friend(screen)
+                    break
+                elif key in (ord('m'), ord('M')):
+                    state = self.friendlyMatch(screen)
+                    break
+                elif key in (ord('g'), ord('G')):
+                    self.connect_matchmaking_websocket()
+                    state = 1
+                    break
+    
+    def get_list(self, screen):
+        """Get the list of rooms from the server."""
+        headers = {'Cookie': self.cookie_str}
+        try:
+            response = requests.get(f'{SERVER_URL}/rooms_list/', headers=headers, verify=False)
+            if response.status_code == 200:
+                room_list = response.json()
+                print("Room list fetched successfully!")
+                room_names = []
+                for room in room_list:
+                    room_info = (room['name'], room['created_by'], room['opponent'])  # Store as a tuple
+                    room_names.append(room_info)
+                return room_names
+            else:
+                print("Failed to fetch room list")
+                print("Status code:", response.status_code)
+                print("Response:", response.text)
+        except requests.RequestException as e:
+            print("An error occurred while fetching the room list:", e)
+
+    def friendlyMatch(self, screen):
+        """"Display the option to play a friendly match."""
+        rooms = self.get_list(screen)
+        while True:
+            screen.clear()
+            screen.addstr(0, 0, "Select a room:")
+            for idx, room in enumerate(rooms):
+                roomname, createby, opponent = room  # Unpack the tuple here
+                screen.addstr(idx + 1, 0, f"{idx + 1}. {createby} vs {opponent}")
+            screen.addstr(len(rooms) + 1, 0, "Press q to go back")
+            screen.refresh()
+            
+            key = screen.getch()
+            if key in (ord('q'), ord('Q')):
+                return 0
+            elif key in range(ord('1'), ord('1') + len(rooms)):
+                selected_room = rooms[key - ord('1')]
+                roomname, createby, opponent = selected_room
+                self.room_name = roomname
+                self.opp_username = opponent
+                screen.clear()
+                screen.refresh()
+                return 1
+
+    def friendList(self):
+        """Get list of friends from the server."""
+        headers = {'Cookie': self.cookie_str}
+        try:
+            response = requests.get(f'{SERVER_URL}/friend/list/', headers=headers, verify=False)
+            if response.status_code == 200:
+                friend_list = response.json()
+                print("Friend list fetched successfully!")
+                friend_names = []
+                for user in friend_list:
+                    for friend in user['friends']:
+                        friend_names.append(friend['username'])
+                return friend_names
+            else:
+                print("Failed to fetch friend list")
+                print("Status code:", response.status_code)
+                print("Response:", response.text)
+        except requests.RequestException as e:
+            print("An error occurred while fetching the friend list:", e)
+
+    def invite_friend(self, screen):
+        """Display friend list and handle friend invitation."""
+        friends = self.friendList()
+        while True:
+            screen.clear()
+            screen.addstr(0, 0, "Select a friend to invite:")
+            for idx, friend in enumerate(friends):
+                screen.addstr(idx + 1, 0, f"{idx + 1}. {friend}")
+            screen.addstr(len(friends) + 1, 0, "Press q to go back")
+            screen.refresh()
+            
+            key = screen.getch()
+            if key in (ord('q'), ord('Q')):
+                return 0
+            elif key in range(ord('1'), ord('1') + len(friends)):
+                selected_friend = friends[key - ord('1')]
+                self.send_invite(selected_friend, screen)
+                screen.clear()
+                screen.addstr(0, 0, f"Invitation sent to {selected_friend}!")
+                screen.addstr(1, 0, "Press any key to go back")
+                screen.refresh()
+                screen.getch()
+                return 0
+            
+    def csrf_token(self, screen):
+        headers = {'Cookie': self.cookie_str}
+        response = requests.get(f'{SERVER_URL}/csrf-token', headers=headers, verify=False)
+        screen.clear()
+        data = response.json()
+        return data['csrfToken']
+
+    def send_invite(self, friend, screen):
+        """Send a friend invitation to the selected friend."""
+        headers = {'Cookie': self.cookie_str, 'X-CSRFToken': self.csrf_token(screen), 'Referer': SERVER_URL}
+        data = {"name":"1","created_by":self.username,"to_fight":friend}
+        screen.clear()
+        try:
+            response = requests.post(f'{SERVER_URL}/pong/create/', headers=headers, data=data, verify=False)
+            if response.status_code == 201:
+                print("Friend invitation sent successfully!")
+            else:
+                print("Failed to send friend invitation")
+                print("Status code:", response.status_code)
+                print("Response:", response.text)
+        except requests.RequestException as e:
+            print("An error occurred while sending the friend invitation:", e)
+
     def run(self):
         """Main game loop using curses for terminal display."""
+        curses.wrapper(self._pre_gameinput)
         curses.wrapper(self._run)
 
     def _run(self, screen):
@@ -120,22 +278,23 @@ class GameEngine:
         try:
             last_time = monotonic()
             print(self.result)
-            while self.result['status']:
-                screen.clear()
-                screen.addstr(0, 0, 'Waiting for opponent...')
-                self.result = json.loads(self.ws.recv())
-                if self.result['status'] == 5:
-                    self.room_name = self.result['room_name']
-                    self.opp_username = self.result['opponent']
-                    screen.addstr(1, 0, 'Opponent found')
-                    screen.addstr(2, 0, f'Playing against {self.opp_username}')
-                if self.result['status'] == 2:
-                    screen.addstr(10, 0, 'Game started!')
-                    break
-                screen.refresh()
+            if self.room_name is None:
+                while self.result['status']:
+                    screen.clear()
+                    screen.addstr(0, 0, 'Waiting for opponent...')
+                    self.result = json.loads(self.ws.recv())
+                    if self.result['status'] == 5:
+                        self.room_name = self.result['room_name']
+                        self.opp_username = self.result['opponent']
+                        screen.addstr(1, 0, 'Opponent found')
+                        screen.addstr(2, 0, f'Playing against {self.opp_username}')
+                    if self.result['status'] == 2:
+                        screen.addstr(10, 0, 'Game started!')
+                        break
+                    screen.refresh()
                 
             screen.clear()
-            self.connect_to_pong_websocket()
+            self.connect_to_pong_websocket(screen)
             while True:
                 current_time = monotonic()
                 dt = current_time - last_time
@@ -205,6 +364,10 @@ class GameEngine:
         height, width = screen.getmaxyx()
         ball_size = int(min(width, height) * 0.05)
         paddle_size = int(height * 100 / 600)
+        if game_state['status'] == "waiting":
+            screen.addstr(0, 0, "Game state not available. Please wait for the players to connect.")
+            screen.refresh()
+            return
 
         if ball_size < 1 or paddle_size < 1:
             screen.addstr(0, 0, "Screen is too small to display the game. Please resize the window.")
@@ -254,7 +417,7 @@ if __name__ == "__main__":
         password = getpass.getpass('Password: ')
         game_engine = GameEngine(args.username, password)
         game_engine.authenticate()
-        game_engine.connect_matchmaking_websocket()
+        # game_engine.connect_matchmaking_websocket()
         game_thread = threading.Thread(target=game_engine.run())
         game_thread.daemon = True
         game_thread.start()
@@ -265,5 +428,5 @@ if __name__ == "__main__":
         print("\nGame interrupted. Exiting...")
         exit(0)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        pass
         exit(1)

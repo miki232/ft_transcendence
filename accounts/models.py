@@ -77,8 +77,8 @@ class CustomUser(AbstractUser): # new
         if self.status_login == False:
             return False
         current_time = int(time.time())
-        return (current_time - last_seen_timestamp) <= 300  # 300 seconds = 5 minutes
-
+        return (current_time - last_seen_timestamp) <= 300 # 30 seconds 
+    
     def __str__(self):
         return self.username
 
