@@ -73,9 +73,9 @@ export const navigateTo = async url => {
 	await router();
 };
 
-document.getElementById('languageSwitcher').addEventListener('change', (event) => {
-    changeLanguage(event.target.value);
-});
+// document.getElementById('languageSwitcher').addEventListener('change', (event) => {
+//     changeLanguage(event.target.value);
+// });
 
 // Set initial language based on user preference or default
 
@@ -167,7 +167,7 @@ export async function changeLanguage(language) {
 	
 const userLang = localStorage.getItem('language') || 'en';
 changeLanguage(userLang);
-document.getElementById('languageSwitcher').value = userLang;
+// document.getElementById('languageSwitcher').value = userLang;
 	// const is_loggedin = async () => {
 		//     var csrftoken = getCookie('csrftoken');
 		
@@ -323,15 +323,11 @@ const router = async () => {
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
 			const AboutClass = await match.route.view();
 			view = new AboutClass.default();
-			nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
 			break;
 		case "/contact":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
 			const ContactClass = await match.route.view();
 			view = new ContactClass.default();
-			nav.innerHTML = view.getNav();
-			content.innerHTML = view.getContent();
 			break;
 		case "/dashboard":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
@@ -446,7 +442,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async e => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
-		console.log(e.target);
+		const lang_selector = document.querySelectorAll(".lang-selector");
+		lang_selector.forEach(e => {
+			e.addEventListener("click", () => {
+				// e.preventDefault();
+				console.log(e.getAttribute("value"));
+				changeLanguage(e.getAttribute("value"));
+			});
+		});
 		if (e.target.matches("#play-local")) {
 			localGame_Cache["ws_connection"] = await view.getWebSocket();
 			localGame_Cache["user"] = view.getUser();

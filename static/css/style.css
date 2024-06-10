@@ -53,7 +53,7 @@ h1 {
 }
 
 /***************** HEADER *****************/
-
+/*
 header {
 	position: fixed;
 	top: 0;
@@ -88,17 +88,17 @@ header nav a:not(.profile-pic)::before {
 	height: 2.5px;
 	transition: width .3s;
 	/* transform: scaleX(0); */
-	/* transform-origin: left; */
+	/* transform-origin: left; *//*
 }
 
 header nav a:hover::before {
 	/* transform: scaleX(1); */
-	width: 100%;
+	/*width: 100%;
 }
 
 header h1 {
 	/* text-align: center; */
-	font-size: 30px;
+	/*font-size: 30px;
 	margin: 10px 0;
 }
 
@@ -116,6 +116,52 @@ header img {
 	font-size: 48px;
 	cursor: pointer;
 }
+*/
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	padding: 0 50px;
+}
+
+.bg-body-tertiary {
+	--bs-bg-opacity: 0;
+	color: white;
+}
+
+.select-menu {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.dropdown-item {
+	color: white;
+	font-size: 18px;
+}
+
+.dropdown-item:hover {
+	background-color: rgba(0, 0, 0, 0);
+	color: white;
+	cursor: pointer;
+}
+
+#navbarNavDropdown {
+	justify-content: end;
+}
+
+.nav-item a {
+	font-size: 24px;
+	color: white;
+}
+
+.nav-item a:hover {
+	color: white;
+}
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+	color: white;
+}
+
+
 
 /***************** MAIN *****************/
 
