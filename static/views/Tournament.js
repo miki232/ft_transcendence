@@ -14,6 +14,7 @@ export default class Tournament extends AbstractView {
         this.tournamentstarted = false;
         this.ws = ws;
         this.players = []; // Array to store the players who have joined the tournament
+        this.torunament_chart = [];
         // Fetch the list of users waiting in the tournament from the API
         // fetch('/waiting_for_tournament/')
         // .then(response => response.json())
@@ -97,10 +98,32 @@ export default class Tournament extends AbstractView {
                     console.log('Parsed data:', data);
                     console.log(data.status)
                     if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
-                        const response = await fetch('/tournament_match/');
-                        const matchData = await response.json();
-                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
-                        createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        // const response = await fetch('/tournament_match/');
+                        // const matchData = await response.json();
+                        // console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
+                        // this.displayTournamentChart(this.torunament_chart);
+                        // createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        let round = [];
+                        for (const matchId in data.dict) {
+                            if (data.dict.hasOwnProperty(matchId)) {
+                                const match = `${data.dict[matchId][0]} Vs ${data.dict[matchId][1]}`;
+                                console.log(match);
+                                round.push(match);
+                                this.torunament_chart.push(match);
+                                // createNotification(match);
+                            }
+                        }
+                        // Check if the round already exists in the user's rounds
+                        const roundExists = this.user.round.some(existingRound => {
+                            return existingRound.every((value, index) => value === round[index]);
+                        });
+                        // If the round does not exist, add it
+                        if (!roundExists) {
+                            this.user.round.push(round);
+                        }
+                        this.displayTournamentChart();
+                        console.log("ROUND", this.user.round);
                     }
                     else if (data.status === "Tournament start") {
                         this.user.matchmaking_ws.close(); // Close the WebSocket
@@ -204,5 +227,50 @@ export default class Tournament extends AbstractView {
     addPlayer(player) {
         this.players.push(player);
         this.content.innerHTML = this.getContent(); // Update the content to reflect the new player
+    }
+
+    displayTournamentChart() {
+        console.log(this.user.round); // Add logging
+    
+        const container = document.querySelector('.tournament-container');
+        container.innerHTML = ''; // Clear any existing content
+    
+        const tournamentWrapper = document.createElement('div');
+        tournamentWrapper.className = 'tournament-wrapper';
+    
+        this.user.round.forEach((data, round) => {
+            const roundDiv = document.createElement('div');
+            roundDiv.className = 'round';
+            roundDiv.dataset.round = round;
+        
+            data.forEach((match, index) => {
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'match';
+        
+                const players = match.split(' Vs ');
+        
+                const player1 = document.createElement('div');
+                player1.className = 'player';
+                player1.textContent = players[0];
+        
+                // Create player2 element
+                const player2 = document.createElement('div');
+                player2.className = 'player';
+                player2.textContent = players[1];
+        
+                // Append players to matchDiv
+                matchDiv.appendChild(player1);
+                matchDiv.appendChild(player2);
+        
+                // Append matchDiv to roundDiv
+                roundDiv.appendChild(matchDiv);
+            });
+        
+            // Append roundDiv to tournamentWrapper
+            tournamentWrapper.appendChild(roundDiv);
+        });
+        
+        // Append tournamentWrapper to container
+        container.appendChild(tournamentWrapper);
     }
 }

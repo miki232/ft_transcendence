@@ -1260,3 +1260,89 @@ canvas {
 	}
 
 }
+
+/* TOURNAMENT CHART */
+.tournament-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px;
+    position: relative;
+}
+
+.match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    position: relative;
+}
+
+.player {
+    font-size: 14px;
+    color: var(--quaternary-color);
+    width: 60px;
+    text-align: center;
+}
+
+.vs {
+    font-size: 12px;
+    color: var(--tertiary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.match:before, .match:after {
+    content: '';
+    position: absolute;
+    border-top: 2px solid var(--primary-color);
+    width: 50%;
+    top: 50%;
+}
+
+.match:before {
+    left: -50%;
+}
+
+.match:after {
+    right: -50%;
+}
+
+.round:first-child .match:before, 
+.round:last-child .match:after {
+    border: none;
+}
+
+.tournament-wrapper .round:not(:first-child) .match:before {
+    border-top: none;
+    border-left: 2px solid var(--primary-color);
+    height: 50%;
+    top: 0;
+    left: -2px;
+}
+
+.tournament-wrapper .round:not(:last-child) .match:after {
+    border-top: none;
+    border-right: 2px solid var(--primary-color);
+    height: 50%;
+    bottom: 0;
+    right: -2px;
+}
+

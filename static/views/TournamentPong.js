@@ -40,9 +40,9 @@ export default class Pong extends AbstractView{
 			}
 		})
 			.then(response => response.json())
-			.then(data => {
+			.then(async data => {
 				console.error(data);
-				this.setUser(data.username);
+				await this.setUser(data.username);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -154,8 +154,8 @@ export default class Pong extends AbstractView{
             //         document.getElementById("score2").innerHTML = "Not your Score: " + data.score2;
             // }
             if (data.victory != "none"){
-                console.log(data.victory, this.user.user);
-                if (this.user.user === data.victory){
+                console.log(data.victory, this.user.username);
+                if (this.user.username === data.victory){
                     console.log("HAI VINTO");
                     const content = document.querySelector("#content");
                     let win = await this.getround();
@@ -229,7 +229,7 @@ export default class Pong extends AbstractView{
     async getContent() {
         await this.loadUserData();
         await this.connect_game();
-        console.log("PROVA USER", this.user.user);
+        console.log("PROVA USER", this.user.username);
         // this.ws.onmessage = function(event){
         //     const data = JSON.parse(event.data);
         //     console.log(data);
