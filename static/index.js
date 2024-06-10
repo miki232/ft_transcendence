@@ -340,47 +340,47 @@ const router = async () => {
 			view = new DashboardClass.default(user);
 			break;
 		case "/dashboard/history":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const HistoryClass = await match.route.view();
 			view = new HistoryClass.default(user, user);
 			break;
 		case "/dashboard/settings":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const SettingsClass = await match.route.view();
 			view = new SettingsClass.default(user);
 			break;
 		case "/dashboard/requests":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const RequestsClass = await match.route.view();
 			view = new RequestsClass.default(user);
 			break;
 		case "/local_game":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
 			break;
 		case "/friends":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const FriendsClass = await match.route.view();
 			view = new FriendsClass.default(user);
 			break;
 		case `/friends/user_info_${userID}`:
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const InfoClass = await match.route.view();
 			view = new InfoClass.default(userID, user);
 			break;
 		case `/friends/user_info_${userID}/history`:
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const UserInfoHistoryClass = await match.route.view();
 			view = new UserInfoHistoryClass.default(userID, user);
 			break;
 		case "/online":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const OnlineClass = await match.route.view();
 			view = new OnlineClass.default(user);
 			break;
 		case "/matchmaking":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			// if (previousUrl === "/pong")
 			// 	break;
 			const MatchMakingClass = await match.route.view();
@@ -388,7 +388,7 @@ const router = async () => {
 			// console.log("OSU", room_name);
 			break;
 		case "/friendly_match":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const FriendlyMatchClass = await match.route.view();
 			view = new FriendlyMatchClass.default(user);
 			break;
@@ -433,7 +433,9 @@ const router = async () => {
 
 };
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", async () => {
+	await router();
+});
 //** API per le History Dei Match*/
 // https://127.0.0.1:8001/accounts/match_history/?username=<USERNAME>
 // URL per vedere la history dei match,

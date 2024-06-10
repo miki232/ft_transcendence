@@ -9,20 +9,24 @@ export default class Online extends AbstractView {
 	constructor(user) {
 		super();
 		this.user = user;
+        this.player = 0
+		this.ws_local = null;
+		this.opponent = null;
+		this.room = null;
+        this.tournament = null;
+		this.initialize();
+		// this.getRoom();
+	}
+
+	initialize() {
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("nav");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		this.activeBtn();
 		this.user.expProgress();
-        this.player = 0
-		this.ws_local = null;
-		this.opponent = null;
-		this.room = null;
-        this.tournament = null;
-		// this.getRoom();
 	}
-	
+
 	async getWebSocket() {
 		return this.ws_local;
 	}

@@ -7,11 +7,7 @@ export default class extends AbstractView {
 	constructor(user) {
 		super();
 		this.user = user;
-		this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
-		this.nav.innerHTML = this.getNav();
-		this.content.innerHTML = this.getContent();
-		this.user.expProgress();
+		this.initialize();
 		// this.isValid = false;
 		// this.user;
 		// this.email;
@@ -19,6 +15,14 @@ export default class extends AbstractView {
 		// this.pro_pic;
 		// this.validateLogin();
 		// this.setTitle("Dashboard");
+	}
+
+	initialize() {
+		this.content = document.querySelector("#content");
+		this.nav = document.querySelector("nav");
+		this.nav.innerHTML = this.getNav();
+		this.content.innerHTML = this.getContent();
+		this.user.expProgress();
 	}
 
 	// async loadUserData() {
