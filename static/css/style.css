@@ -1338,7 +1338,7 @@ canvas {
 }
 
 /* TOURNAMENT CHART */
-.tournament-container {
+/* .tournament-container {
     display: flex;
     justify-content: center;
     padding: 20px;
@@ -1420,5 +1420,159 @@ canvas {
     height: 50%;
     bottom: 0;
     right: -2px;
+} */
+
+/* .tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 5px 0;
+}
+
+.connector {
+    width: 2px;
+    height: 40px;
+    background-color: #ccc;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .tournament-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .round {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .match {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .player {
+        width: 80%;
+    }
+} */
+
+.tournament-container {
+    padding: 10px;
+}
+
+.waiting-wrapper {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.waiting-players {
+    list-style-type: none;
+    padding: 0;
+}
+
+.waiting-players li {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px 0;
+    padding: 10px;
+}
+
+.tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 5px 0;
+}
+
+.connector {
+    width: 2px;
+    height: 40px;
+    background-color: #ccc;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .tournament-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .round {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .match {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .player {
+        width: 80%;
+    }
 }
 

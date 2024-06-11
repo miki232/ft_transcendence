@@ -8,17 +8,33 @@ export default class Pong extends AbstractView{
         super();
         this.user =  user;
         this.room_name = room_name;
-        this.game_ws = "null";
-        this.ballX = 0;
-        this.ballY = 0;
-        this.paddle_width = 10;
+        this.opponent = this.user.tournament_opp.username;
+        this.player1 = undefined;
+        this.player2 = undefined;
+        this.player1_pic = undefined;
+        this.player2_pic = undefined;
+        this.score1;
+        this.score2;
+        this.ball_size = 20;
+        this.ballX = 800 / 2 - this.ball_size / 2;
+        this.ballY = 600 / 2 - this.ball_size / 2;
+        this.paddle_width = 20;
         this.paddle_height = 100;
-        this.ball_radius = 5;
-        this.playerPaddleY = 400 / 2 - this.paddle_height / 2;
-        this.opponentPaddleY = 400 / 2 - this.paddle_height / 2;
+        this.net_width = 4;
+        this.net_height = 20;
+        this.playerPaddleY = 600 / 2 - this.paddle_height / 2;
+        this.opponentPaddleY = 600 / 2 - this.paddle_height / 2;
         this.arrowUpPressed = false;
         this.arrowDownPressed = false;
         this.users = "null";
+        this.game_ws = "null";
+        this.initialize();
+
+    }
+
+    async initialize() {
+        document.querySelector('header').style.display = 'none';
+        document.querySelector('body').classList.add('game-bg');
 
     }
 
@@ -41,7 +57,6 @@ export default class Pong extends AbstractView{
 		})
 			.then(response => response.json())
 			.then(async data => {
-				console.error(data);
 				await this.setUser(data.username);
 			})
 			.catch((error) => {
@@ -75,23 +90,82 @@ export default class Pong extends AbstractView{
         }
     }
 
+    drawPaddle(ctx, x, y, width, height, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.fillRect(x, y, width, height);
+    }
+
+    drawBall(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    drawNet(ctx, canvas) {
+        for (let i = 0; i < canvas.height + this.net_height; i += this.net_height * 2) {
+            this.drawPaddle(ctx, canvas.width / 2 - this.net_width / 2, i, this.net_width, this.net_height, '#e10088');
+        }
+    }
+
     update(canvas, context) {
         this.updatePaddlePosition();
         // Clear the previous frame
         context.clearRect(0, 0, canvas.width, canvas.height);
 
+        this.drawNet(context, canvas);
+        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
-        context.fillStyle = '#FFFFFF';
-        context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
+        // this.updatePaddlePosition();
+        // // Clear the previous frame
+        // context.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw opponent paddle
-        context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
+        // // Draw player paddle
+        // context.fillStyle = '#FFFFFF';
+        // context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
 
-        context.beginPath();
-        context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
-        context.fillStyle = '#FFFFFF';
-        context.fill();
-        context.closePath();
+        // // Draw opponent paddle
+        // context.fillRect(canvas.width - this.paddle_width, this.opponentPaddleY, this.paddle_width, this.paddle_height);
+
+        // context.beginPath();
+        // context.arc(this.ballX, this.ballY, 5, 0, Math.PI * 2);
+        // context.fillStyle = '#FFFFFF';
+        // context.fill();
+        // context.closePath();
+    }
+
+    scoreTabMaker(data) {
+        console.log(data, this.user.getUser(), this.user.tournament_opp.username);
+        if (data.player === this.user.getUser()) {
+            this.player1 = this.user.getUser();
+            this.player2 = this.user.tournament_opp.username;
+            this.player1_pic = this.user.getPic();
+            this.player2_pic = this.user.tournament_opp.pro_pic;
+        } else {
+            this.player1 = this.user.tournament_opp.username;
+            this.player2 = this.user.getUser();
+            this.player1_pic = this.user.tournament_opp.pro_pic;
+            this.player2_pic = this.user.getPic();
+        }
+        const playerOneTab = document.getElementById('player1-score');
+        const playerTwoTab = document.getElementById('player2-score');
+        const playerOneHTML = `
+            <img src="${this.player1_pic}"/><p>${this.player1}</p><p id="score1"></p>
+        `;
+        const playerTwoHTML = `
+            <p id="score2"></p><p>${this.player2}</p><img src="${this.player2_pic}"/>
+        `;
+        playerOneTab.innerHTML = playerOneHTML;
+        playerTwoTab.innerHTML = playerTwoHTML;
+        this.score1 = document.getElementById("score1");
+        this.score2 = document.getElementById("score2");
     }
 
     updatePaddlePosition() {
@@ -128,6 +202,7 @@ export default class Pong extends AbstractView{
         this.update(canvas, context);
         this.game_ws.onmessage = async event => {
             const data = JSON.parse(event.data);
+            this.scoreTabMaker(data);
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
             }
@@ -141,6 +216,8 @@ export default class Pong extends AbstractView{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
+            this.score1.innerHTML = data.score1;
+            this.score2.innerHTML = data.score2;
             // if (data.score1 !== undefined) {
             //     if (data.player === users)
             //         document.getElementById("score1").innerHTML = "Your Score: " + data.score1;
@@ -174,6 +251,7 @@ export default class Pong extends AbstractView{
                         const view = new Tournament(this.user, this.user.matchmaking_ws);
                         content.innerHTML =  view.getContent();
                         await view.sendJoin(); 
+                        view.displayTournamentChart();
                         let room = await view.getRoom_Match();
                         console.log("JOINING TOURNAMENT");
                         console.log("JOINING TOURNAMENT", room);
@@ -229,13 +307,14 @@ export default class Pong extends AbstractView{
     async getContent() {
         await this.loadUserData();
         await this.connect_game();
-        console.log("PROVA USER", this.user.username);
-        // this.ws.onmessage = function(event){
-        //     const data = JSON.parse(event.data);
-        //     console.log(data);
-        // };
-        return  `
-                <canvas id="pongCanvas" width="800" height="400"></canvas>
+        const pongHTML =  `
+            <div id="scores">
+                <div id="player1-score" class="score-info"></div>
+                <div id="the-match"><h1>THE MATCH</h1></div>
+                <div id="player2-score" class="score-info"></div>
+            </div>
+            <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
+        return pongHTML;
     }
 }
