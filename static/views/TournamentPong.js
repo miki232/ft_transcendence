@@ -202,7 +202,10 @@ export default class Pong extends AbstractView{
         this.update(canvas, context);
         this.game_ws.onmessage = async event => {
             const data = JSON.parse(event.data);
-            this.scoreTabMaker(data);
+            if (data.player !== undefined && this.player1 === undefined) {
+                this.scoreTabMaker(data);
+            }
+            // this.scoreTabMaker(data);
             if (data.ball_x !== undefined) {
                 this.ballX = data.ball_x;
             }
@@ -238,7 +241,13 @@ export default class Pong extends AbstractView{
                     let win = await this.getround();
                     await this.closeWebSocket();
                     if (win){
-                        content.innerHTML = `<h1>YOU WON</h1>`;
+                        content.innerHTML = `<h1>YOU WON</h1>`;                        
+                        setTimeout(() => {
+                            this.user.disconnected = false;
+                            document.querySelector("header").style.display = "block";
+                            document.querySelector("body").classList.remove("game-bg");
+                            navigateTo("/online");
+                        }, 3000);
                         return;
                     }
                     this.user.matchmaking_ws = new WebSocket(
@@ -249,15 +258,20 @@ export default class Pong extends AbstractView{
                         )
                     this.user.matchmaking_ws.onopen = async () => {
                         const view = new Tournament(this.user, this.user.matchmaking_ws);
-                        content.innerHTML =  view.getContent();
+                        // content.innerHTML =  view.getContent();
+                        let newContent = view.getContent();
+                        content.innerHTML += newContent;
                         await view.sendJoin(); 
                         view.displayTournamentChart();
                         let room = await view.getRoom_Match();
                         console.log("JOINING TOURNAMENT");
                         console.log("JOINING TOURNAMENT", room);
-                        this.room_name = room;
-                        content.innerHTML =  await this.getContent();
-                        await this.loop();
+                        // this.room_name = room;
+                        // content.innerHTML =  await this.getContent();
+                        let newCanvas = await this.getContent();
+                        let oldCanvas = document.getElementById('your-canvas-id');
+                        oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+                        // await this.loop();
                     };
                     // const view = new Tournament(this.users, ws);
                     // content.innerHTML =  view.getContent();
@@ -271,6 +285,12 @@ export default class Pong extends AbstractView{
                     // alert("AHAHAH hai PERSO")
                     createNotification("YOU LOST");
                     await this.closeWebSocket();
+                    setTimeout(() => {
+                        this.user.disconnected = false;
+                        document.querySelector("header").style.display = "block";
+                        document.querySelector("body").classList.remove("game-bg");
+                        navigateTo("/online");
+                    }, 3000);
                 }
             }
 

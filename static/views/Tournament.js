@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
+import Pong from "./TournamentPong.js";
 
 export default class Tournament extends AbstractView {
     constructor(user, ws) {
@@ -16,6 +17,7 @@ export default class Tournament extends AbstractView {
         this.players = []; // Array to store the players who have joined the tournament
         this.torunament_chart = [];
         this.getWaitingPlayers(); // Fetch waiting players on initialization
+        let isMessageProcessed = false;
 
         // Fetch the list of users waiting in the tournament from the API
         // fetch('/waiting_for_tournament/')
@@ -150,6 +152,7 @@ export default class Tournament extends AbstractView {
                         this.content.innerHTML = `<h1>TOURNAMENT STARTED</h1>`;
                         this.content.innerHTML += `${matchData.created_by} vs ${matchData.opponent}`;
                         console.log("ROOM NAME", this.roomName);
+                        let isMessageProcessed = false;
                         resolve(this.roomName);
                     }
                     else if (data.status === "Waiting for players") {
@@ -178,6 +181,22 @@ export default class Tournament extends AbstractView {
                 console.error('WebSocket error:', error);
                 reject(error);
             };
+        })
+        .then(async room_name => {
+            try
+            {
+                document.getElementById("opponent").innerHTML = this.user.tournament_opp.username;   
+            }
+            catch
+            {
+                console.log("ROOM NAME", room_name);
+                const view = new Pong(this.user, room_name);
+                content.innerHTML = await view.getContent();
+                await view.loop();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
     }
 

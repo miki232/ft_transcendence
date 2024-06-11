@@ -394,27 +394,27 @@ const router = async () => {
 		// 	content.innerHTML = await view.getContent();
 		// 	await view.loop();
 		// 	break;
-		case "/pong_tournament":
-			///** DA rivisitare */
-			// document.body.classList.remove("body");
-			// document.body.classList.add("bodypong");
-			// document.getElementById("container").classList.add("containerpong");
-			// document.getElementById("container").removeAttribute("id");
-			//***sdassdad */
-			console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
-			const Pong_tournamentClass = await match.route.view();
-			view = new Pong_tournamentClass.default(user, room_name);
-			content.innerHTML = await view.getContent();
-			await view.loop();
-			break;
+		// case "/pong_tournament":
+		// 	///** DA rivisitare */
+		// 	// document.body.classList.remove("body");
+		// 	// document.body.classList.add("bodypong");
+		// 	// document.getElementById("container").classList.add("containerpong");
+		// 	// document.getElementById("container").removeAttribute("id");
+		// 	//***sdassdad */
+		// 	console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
+		// 	const Pong_tournamentClass = await match.route.view();
+		// 	view = new Pong_tournamentClass.default(user, room_name);
+		// 	content.innerHTML = await view.getContent();
+		// 	await view.loop();
+		// 	break;
 		case "/tournament":
 			const TournamentClass = await match.route.view();
 			console.log(user.matchmaking_ws);
 			view = new TournamentClass.default(user, user.matchmaking_ws);
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
-			console.log("OSU", room_name);
-			if (room_name !== null) navigateTo("/pong_tournament");
+			// console.log("OSU", room_name);
+			// if (room_name !== null) navigateTo("/pong_tournament");
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();
