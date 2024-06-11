@@ -15,6 +15,8 @@ export default class Tournament extends AbstractView {
         this.ws = ws;
         this.players = []; // Array to store the players who have joined the tournament
         this.torunament_chart = [];
+        this.getWaitingPlayers(); // Fetch waiting players on initialization
+
         // Fetch the list of users waiting in the tournament from the API
         // fetch('/waiting_for_tournament/')
         // .then(response => response.json())
@@ -98,9 +100,17 @@ export default class Tournament extends AbstractView {
                     console.log('Parsed data:', data);
                     console.log(data.status)
                     if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
-                        // const response = await fetch('/tournament_match/');
-                        // const matchData = await response.json();
-                        // console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        const response = await fetch('/tournament_match/');
+                        const matchData = await response.json();
+                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        if (this.user.username === matchData.created_by){
+                            this.user.tournament_opp.username = matchData.opponent;
+                            this.user.tournament_opp.pro_pic = matchData.pro_pic_opponent;
+                        }
+                        else{
+                            this.user.tournament_opp.username = matchData.created_by;
+                            this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
+                        }
                         // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
                         // this.displayTournamentChart(this.torunament_chart);
                         // createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
@@ -183,14 +193,37 @@ export default class Tournament extends AbstractView {
         try {
             const response = await fetch('/waiting_for_tournament/');
             const data = await response.json();
-            // Add the users to the players array
             this.players = Object.values(data).map(item => item[0]);
-            // Update the content to reflect the new players
-            this.content.innerHTML = this.getContent();
+            this.displayWaitingPlayers(); // Update the content to reflect the new players
         } catch (error) {
             console.error('Error:', error);
         }
     }
+
+    displayWaitingPlayers() {
+        const container = document.querySelector('.tournament-container');
+        container.innerHTML = ''; // Clear any existing content
+    
+        const waitingWrapper = document.createElement('div');
+        waitingWrapper.className = 'waiting-wrapper';
+
+        const title = document.createElement('h2');
+        title.textContent = 'Waiting Players';
+        waitingWrapper.appendChild(title);
+
+        const playerList = document.createElement('ul');
+        playerList.className = 'waiting-players';
+    
+        this.players.forEach(player => {
+            const playerItem = document.createElement('li');
+            playerItem.textContent = player.username;
+            playerList.appendChild(playerItem);
+        });
+    
+        waitingWrapper.appendChild(playerList);
+        container.appendChild(waitingWrapper);
+    }
+
 
 
     async sendJoin() {
@@ -208,14 +241,16 @@ export default class Tournament extends AbstractView {
 
     getContent() {
         
-        let content = `<div class="tournament-container">`;
-        content += `<h2>Tournament Participants</h2>`;
-        content += `<ul class="tournament-participants">`;
-        this.players.forEach(player => {
-            content += `<li>${player.username}</li>`;
-        });
-        content += `</ul>`;
-        content += `</div>`;
+        // let content = `<div class="tournament-container">`;
+        // content += `<h2>Tournament Participants</h2>`;
+        // content += `<ul class="tournament-participants">`;
+        // this.players.forEach(player => {
+        //     content += `<li>${player.username}</li>`;
+        // });
+        // content += `</ul>`;
+        // content += `</div>`;
+        // return content;
+        let content = `<div class="tournament-container"></div>`;
         return content;
     }
 
@@ -229,6 +264,51 @@ export default class Tournament extends AbstractView {
         this.content.innerHTML = this.getContent(); // Update the content to reflect the new player
     }
 
+    // displayTournamentChart() {
+    //     console.log(this.user.round); // Add logging
+    
+    //     const container = document.querySelector('.tournament-container');
+    //     container.innerHTML = ''; // Clear any existing content
+    
+    //     const tournamentWrapper = document.createElement('div');
+    //     tournamentWrapper.className = 'tournament-wrapper';
+    
+    //     this.user.round.forEach((data, round) => {
+    //         const roundDiv = document.createElement('div');
+    //         roundDiv.className = 'round';
+    //         roundDiv.dataset.round = round;
+        
+    //         data.forEach((match, index) => {
+    //             const matchDiv = document.createElement('div');
+    //             matchDiv.className = 'match';
+        
+    //             const players = match.split(' Vs ');
+        
+    //             const player1 = document.createElement('div');
+    //             player1.className = 'player';
+    //             player1.textContent = players[0];
+        
+    //             // Create player2 element
+    //             const player2 = document.createElement('div');
+    //             player2.className = 'player';
+    //             player2.textContent = players[1];
+        
+    //             // Append players to matchDiv
+    //             matchDiv.appendChild(player1);
+    //             matchDiv.appendChild(player2);
+        
+    //             // Append matchDiv to roundDiv
+    //             roundDiv.appendChild(matchDiv);
+    //         });
+        
+    //         // Append roundDiv to tournamentWrapper
+    //         tournamentWrapper.appendChild(roundDiv);
+    //     });
+        
+    //     // Append tournamentWrapper to container
+    //     container.appendChild(tournamentWrapper);
+    // }
+
     displayTournamentChart() {
         console.log(this.user.round); // Add logging
     
@@ -238,12 +318,12 @@ export default class Tournament extends AbstractView {
         const tournamentWrapper = document.createElement('div');
         tournamentWrapper.className = 'tournament-wrapper';
     
-        this.user.round.forEach((data, round) => {
+        this.user.round.forEach((data, roundIndex) => {
             const roundDiv = document.createElement('div');
             roundDiv.className = 'round';
-            roundDiv.dataset.round = round;
+            roundDiv.dataset.round = roundIndex;
         
-            data.forEach((match, index) => {
+            data.forEach((match, matchIndex) => {
                 const matchDiv = document.createElement('div');
                 matchDiv.className = 'match';
         
@@ -253,24 +333,26 @@ export default class Tournament extends AbstractView {
                 player1.className = 'player';
                 player1.textContent = players[0];
         
-                // Create player2 element
                 const player2 = document.createElement('div');
                 player2.className = 'player';
                 player2.textContent = players[1];
         
-                // Append players to matchDiv
                 matchDiv.appendChild(player1);
                 matchDiv.appendChild(player2);
+    
+                if (roundIndex > 0) {
+                    const connectorDiv = document.createElement('div');
+                    connectorDiv.className = 'connector';
+                    matchDiv.appendChild(connectorDiv);
+                }
         
-                // Append matchDiv to roundDiv
                 roundDiv.appendChild(matchDiv);
             });
         
-            // Append roundDiv to tournamentWrapper
             tournamentWrapper.appendChild(roundDiv);
         });
-        
-        // Append tournamentWrapper to container
+    
         container.appendChild(tournamentWrapper);
     }
+    
 }
