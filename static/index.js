@@ -48,7 +48,7 @@ setLanguage(userLanguage);
 */
 
 const container = document.querySelector("#container");
-const nav = document.querySelector("nav");
+const nav = document.querySelector("header");
 const content = document.querySelector("#content");
 var user = new User();
 let view = null;
@@ -439,7 +439,7 @@ window.addEventListener("popstate", async () => {
 ///*/
 
 document.addEventListener("DOMContentLoaded", () => {
-	document.body.addEventListener("click", async e => {
+	document.body.addEventListener("click", async (e) => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
 		const lang_selector = document.querySelectorAll(".lang-selector");
@@ -450,6 +450,19 @@ document.addEventListener("DOMContentLoaded", () => {
 				changeLanguage(e.getAttribute("value"));
 			});
 		});
+		if (e.target.matches(".toggler-icon")) {
+			const navbarCollaspe = document.querySelector("#navbarNavDropdown");
+			const spanToggler = document.querySelector(".navbar-toggler-icon");
+			if (navbarCollaspe.classList.contains("show-navbar")) {
+				setTimeout(() => {
+					spanToggler.innerHTML = '<ion-icon name="menu-outline" class="toggler-icon"></ion-icon>';
+					navbarCollaspe.classList.remove("show-navbar");
+				}, 400);
+			} else {
+				spanToggler.innerHTML = '<ion-icon name="close-outline" class="toggler-icon"></ion-icon>';
+				navbarCollaspe.classList.add("show-navbar");
+			}
+		}
 		if (e.target.matches("#play-local")) {
 			localGame_Cache["ws_connection"] = await view.getWebSocket();
 			localGame_Cache["user"] = view.getUser();
@@ -479,11 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		// 	e.preventDefault();
 		// 	navigateTo("/dashboard");
 		// }
-		if (e.target.matches("[home-link]")) {
-			e.preventDefault();
-			e.stopPropagation();
-			navigateTo("/dashboard");
-		} else if (e.target.matches("[data-link]")) {
+		if (e.target.matches("[data-link]")) {
 			e.preventDefault();
 			navigateTo(e.target.href);
 		}

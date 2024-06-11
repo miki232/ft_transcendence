@@ -9,7 +9,7 @@ export default class FriendlyMatch extends AbstractView {
         super();
         this.user = user;
         this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
+		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
         this.roomName = "undefined";

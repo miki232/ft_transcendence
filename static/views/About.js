@@ -32,7 +32,7 @@ export default class extends AbstractView {
 			  <div class="container-fluid">
 				<h1 id="logo">The Match</h1>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
+					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNavDropdown">
 				  <ul class="navbar-nav">
@@ -40,10 +40,10 @@ export default class extends AbstractView {
 					  <a class="nav-link" href="/" data-link>Home</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" aria-current="page" href="/about">About Us</a>
+					  <a class="nav-link" href="/about" aria-current="page" data-link>About Us</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/contact">Contact</a>
+					  <a class="nav-link" href="/contact" data-link>Contact</a>
 					</li>
 					<li class="nav-item dropdown">
 					  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
