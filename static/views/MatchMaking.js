@@ -300,7 +300,7 @@ export default class MatchMaking extends AbstractView {
 					  <a class="nav-link" href="/local_game" data-link>Local Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/online_game" data-link>Online Game</a>
+					  <a class="nav-link" href="/online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
