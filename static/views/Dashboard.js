@@ -150,19 +150,20 @@ export default class extends AbstractView {
 	}
 
 	getContent() {
-		let dashboardHTML = `
+		const dashboardHTML = `
 		<div class="dashboard">
-		<div class="profile-card">
-		<div class="user-dashboard">
-						<img alt="Profile picture" src="${this.user.getPic()}"/>
-						<div class="user-info">
-							<h3>${this.user.getUser()}</h3>
-							<h5 data-translate="level">Level${this.user.getLevel()}</h5>
-							<div class="exp-bar"><div class="progress-bar"></div></div>
-						</div>
+			<div class="profile-card">
+				<h1>Dashboard</h1>
+				<div class="user-dashboard">
+					<img alt="Profile picture" src="${this.user.getPic()}"/>
+					<div class="user-info">
+						<h3>${this.user.getUser()}</h3>
+						<h5 data-translate="level">Level${this.user.getLevel()}</h5>
+						<div class="exp-bar"><div class="progress-bar"></div></div>
 					</div>
-					<div class="btns-container">
-						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+				</div>
+				<div class="btns-container">
+					<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
 						<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
 						<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
 						<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
@@ -173,6 +174,7 @@ export default class extends AbstractView {
 					</div>
 				</div>
 			</div>
+		</div>
 		`;
 		// dashboardHTML += await this.room.getContent();
 		return dashboardHTML;

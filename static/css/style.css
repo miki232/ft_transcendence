@@ -251,6 +251,10 @@ header {
 	transition: transform 0.3s ease;
 }
 
+.form-box form {
+	justify-content: center;
+}
+
 .btns-container,
 .back-btn-container {
 	width: 100%;
