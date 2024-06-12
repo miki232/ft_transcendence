@@ -260,7 +260,7 @@ export default class Pong extends AbstractView{
                         const view = new Tournament(this.user, this.user.matchmaking_ws);
                         // content.innerHTML =  view.getContent();
                         let newContent = view.getContent();
-                        content.innerHTML += newContent;
+                        content.innerHTML = newContent;
                         await view.sendJoin(); 
                         view.displayTournamentChart();
                         let room = await view.getRoom_Match();
@@ -268,9 +268,10 @@ export default class Pong extends AbstractView{
                         console.log("JOINING TOURNAMENT", room);
                         // this.room_name = room;
                         // content.innerHTML =  await this.getContent();
-                        let newCanvas = await this.getContent();
-                        let oldCanvas = document.getElementById('your-canvas-id');
-                        oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+                        // let newCanvas = await this.getContent();
+                        // let oldCanvas = document.getElementById('pongCanvas');
+                        // oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+                        // content.innerHTML =  await this.getContent();
                         // await this.loop();
                     };
                     // const view = new Tournament(this.users, ws);
