@@ -9,11 +9,11 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match
+from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match, Tournament
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer
+from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer, TournamentSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
@@ -210,6 +210,18 @@ class TournamentCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class TournamentHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        user = CustomUser.objects.get(username=request.user)
+        matches = Tournament_Match.objects.filter(user1=user) | Tournament_Match.objects.filter(user2=user)
+        tournaments = Tournament.objects.filter(matches__in=matches).distinct()
+        serializer = TournamentSerializer(tournaments, many=True)
+        return Response(serializer.data)
     
 # Create your views here.
 @login_required

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RoomName, TournamentPlaceHolder, Tournament_Match
+from .models import RoomName, TournamentPlaceHolder, Tournament_Match, Tournament
 from accounts.models import CustomUser
 
 class RoomNameSerializer(serializers.ModelSerializer):
@@ -24,3 +24,20 @@ class TournametMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament_Match
         fields = ['name', 'player1', 'player2', 'player1_score', 'player2_score', 'result']
+
+class TMatchSerializer(serializers.ModelSerializer):
+    user1 = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())
+    user2 = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())
+    winner = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())
+    
+    class Meta:
+        model = Tournament_Match
+        fields = ['room_name', 'user1', 'user2', 'score_user1', 'score_user2', 'winner']
+
+class TournamentSerializer(serializers.ModelSerializer):
+    winner = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())
+    matches = TMatchSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Tournament
+        fields = ['name', 'matches', 'timestamp', 'winner']

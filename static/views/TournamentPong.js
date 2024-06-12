@@ -241,6 +241,7 @@ export default class Pong extends AbstractView{
                     let win = await this.getround();
                     await this.closeWebSocket();
                     if (win){
+                        this.user.round = [];
                         content.innerHTML = `<h1>YOU WON</h1>`;                        
                         setTimeout(() => {
                             this.user.disconnected = false;
@@ -285,6 +286,7 @@ export default class Pong extends AbstractView{
                 {
                     // alert("AHAHAH hai PERSO")
                     createNotification("YOU LOST");
+                    this.user.round = [];
                     await this.closeWebSocket();
                     setTimeout(() => {
                         this.user.disconnected = false;
