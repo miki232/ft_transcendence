@@ -223,6 +223,22 @@ class TournamentHistoryView(APIView):
         serializer = TournamentSerializer(tournaments, many=True)
         return Response(serializer.data)
     
+class Search_TournamentMatchView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        username = request.query_params.get('username')
+        print("Search_TournamentMatchView 1", username)
+        if username is not None:
+            user = CustomUser.objects.get(username=username)
+            matches = Tournament_Match.objects.filter(user1=user) | Tournament_Match.objects.filter(user2=user)
+            tournaments = Tournament.objects.filter(matches__in=matches).distinct()
+            serializer = TournamentSerializer(tournaments, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"detail": "Username query parameter is required."}, status=400)
+
 # Create your views here.
 @login_required
 def pong(request, room_name):
