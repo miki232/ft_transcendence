@@ -183,15 +183,8 @@ export default class LocalGame extends AbstractView {
 					<li class="nav-item">
 					  <a class="nav-link" href="/chat" data-link>Chat</a>
 					</li>
-					<li class="nav-item dropdown">
-					  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-						Language
-					  </a>
-					  <ul class="dropdown-menu select-menu">
-						<li class="dropdown-item lang-selector" value="en">English</li>
-						<li class="dropdown-item lang-selector" value="fr">Français</li>
-						<li class="dropdown-item lang-selector" value="it">Italiano</li>
-					  </ul>
+					<li class="nav-item">
+					  <a class="nav-link" href="/dashboard" data-link>Dashboard</a>
 					</li>
 				  </ul>
 				</div>
