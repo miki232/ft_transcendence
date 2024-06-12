@@ -20,10 +20,12 @@ export default class Settings extends AbstractView {
 		this.nav.innerHTML = this.getNav();
 		this.lang = localStorage.getItem('language') || 'en';
 		this.content.innerHTML = this.getContent();
+		this.isStartSettings = true;
 		this.activeBtn();
 	}
 
 	async changeAvatar() {
+		this.isStartSettings = false;
 		const changePicBtn = document.getElementById("change-pic");
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
@@ -116,6 +118,7 @@ export default class Settings extends AbstractView {
 	}
 
 	async changeUsername() {
+		this.isStartSettings = false;
 		const changePicBtn = document.getElementById("change-pic");
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
@@ -202,6 +205,7 @@ export default class Settings extends AbstractView {
 	}
 
 	async changePassword() {
+		this.isStartSettings = false;
 		const changePicBtn = document.getElementById("change-pic");
 		const changeUsernameBtn = document.getElementById("change-username");
 		const deleteAccountBtn = document.getElementById("delete-account");
@@ -294,6 +298,7 @@ export default class Settings extends AbstractView {
 	}
 
 	async deleteAccount() {
+		this.isStartSettings = false;
 		const changePicBtn = document.getElementById("change-pic");
 		const changeUsernameBtn = document.getElementById("change-username");
 		const changePasswordBtn = document.getElementById("change-password");
@@ -383,7 +388,12 @@ export default class Settings extends AbstractView {
 		const backBtn = document.getElementById("back");
 		backBtn.addEventListener("click", e => {
 			e.preventDefault();
-			navigateTo("/dashboard");
+			if (this.isStartSettings) {
+				navigateTo("/dashboard");
+			} else {
+				navigateTo("/dashboard/settings");
+				this.isStartSettings = true;
+			}
 		});
 		const changeUsernameBtn = document.getElementById("change-username");
 		changeUsernameBtn.addEventListener("click", () => {
@@ -450,7 +460,7 @@ export default class Settings extends AbstractView {
 						<h3>${this.user.getUser()}</h3>
 					</div>
 					<div class="btns-container">
-						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
 						<button type="button" data-translate="changeavatar" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
 						<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
 						<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
