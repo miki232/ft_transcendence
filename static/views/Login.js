@@ -130,17 +130,19 @@ export default class extends AbstractView {
 						<ion-icon name="lock-closed-outline"></ion-icon>
 					</div>
 					<div class="checkbox">
-						<span>
+						<div>
 							<input type="checkbox" id="login-checkbox">
 							<label data-translate="rememberme" for="login-checkbox">Remember me</label>
-						</span>
-						<h5 data-translate="forgotpass" >Forgot password?</h5>
+						</div>
+						<div>
+							<h5 data-translate="forgotpass">Forgot password?</h5>
+						</div>
 					</div>
 					<button type="submit" data-translate="login" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon">Login</button>
 					<div class="login-register">
 						<p data-translate="noaccount" >Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
 					</div>
-					<div class="hr" style="width: 75%; margin: 25px 0 30px 0;"></div>
+					<div class="hr" style="width: 80%; margin: 25px 0 30px 0;"></div>
 					<a href="accounts/authorize/" id="school-login" data-translate="login42">Login with 42 intra account</a>
 				</form>
 				<form class="register-form">
@@ -164,7 +166,7 @@ export default class extends AbstractView {
 						<input type="checkbox" id="register-checkbox">
 						<label for="register-checkbox">I agree to the terms & conditions</label>
 					</div>
-					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register</button>
+					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register<ion-icon name="save-outline"></ion-icon></button>
 					<div class="login-register">
 						<p data-translate="alreadyacc">Already have an account? <a href="#" class="login-btn" data-translate="fromregtologin">Login</a></p>
 					</div>
