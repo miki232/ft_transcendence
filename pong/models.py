@@ -41,6 +41,12 @@ class Tournament_Match(models.Model):
     def __str__(self):
         return f'Match between {self.user1.username} and {self.user2.username} on {self.date}'
 
+class Tournament(models.Model):
+    name = models.CharField(max_length=255, unique=True, null=True)
+    matches = models.ManyToManyField(Tournament_Match)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
+
 class TournamentRoomName(models.Model):
     name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -51,13 +57,7 @@ class TournamentRoomName(models.Model):
 
     def __str__(self):
         return self.name
-
-class Tournament(models.Model):
-    name = models.CharField(max_length=255, unique=True, null=True)
-    matches = models.ManyToManyField(Tournament_Match)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
-
+    
 class TournamentPlaceHolder(models.Model):
     playerNumber = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
