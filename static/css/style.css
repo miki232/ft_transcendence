@@ -212,7 +212,7 @@ header {
 .dashboard {
 	position: relative;
 	width: 550px; /*430px;*/
-	height: 675px; /*550px;*/
+	height: 700px; /*550px;*/
 	backdrop-filter: blur(20px);
 	color: white;
 	font-size: 28px;
@@ -222,9 +222,9 @@ header {
 	transition: transform 0.5s ease, height 0.3s ease-in-out;
 }
 
-.dashboard {
+/* .dashboard {
 	padding-top: 30px;
-}
+} */
 
 .form-box form {
 	justify-content: center;
@@ -244,11 +244,24 @@ header {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	/* justify-content: center; */
+	justify-content: space-around;
 	align-items: center;
 	flex-direction: column;
 	position: absolute;
 	transition: transform 0.3s ease;
+}
+
+.btns-container,
+.back-btn-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.back-btn-container {
+	padding-bottom: 15px;
 }
 
 .form-box .register-form {
@@ -367,6 +380,16 @@ header {
 	align-items: center;
 }
 
+.btns-container .submit-btn:not(:last-child) {
+	margin-top: 0;
+	margin-bottom: 25px;
+}
+
+.settings .btns-container .submit-btn:not(:last-child) {
+	margin-top: 0;
+	margin-bottom: 15px
+}
+
 .submit-btn:active {
 	border: 2px solid black;
 	font-size: 16px;
@@ -429,12 +452,12 @@ form .submit-btn ion-icon {
 }
 
 .user-dashboard {
-	width: 76%;
+	width: 80%;
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	margin-top: 20px;
-	margin-bottom: 45px;
+	/* margin-top: 20px;
+	margin-bottom: 45px; */
 }
 
 .user-info {
@@ -497,23 +520,22 @@ form .submit-btn ion-icon {
 }
 
 .delete-room {
-		color: var(--logout-color);
-		font-size: smaller;
-		cursor: pointer;
-		margin-left: 5px;
+	color: var(--logout-color);
+	font-size: smaller;
+	cursor: pointer;
+	margin-left: 5px;
 }
 
 .user-data {
-	width: 76%;
+	width: 80%;
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	margin: 15px 0;
 }
 
-.user-data h1 {
-	margin: 10px 0;
-}
+ .user-data h3 {
+	margin: 0;
+ }
 
 .user-data img {
 	height: 100px;
@@ -617,6 +639,34 @@ div .rooms-list {
 	position: relative;
 	top: 25%;
 	font-size: 16px;
+}
+
+.change-language {
+	width: 80%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.change-language p {
+	margin: 0;
+	font-size: 24px;
+}
+
+.change-language .flags {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1.5;
+	gap: 35px;
+}
+
+.change-language .lang-selector{
+	border-radius: 0;
+	height: 28px;
+	width: auto;
+	cursor: pointer;
 }
 
 /**************** HISTORY ****************/

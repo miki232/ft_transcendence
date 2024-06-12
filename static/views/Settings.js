@@ -27,6 +27,8 @@ export default class Settings extends AbstractView {
 		const changePicBtn = document.getElementById("change-pic");
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
+		const changeLang = document.querySelector(".change-language");
+		changeLang.style.display = "none";
 		const changeUsernameBtn = document.getElementById("change-username");
 		changePasswordBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
@@ -108,6 +110,7 @@ export default class Settings extends AbstractView {
 			changeUsernameBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
+			changeLang.style.display = "flex";
 		});
 		await changeLanguage(this.lang);
 	}
@@ -117,6 +120,8 @@ export default class Settings extends AbstractView {
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
 		const changeUsernameBtn = document.getElementById("change-username");
+		const changeLang = document.querySelector(".change-language");
+		changeLang.style.display = "none";
 		changePicBtn.style.display = "none";
 		changePasswordBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
@@ -191,6 +196,7 @@ export default class Settings extends AbstractView {
 			changePicBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
+			changeLang.style.display = "flex";
 		});
 		await changeLanguage(this.lang);
 	}
@@ -200,6 +206,8 @@ export default class Settings extends AbstractView {
 		const changeUsernameBtn = document.getElementById("change-username");
 		const deleteAccountBtn = document.getElementById("delete-account");
 		const changePasswordBtn = document.getElementById("change-password");
+		const changeLang = document.querySelector(".change-language");
+		changeLang.style.display = "none";
 		changePicBtn.style.display = "none";
 		changeUsernameBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
@@ -280,6 +288,7 @@ export default class Settings extends AbstractView {
 			changePicBtn.style.display = "block";
 			changeUsernameBtn.style.display = "block";
 			deleteAccountBtn.style.display = "block";
+			changeLang.style.display = "flex";
 		});
 		await changeLanguage(this.lang);
 	}
@@ -289,6 +298,8 @@ export default class Settings extends AbstractView {
 		const changeUsernameBtn = document.getElementById("change-username");
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
+		const changeLang = document.querySelector(".change-language");
+		changeLang.style.display = "none";
 		changePicBtn.style.display = "none";
 		changeUsernameBtn.style.display = "none";
 		changePasswordBtn.style.display = "none";
@@ -332,6 +343,7 @@ export default class Settings extends AbstractView {
 			changePicBtn.style.display = "block";
 			changeUsernameBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
+			changeLang.style.display = "flex";
 		});
 		await changeLanguage(this.lang);
 	}
@@ -417,15 +429,8 @@ export default class Settings extends AbstractView {
 					<li class="nav-item">
 					  <a class="nav-link" href="/chat" data-link>Chat</a>
 					</li>
-					<li class="nav-item dropdown">
-					  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-						Language
-					  </a>
-					  <ul class="dropdown-menu select-menu">
-						<li class="dropdown-item lang-selector" value="en">English</li>
-						<li class="dropdown-item lang-selector" value="fr">Français</li>
-						<li class="dropdown-item lang-selector" value="it">Italiano</li>
-					  </ul>
+					<li class="nav-item">
+					  <a class="nav-link" href="/dashboard" data-link>Dashboard</a>
 					</li>
 				  </ul>
 				</div>
@@ -444,12 +449,25 @@ export default class Settings extends AbstractView {
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<h3>${this.user.getUser()}</h3>
 					</div>
-					<button type="button" data-translate="changeavatar" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
-					<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
-					<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
-					<button type="button" data-translate="delaccount" class="submit-btn dashboard-btn red-btn" id="delete-account"><ion-icon name="trash-outline"></ion-icon>Delete Account</button>
-					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					<div class="btns-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="changeavatar" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
+						<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
+						<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
+						<div class="change-language">
+							<p>Change Language:</p>
+							<div class="flags">
+								<img src="/static/img/flags/gb.png" alt="English" class="flag lang-selector" value="en">
+								<img src="/static/img/flags/fr.png" alt="Français" class="flag lang-selector" value="fr">
+								<img src="/static/img/flags/it.png" alt="Italiano" class="flag lang-selector" value="it">
+							</div>
+						</div>
+						<button type="button" data-translate="delaccount" class="submit-btn dashboard-btn red-btn" id="delete-account"><ion-icon name="trash-outline"></ion-icon>Delete Account</button>
+					</div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					</div>
 				</div>
 			</div>
 		`;

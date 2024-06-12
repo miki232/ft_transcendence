@@ -151,9 +151,9 @@ export default class extends AbstractView {
 
 	getContent() {
 		let dashboardHTML = `
-			<div class="dashboard">
-				<div class="profile-card">
-					<div class="user-dashboard">
+		<div class="dashboard">
+		<div class="profile-card">
+		<div class="user-dashboard">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<div class="user-info">
 							<h3>${this.user.getUser()}</h3>
@@ -161,11 +161,16 @@ export default class extends AbstractView {
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
-					<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
-					<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
-					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+					<div class="btns-container">
+						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
+						<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
+						<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
+					</div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 20px;"></div>
+						<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+					</div>
 				</div>
 			</div>
 		`;
