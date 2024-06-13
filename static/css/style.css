@@ -389,6 +389,10 @@ header {
 	margin-bottom: 25px;
 }
 
+#settings-btn {
+	margin: 0;
+}
+
 .settings .btns-container .submit-btn:not(:last-child) {
 	margin-top: 0;
 	margin-bottom: 15px
@@ -679,10 +683,17 @@ div .rooms-list {
 
 /**************** HISTORY ****************/
 
+.history .btns-container {
+	max-height: 60%;
+}
+
+.history .btns-container .submit-btn {
+	margin-bottom: 15px;
+	min-height: 45px;
+}
+
 .match-list {
-	width: 85%;
-	height: 75%;
-	margin-top: 40px;
+	width: 80%;
 	padding-right: 10px;
 	overflow-y: auto;
 	font-size: 20px;
@@ -751,6 +762,10 @@ div .rooms-list {
 .room-info img {
 	height: 40px;
 	width: 40px;
+}
+
+.tournament-line {
+	width: 100%;
 }
 
 /***************** LOCAL GAME **************/

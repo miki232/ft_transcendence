@@ -391,8 +391,8 @@ export default class Settings extends AbstractView {
 			if (this.isStartSettings) {
 				navigateTo("/dashboard");
 			} else {
-				navigateTo("/dashboard/settings");
 				this.isStartSettings = true;
+				navigateTo("/dashboard/settings");
 			}
 		});
 		const changeUsernameBtn = document.getElementById("change-username");
@@ -451,7 +451,7 @@ export default class Settings extends AbstractView {
 	}
 
 	getContent() {
-		const user_infoHTML = `
+		const settingsHTML = `
 			<div class="dashboard">
 				<div class="settings">
 					<h1 data-translate="settings">Settings</h1>
@@ -481,6 +481,6 @@ export default class Settings extends AbstractView {
 				</div>
 			</div>
 		`;
-		return user_infoHTML;
+		return settingsHTML;
 	}
 }
