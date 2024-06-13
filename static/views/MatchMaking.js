@@ -26,6 +26,11 @@ export default class MatchMaking extends AbstractView {
 		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
+        const backBtn = document.getElementById("back");
+		backBtn.addEventListener("click", e => {
+			e.preventDefault();
+			navigateTo("/online");
+		});
         this.roomName = await this.getRoom_Match();
         if (this.roomName !== "undefined") {
             console.log("ROOM NAME", this.roomName);
@@ -337,8 +342,14 @@ export default class MatchMaking extends AbstractView {
                     <span id="vs">VS</span>
                     <div class="opponent">
                         <h4>Waiting for opponent...</h3>
-                        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
+                    <div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					</div>
                 </div>
             </div>
         `;

@@ -801,7 +801,8 @@ div .rooms-list {
 } */
 
 .matchmaking h4 {
-	font-size: 24px;
+	font-size: 28px;
+	margin: 0;
 }
 
 .opponent {
@@ -809,7 +810,7 @@ div .rooms-list {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	margin-top: 45px;
+	gap: 20px;
 }
 
 #scores {
@@ -1205,7 +1206,7 @@ canvas {
 
 /************* LOADING SPINNER *************/
 
-
+/* 
 .lds-spinner,
 .lds-spinner div,
 .lds-spinner div:after {
@@ -1289,7 +1290,7 @@ canvas {
   100% {
     opacity: 0;
   }
-}
+} */
 
 
 /************ MEDIA QUERIES ************/
