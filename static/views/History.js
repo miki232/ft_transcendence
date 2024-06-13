@@ -21,39 +21,23 @@ export default class History extends AbstractView {
 		this.user = user;
 		this.userObj = userObj;
 		this.isStartHistory = true;
+		this.isFriend = false;
 		this.initialize();
 	}
 
 	async initialize() {
 		let type = typeof this.user;
-		if (type === "string")
+		if (type === "string") {
 			this.user = await this.getUserInfo(this.user);
+			this.isFriend = true;
+		}
 		const content = document.querySelector("#content");
 		const nav = document.querySelector("header");
 		nav.innerHTML = this.getNav();
 		content.innerHTML = this.getContent();
-		const historyElement = document.querySelector('.history');
-		// const tournamentListElement = document.createElement("div");
-		// tournamentListElement.className = "tournament-list";
-		// historyElement.appendChild(tournamentListElement);
-		// tournamentListElement.innerHTML = "<h2>Tournament</h2>";
-		// const matchListElement = document.createElement("div");
-		// matchListElement.className = "match-list";
-		// historyElement.appendChild(matchListElement);
-		// matchListElement.innerHTML = "<h2>Matches</h2>";
-		// const backBtnContainer = document.createElement("div");
-		// backBtnContainer.className = "back-btn-container";
-		// historyElement.appendChild(backBtnContainer);
-		// backBtnContainer.innerHTML = `
-		// 	<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
-		// 	<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
-		// `;
-		
 		const data = await getHistoryList(this.user.username);
 		const dataTournament = await getTournamentHistory(this.user.username);
 		console.log(dataTournament);
-		// dataTournament.length === 0 ? this.noHistory(tournamentListElement) : null;
-		// data[0].match_history.length === 0 ? this.noHistory(matchListElement) : await this.historyList(data, matchListElement);
 		this.activeBtns(data, dataTournament);
 	}
 
@@ -74,10 +58,16 @@ export default class History extends AbstractView {
 		backBtn.addEventListener("click", e => {
 			e.preventDefault();
 			if (this.isStartHistory) {
-				navigateTo("/dashboard");
+				if (this.isFriend === false)
+					navigateTo("/dashboard");
+				else
+					navigateTo("/friends/user_info_" + this.user.username)
 			} else {
-				navigateTo("/dashboard/history");
-				this.isStartHistory = true;
+				if (this.isFriend === false)
+					navigateTo("/dashboard/history");
+				else
+					navigateTo("/friends/user_info_" + this.user.username + "/history")
+					this.isStartHistory = true;
 			}
 		});
 	}

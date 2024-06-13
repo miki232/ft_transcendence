@@ -367,6 +367,7 @@ const router = async () => {
 			break;
 		case `/friends/user_info_${userID}/history`:
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			console.log(userID);
 			const UserInfoHistoryClass = await match.route.view();
 			view = new UserInfoHistoryClass.default(userID, user);
 			break;
