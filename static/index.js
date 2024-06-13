@@ -235,7 +235,7 @@ const router = async () => {
         { path: "/friends/user_info_" + userID, view: () => import('./views/User_Info.js') },
         { path: "/friends/user_info_" + userID + "/history", view: () => import('./views/History.js') },
         { path: "/online", view: () => import('./views/Online.js') },
-		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
+		{ path: "/online/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
 		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
@@ -376,7 +376,7 @@ const router = async () => {
 			const OnlineClass = await match.route.view();
 			view = new OnlineClass.default(user);
 			break;
-		case "/matchmaking":
+		case "/online/matchmaking":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			// if (previousUrl === "/pong")
 			// 	break;

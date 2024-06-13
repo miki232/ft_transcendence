@@ -18,6 +18,7 @@ export default class LocalGame extends AbstractView {
 		this.ws_local = null;
 		this.opponent = null;
 		this.room = null;
+		this.isStartLocal = true;
 		this.getRoom();
 	}
 	
@@ -61,10 +62,12 @@ export default class LocalGame extends AbstractView {
 			}
 		return this.room
 	}
+
 	activeBtn() {
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
 		two_playerBtn.addEventListener("click", e => {
+			this.isStartLocal = false;
 			this.ws_local = new WebSocket('wss://'
 			        + window.location.hostname
 			        + ':8000'
@@ -90,6 +93,7 @@ export default class LocalGame extends AbstractView {
 			const cancelBtn = document.querySelector(".red-btn");
 			cancelBtn.addEventListener("click", e => {
 				e.preventDefault();
+				this.isStartLocal = true;
 				const change_all = document.querySelectorAll(".change");
 				change_all.forEach(e => {
 					e.remove();
@@ -156,6 +160,16 @@ export default class LocalGame extends AbstractView {
 				}
 			}
 		})
+		const backBtn = document.getElementById("back");
+		backBtn.addEventListener("click", e => {
+			e.preventDefault();
+			if (this.isStartLocal) {
+				navigateTo("/dashboard");
+			} else {
+				this.isStartLocal = true;
+				navigateTo("/local_game");
+			}
+		});
 	}
 
 	getNav() {
@@ -207,8 +221,15 @@ export default class LocalGame extends AbstractView {
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<button type="button" class="submit-btn dashboard-btn" id="vs-cpu"><ion-icon name="desktop-outline"></ion-icon>1P vs CPU</button>
-					<button type="button" class="submit-btn dashboard-btn" id="vs-player"><ion-icon name="people-outline"></ion-icon>1P vs 2P</button>
+					<div class="btns-container">
+						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<button type="button" class="submit-btn dashboard-btn" id="vs-cpu"><ion-icon name="desktop-outline"></ion-icon>1P vs CPU</button>
+						<button type="button" class="submit-btn dashboard-btn" id="vs-player"><ion-icon name="people-outline"></ion-icon>1P vs 2P</button>
+					</div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					</div>
 				</div>
 			</div>
 		`;

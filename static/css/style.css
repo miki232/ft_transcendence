@@ -202,6 +202,14 @@ header {
 		/* padding-top: 60px; */
 /* } */
 
+/**************** H1 ****************/
+
+.online-game h1,
+.local-game h1,
+.friends.-card h1 {
+	margin: 0;
+}
+
 /***************** CONTENT *****************/
 
 #container {
@@ -770,11 +778,11 @@ div .rooms-list {
 
 /***************** LOCAL GAME **************/
 
-.local-game,
+/* .local-game,
 .online-game,
 .matchmaking {
 	justify-content: start;
-}
+} */
 
 #vs-cpu {
 	margin-top: 28px;
@@ -788,9 +796,9 @@ div .rooms-list {
 	width: 100px;
 }
 
-.matchmaking h1 {
+/* .matchmaking h1 {
 	margin-bottom: 45px;
-}
+} */
 
 .matchmaking h4 {
 	font-size: 24px;

@@ -94,7 +94,7 @@ export default class Online extends AbstractView {
         matchmakingBtn.addEventListener("click", e => {
             e.preventDefault();
             console.log("1 vs 1");
-            navigateTo("/matchmaking");
+            navigateTo("/online/matchmaking");
         })
         if (this.tournament.status == true) {
             this.user.matchmaking_ws = new WebSocket(
@@ -281,10 +281,17 @@ export default class Online extends AbstractView {
 							<div class="exp-bar"><div class="progress-bar"></div></div>
 						</div>
 					</div>
-					<button type="button" data-translate="matchmaking" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
-					<button type="button" data-translate="tournament" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter"></span></button>
-					<button type="button" data-translate="friendly" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
-					<button type="button" data-translate="friendlytournament" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
+					<div class="btns-container">
+						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<button type="button" data-translate="matchmaking" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
+						<button type="button" data-translate="tournament" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter"></span></button>
+						<button type="button" data-translate="friendly" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
+						<button type="button" data-translate="friendlytournament" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
+					</div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					</div>
 				</div>
 			</div>
 		`;
