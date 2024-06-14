@@ -478,10 +478,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH and self.state['ball_x'] >= 20:
             if self.state['paddle1_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle1_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle1_y'], 20, self.state['ball_x'], self.state['ball_y'])
-        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
+        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 25) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
             if self.state['paddle2_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle2_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle2_y'], SCREEN_WIDTH - (PADDLE_WIDTH + 20), self.state['ball_x'], self.state['ball_y'])
-    
+
 
     def simulate_input(self, paddle, player, new_paddle_pos):
             if self.state[paddle] < new_paddle_pos - PADDLE_SPEED:
