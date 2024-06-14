@@ -10,8 +10,8 @@ export default class Pong {
         this.player2 = undefined;
         this.player1_pic = undefined;
         this.player2_pic = undefined;
-        this.score1;
-        this.score2;
+        this.score1 = 0;
+        this.score2 = 0;
         this.ball_size = 20;
         this.ballX = 800 / 2 - this.ball_size / 2;
         this.ballY = 600 / 2 - this.ball_size / 2;
@@ -90,15 +90,15 @@ export default class Pong {
     }
 
     scoreTabMaker(data) {
-        console.log(data, this.user.getUser(), this.user.online_opponent.username);
-        if (data.player === this.user.getUser()) {
-            this.player1 = this.user.getUser();
+        console.log(data.created_by);
+        if (data.created_by === this.user.username) {
+            this.player1 = this.user.username;
             this.player2 = this.user.online_opponent.username;
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.online_opponent.pro_pic;
         } else {
             this.player1 = this.user.online_opponent.username;
-            this.player2 = this.user.getUser();
+            this.player2 = this.user.username;
             this.player1_pic = this.user.online_opponent.pro_pic;
             this.player2_pic = this.user.getPic();
         }
