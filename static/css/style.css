@@ -662,10 +662,11 @@ div .rooms-list {
 .no-entries {
 	position: relative;
 	top: 25%;
-	font-size: 16px;
+	font-size: 22px;
 }
 
-.change-language {
+.change-language,
+.customize-paddle-color {
 	width: 80%;
 	display: flex;
 	justify-content: space-between;
@@ -673,7 +674,12 @@ div .rooms-list {
 	margin-bottom: 15px;
 }
 
-.change-language p {
+.customize-paddle-color input {
+	margin-right: 60px;
+}
+
+.change-language p,
+.customize-paddle-color p {
 	margin: 0;
 	font-size: 24px;
 }
@@ -704,9 +710,12 @@ div .rooms-list {
 	min-height: 45px;
 }
 
-.match-list {
+.match-list,
+.friends-list {
 	width: 80%;
-	padding-right: 10px;
+	max-height: 280px;
+	min-height: 140px;
+	/* padding-right: 10px; */
 	overflow-y: auto;
 	font-size: 20px;
 }
@@ -866,7 +875,6 @@ div .rooms-list {
 	margin: 20px 0 10px 0;
 }
 
-.friends-list,
 .requests-list,
 .rooms-list {
 	width: 80%;

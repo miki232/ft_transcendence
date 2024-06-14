@@ -93,6 +93,15 @@ export default class Friends extends AbstractView {
 			})
 	}
 
+	noFriends (element) {
+		var noEntries = document.createElement("p");
+		noEntries.className = "no-entries";
+		noEntries.textContent = "You don't have any friends yet.";
+		noEntries.setAttribute("data-translate", "noFriends");
+		element.appendChild(noEntries);
+		element.style.textAlign = "center";
+	}
+
 	async getFriendList() {
 		this.isStartFriends = false;
 		const searchUserBtn = document.getElementById("search-user");
@@ -106,16 +115,14 @@ export default class Friends extends AbstractView {
 		var friendListElement = document.querySelector(".friends-list");
 		// friendListElement.innerHTML = "";
 		// friendListElement.className = "content";
-		var noEntries = document.createElement("span");
-		noEntries.className = "no-entries";
-		noEntries.textContent = "You don't have any friends yet.";
-		noEntries.setAttribute("data-translate", "noFriends");
-		friendListElement.appendChild(noEntries);
+		if (data.length === 0) {
+			this.noFriends(friendListElement);
+			return;
+		}
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
 			var userUsername = friendList.user.username;         
 			for (let j = 0; j < friendList.friends.length; j++) {
-				noEntries.remove();
 				const friendUsername = friendList.friends[j].username;
 				const friendStatus = friendList.friends[j].status_login;
 				const friendPic = friendList.friends[j].pro_pic;

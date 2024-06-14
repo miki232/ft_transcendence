@@ -21,6 +21,7 @@ export default class LocalPong extends AbstractView{
         this.arrowUpPressed = false;
         this.arrowDownPressed = false;
         this.users = user;
+        this.user_paddle_color = user.paddle_color;
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
@@ -80,6 +81,7 @@ export default class LocalPong extends AbstractView{
     }
 
     drawRect(ctx, x, y, width, height, color) {
+        console.log("COLOR", color);
         ctx.fillStyle = color;
         ctx.shadowColor = color;
         ctx.shadowBlur = 20;
@@ -108,7 +110,7 @@ export default class LocalPong extends AbstractView{
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         this.drawNet(context, canvas, "#FFFFFF");
-        this.drawRect(context, 10, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawRect(context, 10, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color);
         this.drawRect(context, canvas.width - this.paddle_width -10, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FFDE59');
         // Draw player paddle

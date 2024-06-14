@@ -13,6 +13,7 @@ export default class User extends AbstractView {
 		this.logged = false;
 		this.level;
 		this.exp;
+		this.paddle_color = "#00FF99";
 		this.online_room;
 		this.online_opponent = {
 			username: "null",
@@ -129,6 +130,7 @@ export default class User extends AbstractView {
 				this.setPic(data.pro_pic);
 				this.setLevel(data.level);
 				this.setExp(data.exp);
+				this.setPaddleColor(data.paddle_color);
 				// this.setPassword(data.password);
 			})
 			.catch((error) => {
@@ -146,6 +148,10 @@ export default class User extends AbstractView {
 	
 	setEmail (data_email) {
 		this.email = data_email;
+	}
+
+	setPaddleColor(data_color) {
+		this.paddle_color = data_color;
 	}
 
 	// setPassword(data_password) {

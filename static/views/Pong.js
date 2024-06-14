@@ -4,6 +4,8 @@ import { navigateTo } from "../index.js";
 export default class Pong {
     constructor(user){
         this.user = user;
+        this.user_paddle_color1;
+        this.user_paddle_color2;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
         this.player1 = undefined;
@@ -96,11 +98,15 @@ export default class Pong {
             this.player2 = this.user.online_opponent.username;
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.online_opponent.pro_pic;
+            this.user_paddle_color1 = this.user.paddle_color;
+            this.user_paddle_color2 = '#00CCFF';
         } else {
             this.player1 = this.user.online_opponent.username;
             this.player2 = this.user.username;
             this.player1_pic = this.user.online_opponent.pro_pic;
             this.player2_pic = this.user.getPic();
+            this.user_paddle_color1 = '#00CCFF';
+            this.user_paddle_color2 = this.user.paddle_color;
         }
         const playerOneTab = document.getElementById('player1-score');
         const playerTwoTab = document.getElementById('player2-score');
@@ -161,8 +167,8 @@ export default class Pong {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         this.drawNet(context, canvas);
-        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
-        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color1);
+        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color2);
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
         // context.fillStyle = '#FFFFFF';

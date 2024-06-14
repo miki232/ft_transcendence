@@ -73,10 +73,19 @@ export default class History extends AbstractView {
 	}
 
 	noHistory (listElement) {
-		const noEntries = document.createElement("span");
+		const noEntries = document.createElement("p");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "No history found.";
 		listElement.appendChild(noEntries);
+		listElement.style.textAlign = "center";
+	}
+
+	matchListPadding (element) {
+		if (element.scrollHeight > element.clientHeight) {
+			element.style.paddingRight = "10px";
+		} else {
+			element.style.paddingRight = "0px";
+		}
 	}
 
 	async tournamentList (data) {
@@ -101,6 +110,7 @@ export default class History extends AbstractView {
 				matchListElement.innerHTML += tournamentHTML;
 			};
 		}
+		this.matchListPadding(matchListElement);
 	}
 
 	async historyList (data) {
@@ -171,6 +181,7 @@ export default class History extends AbstractView {
 				matchListElement.innerHTML += matchHTML;
 			};
 		}
+		this.matchListPadding(matchListElement);
 	}
 
 	async getUserInfo(username) {
