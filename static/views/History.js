@@ -1,7 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { createNotification } from "./Notifications.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 
 export async function getHistoryList(user) {
 	const response = await fetch('/accounts/match_history/?username=' + user)
@@ -22,6 +22,7 @@ export default class History extends AbstractView {
 		this.userObj = userObj;
 		this.isStartHistory = true;
 		this.isFriend = false;
+		this.lang = localStorage.getItem('language');
 		this.initialize();
 	}
 
@@ -78,6 +79,7 @@ export default class History extends AbstractView {
 		noEntries.textContent = "No history found.";
 		noEntries.setAttribute("data-translate", "noHistory");
 		listElement.appendChild(noEntries);
+		changeLanguage(this.lang);
 	}
 
 	async tournamentList (data) {
