@@ -83,6 +83,11 @@ export default class Online extends AbstractView {
 
 	async activeBtn() {
         await this.getTournament();
+		const backBtn = document.getElementById("back");
+		backBtn.addEventListener("click", e => {
+			e.preventDefault();
+				navigateTo("/dashboard");
+		});
 		const matchmakingBtn = document.getElementById("o-match");
 		const tournamentBtn = document.getElementById("o-tournament");
 		const friendlyBtn = document.getElementById("f-match");
@@ -123,21 +128,22 @@ export default class Online extends AbstractView {
                     }
                 }
             }
-        }
-        else
+        } else {
             tournamentBtn.setAttribute("disabled", "true");
-        tournamentBtn.addEventListener("click", e => {
-            e.preventDefault();
-            console.log("Tournament");
-            if (this.tournament.status == true) {
-                this.user.matchmaking_ws.send(JSON.stringify({
-                    "action": "joinTournamentQueue",
-                    "username": this.user.getUser(),
-                    "status": "not_ready",
-                }));
-                navigateTo("/tournament");
-            }
-        })
+        	tournamentBtn.addEventListener("click", e => {
+            	e.preventDefault();
+            	console.log("Tournament");
+            	if (this.tournament.status == true) {
+                	this.user.matchmaking_ws.send(JSON.stringify({
+                    	"action": "joinTournamentQueue",
+                    	"username": this.user.getUser(),
+                    	"status": "not_ready",
+                	}));
+                	navigateTo("/tournament");
+            	}
+        	});
+		}
+	}
 		// two_playerBtn.addEventListener("click", e => {
 		// 	this.ws_local = new WebSocket('wss://'
 		// 	        + window.location.hostname
@@ -230,9 +236,8 @@ export default class Online extends AbstractView {
 		// 		}
 		// 	}
 		// })
-	}
 
-	getNav() {
+	getNav () {
 		const navHTML = `
 			<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			  <div class="container-fluid">
