@@ -49,8 +49,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="link-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 			</div>
 		`;
 		changePicBtn.insertAdjacentHTML("afterend", changePicHTML);
@@ -68,9 +67,8 @@ export default class Settings extends AbstractView {
 					pro_pic : "defaultPic",
 				})
 			});
-			// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
 			createNotification("Profile picture changed successfully!");
-			navigateTo("/dashboard");
+			navigateTo("/dashboard/settings");
 		});
 		const uploadBtn = document.querySelector(".upload-file");
 		uploadBtn.addEventListener("click", e => {
@@ -80,39 +78,33 @@ export default class Settings extends AbstractView {
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
-			const urlInput = document.querySelector(".input-box input").value;
-			if (!urlInput) {
+			const urlInput = document.querySelector(".input-box input");
+			if (!urlInput.value) {
 				createNotification("Please, insert an URL.");
 				return;
 			}
-			const csrf = await getCSRFToken();
-			const formdata = new FormData();
-			formdata.append('url', urlInput);
-			await fetch('/accounts/user_info/', {
-				method: 'POST',
-				headers: {
-					'X-CSRFToken': csrf
-				},
-				body: formdata
-			});
-			// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
-			createNotification("Profile picture changed successfully!");
-			navigateTo("/dashboard");
-		});
-		const cancelBtn = document.querySelector(".red-btn");
-		cancelBtn.addEventListener("click", e => {
-			e.preventDefault();
-			const change_all = document.querySelectorAll(".change");
-			changePicBtn.removeAttribute("disabled");
-			change_all.forEach(e => {
-				e.remove();
-			});
-			changePicBtn.classList.remove("settings-btn");
-			changePicBtn.classList.add("submit-btn");
-			changeUsernameBtn.style.display = "block";
-			changePasswordBtn.style.display = "block";
-			deleteAccountBtn.style.display = "block";
-			changeLang.style.display = "flex";
+			try {
+				const csrf = await getCSRFToken();
+				const formdata = new FormData();
+				formdata.append('url', urlInput.value);
+				const response = await fetch('/accounts/user_info/', {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': csrf
+					},
+					body: formdata
+				});
+				console.log(response);
+				if (!response.ok) {
+					throw new Error("Error in changing the profile picture");
+				}
+				createNotification("Profile picture changed successfully!");
+				navigateTo("/dashboard/settings");
+			} catch (error) {
+				urlInput.value = "";
+				console.error('Error: ', error);
+				createNotification("Provided URL is not valid!");
+			}
 		});
 		await changeLanguage(this.lang);
 	}
@@ -137,8 +129,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 			</div>
 		`;
 		changeUsernameBtn.insertAdjacentHTML("afterend", changeUsernameHTML);
@@ -186,21 +177,6 @@ export default class Settings extends AbstractView {
 				createNotification(error.message);
 			}
 		});
-		const cancelBtn = document.querySelector(".red-btn");
-		cancelBtn.addEventListener("click", e => {
-			e.preventDefault();
-			changeUsernameBtn.removeAttribute("disabled");
-			const change_all = document.querySelectorAll(".change");
-			change_all.forEach(e => {
-				e.remove();
-			});
-			changeUsernameBtn.classList.remove("settings-btn");
-			changeUsernameBtn.classList.add("submit-btn");
-			changePicBtn.style.display = "block";
-			changePasswordBtn.style.display = "block";
-			deleteAccountBtn.style.display = "block";
-			changeLang.style.display = "flex";
-		});
 		await changeLanguage(this.lang);
 	}
 
@@ -228,8 +204,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
-				<button type="button" data-translate="save" class="submit-btn confirm-btn"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-				<button type="button" data-translate="notsave" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
+				<button type="button" data-translate="save" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
 			</div>
 		`;
 		changePasswordBtn.insertAdjacentHTML("afterend", changePasswordHTML);
@@ -279,20 +254,6 @@ export default class Settings extends AbstractView {
 				console.error('Error: ', error);
 				createNotification(error.message);
 			}
-		});
-		const cancelBtn = document.querySelector(".red-btn");
-		cancelBtn.addEventListener("click", e => {
-			e.preventDefault();
-			changePasswordBtn.removeAttribute("disabled");
-			change_all.forEach(e => {
-				e.remove();
-			});
-			changePasswordBtn.classList.remove("settings-btn");
-			changePasswordBtn.classList.add("submit-btn");
-			changePicBtn.style.display = "block";
-			changeUsernameBtn.style.display = "block";
-			deleteAccountBtn.style.display = "block";
-			changeLang.style.display = "flex";
 		});
 		await changeLanguage(this.lang);
 	}
