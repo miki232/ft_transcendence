@@ -869,8 +869,8 @@ div .rooms-list {
 .friends-list,
 .requests-list,
 .rooms-list {
-	width: 85%;
-	height: 50%;
+	width: 80%;
+	/* height: 50%; */
 	margin-bottom: 20px;
 	text-align: center;
 	overflow-y: auto;
@@ -947,9 +947,9 @@ div .rooms-list {
 	margin: 5px;
 }
 
-.friends-list {
+/* .friends-list {
 	height: 40%;
-}
+} */
 
 .friend a,
 .user a {
