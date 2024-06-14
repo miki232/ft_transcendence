@@ -81,11 +81,11 @@ export default class LocalGame extends AbstractView {
 			two_playerBtn.classList.add("local-game-btn");
 			const two_playerHTML = `
 				<div class="input-box change">
-					<input type="text" placeholder="2P Username">
+					<input type="text" data-translate="secondpusername" placeholder="2P Username">
 					<ion-icon name="person-outline"></ion-icon>
 				</div>
 				<div class="change-btn change">
-				<button type="button" id="play-local" class="submit-btn confirm-btn"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+				<button type="button" id="play-local" data-translate="" class="submit-btn confirm-btn"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
 				<button type="button" class="submit-btn red-btn"><ion-icon name="close-outline"></ion-icon>Cancel</button>
 			</div>
 			`;

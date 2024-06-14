@@ -442,14 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", async (e) => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
-		const lang_selector = document.querySelectorAll(".lang-selector");
-		lang_selector.forEach(e => {
-			e.addEventListener("click", () => {
-				// e.preventDefault();
-				console.log(e.getAttribute("value"));
-				changeLanguage(e.getAttribute("value"));
-			});
-		});
+		
 		if (e.target.matches(".toggler-icon")) {
 			const navbarCollaspe = document.querySelector("#navbarNavDropdown");
 			const spanToggler = document.querySelector(".navbar-toggler-icon");

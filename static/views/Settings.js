@@ -105,7 +105,8 @@ export default class Settings extends AbstractView {
 				console.error('Error: ', error);
 				createNotification("Provided URL is not valid!");
 			}
-		});
+		
+		this.lang = localStorage.getItem('language') || 'en';});
 		await changeLanguage(this.lang);
 	}
 
@@ -177,6 +178,8 @@ export default class Settings extends AbstractView {
 				createNotification(error.message);
 			}
 		});
+
+		this.lang = localStorage.getItem('language') || 'en';
 		await changeLanguage(this.lang);
 	}
 
@@ -254,7 +257,8 @@ export default class Settings extends AbstractView {
 				console.error('Error: ', error);
 				createNotification(error.message);
 			}
-		});
+		
+		this.lang = localStorage.getItem('language') || 'en';});
 		await changeLanguage(this.lang);
 	}
 
@@ -310,7 +314,8 @@ export default class Settings extends AbstractView {
 			changeUsernameBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 			changeLang.style.display = "flex";
-		});
+		
+		this.lang = localStorage.getItem('language') || 'en';});
 		await changeLanguage(this.lang);
 	}
 
@@ -342,10 +347,19 @@ export default class Settings extends AbstractView {
 						createNotification(error.message);
 					}
 				}
-			});
+		
+		this.lang = localStorage.getItem('language') || 'en';	});
+		await changeLanguage(this.lang);
 	}
 
 	activeBtn() {
+		const lang_selector = document.querySelectorAll(".lang-selector");
+		lang_selector.forEach(e => {
+			e.addEventListener("click", () => {
+				console.log(e.getAttribute("value"));
+				changeLanguage(e.getAttribute("value"));
+			});
+		});
 		const backBtn = document.getElementById("back");
 		backBtn.addEventListener("click", e => {
 			e.preventDefault();
@@ -371,8 +385,7 @@ export default class Settings extends AbstractView {
 		const changePicBtn = document.getElementById("change-pic");
 		changePicBtn.addEventListener("click", () => {
 			this.changeAvatar();
-		});
-		
+		});		
 	}
 
 	getNav() {

@@ -12,7 +12,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned
 from django.utils.html import escape
+from django.contrib import messages
 
 import requests
 import re
@@ -46,7 +48,8 @@ def redirect_to_42(request):
         'scope': 'public',
     }
     url = 'https://api.intra.42.fr/oauth/authorize?' + urllib.parse.urlencode(params)
-    return redirect(url)
+    # return redirect(url)
+    return JsonResponse({'url': url})
 
 def callback(request):
     code = request.GET.get('code')
@@ -74,20 +77,30 @@ def callback(request):
     response.raise_for_status()
     user_info = response.json()
 
-    # Check if the user already exists in your database
-    user, created = CustomUser.objects.get_or_create(
-        username=user_info['login'],
-        pro_pic=user_info['image']['link'],
-        defaults={'email': user_info.get('email', '')}
-    )
 
+    try:
+        user = CustomUser.objects.get(username=user_info['login'], email=user_info.get('email', ''))
+    except ObjectDoesNotExist:
+    # Check if the user already exists in your database
+        user = CustomUser.objects.create(
+            username=user_info['login'],
+            pro_pic=user_info['image']['link'], 
+            email=user_info.get('email', ''),
+            OAuth=True
+        )
+    except MultipleObjectsReturned:
+        return HttpResponse('Multiple users with the same username', status=400)
     # Log the user in
-    login(request, user)
-    if (user.is_active):
-        user.status_login = True
-        user.save()
-    # Redirect the user to a success page or any other appropriate page
-    return redirect('/')
+    if user.OAuth:
+        login(request, user)
+        if (user.is_active):
+            user.status_login = True
+            user.save()
+            return JsonResponse({'status': 'success', 'message': 'User logged in successfully'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'User is not active'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid OAuth token'})
 
 class UserSignupView(APIView):
     def post(self, request, format=None):

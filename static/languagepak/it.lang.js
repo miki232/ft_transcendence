@@ -57,6 +57,7 @@ const translations = {
     notsave: "Annulla",
     uploadImage: "Carica immagine",
     defaultImage: "Immagine Default",
+    secondpusername: "2P Nome utente",
     // Add more translations here...
 };
 

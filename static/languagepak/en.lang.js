@@ -59,6 +59,7 @@ const translations = {
     notsave: "Cancel",
     uploadImage: "Upload Avatar",
     defaultImage: "Default Avatar",
+    secondpusername: "2P Username",
     // Add more translations here
 };
 
