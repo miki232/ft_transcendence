@@ -301,7 +301,7 @@ const router = async () => {
 			route: routes[3],
 			isMatch: true
 		};
-		document.querySelector('header').style.display = 'flex';
+		document.querySelector('header').style.display = 'block';
 		document.querySelector('body').classList.remove('game-bg');
 		user.disconnected === true ? createNotification("You have been disconnected from the game", "error") : user.disconnected = true;
 		user.lastURL = null;

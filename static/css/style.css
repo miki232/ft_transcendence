@@ -132,6 +132,10 @@ header {
 	vertical-align: middle;
 }
 
+.navbar .container-fluid {
+	flex-wrap: nowrap
+}
+
 .bg-body-tertiary {
 	--bs-bg-opacity: 0;
 	color: white;
@@ -1295,9 +1299,15 @@ canvas {
 
 /************ MEDIA QUERIES ************/
 
+@media screen and (max-width: 1080px) {
+	header {
+		padding: 0 10px;
+	}
+}
+
 @media screen and (max-width: 860px) {
 
-	header {
+	/* header {
 		padding: 15px 30px;
 	}
 
@@ -1327,7 +1337,7 @@ canvas {
 		border: 2px solid white;
 		border-radius: 20px;
 	}
-	
+	 */
 	.form-box,
 	.dashboard {
 		width: 350px;
