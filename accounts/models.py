@@ -16,6 +16,7 @@ class CustomUser(AbstractUser): # new
     Ai = models.BooleanField(default=False)
     Occupied = models.BooleanField(default=False)
     language = models.CharField(max_length=254, default="en")
+    paddle_color = models.CharField(max_length=254, default="white")
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):
