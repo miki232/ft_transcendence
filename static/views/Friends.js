@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 import { getRequests, sendFriendRequest } from "./Requests.js";
 
 // export async function getCSRFToken() {
@@ -51,6 +51,7 @@ export default class Friends extends AbstractView {
 		this.activeBtns();
 		this.CurrentUsername;
 		this.isStartFriends = true;
+		this.lang = localStorage.getItem('language') || 'en';
 	}
 
 	activeBtns () {
@@ -141,6 +142,7 @@ export default class Friends extends AbstractView {
 				navigateTo(e.target.href);
 			});
 		});
+		changeLanguage(this.lang);
 	}
 
 	async searchUser() {
@@ -159,6 +161,7 @@ export default class Friends extends AbstractView {
 			<div class="friends-list"></div>
 		`;
 		searchUserBtn.insertAdjacentHTML("afterend", friendsListHTML);
+		changeLanguage(this.lang);
 		const friendsSearch = document.querySelector(".friends-list");
 		const friendInput = document.querySelector("#friendNameInput");
 		const searchBtn = document.querySelector("#search-btn");
@@ -273,8 +276,8 @@ export default class Friends extends AbstractView {
 					<h1 data-translate="friends">Friends</h1>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
-						<button type="button" class="submit-btn" id="friends-list"><ion-icon name="people-outline"></ion-icon>Friends List</button>
-						<button type="button" class="submit-btn" id="search-user"><ion-icon name="search-outline"></ion-icon>Search User</button>
+						<button type="button" class="submit-btn" data-translate="friendlist" id="friends-list"><ion-icon name="people-outline"></ion-icon>Friends List</button>
+						<button type="button" class="submit-btn" data-translate="finduser" id="search-user"><ion-icon name="search-outline"></ion-icon>Search User</button>
 					</div>
 					<div class="back-btn-container">
 						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>

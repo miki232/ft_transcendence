@@ -208,7 +208,7 @@ class UserInfoView(APIView):
             print("Paddle Color", request.data['paddle_color'])
             request.user.paddle_color = request.data['paddle_color']
             request.user.save()
-        elif 'langugage' in request.data:
+        elif 'language' in request.data:
             request.user.language = request.data['language']
             request.user.save()
         else:

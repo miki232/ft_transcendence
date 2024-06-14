@@ -79,6 +79,53 @@ export const navigateTo = async url => {
 
 // Set initial language based on user preference or default
 
+// export async function changeLanguage(language) {
+//     localStorage.setItem('language', language);
+//     console.log(language);
+//     try {
+//         const module = await import(`./languagepak/${language}.lang.js`);
+//         const translations = module.default;
+
+//         document.querySelectorAll('[data-translate]').forEach(element => {
+//             const key = element.getAttribute('data-translate');
+//             let translation = translations[key];
+
+//             if (translation) {
+//                 // Replace placeholders in the translation with dynamic content if any
+//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+//                     try {
+//                         return eval(expression);
+//                     } catch (error) {
+//                         console.error(`Error evaluating expression: ${expression}`, error);
+//                         return '';
+//                     }
+//                 });
+
+//                 // Replace only text nodes while preserving the order of other nodes
+//                 let childNodes = Array.from(element.childNodes);
+//                 let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+//                 let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+//                 // Update text nodes
+//                 if (textNodes.length > 0) {
+//                     textNodes.forEach(textNode => {
+//                         textNode.nodeValue = translation;
+//                     });
+//                 } else {
+//                     const textNode = document.createTextNode(translation);
+//                     if (nonTextNodes.length > 0) {
+//                         element.insertBefore(textNode, nonTextNodes[0]);
+//                     } else {
+//                         element.appendChild(textNode);
+//                     }
+//                 }
+//             }
+//         });
+//     } catch (error) {
+//         console.error(`Error loading language pack: ${error}`);
+//     }
+// }
+
 export async function changeLanguage(language) {
     localStorage.setItem('language', language);
     console.log(language);
@@ -101,22 +148,27 @@ export async function changeLanguage(language) {
                     }
                 });
 
-                // Replace only text nodes while preserving the order of other nodes
-                let childNodes = Array.from(element.childNodes);
-                let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
-                let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
-
-                // Update text nodes
-                if (textNodes.length > 0) {
-                    textNodes.forEach(textNode => {
-                        textNode.nodeValue = translation;
-                    });
+                // If the element is an input and has a placeholder, translate the placeholder
+                if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                    element.setAttribute('placeholder', translation);
                 } else {
-                    const textNode = document.createTextNode(translation);
-                    if (nonTextNodes.length > 0) {
-                        element.insertBefore(textNode, nonTextNodes[0]);
+                    // Replace only text nodes while preserving the order of other nodes
+                    let childNodes = Array.from(element.childNodes);
+                    let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+                    let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+                    // Update text nodes
+                    if (textNodes.length > 0) {
+                        textNodes.forEach(textNode => {
+                            textNode.nodeValue = translation;
+                        });
                     } else {
-                        element.appendChild(textNode);
+                        const textNode = document.createTextNode(translation);
+                        if (nonTextNodes.length > 0) {
+                            element.insertBefore(textNode, nonTextNodes[0]);
+                        } else {
+                            element.appendChild(textNode);
+                        }
                     }
                 }
             }
@@ -126,42 +178,6 @@ export async function changeLanguage(language) {
     }
 }
 
-
-// async function changeLanguage(language) {
-//     localStorage.setItem('language', language);
-//     console.log(language);
-
-//     try {
-//         const module = await import(`./languagepak/${language}.lang.js`);
-//         const translations = module.default;
-
-//         document.querySelectorAll('[data-translate]').forEach(element => {
-//             const key = element.getAttribute('data-translate');
-//             let translation = translations[key];
-
-//             if (translation) {
-//                 // Replace placeholders in the translation with dynamic content if any
-//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
-                    // try {
-                    //     return eval(expression);
-                    // } catch (error) {
-                    //     console.error(`Error evaluating expression: ${expression}`, error);
-                    //     return '';
-                    // }
-//                 });
-
-//                 // Update only text nodes, preserve other elements (e.g., icons)
-//                 element.childNodes.forEach(child => {
-//                     if (child.nodeType === Node.TEXT_NODE) {
-//                         child.nodeValue = translation;
-//                     }
-//                 });
-//             }
-//         });
-//     } catch (error) {
-//         console.error(`Error loading language pack: ${error}`);
-//     }
-// }
 
 	
 const userLang = localStorage.getItem('language') || 'en';

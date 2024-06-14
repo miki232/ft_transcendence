@@ -76,6 +76,7 @@ export default class History extends AbstractView {
 		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "No history found.";
+		noEntries.setAttribute("data-translate", "noHistory");
 		listElement.appendChild(noEntries);
 	}
 
