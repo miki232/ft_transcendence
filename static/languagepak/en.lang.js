@@ -48,6 +48,7 @@ const translations = {
     search: "Search",
     friendlist: "Friend List",
     noFriends: "You don't have any friends yet",
+    noRequests: "No requestss",
     searchresults: "Search Results",
     sendmsg: "Send Message",
     sendreq: "Add to Friends",
@@ -60,6 +61,13 @@ const translations = {
     uploadImage: "Upload Avatar",
     defaultImage: "Default Avatar",
     secondpusername: "2P Username",
+    play: "Play",
+    changelang: "Change Language:",
+    changepic: "Profile picture changed successfully!",
+    newusername: "New Username",
+    newpass: "New Password",
+    confirmpass: "Confirm Password",
+    noHistory: "No history found.",
     // Add more translations here
 };
 

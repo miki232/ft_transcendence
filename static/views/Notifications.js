@@ -1,14 +1,33 @@
-export function createNotification(message) {
-	const notification = document.createElement('div');
-	notification.classList.add('notification');
-	const text = document.createElement('span');
-	text.innerHTML = message;
-	notification.innerHTML = `<ion-icon name="notifications"></ion-icon>`;
-	notification.appendChild(text);
-	document.body.appendChild(notification);
-	setTimeout(() => {
-		document.body.removeChild(notification);
-	}, 3000);
+// export function createNotification(message) {
+// 	const notification = document.createElement('div');
+// 	notification.classList.add('notification');
+// 	const text = document.createElement('span');
+// 	text.innerHTML = message;
+// 	notification.innerHTML = `<ion-icon name="notifications"></ion-icon>`;
+// 	notification.appendChild(text);
+// 	document.body.appendChild(notification);
+// 	setTimeout(() => {
+// 		document.body.removeChild(notification);
+// 	}, 3000);
+// }
+
+export function createNotification(message, key) {
+    const notification = document.createElement('div');
+    notification.classList.add('notification');
+    const text = document.createElement('span');
+    text.innerHTML = message;
+
+    // Add data-translate attribute if key is provided
+    if (key) {
+        text.setAttribute('data-translate', key);
+    }
+
+    notification.innerHTML = `<ion-icon name="notifications"></ion-icon>`;
+    notification.appendChild(text);
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
 }
 
 // export function createNotification(message) {

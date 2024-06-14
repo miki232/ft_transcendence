@@ -129,6 +129,7 @@ export default class extends AbstractView {
 		const noEntries = document.createElement("span");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "No requests";
+		noEntries.setAttribute("data-translate", "noRequests");
 		requestsListElement.appendChild(noEntries);
 		for (let i = 0; i < data.length; i++) {
 			const request = data[i];

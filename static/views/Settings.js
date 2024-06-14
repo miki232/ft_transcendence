@@ -67,7 +67,10 @@ export default class Settings extends AbstractView {
 					pro_pic : "defaultPic",
 				})
 			});
-			createNotification("Profile picture changed successfully!");
+			// createNotification("Profile picture changed successfully!");
+			createNotification("Profile picture changed successfully!", "changepic");
+			// this.lang = localStorage.getItem('language') || 'en';
+			// changeLanguage(this.lang);
 			navigateTo("/dashboard/settings");
 		});
 		const uploadBtn = document.querySelector(".upload-file");
@@ -98,7 +101,7 @@ export default class Settings extends AbstractView {
 				if (!response.ok) {
 					throw new Error("Error in changing the profile picture");
 				}
-				createNotification("Profile picture changed successfully!");
+				createNotification("Profile picture changed successfully!", "changepic");
 				navigateTo("/dashboard/settings");
 			} catch (error) {
 				urlInput.value = "";
@@ -106,8 +109,9 @@ export default class Settings extends AbstractView {
 				createNotification("Provided URL is not valid!");
 			}
 		
-		this.lang = localStorage.getItem('language') || 'en';});
-		await changeLanguage(this.lang);
+		});
+		this.lang = localStorage.getItem('language') || 'en';
+		changeLanguage(this.lang);
 	}
 
 	async changeUsername() {
@@ -126,7 +130,7 @@ export default class Settings extends AbstractView {
 		changeUsernameBtn.classList.add("settings-btn");
 		const changeUsernameHTML = `
 			<div class="input-box change">
-				<input type="text" placeholder="New Username">
+				<input type="text" data-translate="newusername" placeholder="New Username">
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
@@ -134,6 +138,7 @@ export default class Settings extends AbstractView {
 			</div>
 		`;
 		changeUsernameBtn.insertAdjacentHTML("afterend", changeUsernameHTML);
+		// changeLanguage(this.lang);
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
@@ -179,7 +184,7 @@ export default class Settings extends AbstractView {
 		});
 
 		this.lang = localStorage.getItem('language') || 'en';
-		await changeLanguage(this.lang);
+		changeLanguage(this.lang);
 	}
 
 	async changePassword() {
@@ -198,11 +203,11 @@ export default class Settings extends AbstractView {
 		changePasswordBtn.classList.add("settings-btn");
 		const changePasswordHTML = `
 			<div class="input-box change">
-				<input type="password" placeholder="New Password" id="new-password">
+				<input type="password" data-translate="newpass" placeholder="New Password" id="new-password">
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="input-box change">
-				<input type="password" placeholder="Confirm Password" id="confirm-password">
+				<input type="password" data-translate="confirmpass" placeholder="Confirm Password" id="confirm-password">
 				<ion-icon name="lock-closed-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
@@ -210,6 +215,7 @@ export default class Settings extends AbstractView {
 			</div>
 		`;
 		changePasswordBtn.insertAdjacentHTML("afterend", changePasswordHTML);
+		changeLanguage(this.lang);
 		const change_all = document.querySelectorAll(".change");
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
@@ -339,7 +345,8 @@ export default class Settings extends AbstractView {
 						}
 						const data = await response.json();
 						// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
-						createNotification("Profile picture changed successfully!");
+						createNotification("Profile picture changed successfully!", "changepic");
+						changeLanguage(this.lang);
 						navigateTo("/dashboard");
 					} catch (error) {
 						console.error('Error: ', error);
@@ -372,8 +379,26 @@ export default class Settings extends AbstractView {
 		});
 		const lang_selector = document.querySelectorAll(".lang-selector");
 		lang_selector.forEach(e => {
-			e.addEventListener("click", () => {
-				changeLanguage(e.getAttribute("value"));
+			e.addEventListener("click", async () => {
+				const language = e.getAttribute("value");
+				console.log(language);
+				await changeLanguage(language);
+	
+				// Send a POST request
+				try {
+					const response = await fetch('/accounts/user_info/', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': await getCSRFToken()
+						},
+						body: JSON.stringify({ "language": language }),
+					});
+					const data = await response.json();
+					console.log('Success:', data);
+				} catch (error) {
+					console.error('Error:', error);
+				}
 			});
 		});
 		const backBtn = document.getElementById("back");
@@ -459,7 +484,7 @@ export default class Settings extends AbstractView {
 							<input type="color" id="paddle_color" value="${this.user.paddle_color}">
 						</div>
 						<div class="change-language">
-							<p>Change Language:</p>
+							<p data-translate="changelang">Change Language:</p>
 							<div class="flags">
 								<img src="/static/img/flags/gb.png" alt="English" class="flag lang-selector" value="en">
 								<img src="/static/img/flags/fr.png" alt="Français" class="flag lang-selector" value="fr">

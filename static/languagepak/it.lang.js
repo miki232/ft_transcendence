@@ -45,7 +45,8 @@ const translations = {
     finduser: "Cerca utente",
     search: "Cerca",
     friendlist: "Lista Amici",
-    noFriends: "Non hai amici",
+    noFriends: "Non hai ancora nessun amico",
+    noRequests: "Non hai richieste",
     searchresults: "Risultati della ricerca",
     sendmsg: "Messaggia",
     sendreq: "Aggiungi agli Amici",
@@ -58,6 +59,13 @@ const translations = {
     uploadImage: "Carica immagine",
     defaultImage: "Immagine Default",
     secondpusername: "2P Nome utente",
+    play: "Gioca",
+    changelang: "Cambia Lingua:",
+    changepic: "Immagine cambiata con successo!",
+    newusername: "Nuovo Nome Utente",
+    newpass: "Nuova Password",
+    confirmpass: "Conferma Password",
+    noHistory: "Non hai giocato partite.",
     // Add more translations here...
 };
 

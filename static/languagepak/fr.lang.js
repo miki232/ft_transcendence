@@ -48,6 +48,7 @@ const translations = {
     search: "Cherche",
     friendlist: "Liste d'Amis",
     noFriends: "Vous n'avez pas d'amis",
+    noRequests: "Vous n'avez pas de demandes",
     searchresults: "Résultats de la recherche",
     sendmsg: "Message",
     sendreq: "Ajouter aux Amis",
@@ -60,6 +61,13 @@ const translations = {
     uploadImage: "Choisir Image",
     defaultImage: "Image Défaut",
     secondpusername: "2P Nom d'utilisateur",
+    play: "Jouer",
+    changelang: "Changer Langue:",
+    changepic: "L'image a été changée avec succès!",
+    newusername: "Nouveau Nom d'Utilisateur",
+    newpass: "Nouveau Mot de Passe",
+    confirmpass: "Confirmer le Mot de Passe",
+    noHistory: "Vous n'avez pas encore joué de matchs.",
     // Add more translations here...
 };
 
