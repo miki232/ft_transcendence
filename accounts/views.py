@@ -128,6 +128,17 @@ class UserdeleteView(APIView):
             return Response({'value' : 'User deleted'}, status=status.HTTP_200_OK)
         return Response({'value' : 'User not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
 
+def is_valid_image_url(url):
+    try:
+        response = requests.get(url, stream=True)
+        if 'image' in response.headers['Content-Type']:
+            return True
+        else:
+            return False
+    except requests.exceptions.RequestException as e:
+        # This means something went wrong (like a 404 error, etc.)
+        return False
+
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = (SessionAuthentication,)
@@ -152,6 +163,8 @@ class UserInfoView(APIView):
             image_url = request.POST['url']
             if re.search('<.*?>', image_url):
                 return JsonResponse({'error': 'Invalid input'}, status=400)
+            if not is_valid_image_url(image_url):
+                return JsonResponse({'error': 'Invalid URL'}, status=400)
             validate = URLValidator()
             try:
                 validate(image_url)
