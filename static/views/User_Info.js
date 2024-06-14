@@ -138,7 +138,7 @@ export default class UserInfo extends AbstractView {
 				<div class="collapse navbar-collapse" id="navbarNavDropdown">
 				  <ul class="navbar-nav">
 					<li class="nav-item">
-					  <a class="nav-link" href="/local_game" data-link>Local Game</a>
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/online" data-link>Online Game</a>

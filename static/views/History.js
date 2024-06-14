@@ -199,16 +199,16 @@ export default class History extends AbstractView {
 				<div class="collapse navbar-collapse" id="navbarNavDropdown">
 				  <ul class="navbar-nav">
 					<li class="nav-item">
-					  <a class="nav-link" href="/local_game" data-link>Local Game</a>
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/online" data-link>Online Game</a>
+					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/friends" data-link>Friends</a>
+					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/chat" data-link>Chat</a>

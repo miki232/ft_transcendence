@@ -82,7 +82,6 @@ export const navigateTo = async url => {
 export async function changeLanguage(language) {
     localStorage.setItem('language', language);
     console.log(language);
-
     try {
         const module = await import(`./languagepak/${language}.lang.js`);
         const translations = module.default;

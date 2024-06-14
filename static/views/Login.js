@@ -91,19 +91,19 @@ export default class extends AbstractView {
 					  <a class="nav-link" aria-current="page" href="/" data-link>Home</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/about" data-link>About Us</a>
+					  <a class="nav-link" data-translate="aboutus" href="/about" data-link>About Us</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/contact" data-link>Contact</a>
+					  <a class="nav-link" data-translate="contacts" href="/contact" data-link>Contact</a>
 					</li>
 					<li class="nav-item dropdown">
-					  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					  <a class="nav-link dropdown-toggle" data-translate="language" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Language
 					  </a>
 					  <ul class="dropdown-menu select-menu">
-						<li class="dropdown-item lang-selector" value="en">English</li>
-						<li class="dropdown-item lang-selector" value="fr">Français</li>
-						<li class="dropdown-item lang-selector" value="it">Italiano</li>
+						<li class="dropdown-item lang-selector" data-translate="eng" value="en">English</li>
+						<li class="dropdown-item lang-selector" data-translate="fr" value="fr">Français</li>
+						<li class="dropdown-item lang-selector" data-translate="it" value="it">Italiano</li>
 					  </ul>
 					</li>
 				  </ul>

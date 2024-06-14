@@ -65,15 +65,18 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def notificationloop(self):
         while True:
-            notificationslist = await self.get_notifications()
-            for notification in notificationslist:
-                await self.send(text_data=json.dumps(
-                    {
-                        'content' : notification.content,
-                        'read' : notification.read
-                    }
-                ))
-            await asyncio.sleep(15)
+            try:
+                notificationslist = await self.get_notifications()
+                for notification in notificationslist:
+                    await self.send(text_data=json.dumps(
+                        {
+                            'content' : notification.content,
+                            'read' : notification.read
+                        }
+                    ))
+                await asyncio.sleep(15)
+            except:
+                break
 
     @database_sync_to_async
     def get_notifications(self):
@@ -88,6 +91,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(
             f"notifications_{self.user.id}", self.channel_name
         )
+        self.notificationloop.cancel()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)

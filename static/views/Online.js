@@ -128,21 +128,21 @@ export default class Online extends AbstractView {
                     }
                 }
             }
-        } else {
+        } else
             tournamentBtn.setAttribute("disabled", "true");
-        	tournamentBtn.addEventListener("click", e => {
-            	e.preventDefault();
-            	console.log("Tournament");
-            	if (this.tournament.status == true) {
-                	this.user.matchmaking_ws.send(JSON.stringify({
-                    	"action": "joinTournamentQueue",
-                    	"username": this.user.getUser(),
-                    	"status": "not_ready",
-                	}));
-                	navigateTo("/tournament");
-            	}
-        	});
-		}
+        tournamentBtn.addEventListener("click", e => {
+			console.log("Tournament is not active");
+        	e.preventDefault();
+        	console.log("Tournament");
+        	if (this.tournament.status == true) {
+            	this.user.matchmaking_ws.send(JSON.stringify({
+                	"action": "joinTournamentQueue",
+                	"username": this.user.getUser(),
+                	"status": "not_ready",
+            	}));
+            	navigateTo("/tournament");
+        	}
+        });
 	}
 		// two_playerBtn.addEventListener("click", e => {
 		// 	this.ws_local = new WebSocket('wss://'
@@ -248,16 +248,16 @@ export default class Online extends AbstractView {
 				<div class="collapse navbar-collapse" id="navbarNavDropdown">
 				  <ul class="navbar-nav">
 					<li class="nav-item">
-					  <a class="nav-link" href="/local_game" data-link>Local Game</a>
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/online" data-link>Online Game</a>
+					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/friends" data-link>Friends</a>
+					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/chat" data-link>Chat</a>

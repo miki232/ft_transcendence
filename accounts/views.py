@@ -182,6 +182,9 @@ class UserInfoView(APIView):
             print("Paddle Color", request.data['paddle_color'])
             request.user.paddle_color = request.data['paddle_color']
             request.user.save()
+        elif 'langugage' in request.data:
+            request.user.language = request.data['language']
+            request.user.save()
         else:
             return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'pro_pic': url, 'paddle_color' : request.user.paddle_color}, status=status.HTTP_200_OK)
