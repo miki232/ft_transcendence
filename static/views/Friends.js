@@ -113,7 +113,7 @@ export default class Friends extends AbstractView {
 		friendListElement.appendChild(noEntries);
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
-			var userUsername = friendList.user.username;            
+			var userUsername = friendList.user.username;         
 			for (let j = 0; j < friendList.friends.length; j++) {
 				noEntries.remove();
 				const friendUsername = friendList.friends[j].username;

@@ -947,10 +947,11 @@ div .rooms-list {
 	margin: 5px;
 }
 
-/* .friends-list {
-	height: 40%;
-} */
-
+.friends-list {
+	max-height: 280px;
+	margin-bottom: 0;
+}	
+	
 .friend a,
 .user a {
 	color: white;
