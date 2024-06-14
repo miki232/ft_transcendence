@@ -178,9 +178,13 @@ class UserInfoView(APIView):
                 os.remove(current_pic_path)
             request.user.pro_pic = url
             request.user.save()
+        elif 'paddle_color' in request.data:
+            print("Paddle Color", request.data['paddle_color'])
+            request.user.paddle_color = request.data['paddle_color']
+            request.user.save()
         else:
             return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'pro_pic': url}, status=status.HTTP_200_OK)
+        return Response({'pro_pic': url, 'paddle_color' : request.user.paddle_color}, status=status.HTTP_200_OK)
 
 class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserMatchHistorySerializer

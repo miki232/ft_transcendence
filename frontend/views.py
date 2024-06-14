@@ -25,7 +25,7 @@ def room(request):
     return render(request, "base.html")
 
 def test(request):
-    return render(request, "home2.html")
+    return render(request, "friend_example.html")
 
 @login_required
 def csrf(request):
