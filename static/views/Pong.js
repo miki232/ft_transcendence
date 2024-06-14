@@ -90,8 +90,8 @@ export default class Pong {
     }
 
     scoreTabMaker(data) {
-        console.log(data.created_by);
-        if (data.created_by === this.user.username) {
+        console.log(data.player);
+        if (data.player === this.user.username) {
             this.player1 = this.user.username;
             this.player2 = this.user.online_opponent.username;
             this.player1_pic = this.user.getPic();

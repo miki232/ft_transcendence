@@ -167,7 +167,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.opponent, friendly = await self.get_opponent_from_room(self.room_name)
                 print("Pong Consumer 168", self.opponent)
                 if friendly:
-                    await self.send(text_data=json.dumps({'status' : "waiting", 'message': 'Waiting for the opponent to join...'}))
+                    await self.send(text_data=json.dumps({'status' : "waiting", 'message': 'Waiting for the opponent to join...', 'player': self.user.username}))
                     await send_save_notification_async(self.opponent, f"{self.user.username} is waiting for you in the room {self.room_name}")
             
             print("Pong Consumer 149", len(PongConsumer.players[self.room_name]))
