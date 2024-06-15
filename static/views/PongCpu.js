@@ -19,6 +19,7 @@ export default class PongCpu extends AbstractView{
         this.playerPaddleY = 600 / 2 - this.paddle_height / 2;
         this.opponentPaddleY = 600 / 2 - this.paddle_height / 2;
         this.arrowUpPressed = false;
+        this.user_paddle_color = user.paddle_color;
         this.arrowDownPressed = false;
         this.users = user;
         this.keysPressed = {};
@@ -107,7 +108,7 @@ export default class PongCpu extends AbstractView{
         // Clear the previous frame
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.drawNet(context, canvas, "#FFFFFF");
-        this.drawRect(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
+        this.drawRect(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color);
         this.drawRect(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FFDE59');
         // Draw player paddle
@@ -204,7 +205,7 @@ export default class PongCpu extends AbstractView{
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !==  this.users.username) {
-                document.getElementById("score2").innerHTML = this.users.username + " Score: " + data.score2;
+                document.getElementById("score1").innerHTML = this.users.username + " Score: " + data.score1;
 
             }
             if (data.score2 !==  this.opponent) {
