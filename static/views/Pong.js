@@ -6,6 +6,7 @@ export default class Pong {
         this.user = user;
         this.user_paddle_color1;
         this.user_paddle_color2;
+        this.tempcolor;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
         this.player1 = undefined;
@@ -46,9 +47,9 @@ export default class Pong {
 		return csrftoken;
 	}
 
-    async loadUserData() {
+    async loadOpponentPaddle(userID) {
 		var csrftoken = await this.getCSRFToken()
-		await fetch('/accounts/user_info/', {
+		await fetch('/accounts/guser_info/?username=' + userID, {
 			method: 'GET',
 			headers: {
 				'Content-Type' : 'application/json',
@@ -58,7 +59,8 @@ export default class Pong {
 			.then(response => response.json())
 			.then(data => {
 				console.log(data);
-				this.setUser(data.username);
+                console.log(data.user.paddle_color);
+                this.tempcolor = data.user.paddle_color;
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -91,21 +93,26 @@ export default class Pong {
         }
     }
 
-    scoreTabMaker(data) {
-        console.log(data.player);
+    async scoreTabMaker(data) {
+        console.log("data.player", data.player);
         if (data.player === this.user.username) {
             this.player1 = this.user.username;
             this.player2 = this.user.online_opponent.username;
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.online_opponent.pro_pic;
+            console.log("player1", this.player1, "player2", this.user.online_opponent.username);
+            await this.loadOpponentPaddle(this.user.online_opponent.username);
+            console.log("this.tempcolor", this.tempcolor)
             this.user_paddle_color1 = this.user.paddle_color;
-            this.user_paddle_color2 = '#00CCFF';
+            this.user_paddle_color2 = this.tempcolor
         } else {
             this.player1 = this.user.online_opponent.username;
             this.player2 = this.user.username;
             this.player1_pic = this.user.online_opponent.pro_pic;
             this.player2_pic = this.user.getPic();
-            this.user_paddle_color1 = '#00CCFF';
+            console.log("ON ELSE player1", this.player1, "player2", this.user.online_opponent.username);
+            await this.loadOpponentPaddle(this.user.online_opponent.username);
+            this.user_paddle_color1 = this.tempcolor
             this.user_paddle_color2 = this.user.paddle_color;
         }
         const playerOneTab = document.getElementById('player1-score');
