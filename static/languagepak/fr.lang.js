@@ -86,7 +86,7 @@ const translations = {
     friendReqCancelled: "Demande d'ami annulée!",
     youlost: "VOUS AVEZ PERDU!",
     noUserFound: "Aucun utilisateur trouvé",
-    logout: "Déconnexion réussie avec succès",
+    logoutSuccess: "Déconnexion réussie avec succès",
     wrongUserPass: "Nom d'utilisateur ou mot de passe incorrect",
     exiting: "L'utilisateur avec cet email et nom d'utilisateur existe déjà",
     // Add more translations here...

@@ -129,6 +129,12 @@ class UserLoginView(APIView):
             else:
                 # If "remember_me" is true, set the session to expire in 2 weeks (1209600 seconds)
                 request.session.set_expiry(1209600)
+            if not request.data.get('language', False):
+                user.language = 'en'
+                user.save()
+            else:
+                user.language = request.data['language']
+                user.save()
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

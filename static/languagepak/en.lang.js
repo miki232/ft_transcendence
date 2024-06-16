@@ -86,7 +86,7 @@ const translations = {
     friendReqCancelled: "Friend request cancelled!",
     youlost: "YOU LOST!",
     noUserFound: "No user found",
-    logout: "Successfully logged out",
+    logoutSuccess: "Successfully logged out",
     wrongUserPass: "Wrong username or password",
     exiting: "User with this email and username already exists",
     // Add more translations here

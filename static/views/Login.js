@@ -53,7 +53,16 @@ export default class extends AbstractView {
 		const login_username = document.querySelector("#login-user");
 		const login_pass = document.querySelector("#login-pass");
 		const schoolLoginBtn = document.getElementById("school-login");
+		var langSelectors = document.querySelectorAll('.lang-selector');
 
+		langSelectors.forEach(function(selector) {
+			selector.addEventListener('click', function(event) {
+				var lang = this.getAttribute('value');
+				changeLanguage(lang);
+				// Do something with the selected language
+				console.log('Selected language: ' + lang);
+			});
+		});
 		loginSwap.addEventListener("click", e => {
 			e.preventDefault();
 			form_box.classList.remove("change-form");

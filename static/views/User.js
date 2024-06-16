@@ -84,7 +84,8 @@ export default class User extends AbstractView {
 			body: JSON.stringify({
 				username: username,
 				password: password,
-				remember_me : rememberme
+				remember_me : rememberme,
+				language: localStorage.getItem('language')
 			}),
 		}).then(response => {
 			response.json();
