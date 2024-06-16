@@ -96,11 +96,13 @@ def callback(request):
         if (user.is_active):
             user.status_login = True
             user.save()
-            return JsonResponse({'status': 'success', 'message': 'User logged in successfully'})
+            return render(request, 'close_tab.html')
+            # return JsonResponse({'status': 'success', 'message': 'User logged in successfully'})
         else:
-            return JsonResponse({'status': 'error', 'message': 'User is not active'})
+            return render(request, 'close_tab.html', {'error': 'User is not active'})
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid OAuth token'})
+        return render(request, 'close_tab.html', {'error': 'User with this email and username already exists'})
+
 
 class UserSignupView(APIView):
     def post(self, request, format=None):

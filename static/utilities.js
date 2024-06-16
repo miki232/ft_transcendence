@@ -51,7 +51,7 @@ export async function register() {
     const csrftoken = getCookieRegister('csrftoken');
 
     if (!username || !password || !email) {
-        createNotification('Please fill in all fields');
+        createNotification('Please fill in all fields', "fillfields");
         return;
     }
 
@@ -87,7 +87,7 @@ export async function register() {
             const data = await response.json();
             console.log(data);
             console.log("Register");
-            createNotification("Account created successfully");
+            createNotification("Account created successfully!", "acccreated");
             usernameInput.value = '';
             passwordInput.value = '';
             emailInput.value = '';

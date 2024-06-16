@@ -920,7 +920,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
                 await self.reset()
-                if self.state['score1'] < POINTS_TO_WIN:
+                if self.state['score2'] < POINTS_TO_WIN:
                     await self.countdown()
 
             elif self.state['ball_x'] >= 795:
@@ -933,7 +933,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = -3
                 await self.reset()
-                if self.state['score2'] < POINTS_TO_WIN:
+                if self.state['score1'] < POINTS_TO_WIN:
                     await self.countdown()
 
 

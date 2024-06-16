@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 import { register } from "../utilities.js";
+import { createNotification } from "./Notifications.js";
 // import validateLogin from './Dashboard.js';
 
 export default class extends AbstractView {
@@ -51,6 +52,7 @@ export default class extends AbstractView {
 		const registerSwap = document.querySelector(".register-btn");
 		const login_username = document.querySelector("#login-user");
 		const login_pass = document.querySelector("#login-pass");
+		const schoolLoginBtn = document.getElementById("school-login");
 
 		loginSwap.addEventListener("click", e => {
 			e.preventDefault();
@@ -75,6 +77,37 @@ export default class extends AbstractView {
 			const registered = await register();
 			registered === true ? form_box.classList.remove("change-form") : null;
 		});
+		schoolLoginBtn.addEventListener('click', async e => {
+			e.preventDefault();
+			const response = await fetch('accounts/authorize/', {
+				method: 'GET',
+				headers: {
+					'Content-Type' : 'application/json',
+					'X-CSRFToken': this.getCookie('csrftoken')
+				}
+			});
+			if (response.ok) {
+				const data = await response.json();
+				const newWindow = window.open(data.url, '_blank');
+
+				const checkWindowClosed = setInterval(function() {
+					if (newWindow.closed) {
+						clearInterval(checkWindowClosed);
+						let exiting = localStorage.getItem('error42');
+						if (exiting === null) {
+							console.log('The tab has been closed');
+							navigateTo("/dashboard");
+						}
+						console.log('The tab has been closed with error:', exiting);
+						createNotification(exiting, "exiting");
+						navigateTo("/dashboard");
+						// Perform any other actions needed after the tab is closed
+					}
+				}, 1000); // Check every second
+			} else {
+				console.error('Error:', response.status);
+			}
+    });
 	}
 
 	getNav() {

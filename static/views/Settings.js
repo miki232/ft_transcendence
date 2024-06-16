@@ -83,7 +83,7 @@ export default class Settings extends AbstractView {
 			e.preventDefault();
 			const urlInput = document.querySelector(".input-box input");
 			if (!urlInput.value) {
-				createNotification("Please, insert an URL.");
+				createNotification("Please, insert an URL.", "urlinsert");
 				return;
 			}
 			try {
@@ -106,7 +106,7 @@ export default class Settings extends AbstractView {
 			} catch (error) {
 				urlInput.value = "";
 				console.error('Error: ', error);
-				createNotification("Provided URL is not valid!");
+				createNotification("Provided URL is not valid!", "urlnotvalid");
 			}
 		
 		});
@@ -145,11 +145,11 @@ export default class Settings extends AbstractView {
 			const input = document.querySelector(".input-box input");
 			const newUsername = input.value;
 			if (newUsername === "") {
-				createNotification("Username cannot be empty!");
+				createNotification("Username cannot be empty!", "usercannotempty");
 				return;
 			}
 			if (newUsername === this.user.getUser()) {
-				createNotification("Username can't be the same as the old");
+				createNotification("Username can't be the same as the old one!", "usercannotsame");
 				input.value = "";
 				return;
 			}
@@ -173,7 +173,7 @@ export default class Settings extends AbstractView {
 						throw new Error(data.username[0]);
 					}
 				} else {
-					createNotification("Username changed successfully!");
+					createNotification("Username changed successfully!", "userchanged");
 					navigateTo("/settings");
 				}
 			} catch (error) {
@@ -225,11 +225,11 @@ export default class Settings extends AbstractView {
 			const newPassword = inputNew.value;
 			const confirmPassword = inputConfirm.value;
 			if (!newPassword || !confirmPassword) {
-				createNotification("Fields cannot be empty!");
+				createNotification("Field cannot be empty!", "fieldcannotempty");
 				return;
 			}
 			if (newPassword !== confirmPassword) {
-				createNotification("Passwords do not match!");
+				createNotification("Passwords do not match!", "passdontmatch");
 				inputNew.value = "";
 				inputConfirm.value = "";
 				return;
@@ -254,7 +254,7 @@ export default class Settings extends AbstractView {
 						throw new Error(data.newpassword[0]);
 					}
 				} else {
-					createNotification("Password changed successfully! Please log in again.");
+					createNotification("Password changed successfully! Please log in again.", "passchanged");
 					// await this.user.loadUserData();
 					navigateTo("/");
 				}
@@ -303,7 +303,7 @@ export default class Settings extends AbstractView {
 					'X-CSRFToken': csrf
 				}
 			});
-			createNotification("Account deleted successfully!");
+			createNotification("Account deleted successfully!", "accdeleted");
 			navigateTo("/");
 		});
 		const cancelBtn = document.querySelectorAll(".no-btn");
@@ -346,7 +346,7 @@ export default class Settings extends AbstractView {
 						const data = await response.json();
 						// await this.user.loadUserData(); /// Se dopo il fetch viene renderizzato la pagina "Dashboard", non è necessarion fare loadUserData
 						createNotification("Profile picture changed successfully!", "changepic");
-						changeLanguage(this.lang);
+						// changeLanguage(this.lang);
 						navigateTo("/dashboard");
 					} catch (error) {
 						console.error('Error: ', error);

@@ -216,7 +216,7 @@ export default class Friends extends AbstractView {
 							});
 						});
 					} else {
-						createNotification("User not found");
+						createNotification("User not found", "usernotfound");
 						friendInput.value = "";
 					}
     		    })

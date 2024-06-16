@@ -134,6 +134,22 @@ export default class PongCpu extends AbstractView{
         }
     }
 
+    winner_checker(data) {
+        if (data.victory != "none" && data.victory != undefined) {
+            const content = document.getElementById('content');
+            const resultHTML = `
+                <div class="result" style="display: flex; justify-content: center; width: 800px; height: 400px;">
+                    <img ${data.victory === this.users.getUser() ? 'src="static/img/win.jpg"' : 'src="static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
+                </div>
+            `;
+            content.innerHTML = resultHTML;
+            setTimeout(() => {
+                this.users.disconnected = false;
+                navigateTo('/local_game');
+            }, 3000);
+        }   
+    }
+
     async loop(){
         console.log('loop', this.game_ws);
         const canvas = document.getElementById('pongCanvas');
@@ -205,11 +221,11 @@ export default class PongCpu extends AbstractView{
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !==  this.users.username) {
-                document.getElementById("score1").innerHTML = this.users.username + " Score: " + data.score1;
+                document.getElementById("player1-score").innerHTML = this.users.username + " Score: " + data.score1;
 
             }
             if (data.score2 !==  this.opponent) {
-                document.getElementById("score2").innerHTML = this.opponent + " Score: " + data.score2;
+                document.getElementById("player2-score").innerHTML = this.opponent + " Score: " + data.score2;
             }
             /// DEBUG -------------------------------------
             if (data.hit !== undefined) {
@@ -223,7 +239,7 @@ export default class PongCpu extends AbstractView{
             //     else
             //         alert("AHAHAH hai PERSO")
             // }
-
+            this.winner_checker(data);
             this.update(canvas, context);
         }
     }
@@ -237,9 +253,11 @@ export default class PongCpu extends AbstractView{
         // };
         // ID HIT FOR DEBUG 
         return  `
-            <h1 id="score1">Score: 0</h1>
-            <h1 id="score2">Score: 0</h1>
-            <h1 id="hit" style="color: white;"></h1> 
+            <div id="scores">
+                    <div id="player1-score" class="score-info"></div>
+                    <div id="the-match"><h1>THE MATCH</h1></div>
+                    <div id="player2-score" class="score-info"></div>
+            </div>
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;

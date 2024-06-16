@@ -90,7 +90,7 @@ export default class UserInfo extends AbstractView {
 				sendRequestBtn.addEventListener("click", async e => {
 					e.preventDefault();
 					await sendFriendRequest(data.user.username);
-					createNotification("Friend request sent!");
+					createNotification("Friend request sent!", "friendReqSent");
 					friendInfoElement.innerHTML = "";
 					await this.getUserInfo(data.user.username);
 				});
@@ -116,13 +116,13 @@ export default class UserInfo extends AbstractView {
 					e.preventDefault();
 					cancelRequest(data.user.username);
 					friendInfoElement.innerHTML = "";
-					createNotification("Friend request cancelled!");
+					createNotification("Friend request cancelled!", "friendReqCancelled");
 					await this.getUserInfo(data.user.username);
 				});
 			}
 		})
 		.catch((error) => {
-			createNotification("No user found!");
+			createNotification("No user found", "noUserFound");
 			console.error('Error:', error);
 		});
 	}

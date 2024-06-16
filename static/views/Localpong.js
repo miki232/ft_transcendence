@@ -81,7 +81,6 @@ export default class LocalPong extends AbstractView{
     }
 
     drawRect(ctx, x, y, width, height, color) {
-        console.log("COLOR", color);
         ctx.fillStyle = color;
         ctx.shadowColor = color;
         ctx.shadowBlur = 20;
@@ -142,6 +141,34 @@ export default class LocalPong extends AbstractView{
             this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.username}));
         }
     }
+
+    winner_checker(data) {
+        if (data.victory != "none" && data.victory != undefined) {
+            const canvas = document.getElementById('pongCanvas');
+            const context = canvas.getContext('2d');
+            context.font = '48px serif';
+            context.fillStyle = 'red';
+            if (data.victory === this.users.getUser()) {
+                console.log('You Win!');
+                context.fillStyle = 'green';
+                context.fillText('You Win!', canvas.width / 5, canvas.height / 2);
+                context.fillStyle = 'red';
+                context.fillText('You Lose!', (canvas.width / 5) * 3, canvas.height / 2);
+            } else {
+                console.log('You Lose!');
+                context.fillStyle = 'red';
+                context.fillText('You Lose!', canvas.width / 5, canvas.height / 2);
+                context.fillStyle = 'green'; 
+                context.fillText('You Win!', (canvas.width / 5) * 3, canvas.height / 2);
+            }
+            setTimeout(() => {
+                this.users.disconnected = false;
+                this.closeWebSocket();
+                navigateTo('/local_game');
+            }, 3000);
+        }   
+    }
+    
 
     async loop(){
         console.log('loop', this.game_ws);
@@ -205,11 +232,11 @@ export default class LocalPong extends AbstractView{
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !==  this.users.username) {
-                document.getElementById("score1").innerHTML = this.users.username + " Score: " + data.score1;
+                document.getElementById("player1-score").innerHTML = this.users.username + " Score: " + data.score1;
 
             }
             if (data.score2 !==  this.opponent) {
-                document.getElementById("score2").innerHTML = this.opponent + " Score: " + data.score2;
+                document.getElementById("player2-score").innerHTML = this.opponent + " Score: " + data.score2;
             }
             // if (data.victory != "none"){
             //     console.log(data.victory);
@@ -218,8 +245,8 @@ export default class LocalPong extends AbstractView{
             //     else
             //         alert("AHAHAH hai PERSO")
             // }
-
             this.update(canvas, context);
+            this.winner_checker(data);
         }
     }
 
@@ -231,8 +258,11 @@ export default class LocalPong extends AbstractView{
         //     console.log(data);
         // };
         return  `
-            <h1 id="score1">Score: 0</h1>
-            <h1 id="score2">Score: 0</h1>
+            <div id="scores">
+                    <div id="player1-score" class="score-info"></div>
+                    <div id="the-match"><h1>THE MATCH</h1></div>
+                    <div id="player2-score" class="score-info"></div>
+            </div>
             <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;

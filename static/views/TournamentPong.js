@@ -285,7 +285,7 @@ export default class Pong extends AbstractView{
                 else
                 {
                     // alert("AHAHAH hai PERSO")
-                    createNotification("YOU LOST");
+                    createNotification("YOU LOST!", "youlost");
                     this.user.round = [];
                     await this.closeWebSocket();
                     setTimeout(() => {

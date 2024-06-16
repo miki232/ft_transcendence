@@ -11,7 +11,10 @@
 // 	}, 3000);
 // }
 
+import { changeLanguage } from "../index.js";
+
 export function createNotification(message, key) {
+    const lang = localStorage.getItem('language');
     const notification = document.createElement('div');
     notification.classList.add('notification');
     const text = document.createElement('span');
@@ -25,6 +28,7 @@ export function createNotification(message, key) {
     notification.innerHTML = `<ion-icon name="notifications"></ion-icon>`;
     notification.appendChild(text);
     document.body.appendChild(notification);
+    changeLanguage(lang);
     setTimeout(() => {
         document.body.removeChild(notification);
     }, 3000);

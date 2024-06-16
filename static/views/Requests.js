@@ -155,7 +155,7 @@ export default class extends AbstractView {
 				element.addEventListener("click", async e => {
 					e.preventDefault();
 					acceptFriendRequest(senderUsername);
-					createNotification("Friend request accepted!");
+					createNotification("Friend request accepted!", "friendReqAccepted");
 					element.parentElement.remove();
 					if (requestsListElement.childElementCount === 0) requestsListElement.appendChild(noEntries);
 				});

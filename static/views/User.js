@@ -56,7 +56,7 @@ export default class User extends AbstractView {
 		.then(data => {
 			console.log("Logged out");
 			console.log(data);
-			createNotification("Successfully logged out");
+			createNotification("Successfully logged out", "logoutSuccess");
 			this.logged = false;
 		})
 		.catch((error) => {
@@ -92,7 +92,7 @@ export default class User extends AbstractView {
 			if (response.status === 200) {
 				this.logged = true;
 			} else {
-				createNotification("Wrong username or password");
+				createNotification("Wrong username or password", "wrongUserPass");
 				this.logged = false;
 			}
 		}).then(data => console.log(data))

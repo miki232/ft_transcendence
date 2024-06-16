@@ -210,7 +210,7 @@ export default class MatchMaking extends AbstractView {
                     const data = JSON.parse(event.data);
                     //  Quando riceve status 6 vuol dire che l'opponete si è disconnesso
                     if (data.status === 6){
-                        createNotification("Matchmaking Opponent Disconnected");
+                        createNotification("Your opponent has disconnected!", "opponentdisconnect");
                         const reset = document.querySelectorAll(".user-dashboard");
                         reset[1].innerHTML = `<h4>Waiting for opponent...</h3>
                         <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
