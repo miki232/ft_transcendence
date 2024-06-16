@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { navigateTo } from "../index.js";
+import Info, { getCSRFToken, getusename } from "./Info.js";
 import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
 import LocalPong from "./Localpong.js";
@@ -88,9 +89,11 @@ export default class Online extends AbstractView {
 			e.preventDefault();
 				navigateTo("/dashboard");
 		});
-		const matchmakingBtn = document.getElementById("o-match");
+		const proposeTournamentBtn = document.getElementById("p-tournament");
 		const tournamentBtn = document.getElementById("o-tournament");
+		const matchmakingBtn = document.getElementById("o-match");
 		const friendlyBtn = document.getElementById("f-match");
+
 		friendlyBtn.addEventListener("click", e => {
 			e.preventDefault();
 			console.log("Friendly Match");
@@ -143,6 +146,33 @@ export default class Online extends AbstractView {
             	navigateTo("/tournament");
         	}
         });
+		proposeTournamentBtn.addEventListener("click", async e => {
+			e.preventDefault();
+
+			const data = {
+				name: "Tournament Name", // Replace with actual value
+				playerNumber: 4, // Replace with actual value
+				status: true // Replace with actual value
+			};
+
+			const response = await fetch("tournament_create/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": await getCSRFToken()
+				},
+				body: JSON.stringify(data)
+			});
+
+			if (response.ok) {
+				console.log("Tournament proposed successfully");
+				createNotification("Tournament proposed successfully", "successTournament");
+				
+			} else {
+				createNotification("There can be only one Tournament ", "failedTournament");
+				console.log("Failed to propose tournament");
+			}
+		});
 	}
 		// two_playerBtn.addEventListener("click", e => {
 		// 	this.ws_local = new WebSocket('wss://'
@@ -291,7 +321,7 @@ export default class Online extends AbstractView {
 						<button type="button" data-translate="matchmaking" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
 						<button type="button" data-translate="tournament" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter"></span></button>
 						<button type="button" data-translate="friendly" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
-						<button type="button" data-translate="friendlytournament" class="submit-btn dashboard-btn" id="f-tournament"><ion-icon name="trophy-outline"></ion-icon>Friendly Tournament</button>
+						<button type="button" data-translate="proposetournament" class="submit-btn dashboard-btn" id="p-tournament"><ion-icon name="trophy-outline"></ion-icon>Propose Tournament</button>
 					</div>
 					<div class="back-btn-container">
 						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
