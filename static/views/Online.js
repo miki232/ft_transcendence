@@ -40,6 +40,15 @@ export default class Online extends AbstractView {
 		return this.opponent;
 	}
 
+	generateRoomName(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
 
     async getTournament() {
         const response = await fetch('/tournament/');
@@ -82,6 +91,37 @@ export default class Online extends AbstractView {
 		return this.room
 	}
 
+	async tournamentInfo() {
+		if (this.tournament.status == true) {
+            this.user.matchmaking_ws = new WebSocket(
+                'wss://'
+                + window.location.hostname
+                + ':8000'
+                + '/ws/matchmaking/'
+                );
+			
+            this.user.matchmaking_ws.onopen = () => {
+                this.user.matchmaking_ws.send(JSON.stringify({
+                    "action": "torunametInfo",
+                    "username": this.user.getUser(),
+                    "status": "not_ready",
+                }));
+            }            
+            this.user.matchmaking_ws.onmessage = async (e) => {
+                if (window.location.pathname === "/online"){
+                    const data = JSON.parse(e.data);
+                    console.log(data);
+                    if (data["status"] === "Waiting for players") {
+                        this.player = await data["numberofplayers_reached"];
+                        console.log(this.player);
+                        const tournamentCounter = document.getElementById("tournamentCounter");
+                        tournamentCounter.textContent = `(${await this.getPlayers()}/${this.tournament.playerNumber})`;
+                    }
+                }
+            }
+        }
+	}
+
 	async activeBtn() {
         await this.getTournament();
 		const backBtn = document.getElementById("back");
@@ -89,7 +129,8 @@ export default class Online extends AbstractView {
 			e.preventDefault();
 				navigateTo("/dashboard");
 		});
-		const proposeTournamentBtn = document.getElementById("p-tournament");
+		const propose4TournamentBtn = document.getElementById("p-tournament-4");
+		const propose8TournamentBtn = document.getElementById("p-tournament-8");
 		const tournamentBtn = document.getElementById("o-tournament");
 		const matchmakingBtn = document.getElementById("o-match");
 		const friendlyBtn = document.getElementById("f-match");
@@ -146,11 +187,11 @@ export default class Online extends AbstractView {
             	navigateTo("/tournament");
         	}
         });
-		proposeTournamentBtn.addEventListener("click", async e => {
+		propose4TournamentBtn.addEventListener("click", async e => {
 			e.preventDefault();
-
+			let name = this.generateRoomName(8);
 			const data = {
-				name: "Tournament Name", // Replace with actual value
+				name: name, // Replace with actual value
 				playerNumber: 4, // Replace with actual value
 				status: true // Replace with actual value
 			};
@@ -166,6 +207,40 @@ export default class Online extends AbstractView {
 
 			if (response.ok) {
 				console.log("Tournament proposed successfully");
+				await this.getTournament();
+				tournamentBtn.removeAttribute("disabled");
+				await this.tournamentInfo();
+				createNotification("Tournament proposed successfully", "successTournament");
+				
+			} else {
+				createNotification("There can be only one Tournament ", "failedTournament");
+				console.log("Failed to propose tournament");
+			}
+		});
+		propose8TournamentBtn.addEventListener("click", async e => {
+			e.preventDefault();
+			let name = this.generateRoomName(8);
+
+			const data = {
+				name: name, // Replace with actual value
+				playerNumber: 8, // Replace with actual value
+				status: true // Replace with actual value
+			};
+
+			const response = await fetch("tournament_create/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": await getCSRFToken()
+				},
+				body: JSON.stringify(data)
+			});
+
+			if (response.ok) {
+				console.log("Tournament proposed successfully");
+				await this.getTournament();
+				tournamentBtn.removeAttribute("disabled");
+				await this.tournamentInfo();
 				createNotification("Tournament proposed successfully", "successTournament");
 				
 			} else {
@@ -321,7 +396,12 @@ export default class Online extends AbstractView {
 						<button type="button" data-translate="matchmaking" class="submit-btn dashboard-btn" id="o-match"><ion-icon name="globe-outline"></ion-icon>Matchmaking</button>
 						<button type="button" data-translate="tournament" class="submit-btn dashboard-btn" id="o-tournament"><ion-icon name="trophy-outline"></ion-icon>Tournament <span id="tournamentCounter"></span></button>
 						<button type="button" data-translate="friendly" class="submit-btn dashboard-btn" id="f-match"><ion-icon name="people-outline"></ion-icon>Friendly Match</button>
-						<button type="button" data-translate="proposetournament" class="submit-btn dashboard-btn" id="p-tournament"><ion-icon name="trophy-outline"></ion-icon>Propose Tournament</button>
+						</div>
+					<div class="tb">
+						<div class="tournament-buttons">
+						<button type="button" data-translate="p-tournament4" class="submit-btn dashboard-btn" id="p-tournament-4"><ion-icon name="send-outline"></ion-icon>Tournament 4 </span></button>
+						<button type="button" data-translate="p-tournament8" class="submit-btn dashboard-btn" id="p-tournament-8"><ion-icon name="send-outline"></ion-icon>Tournament 8 </span></button>
+						</div>
 					</div>
 					<div class="back-btn-container">
 						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>

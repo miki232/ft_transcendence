@@ -1706,3 +1706,21 @@ canvas {
     }
 }
 
+
+.tournament-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px; /* Add space between buttons */
+	width: 85%;
+}
+
+.tb {
+	margin-top: 0;
+	width: 100%;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
