@@ -8,6 +8,7 @@ import PongCpu from "./PongCpu.js";
 export default class LocalGame extends AbstractView {
 	constructor(user) {
 		super();
+		this.lang;
 		this.user = user;
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("header");
@@ -159,6 +160,7 @@ export default class LocalGame extends AbstractView {
 				if (data["status"] === 0) {
 					const view = new PongCpu(this.user, "AI", this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();
+					changeLanguage(this.lang);
 					await view.loop();
 				}
 			}

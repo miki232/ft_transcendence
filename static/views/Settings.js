@@ -188,6 +188,7 @@ export default class Settings extends AbstractView {
 	}
 
 	async changePassword() {
+		this.lang = localStorage.getItem('language') || 'en';
 		this.isStartSettings = false;
 		const changePicBtn = document.getElementById("change-pic");
 		const changeUsernameBtn = document.getElementById("change-username");
@@ -263,7 +264,7 @@ export default class Settings extends AbstractView {
 				createNotification(error.message);
 			}
 		
-		this.lang = localStorage.getItem('language') || 'en';});
+		});
 		await changeLanguage(this.lang);
 	}
 
@@ -374,6 +375,7 @@ export default class Settings extends AbstractView {
 
 	activeBtn() {
 		const colorPicker = document.getElementById("paddle_color");
+		const customize = document.querySelector(".customize-paddle-color");
 		colorPicker.addEventListener("input", () => {
 			this.paddleColor(colorPicker.value);
 		});
@@ -413,18 +415,22 @@ export default class Settings extends AbstractView {
 		});
 		const changeUsernameBtn = document.getElementById("change-username");
 		changeUsernameBtn.addEventListener("click", () => {
+			customize.setAttribute("style", "display: none;");
 			this.changeUsername();
 		});
 		const changePasswordBtn = document.getElementById("change-password");
 		changePasswordBtn.addEventListener("click", () => {
+			customize.setAttribute("style", "display: none;");
 			this.changePassword();
 		});
 		const deleteAccountBtn = document.getElementById("delete-account");
 		deleteAccountBtn.addEventListener("click", () => {
+			customize.setAttribute("style", "display: none;");
 			this.deleteAccount();
 		});
 		const changePicBtn = document.getElementById("change-pic");
 		changePicBtn.addEventListener("click", () => {
+			customize.setAttribute("style", "display: none;");
 			this.changeAvatar();
 		});		
 	}

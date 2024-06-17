@@ -90,6 +90,7 @@ const translations = {
     wrongUserPass: "Nom d'utilisateur ou mot de passe incorrect",
     exiting: "L'utilisateur avec cet email et nom d'utilisateur existe déjà",
     customizePaddle: "Personnaliser Couleur Paddle:",
+    commands: "Commandes: Appuyez sur W et S pour déplacer le Paddle. Appuyez sur Entrée pour commencer le match."
     // Add more translations here...
 };
 

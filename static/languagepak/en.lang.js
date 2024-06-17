@@ -90,6 +90,7 @@ const translations = {
     wrongUserPass: "Wrong username or password",
     exiting: "User with this email and username already exists",
     customizePaddle: "Customize Paddle Color:",
+    commands: "Commands: Press W and S to move the Paddle. Press Enter to start the Game.",
     // Add more translations here
 };
 

@@ -88,6 +88,7 @@ const translations = {
     wrongUserPass: "Nome utente o password errati",
     exiting: "Utente già esistente",
     customizePaddle: "Personalizza Colore Paddle:",
+    commands: "Comandi: Premere W e S per muovere il Paddle. Premere Enter per iniziare la partita.",
     // Add more translations here...
 };
 

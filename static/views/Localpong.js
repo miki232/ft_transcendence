@@ -263,7 +263,7 @@ export default class LocalPong extends AbstractView{
                     <div id="the-match"><h1>THE MATCH</h1></div>
                     <div id="player2-score" class="score-info"></div>
             </div>
-            <div id="countdown" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
+            <div id="countdown" data-translate="commands" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
     }
