@@ -245,8 +245,8 @@ export default class History extends AbstractView {
 					<h2>Match History</h2>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
-						<button type="button" class="submit-btn dashboard-btn" id="tournament-list"><ion-icon name="trophy-outline"></ion-icon>Tournament List</button>
-						<button type="button" class="submit-btn dashboard-btn" id="match-list"><ion-icon name="globe-outline"></ion-icon>Match List</button>
+						<button type="button" class="submit-btn dashboard-btn" id="tournament-list"><ion-icon name="trophy-outline"></ion-icon>Tournaments</button>
+						<button type="button" class="submit-btn dashboard-btn" id="match-list"><ion-icon name="globe-outline"></ion-icon>Matches</button>
 					</div>
 					<div class="back-btn-container">
 						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>

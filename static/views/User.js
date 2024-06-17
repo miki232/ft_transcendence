@@ -132,6 +132,8 @@ export default class User extends AbstractView {
 				this.setLevel(data.level);
 				this.setExp(data.exp);
 				this.setPaddleColor(data.paddle_color);
+				localStorage.setItem('language', data.language);
+				console.log("User data loaded", data.language);
 				// this.setPassword(data.password);
 			})
 			.catch((error) => {

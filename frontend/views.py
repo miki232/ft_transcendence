@@ -53,10 +53,10 @@ def room_namelocal(request, attempts=0):
                     return JsonResponse({'roomname': rooms.roomname})
             except:
                 pass
-            if len(roomLocal.objects.filter(user=users)) >= 3:
-                users.is_active = False
-                users.save()
-                return JsonResponse({'Error': 'You have been Banned.', 'attempts': attempts})
+            # if len(roomLocal.objects.filter(user=users)) >= 3:
+            #     users.is_active = False
+            #     users.save()
+            #     return JsonResponse({'Error': 'You have been Banned.', 'attempts': attempts})
             room = roomLocal.objects.create(roomname=room_name, user=users)
         except Exception as e:
             if attempts < 2:
