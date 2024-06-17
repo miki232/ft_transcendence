@@ -89,6 +89,7 @@ const translations = {
     logoutSuccess: "Déconnexion réussie avec succès",
     wrongUserPass: "Nom d'utilisateur ou mot de passe incorrect",
     exiting: "L'utilisateur avec cet email et nom d'utilisateur existe déjà",
+    customizePaddle: "Personnaliser Couleur Paddle:",
     // Add more translations here...
 };
 

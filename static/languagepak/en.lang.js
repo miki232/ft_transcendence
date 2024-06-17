@@ -89,6 +89,7 @@ const translations = {
     logoutSuccess: "Successfully logged out",
     wrongUserPass: "Wrong username or password",
     exiting: "User with this email and username already exists",
+    customizePaddle: "Customize Paddle Color:",
     // Add more translations here
 };
 
