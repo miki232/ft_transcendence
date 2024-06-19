@@ -9,6 +9,7 @@ from pynput.keyboard import Key, KeyCode
 import curses
 import os
 from time import monotonic
+import time
 import json
 import ssl
 import select
@@ -46,6 +47,7 @@ class GameEngine:
         self.ws = None
         self.ws_pong = None
         self.ws_notifications = None
+        self.matches = {}
 
     def authenticate(self):
         """Authenticate user with the server and obtain session cookies."""
@@ -62,6 +64,16 @@ class GameEngine:
         except requests.RequestException as e:
             print(f'Connection error: {e}. Please check your internet connection.')
             exit(1)
+
+    def display_matches(self, screen):
+        """Display the matches on the screen."""
+        y = 8  # start displaying matches from the 8th row
+        for match, details in self.matches.items():
+            room_name, user = match
+            opponent = details['opponent']
+            result = details['result']
+            screen.addstr(y, 0, f'{user} Vs {opponent}, Result: You {result}, score: {details["score1"]} - {details["score2"]}')
+            y += 1  # move to the next row for the next match
 
     def connect_matchmaking_websocket(self):
         """Connect to the matchmaking websocket and join the queue."""
@@ -113,32 +125,39 @@ class GameEngine:
             print(f'Error connecting to Pong websocket: {e}')
             exit(1)
 
+    def display_input(self, screen):
+        screen.clear()
+        self.display_matches(screen)
+        screen.addstr(0, 0, 'Press g to start the game...')
+        screen.addstr(2, 0, 'Press f to invite a friend to play')
+        screen.addstr(4, 0, 'Press m to play a friendly match')
+        screen.addstr(6, 0, 'Press q/esc to quit')
+        screen.refresh()
+
     def _pre_gameinput(self, screen):
         """Display pre-game instructions and wait for user input."""
         # self.connect_notfications_websocket()
         state = 0
+        self.room_name = None
+        if state == 0:
+            self.display_input(screen)
         while state == 0:
-            screen.clear()
-            screen.addstr(0, 0, 'Press g to start the game...')
-            screen.addstr(2, 0, 'Press f to invite a friend to play')
-            screen.addstr(4, 0, 'Press m to play a friendly match')
-            screen.addstr(6, 0, 'Press q/esc to quit')
-
-            screen.refresh()
-            while True:
-                key = screen.getch()
-                if key in (ord('q'), ord('Q'), 27):  # ESC key is 27
-                    exit(0)
-                elif key in (ord('f'), ord('F')):
-                    state = self.invite_friend(screen)
-                    break
-                elif key in (ord('m'), ord('M')):
-                    state = self.friendlyMatch(screen)
-                    break
-                elif key in (ord('g'), ord('G')):
-                    self.connect_matchmaking_websocket()
-                    state = 1
-                    break
+            key = screen.getch()
+            if key in (ord('q'), ord('Q'), 27):  # ESC key is 27
+                exit(0)
+            elif key in (ord('f'), ord('F')):
+                state = self.invite_friend(screen)
+                if state == 0:
+                    self.display_input(screen)
+            elif key in (ord('m'), ord('M')):
+                state = self.friendlyMatch(screen)
+                if state == 0:
+                    self.display_input(screen)
+            elif key in (ord('g'), ord('G')):
+                self.connect_matchmaking_websocket()
+                state = 1
+            time.sleep(0.01)  # Add a sleep interval to avoid busy-waiting
+            
     
     def get_list(self, screen):
         """Get the list of rooms from the server."""
@@ -163,15 +182,15 @@ class GameEngine:
     def friendlyMatch(self, screen):
         """"Display the option to play a friendly match."""
         rooms = self.get_list(screen)
-        while True:
-            screen.clear()
-            screen.addstr(0, 0, "Select a room:")
-            for idx, room in enumerate(rooms):
-                roomname, createby, opponent = room  # Unpack the tuple here
-                screen.addstr(idx + 1, 0, f"{idx + 1}. {createby} vs {opponent}")
-            screen.addstr(len(rooms) + 1, 0, "Press q to go back")
-            screen.refresh()
+        screen.clear()
+        screen.addstr(0, 0, "Select a room:")
+        for idx, room in enumerate(rooms):
+            roomname, createby, opponent = room  # Unpack the tuple here
+            screen.addstr(idx + 1, 0, f"{idx + 1}. {createby} vs {opponent}")
+        screen.addstr(len(rooms) + 1, 0, "Press q to go back")
+        screen.refresh()
             
+        while True:
             key = screen.getch()
             if key in (ord('q'), ord('Q')):
                 return 0
@@ -183,6 +202,7 @@ class GameEngine:
                 screen.clear()
                 screen.refresh()
                 return 1
+            time.sleep(0.01)  # Add a sleep interval to avoid busy-waiting
 
     def friendList(self):
         """Get list of friends from the server."""
@@ -207,14 +227,14 @@ class GameEngine:
     def invite_friend(self, screen):
         """Display friend list and handle friend invitation."""
         friends = self.friendList()
-        while True:
-            screen.clear()
-            screen.addstr(0, 0, "Select a friend to invite:")
-            for idx, friend in enumerate(friends):
-                screen.addstr(idx + 1, 0, f"{idx + 1}. {friend}")
-            screen.addstr(len(friends) + 1, 0, "Press q to go back")
-            screen.refresh()
+        screen.clear()
+        screen.addstr(0, 0, "Select a friend to invite:")
+        for idx, friend in enumerate(friends):
+            screen.addstr(idx + 1, 0, f"{idx + 1}. {friend}")
+        screen.addstr(len(friends) + 1, 0, "Press q to go back")
+        screen.refresh()
             
+        while True:
             key = screen.getch()
             if key in (ord('q'), ord('Q')):
                 return 0
@@ -227,7 +247,8 @@ class GameEngine:
                 screen.refresh()
                 screen.getch()
                 return 0
-            
+            time.sleep(0.01)  # Add a sleep interval to avoid busy-waiting
+    
     def csrf_token(self, screen):
         headers = {'Cookie': self.cookie_str}
         response = requests.get(f'{SERVER_URL}/csrf-token', headers=headers, verify=False)
@@ -253,27 +274,35 @@ class GameEngine:
 
     def run(self):
         """Main game loop using curses for terminal display."""
-        curses.wrapper(self._pre_gameinput)
-        curses.wrapper(self._run)
+        try:
+            pressed_keys = defaultdict(bool)
 
-    def _run(self, screen):
+            def on_press(key):
+                pressed_keys[key] = True
+
+            def on_release(key):
+                pressed_keys[key] = False
+
+            listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+            listener.daemon = True
+            listener.start()
+            while True:
+                curses.wrapper(self._pre_gameinput)
+                curses.wrapper(self._run, pressed_keys)
+        except (WebSocketException, json.JSONDecodeError) as e:
+            print(f'Error during game loop: {e}')
+        finally:
+            listener.stop()
+
+    def _run(self, screen, pressed_keys):
         curses.curs_set(0)
         screen.nodelay(True)
 
         game_state = self.game_state
         resized = True
 
-        pressed_keys = defaultdict(bool)
-
-        def on_press(key):
-            pressed_keys[key] = True
-
-        def on_release(key):
-            pressed_keys[key] = False
-
-        listener = keyboard.Listener(on_press=on_press, on_release=on_release)
-        listener.daemon = True
-        listener.start()
+        def add_match(self, room_name, user, opponent, result, score1, score2):
+            self.matches[(room_name, user)] = {'opponent': opponent, 'result': result, 'score1' : score1, 'score2' : score2}
 
         try:
             last_time = monotonic()
@@ -321,19 +350,21 @@ class GameEngine:
                 if self.game_state['victory'] == self.username:
                     screen.clear()
                     screen.addstr(10, 0, 'You win!')
+                    add_match(self, self.room_name, self.username, self.opp_username, 'win', self.game_state["score1"], self.game_state["score2"])
                     screen.refresh()
+                    time.sleep(2)
                     break
                 elif self.game_state['victory'] == self.opp_username:
                     screen.clear()
                     screen.addstr(10, 0, 'You lose!')
+                    add_match(self, self.room_name, self.username, self.opp_username, 'lose', self.game_state["score1"], self.game_state["score2"])
                     screen.refresh()
+                    time.sleep(2)
                     break
                 # Update game_state based on pressed_keys...
-            self.waiting_input(screen, pressed_keys)
+            # self.waiting_input(screen, pressed_keys)
         except (WebSocketException, json.JSONDecodeError) as e:
             print(f'Error during game loop: {e}')
-        finally:
-            listener.stop()
 
     def waiting_input(self, screen, pressed_keys):
         """Handle input waiting after game ends for rematch or quit."""
@@ -355,7 +386,7 @@ class GameEngine:
                 screen.addstr(0, 0, 'Rematching...')
                 screen.refresh()
                 sat = True
-                self.connect_matchmaking_websocket()
+                # self.connect_matchmaking_websocket()
                 self.run()
 
     def print_game_state(self, game_state, screen):
