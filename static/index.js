@@ -224,6 +224,7 @@ function wsConnection() {
 }
 
 const router = async () => {
+	console.log(user.lastURL);
 	user.loadUserData();
 	const userLang = localStorage.getItem('language') || 'en';
 
@@ -234,6 +235,13 @@ const router = async () => {
 		} else if (count === 3) {
 			var userID = location.pathname.split("_")[2].split("/")[0];
 		}
+	}
+
+	if (!location.pathname.includes(user.local_room) && user.local_ws) {
+        console.log("DISCONNECTED FROM WEBSOCKET LOCALPONG");
+		user.local_room = null;
+		await user.local_ws.close();
+		// user.lastURL = null;
 	}
 
 	const routes = [
@@ -255,7 +263,7 @@ const router = async () => {
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
 		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
 		{ path: "/local_game/1P-vs-CPU", view: () => import('./views/PongCpu.js')},
-		{ path: "/local_game/1P-vs-2P", view: () => import('./views/Localpong.js')}
+		{ path: "/local_game/1P-vs-2P/" + user.local_room, view: () => import('./views/Localpong.js')}
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 
@@ -275,9 +283,6 @@ const router = async () => {
 	// 	// 	navigateTo("/online");
 	// 	// }
 	// }
-	if (view instanceof LocalGame) {
-			await view.closeWebSocket();
-	}
 
 	const potentialMatches = routes.map(route => {
 		return {
@@ -378,7 +383,6 @@ const router = async () => {
 			break;
 		case "/local_game":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
-			console.log("LOCAL GAME");
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
 			break;
@@ -418,7 +422,7 @@ const router = async () => {
 			break;
 		case "/1P-vs-CPU":
 			break;
-		case "/local_game/1P-vs-2P":
+		case "/local_game/1P-vs-2P/" + user.local_room:
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const LocalPongClass = await match.route.view();
 			view = new LocalPongClass.default(user, user.local_opponent, user.local_room, user.local_ws);

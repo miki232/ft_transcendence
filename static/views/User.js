@@ -31,7 +31,7 @@ export default class User extends AbstractView {
 		this.lastURL = null;
 		this.room_nextround = null;
 		//localPong
-		this.local_oppnent = null;
+		this.local_opponent = null;
 		this.local_room = null;
 		this.local_ws = null;
 	}

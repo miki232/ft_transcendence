@@ -31,6 +31,7 @@ export default class LocalPong extends AbstractView{
     }
 
     async initialize() {
+		// this.users.lastURL = "local_game";
         const content = document.getElementById('content');
         content.innerHTML = await this.getContent();
         console.log(this.opponent, this.game_ws, this.room_name);
@@ -246,7 +247,7 @@ export default class LocalPong extends AbstractView{
                 document.getElementById("player1-score").innerHTML = this.users.username + ": " + data.score1;
             }
             if (data.score2 !==  this.opponent) {
-                document.getElementById("player2-score").innerHTML = this.users.username + ": " + data.score2;
+                document.getElementById("player2-score").innerHTML = this.opponent + ": " + data.score2;
             }
             // if (data.victory != "none"){
             //     console.log(data.victory);
