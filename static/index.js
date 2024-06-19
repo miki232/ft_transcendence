@@ -311,6 +311,13 @@ const router = async () => {
 		};
 		createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
+	}
+	else if (user.lastURL === "/1P-vs-CPU") {
+		match = {
+			route: routes[7],
+			isMatch: true
+		};
+		user.lastURL = null;
 	} else if (user.lastURL === "/pong") {
 		match = {
 			route: routes[3],

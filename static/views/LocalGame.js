@@ -158,6 +158,8 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
+					history.replaceState(null, null, "/1P-vs-CPU");
+					this.user.lastURL = "/1P-vs-CPU";
 					const view = new PongCpu(this.user, "AI", this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();
 					changeLanguage(this.lang);
