@@ -79,7 +79,7 @@ const translations = {
     accdeleted: "Account deleted successfully!",
     fillfields: "Please fill in all fields",
     acccreated: "Account created successfully!",
-    usernotfound: "Username not found",
+    usernotfound: "User not found",
     opponentdisconnect: "Your opponent has disconnected!",
     friendReqSent: "Friend request sent!",
     friendReqAccepted: "Friend request accepted!",
@@ -90,7 +90,7 @@ const translations = {
     wrongUserPass: "Wrong username or password",
     exiting: "User with this email and username already exists",
     customizePaddle: "Customize Paddle Color:",
-    commands: "Commands: Press W and S to move the Paddle. Press Enter to start the Game.",
+    commands: "Commands: Press ⬆ and ⬇ to move the Paddle. Press Enter to start the Game.",
     // Add more translations here
 };
 

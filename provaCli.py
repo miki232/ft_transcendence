@@ -26,6 +26,9 @@ KEY_BINDINGS: dict[str, Key | KeyCode] = {
     "up2": KeyCode(char="w"),
     "down": Key.down,
     "down2": KeyCode(char="s"),
+    "game": KeyCode(char="g"),
+    "invite": KeyCode(char="f"),
+    "match_friendly": KeyCode(char="m"),
 }
 
 SERVER_URL = 'https://127.0.0.1:8001'
@@ -134,7 +137,7 @@ class GameEngine:
         screen.addstr(6, 0, 'Press q/esc to quit')
         screen.refresh()
 
-    def _pre_gameinput(self, screen):
+    def _pre_gameinput(self, screen, pressed_keys):
         """Display pre-game instructions and wait for user input."""
         # self.connect_notfications_websocket()
         state = 0
@@ -142,18 +145,30 @@ class GameEngine:
         if state == 0:
             self.display_input(screen)
         while state == 0:
-            key = screen.getch()
-            if key in (ord('q'), ord('Q'), 27):  # ESC key is 27
+            exit = (
+                pressed_keys[KEY_BINDINGS["quit"]]
+                or pressed_keys[KEY_BINDINGS["quit2"]]
+            )
+            match_friendly = (
+                pressed_keys[KEY_BINDINGS["match_friendly"]]
+            )
+            game = (
+                pressed_keys[KEY_BINDINGS["game"]]
+            )
+            invite = (
+                pressed_keys[KEY_BINDINGS["invite"]]
+            )
+            if exit:  # ESC key is 27
                 exit(0)
-            elif key in (ord('f'), ord('F')):
+            elif invite:
                 state = self.invite_friend(screen)
                 if state == 0:
                     self.display_input(screen)
-            elif key in (ord('m'), ord('M')):
+            elif match_friendly:
                 state = self.friendlyMatch(screen)
                 if state == 0:
                     self.display_input(screen)
-            elif key in (ord('g'), ord('G')):
+            elif game:
                 self.connect_matchmaking_websocket()
                 state = 1
             time.sleep(0.01)  # Add a sleep interval to avoid busy-waiting
@@ -193,6 +208,7 @@ class GameEngine:
         while True:
             key = screen.getch()
             if key in (ord('q'), ord('Q')):
+                time.sleep(0.2)
                 return 0
             elif key in range(ord('1'), ord('1') + len(rooms)):
                 selected_room = rooms[key - ord('1')]
@@ -237,6 +253,7 @@ class GameEngine:
         while True:
             key = screen.getch()
             if key in (ord('q'), ord('Q')):
+                time.sleep(0.2)
                 return 0
             elif key in range(ord('1'), ord('1') + len(friends)):
                 selected_friend = friends[key - ord('1')]
@@ -287,7 +304,7 @@ class GameEngine:
             listener.daemon = True
             listener.start()
             while True:
-                curses.wrapper(self._pre_gameinput)
+                curses.wrapper(self._pre_gameinput, pressed_keys)
                 curses.wrapper(self._run, pressed_keys)
         except (WebSocketException, json.JSONDecodeError) as e:
             print(f'Error during game loop: {e}')
@@ -311,6 +328,8 @@ class GameEngine:
                 while self.result['status']:
                     screen.clear()
                     screen.addstr(0, 0, 'Waiting for opponent...')
+                    screen.addstr(1, 0, 'you are in the queue')
+                    screen.addstr(2, 0, 'You can\'t quit now')
                     self.result = json.loads(self.ws.recv())
                     if self.result['status'] == 5:
                         self.room_name = self.result['room_name']
@@ -341,10 +360,18 @@ class GameEngine:
                     pressed_keys[KEY_BINDINGS["down"]]
                     or pressed_keys[KEY_BINDINGS["down2"]]
                 )
+                quit = (
+                    pressed_keys[KEY_BINDINGS["quit"]]
+                    or pressed_keys[KEY_BINDINGS["quit2"]]
+                )
                 if up:
                     self.ws_pong.send(json.dumps({"action": "move_up", "user": self.username}))
                 if down:
                     self.ws_pong.send(json.dumps({"action": "move_down", "user" : self.username}))
+                if quit:
+                    self.ws_pong.close()
+                    time.sleep(1)
+                    break
                 self.print_game_state(self.game_state, screen)
                 self.game_state = json.loads(self.ws_pong.recv())
                 if self.game_state['victory'] == self.username:

@@ -128,10 +128,12 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
-					history.replaceState(null, null, "/1P-vs-2P");
+					await navigateTo("/1P-vs-2P");
+					history.replaceState(null, null, "/local_game");
 					this.user.lastURL = "/1P-vs-2P";
 					const view = new LocalPong(this.user, data["opponent"], this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();
+					changeLanguage(this.lang);
 					await view.loop();
 					// navigateTo("/game");
 				} 
@@ -158,7 +160,8 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
-					history.replaceState(null, null, "/1P-vs-CPU");
+					await navigateTo("/1P-vs-CPU");
+					history.replaceState(null, null, "/local_game");
 					this.user.lastURL = "/1P-vs-CPU";
 					const view = new PongCpu(this.user, "AI", this.room, this.ws_local);
 					this.content.innerHTML = await view.getContent();

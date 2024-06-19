@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { navigateTo } from "../index.js";
+import { changeLanguage } from "../index.js";
 import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
 
@@ -25,6 +26,7 @@ export default class LocalPong extends AbstractView{
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
+        this.lang = localStorage.getItem('language') || 'en';
     }
 
     async getCSRFToken() {
@@ -232,11 +234,10 @@ export default class LocalPong extends AbstractView{
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !==  this.users.username) {
-                document.getElementById("player1-score").innerHTML = this.users.username + " Score: " + data.score1;
-
+                document.getElementById("player1-score").innerHTML = this.users.username + ": " + data.score1;
             }
             if (data.score2 !==  this.opponent) {
-                document.getElementById("player2-score").innerHTML = this.opponent + " Score: " + data.score2;
+                document.getElementById("player2-score").innerHTML = this.users.username + ": " + data.score2;
             }
             // if (data.victory != "none"){
             //     console.log(data.victory);

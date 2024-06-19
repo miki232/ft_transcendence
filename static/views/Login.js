@@ -14,6 +14,7 @@ export default class extends AbstractView {
 		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
+		this.lang = localStorage.getItem('language') || 'en';
 		this.activeBtn();
     }
 
@@ -57,10 +58,10 @@ export default class extends AbstractView {
 
 		langSelectors.forEach(function(selector) {
 			selector.addEventListener('click', function(event) {
-				var lang = this.getAttribute('value');
-				changeLanguage(lang);
+				this.lang = this.getAttribute('value');
+				changeLanguage(this.lang);
 				// Do something with the selected language
-				console.log('Selected language: ' + lang);
+				console.log('Selected language: ' + this.lang);
 			});
 		});
 		loginSwap.addEventListener("click", e => {

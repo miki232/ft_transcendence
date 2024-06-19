@@ -77,7 +77,7 @@ const translations = {
     accdeleted: "Account eliminato con successo!",
     fillfields: "Per favore, riempi tutti i campi",
     acccreated: "Account creato con successo!",
-    usernotfound: "Nome utente non trovato",
+    usernotfound: "Utente non trovato",
     opponentdisconnect: "Il tuo avversario si è disconnesso!",
     friendReqSent: "Richiesta di amicizia inviata!",
     friendReqAccepted: "Richiesta di amicizia accettata!",
@@ -88,7 +88,7 @@ const translations = {
     wrongUserPass: "Nome utente o password errati",
     exiting: "Utente già esistente",
     customizePaddle: "Personalizza Colore Paddle:",
-    commands: "Comandi: Premere W e S per muovere il Paddle. Premere Enter per iniziare la partita.",
+    commands: "Comandi: Premere ⬆ e ⬇ per muovere il Paddle. Premere Enter per iniziare la partita.",
     // Add more translations here...
 };
 

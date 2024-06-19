@@ -97,10 +97,10 @@ export default class PongCpu extends AbstractView {
     }
 
     updatePaddlePosition() {
-        if (this.keysPressed['w']) {
+        if (this.keysPressed['ArrowUp']){
             this.game_ws.send(JSON.stringify({'Handling': 'ingame', 'action': 'move_up', 'user': this.users.username}));
         }
-        if (this.keysPressed['s']) {
+        if (this.keysPressed['ArrowDown']){
             this.game_ws.send(JSON.stringify({'Handling': 'ingame', 'action': 'move_down', 'user': this.users.username}));
         }
     }
@@ -202,11 +202,9 @@ export default class PongCpu extends AbstractView {
                 this.opponentPaddleY = data.paddle2_y;
             }
             if (data.score1 !== this.users.username) {
-                document.getElementById("player1-score").innerHTML = this.users.username + " Score: " + data.score1;
-            }
+                document.getElementById("player1-score").innerHTML = this.users.username + ": " + data.score1;            }
             if (data.score2 !== this.opponent) {
-                document.getElementById("player2-score").innerHTML = this.opponent + " Score: " + data.score2;
-            }
+                document.getElementById("player2-score").innerHTML = this.users.username + ": " + data.score2;            }
             if (data.hit !== undefined) {
                 document.getElementById("hit").innerText = data.hit + data.angle;
             }

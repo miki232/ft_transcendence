@@ -254,6 +254,8 @@ const router = async () => {
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
 		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
+		{ path: "/1P-vs-CPU", view: () => import('./views/PongCpu.js')},
+		{ path: "/1P-vs-2P", view: () => import('./views/Localpong.js')}
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 
@@ -304,21 +306,22 @@ const router = async () => {
 	// 	history.back();
 	// 	// previousUrl = match.route.path;
 	// }
+	// else if (user.lastURL === "/1P-vs-CPU") {
+	// 	match = {
+	// 		route: routes[7],
+	// 		isMatch: true
+	// 	};
+	// 	console.log(match.route.path);
+	// 	user.lastURL = null;
+	// }
 	if (user.lastURL === "/1P-vs-2P") {
 		match = {
 			route: routes[7],
 			isMatch: true
 		};
-		createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
 	}
-	else if (user.lastURL === "/1P-vs-CPU") {
-		match = {
-			route: routes[7],
-			isMatch: true
-		};
-		user.lastURL = null;
-	} else if (user.lastURL === "/pong") {
+	else if (user.lastURL === "/pong") {
 		match = {
 			route: routes[3],
 			isMatch: true
@@ -334,6 +337,7 @@ const router = async () => {
 			isMatch: true
 		};
 	}
+	console.log(match.route.path);
 
 	switch (match.route.path) {
 		case "/":
@@ -374,6 +378,7 @@ const router = async () => {
 			break;
 		case "/local_game":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			console.log("LOCAL GAME");
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
 			break;
@@ -410,6 +415,10 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const FriendlyMatchClass = await match.route.view();
 			view = new FriendlyMatchClass.default(user);
+			break;
+		case "/1P-vs-CPU":
+			break;
+		case "/1P-vs-2P":
 			break;
 		// case "/pong":
 		// 	const PongClass = await match.route.view();
@@ -479,11 +488,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				navbarCollaspe.classList.add("show-navbar");
 			}
 		}
-		if (e.target.matches("#play-local")) {
-			localGame_Cache["ws_connection"] = await view.getWebSocket();
-			localGame_Cache["user"] = view.getUser();
-			localGame_Cache["opponent"] = view.getOpponent();
-		}
+		// if (e.target.matches("#play-local")) {
+		// 	localGame_Cache["ws_connection"] = await view.getWebSocket();
+		// 	localGame_Cache["user"] = view.getUser();
+		// 	localGame_Cache["opponent"] = view.getOpponent();
+		// }
 		if (e.target.matches("#Tournament")) {
 			Tournament_Cache["ws"] = await view.getWebSocket();
 			console.log(Tournament_Cache["ws"]);
