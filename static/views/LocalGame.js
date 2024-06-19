@@ -128,13 +128,14 @@ export default class LocalGame extends AbstractView {
 				const data = JSON.parse(e.data);
 				console.log(data);
 				if (data["status"] === 0) {
-					await navigateTo("/1P-vs-2P");
-					history.replaceState(null, null, "/local_game");
-					this.user.lastURL = "/1P-vs-2P";
-					const view = new LocalPong(this.user, data["opponent"], this.room, this.ws_local);
-					this.content.innerHTML = await view.getContent();
-					changeLanguage(this.lang);
-					await view.loop();
+					this.user.setLocalGame(data["opponent"], this.room, this.ws_local);
+					await navigateTo("/local_game/1P-vs-2P");
+					// history.replaceState(null, null, "/local_game");
+					// this.user.lastURL = "/1P-vs-2P";
+					// const view = new LocalPong(this.user, data["opponent"], this.room, this.ws_local);
+					// this.content.innerHTML = await view.getContent();
+					// changeLanguage(this.lang);
+					// await view.loop();
 					// navigateTo("/game");
 				} 
 			}

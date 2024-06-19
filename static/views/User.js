@@ -30,6 +30,10 @@ export default class User extends AbstractView {
 		this.matchmaking_ws = null;
 		this.lastURL = null;
 		this.room_nextround = null;
+		//localPong
+		this.local_oppnent = null;
+		this.local_room = null;
+		this.local_ws = null;
 	}
 
 	async logout(){
@@ -100,6 +104,12 @@ export default class User extends AbstractView {
 		.catch((error) => {
 			console.error('Error: ', error);
 		})
+	}
+
+	setLocalGame(opponent, room, ws) {
+		this.local_opponent = opponent;
+		this.local_room = room;
+		this.local_ws = ws;
 	}
 
 	async isLogged() {

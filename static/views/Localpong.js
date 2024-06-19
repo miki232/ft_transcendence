@@ -27,6 +27,15 @@ export default class LocalPong extends AbstractView{
         this.opponent = opponent;
         this.gamestarted = false;
         this.lang = localStorage.getItem('language') || 'en';
+        this.initialize();
+    }
+
+    async initialize() {
+        const content = document.getElementById('content');
+        content.innerHTML = await this.getContent();
+        console.log(this.opponent, this.game_ws, this.room_name);
+        changeLanguage(this.lang);
+        await this.loop();
     }
 
     async getCSRFToken() {
@@ -172,7 +181,7 @@ export default class LocalPong extends AbstractView{
     }
     
 
-    async loop(){
+    async loop() {
         console.log('loop', this.game_ws);
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
