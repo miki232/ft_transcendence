@@ -106,13 +106,14 @@ export default class History extends AbstractView {
 			for (let i = 0; i < data.length; i++) {
 				const tournament = data[i];
 				const tournamentHTML = `
-				<div class="tournament-line dropdown">
-				<div class="tournament-drop dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><ion-icon name="trophy-outline"></ion-icon><span>${tournament.name}</span><span>Winner: ${tournament.winner}</span></div>
-				<div id="t-matches" class="tournament-matches dropdown-menu"></div>
+					<div class="tournament-line dropdown">
+					<div class="tournament-drop dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><ion-icon name="trophy-outline"></ion-icon><span>${tournament.name}</span><span>Winner: ${tournament.winner}</span></div>
+					<div id="t-matches" class="num${i} tournament-matches dropdown-menu" style="position: relative; tranform: translate(0px, 0px);"></div>
 				`;
 				matchListElement.innerHTML += tournamentHTML;
 				for (let j = 0; j < tournament.matches.length; j++) {
-					const tournamentMatchesEl = document.querySelector(".tournament-matches");
+					console.log("I = ", i);
+					const tournamentMatchesEl = document.querySelector(".num" + i);
 					const matchHTML = `
 						<div class="match-line dropdown-item">
 							<div class="user1">

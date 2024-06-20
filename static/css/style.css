@@ -813,6 +813,11 @@ div .rooms-list {
 	color: white;
 }
 
+#t-matches.show {
+	position: relative !important;
+	transform: translate(0px, 0px) !important;
+}
+
 /***************** LOCAL GAME **************/
 
 /* .local-game,
