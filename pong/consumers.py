@@ -175,7 +175,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             print("Pong Consumer 151", self.user.Ai)
             # This is the second user, inherit the state from the first user
             self.state = PongConsumer.shared_state
-            await self.start_game()
+            if self.user.username == PongConsumer.players[self.room_name][0] and not (ai.Ai):
+                await asyncio.sleep(0.01)
+            else:    
+                await self.start_game()
             print("Pong Consumer 155", self.user1, self.user2)
             if (ai.Ai):
                 if (self.user1 == None):
@@ -493,8 +496,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         last_ai_update_time = time.time()
+        print("Pong Consumer 399", "GAME LOOP", PongConsumer.players[self.room_name][1])
         while (PongConsumer.status[self.room_name]) == False:
             current_time = time.time()
+            if self.user.username == PongConsumer.players[self.room_name][0] and not (self.user1.Ai or self.user2.Ai):
+                await asyncio.sleep(0.01)
+                continue
             """Find who is the AI and move the paddle accordingly"""
             if (self.user1.Ai or self.user2.Ai):
                 if current_time - last_ai_update_time >= 1:
@@ -602,7 +609,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             )
         if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
-            print("Pong Consumer 444","THE winner is", self.match.winner)
+            print("Pong Consumer 444","THE winner is", type(self.match.winner.username), self.match.winner.username, self.user.username)
             await self.FreeAi()
             self.state['victory'] = self.match.winner.username
             await self.channel_layer.group_send(
@@ -1253,6 +1260,11 @@ class MatchMaking(AsyncWebsocketConsumer):
     async def sendAdvisor(self, result):
         print("MatchMaking Sending ADVISOR")
         if result['status'] == 2 or result['status'] == 3 or result['status'] == 4:
+            if result['status'] == 4:
+                result['status'] = 5
+                await self.send(text_data=json.dumps(result))
+                await asyncio.sleep(5)
+                return
             result['status'] = 5
             await self.channel_layer.group_send(result["group_name"], {
                     "type": "chat.message",

@@ -29,6 +29,8 @@ KEY_BINDINGS: dict[str, Key | KeyCode] = {
     "game": KeyCode(char="g"),
     "invite": KeyCode(char="f"),
     "match_friendly": KeyCode(char="m"),
+    "y": KeyCode(char="y"),
+    "enter": Key.enter
 }
 
 SERVER_URL = 'https://127.0.0.1:8001'
@@ -50,6 +52,7 @@ class GameEngine:
         self.ws = None
         self.ws_pong = None
         self.ws_notifications = None
+        self.temp = None
         self.matches = {}
 
     def authenticate(self):
@@ -158,8 +161,25 @@ class GameEngine:
             invite = (
                 pressed_keys[KEY_BINDINGS["invite"]]
             )
+            
             if exit:  # ESC key is 27
-                exit(0)
+                screen.clear()
+                screen.addstr(0, 0, 'Exiting...')
+                screen.addstr(1, 0, 'ARE YOU SURE?')
+                screen.addstr(2, 0, 'Press y to confirm, enter to cancel')
+                screen.refresh()
+                while True:
+                    y = (
+                        pressed_keys[KEY_BINDINGS["y"]]
+                    )
+                    enter = (
+                        pressed_keys[KEY_BINDINGS['enter']]
+                    )
+                    if y:
+                        exit(0)
+                    if enter:
+                        break
+                self.display_input(screen)
             elif invite:
                 state = self.invite_friend(screen)
                 if state == 0:
@@ -335,6 +355,7 @@ class GameEngine:
                         self.room_name = self.result['room_name']
                         self.opp_username = self.result['opponent']
                         screen.addstr(1, 0, 'Opponent found')
+                        screen.addstr(2, 0, f'                                     ')
                         screen.addstr(2, 0, f'Playing against {self.opp_username}')
                     if self.result['status'] == 2:
                         screen.addstr(10, 0, 'Game started!')
@@ -370,6 +391,9 @@ class GameEngine:
                     self.ws_pong.send(json.dumps({"action": "move_down", "user" : self.username}))
                 if quit:
                     self.ws_pong.close()
+                    pressed_keys[KEY_BINDINGS["quit"]] = False
+                    pressed_keys[KEY_BINDINGS["quit2"]] = False
+                    add_match(self, self.room_name, self.username, self.opp_username, 'lose', self.game_state["score1"], self.game_state["score2"])
                     time.sleep(1)
                     break
                 self.print_game_state(self.game_state, screen)
@@ -443,6 +467,9 @@ class GameEngine:
             screen.addch(height - 1, x, '̲')
 
         # Draw usernames and scores
+        # if self.opp_username == self.username:
+        #     screen.addstr(0, 0, f'{self.opp_username} vs {self.username} -d {self.temp}')
+        # else:
         screen.addstr(0, 0, f'{self.username} vs {self.opp_username}')
         screen.addstr(height - 1, 0, f'{game_state["score1"]} - {game_state["score2"]}')
 
