@@ -795,6 +795,24 @@ div .rooms-list {
 	width: 100%;
 }
 
+.tournament-line:hover {
+	cursor: pointer;
+}
+
+.tournament-drop {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#t-matches {
+	background-color: transparent;
+	border-color: transparent;
+	width: 100%;
+	color: white;
+}
+
 /***************** LOCAL GAME **************/
 
 /* .local-game,

@@ -106,11 +106,38 @@ export default class History extends AbstractView {
 			for (let i = 0; i < data.length; i++) {
 				const tournament = data[i];
 				const tournamentHTML = `
-					<div class="tournament-line">
-						<p>${tournament.name}</p>
-					</div>
+				<div class="tournament-line dropdown">
+				<div class="tournament-drop dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><ion-icon name="trophy-outline"></ion-icon><span>${tournament.name}</span><span>Winner: ${tournament.winner}</span></div>
+				<div id="t-matches" class="tournament-matches dropdown-menu"></div>
 				`;
 				matchListElement.innerHTML += tournamentHTML;
+				for (let j = 0; j < tournament.matches.length; j++) {
+					const tournamentMatchesEl = document.querySelector(".tournament-matches");
+					const matchHTML = `
+						<div class="match-line dropdown-item">
+							<div class="user1">
+								<div class="icon">
+									${tournament.matches[j].winner === tournament.matches[j].user1 ? '<ion-icon name="trophy-outline"></ion-icon>' : '<ion-icon name="thumbs-down-outline"></ion-icon>'}
+								</div>
+								<div class="user1-info">
+									<p>${tournament.matches[j].user1}</p>
+									<p>${tournament.matches[j].score_user1}</p>
+								</div>
+							</div>
+							<div class="vs-text"><span>VS</span></div>
+							<div class="user2">
+								<div class="icon">
+									${tournament.matches[j].winner === tournament.matches[j].user2 ? '<ion-icon name="trophy-outline"></ion-icon>' : '<ion-icon name="thumbs-down-outline"></ion-icon>'}
+								</div>
+								<div class="user2-info">
+									<p>${tournament.matches[j].score_user2}</p>
+									<p>${tournament.matches[j].user2}</p>
+								</div>
+							</div>
+						</div>
+					`;
+					tournamentMatchesEl.innerHTML += matchHTML;
+				}
 			};
 		}
 		this.matchListPadding(matchListElement);
