@@ -262,7 +262,7 @@ const router = async () => {
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
 		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
-		{ path: "/local_game/1P-vs-CPU", view: () => import('./views/PongCpu.js')},
+		{ path: "/local_game/1P-vs-CPU/" + user.local_room, view: () => import('./views/PongCpu.js')},
 		{ path: "/local_game/1P-vs-2P/" + user.local_room, view: () => import('./views/Localpong.js')}
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
@@ -420,7 +420,10 @@ const router = async () => {
 			const FriendlyMatchClass = await match.route.view();
 			view = new FriendlyMatchClass.default(user);
 			break;
-		case "/1P-vs-CPU":
+		case "/local_game/1P-vs-CPU/" + user.local_room:
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			const PongCpuClass = await match.route.view();
+			view = new PongCpuClass.default(user, user.local_opponent, user.local_room, user.local_ws);
 			break;
 		case "/local_game/1P-vs-2P/" + user.local_room:
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();

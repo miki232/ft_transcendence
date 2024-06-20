@@ -24,6 +24,15 @@ export default class PongCpu extends AbstractView {
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
+        this.initialize();
+    }
+
+    async initialize() {
+        const content = document.getElementById('content');
+        content.innerHTML = this.getContent();
+        console.log(this.opponent, this.game_ws, this.room_name);
+        // changeLanguage(this.lang);
+        await this.loop();
     }
 
     async getCSRFToken() {
@@ -204,7 +213,7 @@ export default class PongCpu extends AbstractView {
             if (data.score1 !== this.users.username) {
                 document.getElementById("player1-score").innerHTML = this.users.username + ": " + data.score1;            }
             if (data.score2 !== this.opponent) {
-                document.getElementById("player2-score").innerHTML = this.users.username + ": " + data.score2;            }
+                document.getElementById("player2-score").innerHTML = "AI: " + data.score2;            }
             if (data.hit !== undefined) {
                 document.getElementById("hit").innerText = data.hit + data.angle;
             }
@@ -213,8 +222,8 @@ export default class PongCpu extends AbstractView {
         };
     }
 
-    async getContent() {
-        return  `
+    getContent() {
+        const cpuHTML = `
             <div id="scores">
                 <div id="player1-score" class="score-info"></div>
                 <div id="the-match"><h1>THE MATCH</h1></div>
@@ -223,5 +232,6 @@ export default class PongCpu extends AbstractView {
             <div id="countdown" data-translate="commands" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
             <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
+        return cpuHTML;
     }
 }
