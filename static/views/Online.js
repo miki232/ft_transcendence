@@ -7,7 +7,7 @@ import LocalPong from "./Localpong.js";
 import PongCpu from "./PongCpu.js";
 
 export default class Online extends AbstractView {
-	constructor(user) {
+	constructor(user, ws_notifications) {
 		super();
 		this.user = user;
         this.player = 0
@@ -15,11 +15,19 @@ export default class Online extends AbstractView {
 		this.opponent = null;
 		this.room = null;
         this.tournament = null;
+		this.ws_notifications = ws_notifications;
 		this.initialize();
 		// this.getRoom();
 	}
 
 	initialize() {
+		if (this.ws_notifications == null) {
+			this.ws_notifications = new WebSocket('wss://'
+			+ window.location.hostname
+			+ ':8000'
+			+ '/ws/notifications'
+			+ '/');
+		}
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
@@ -134,7 +142,12 @@ export default class Online extends AbstractView {
 		const tournamentBtn = document.getElementById("o-tournament");
 		const matchmakingBtn = document.getElementById("o-match");
 		const friendlyBtn = document.getElementById("f-match");
-
+		this.ws_notifications.onmessage = async (e) => {
+			await this.getTournament();
+			await this.tournamentInfo();
+			this.ws_notifications.send(JSON.stringify({'action': "read"}));
+			tournamentBtn.removeAttribute("disabled");
+		}
 		friendlyBtn.addEventListener("click", e => {
 			e.preventDefault();
 			console.log("Friendly Match");

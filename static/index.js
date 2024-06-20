@@ -406,7 +406,7 @@ const router = async () => {
 		case "/online":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const OnlineClass = await match.route.view();
-			view = new OnlineClass.default(user);
+			view = new OnlineClass.default(user, ws);
 			break;
 		case "/online/matchmaking":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
