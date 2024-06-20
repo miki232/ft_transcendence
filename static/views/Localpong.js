@@ -31,6 +31,8 @@ export default class LocalPong extends AbstractView{
     }
 
     async initialize() {
+        document.querySelector('header').style.display = 'none';
+        document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
         content.innerHTML = await this.getContent();
         console.log(this.opponent, this.game_ws, this.room_name);

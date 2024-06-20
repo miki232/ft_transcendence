@@ -238,7 +238,8 @@ const router = async () => {
 	}
 
 	if (!location.pathname.includes(user.local_room) && user.local_ws) {
-        console.log("DISCONNECTED FROM WEBSOCKET LOCALPONG");
+        document.querySelector('header').style.display = 'block';
+		document.querySelector('body').classList.remove('game-bg');
 		user.local_room = null;
 		await user.local_ws.close();
 		// user.lastURL = null;

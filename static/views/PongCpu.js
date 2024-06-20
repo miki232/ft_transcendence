@@ -28,6 +28,8 @@ export default class PongCpu extends AbstractView {
     }
 
     async initialize() {
+        document.querySelector('header').style.display = 'none';
+        document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
         content.innerHTML = this.getContent();
         console.log(this.opponent, this.game_ws, this.room_name);
