@@ -778,6 +778,11 @@ div .rooms-list {
 	gap: 15px;
 }
 
+.user1-info p,
+.user2-info p {
+	margin: 0;
+}
+
 .user1-info img,
 .user2-info img,
 .room-info img {
