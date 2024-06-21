@@ -1390,6 +1390,10 @@ canvas {
 		font-size: 14px;
 	}
 
+	.input-box input::placeholder {
+		color: white;
+	}
+
 	.input-box label {
 		font-size: 15px;
 	}

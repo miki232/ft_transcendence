@@ -67,8 +67,41 @@ export default class LocalGame extends AbstractView {
 
 	activeBtn() {
 		this.lang = localStorage.getItem('language') || 'en';
+		const tournamentBtn = document.getElementById("l-tournament");
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
+		tournamentBtn.addEventListener("click", e => {
+			e.preventDefault();
+			this.isStartLocal = false;
+			cpu_playerBtn.style.display = "none";
+			two_playerBtn.style.display = "none";
+			tournamentBtn.setAttribute("disabled", "true");
+			tournamentBtn.classList.remove("submit-btn");
+			tournamentBtn.classList.add("local-game-btn");
+			const tournamentHTML = `
+				<div class="input-box change" style="margin: 10px 0px;">
+					<input type="text" data-translate="secondpusername" placeholder="1P Username">
+					<ion-icon name="person-outline"></ion-icon>
+				</div>
+				<div class="input-box change" style="margin: 10px 0px";>
+					<input type="text" data-translate="secondpusername" placeholder="2P Username">
+					<ion-icon name="person-outline"></ion-icon>
+				</div>
+				<div class="input-box change" style="margin: 10px 0px;">
+					<input type="text" data-translate="secondpusername" placeholder="3P Username">
+					<ion-icon name="person-outline"></ion-icon>
+				</div>
+				<div class="input-box change" style="margin: 10px 0px;">
+					<input type="text" data-translate="secondpusername" placeholder="4P Username">
+					<ion-icon name="person-outline"></ion-icon>
+				</div>
+				<div class="change-btn change">
+					<button type="button" id="play-local" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+				</div>
+			`;
+			tournamentBtn.insertAdjacentHTML("afterend", tournamentHTML);
+			changeLanguage(this.lang);
+		})
 		two_playerBtn.addEventListener("click", e => {
 			this.isStartLocal = false;
 			this.ws_local = new WebSocket('wss://'
@@ -79,6 +112,7 @@ export default class LocalGame extends AbstractView {
 			        + '/');
 			e.preventDefault();
 			cpu_playerBtn.style.display = "none";
+			tournamentBtn.style.display = "none";
 			two_playerBtn.setAttribute("disabled", "true");
 			two_playerBtn.classList.remove("submit-btn");
 			two_playerBtn.classList.add("local-game-btn");
@@ -105,6 +139,7 @@ export default class LocalGame extends AbstractView {
 				two_playerBtn.classList.remove("local-game-btn");
 				two_playerBtn.classList.add("submit-btn");
 				cpu_playerBtn.style.display = "block";
+				tournamentBtn.style.display = "block";
 				two_playerBtn.removeAttribute("disabled");
 			})
 			const playBtn = document.querySelector(".confirm-btn");
