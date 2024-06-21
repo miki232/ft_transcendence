@@ -1168,7 +1168,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                     "type": "chat.message",
                     "text": json.dumps({"status" : "6", "dict" : matching_dict})
                 })
-                await asyncio.sleep(5)
+                await asyncio.sleep(6)
                 # await self.channel_layer.group_add(result["group_name"], self.channel_name)
                 # Send the result to the group
                 await self.channel_layer.group_send("waitingroom", {

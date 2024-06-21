@@ -264,7 +264,7 @@ export default class Pong extends AbstractView{
                         content.innerHTML = newContent;
                         await view.sendJoin(); 
                         view.displayTournamentChart();
-                        let room = await view.getRoom_Match();
+                        let room = await view.getRoomcallbackmatch();
                         console.log("JOINING TOURNAMENT");
                         console.log("JOINING TOURNAMENT", room);
                         // this.room_name = room;

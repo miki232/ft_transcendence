@@ -284,6 +284,9 @@ const router = async () => {
 	// 	// 	navigateTo("/online");
 	// 	// }
 	// }
+	// if (view instanceof LocalGame) {
+	// 		await view.closeWebSocket();
+	// }
 
 	const potentialMatches = routes.map(route => {
 		return {
