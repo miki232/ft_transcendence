@@ -235,6 +235,7 @@ export default class LocalGame extends AbstractView {
 					</div>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<button type="button" class="submit-btn dashboard-btn" id="l-tournament"><ion-icon name="trophy-outline"></ion-icon>Local Tournament</button>
 						<button type="button" class="submit-btn dashboard-btn" id="vs-cpu"><ion-icon name="desktop-outline"></ion-icon>1P vs CPU</button>
 						<button type="button" class="submit-btn dashboard-btn" id="vs-player"><ion-icon name="people-outline"></ion-icon>1P vs 2P</button>
 					</div>

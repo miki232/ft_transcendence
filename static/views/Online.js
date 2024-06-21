@@ -151,7 +151,7 @@ export default class Online extends AbstractView {
 		friendlyBtn.addEventListener("click", e => {
 			e.preventDefault();
 			console.log("Friendly Match");
-			navigateTo("/friendly_match");
+			navigateTo("/online/friendly_match");
 		})
         matchmakingBtn.addEventListener("click", e => {
             e.preventDefault();
