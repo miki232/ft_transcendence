@@ -305,7 +305,7 @@ export default class Friends extends AbstractView {
 			}
 		});
 		searchBtn.addEventListener("click", async e => {
-			var inputText = sanitizeInput(friendInput.value);
+			var inputText = friendInput.value; // Create a function to sanitize input BACKEND
 			fetch(`/accounts/search/?q=${inputText}`)
 				.then(response => response.json())
 				.then(data => {

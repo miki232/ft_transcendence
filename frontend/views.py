@@ -3,7 +3,12 @@ from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
 import random
+import html
+
+from rest_framework.views import APIView
 
 from accounts.models import CustomUser
 from .models import roomLocal
@@ -74,3 +79,29 @@ def liberate_room(request):
     except:
         return JsonResponse({'success': False})
     return JsonResponse({'success': True})
+
+
+from rest_framework.response import Response
+from django.db import connection
+
+class SanitizeView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            input_data = request.data.get('input', '')
+            sanitized_input = html.escape(input_data)
+            print(sanitized_input)
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute(sanitized_input)
+                    sql_injection_attempt = False
+                except:
+                    sql_injection_attempt = True
+
+            return JsonResponse({
+                'sanitized_input': sanitized_input,
+                'sql_injection_attempt': sql_injection_attempt
+            })

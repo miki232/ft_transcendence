@@ -21,6 +21,7 @@ urlpatterns = [
     path('delete_room/', DeleteRoomView.as_view(), name='delete_room'),
     path('tournament_history/', TournamentHistoryView.as_view(), name='tournament_history'),
     path('user_tournament/', Search_TournamentMatchView.as_view(), name='search_tournament_match'),
+	path('sanity/', views.SanitizeView.as_view(), name='sanitize'),
     # path('rooms/create/', CreateRoomView.as_view(), name='create_room'), #spostato in pong/urls.py
     path("test/", views.test, name="test"),
 ]
