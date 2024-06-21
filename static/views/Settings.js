@@ -82,10 +82,10 @@ export default class Settings extends AbstractView {
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
 			const urlInput = document.querySelector(".input-box input");
-			if (!urlInput.value) {
-				createNotification("Please, insert an URL.", "urlinsert");
-				return;
-			}
+			// if (!urlInput.value) {
+			// 	createNotification("Please, insert an URL.", "urlinsert");
+			// 	return;
+			// }
 			try {
 				const csrf = await getCSRFToken();
 				const formdata = new FormData();
@@ -108,7 +108,7 @@ export default class Settings extends AbstractView {
 				console.error('Error: ', error);
 				createNotification("Provided URL is not valid!", "urlnotvalid");
 			}
-		
+
 		});
 		this.lang = localStorage.getItem('language') || 'en';
 		changeLanguage(this.lang);
@@ -142,17 +142,19 @@ export default class Settings extends AbstractView {
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
-			const input = document.querySelector(".input-box input");
+			const input = document.querySelector(".input-box input"); /// Al massimo metto qua un Api sanitize 
 			const newUsername = input.value;
-			if (newUsername === "") {
-				createNotification("Username cannot be empty!", "usercannotempty");
-				return;
-			}
-			if (newUsername === this.user.getUser()) {
-				createNotification("Username can't be the same as the old one!", "usercannotsame");
-				input.value = "";
-				return;
-			}
+			//Cancellato controllo username su frontend
+			// cosi' da poterlo fare direttamente sul backend
+			// if (newUsername === "") {
+			// 	createNotification("Username cannot be empty!", "usercannotempty");
+			// 	return;
+			// }
+			// if (newUsername === this.user.getUser()) {
+			// 	createNotification("Username can't be the same as the old one!", "usercannotsame");
+			// 	input.value = "";
+			// 	return;
+			// }
 			try {
 				const csrf = await getCSRFToken();
 				const response = await fetch('/accounts/user_info/', {
@@ -225,16 +227,16 @@ export default class Settings extends AbstractView {
 			const inputConfirm = document.querySelector("#confirm-password");
 			const newPassword = inputNew.value;
 			const confirmPassword = inputConfirm.value;
-			if (!newPassword || !confirmPassword) {
-				createNotification("Field cannot be empty!", "fieldcannotempty");
-				return;
-			}
-			if (newPassword !== confirmPassword) {
-				createNotification("Passwords do not match!", "passdontmatch");
-				inputNew.value = "";
-				inputConfirm.value = "";
-				return;
-			}
+			// if (!newPassword || !confirmPassword) {
+			// 	createNotification("Field cannot be empty!", "fieldcannotempty");
+			// 	return;
+			// }
+			// if (newPassword !== confirmPassword) {
+			// 	createNotification("Passwords do not match!", "passdontmatch");
+			// 	inputNew.value = "";
+			// 	inputConfirm.value = "";
+			// 	return;
+			// }
 			const csrf = await getCSRFToken();
 			try {
 				const response = await fetch('/accounts/user_info/', {
@@ -248,6 +250,10 @@ export default class Settings extends AbstractView {
 						confirmpassword : confirmPassword
 					})
 				});
+				if (response.status === 400) {
+					const data = await response.json();
+					throw new Error(data);
+				}
 				if (!response.ok) {
 					const data = await response.json();
 					if (data.newpassword && data.newpassword[0]) {
@@ -261,9 +267,9 @@ export default class Settings extends AbstractView {
 				}
 			} catch (error) {
 				console.error('Error: ', error);
-				createNotification(error.message);
+				createNotification(error.message, "passdontmatch");
 			}
-		
+
 		});
 		await changeLanguage(this.lang);
 	}
@@ -320,7 +326,7 @@ export default class Settings extends AbstractView {
 			changeUsernameBtn.style.display = "block";
 			changePasswordBtn.style.display = "block";
 			changeLang.style.display = "flex";
-		
+
 		this.lang = localStorage.getItem('language') || 'en';});
 		await changeLanguage(this.lang);
 	}
@@ -354,7 +360,7 @@ export default class Settings extends AbstractView {
 						createNotification(error.message);
 					}
 				}
-		
+
 		this.lang = localStorage.getItem('language') || 'en';	});
 		await changeLanguage(this.lang);
 	}
@@ -385,7 +391,7 @@ export default class Settings extends AbstractView {
 				const language = e.getAttribute("value");
 				console.log(language);
 				await changeLanguage(language);
-	
+
 				// Send a POST request
 				try {
 					const response = await fetch('/accounts/user_info/', {
@@ -432,7 +438,7 @@ export default class Settings extends AbstractView {
 		changePicBtn.addEventListener("click", () => {
 			customize.setAttribute("style", "display: none;");
 			this.changeAvatar();
-		});		
+		});
 	}
 
 	getNav() {

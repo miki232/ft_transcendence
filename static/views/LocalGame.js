@@ -110,7 +110,7 @@ export default class LocalGame extends AbstractView {
 			const playBtn = document.querySelector(".confirm-btn");
 			playBtn.addEventListener("click", e => {
 				e.preventDefault();
-				const input = this.sanitizeInput(document.querySelector(".input-box input").value);
+				const input = this.sanitizeInput(document.querySelector(".input-box input").value); // Create a function to sanitize input BACKEND	
 				if (input === "") {
 					createNotification("Please enter a username", "error");
 					return;
