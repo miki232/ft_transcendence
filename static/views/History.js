@@ -105,14 +105,16 @@ export default class History extends AbstractView {
 		} else {
 			for (let i = 0; i < data.length; i++) {
 				const tournament = data[i];
+				const date = tournament.timestamp.split("T")[0].split("-").reverse().join("-");
+				const time = tournament.timestamp.split("T")[1].split(".")[0];
 				const tournamentHTML = `
 					<div class="tournament-line dropdown">
-					<div class="tournament-drop dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><ion-icon name="trophy-outline"></ion-icon><span>${tournament.name}</span><span>Winner: ${tournament.winner}</span></div>
-					<div id="t-matches" class="num${i} tournament-matches dropdown-menu" style="position: relative; tranform: translate(0px, 0px);"></div>
+						<div class="tournament-drop dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><ion-icon name="trophy-outline"></ion-icon><span>${tournament.name}</span><div class="date"><span>${date}</span><span>${time}</span></div><span>Winner: ${tournament.winner}</span></div>
+						<div id="t-matches" class="num${i} tournament-matches dropdown-menu" style="position: relative; tranform: translate(0px, 0px);"></div>
+					</div>
 				`;
 				matchListElement.innerHTML += tournamentHTML;
 				for (let j = 0; j < tournament.matches.length; j++) {
-					console.log("I = ", i);
 					const tournamentMatchesEl = document.querySelector(".num" + i);
 					const matchHTML = `
 						<div class="match-line dropdown-item">
@@ -159,6 +161,9 @@ export default class History extends AbstractView {
 			const sort_data = data[0].match_history.sort((a, b) => new Date(b.date) - new Date(a.date));
 			for (let i = 0; i < sort_data.length; i++) {
 				const match = sort_data[i];
+				const date = match.date.split("T")[0].split("-").reverse().join("-");
+				const time = match.date.split("T")[1].split(".")[0];
+				console.log(match);
 				if (match.user1__username === this.user.username) {
 					var opponent = await this.getUserInfo(match.user2__username);
 					var user1 = {
@@ -185,6 +190,7 @@ export default class History extends AbstractView {
 					};
 				}
 				const matchHTML = `
+					<div class="date">${date} ${time}</div>
 					<div class="match-line">
 						<div class="user1">
 							<div class="icon">

@@ -329,6 +329,10 @@ header {
 	outline: none;
 }
 
+.input-box input::placeholder {
+	color: white;
+}
+
 .input-box label {
 	transition: .4s;
 	font-size: 18px;
@@ -718,7 +722,15 @@ div .rooms-list {
 	min-height: 140px;
 	/* padding-right: 10px; */
 	overflow-y: auto;
-	font-size: 20px;
+	font-size: 22px;
+}
+
+.date {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
 }
 
 .match-list::-webkit-scrollbar {
@@ -793,6 +805,10 @@ div .rooms-list {
 
 .tournament-line {
 	width: 100%;
+}
+
+.tournament-line:not(:first-child) {
+	margin-top: 15px;
 }
 
 .tournament-line:hover {
@@ -1388,10 +1404,6 @@ canvas {
 
 	.input-box input {
 		font-size: 14px;
-	}
-
-	.input-box input::placeholder {
-		color: white;
 	}
 
 	.input-box label {
