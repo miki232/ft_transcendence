@@ -1,6 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
-import { getCookie, sanitizeInput } from "../utilities.js";
+import { getCookie } from "../utilities.js";
 
 export default class User extends AbstractView {
 	constructor() {

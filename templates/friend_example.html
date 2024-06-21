@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
     <title>Color Form</title>
@@ -44,4 +44,46 @@
         });
     </script>
 </body>
-</html>
+</html> {% endcomment %}
+
+
+<form id="sanityForm">
+    <label for="input">Input:</label>
+    <input type="text" id="input" name="input" required>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+<p id="response"></p>
+<script>
+    async function getCSRFToken() {
+        let response = await fetch("/csrf-token");
+        let data = await response.json();
+        return data.csrfToken;
+    };
+
+    document.getElementById("sanityForm").addEventListener("submit", async function(event) {
+        event.preventDefault(); // Prevent form submission
+        const csrftoken = await getCSRFToken();
+        var input = document.getElementById("input").value;
+
+        fetch("/sanity/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ "input": input })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle response data
+            console.log(data);
+            // Print the response
+            document.getElementById("response").innerText = JSON.stringify(data.sanitized_input);
+        })
+        .catch(error => {
+            // Handle error
+            console.error(error);
+        });
+    });
+</script>
