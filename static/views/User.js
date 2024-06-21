@@ -25,6 +25,11 @@ export default class User extends AbstractView {
 			pro_pic: "null",
 			level: "null",
 		}
+		this.tournament_local_room = {
+			pk_tournament: "null",
+			pk_match: "null",
+			winner : "null",
+		};
 		this.disconnected = true;
 		this.game_ws = null;
 		this.matchmaking_ws = null;

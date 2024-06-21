@@ -729,6 +729,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     print("THE GAME CAN START NOW")
                     await self.send(text_data=json.dumps("THE GAME CAN START NOW"))
                     if message["status"] == "ready":
+                        Pong_LocalConsumer.players[self.room_name][0] = message['username']
                         Pong_LocalConsumer.status[self.room_name] = False
                         self.loop_task = asyncio.create_task(self.game_loop())
                     else :
@@ -736,8 +737,8 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             case "ingame":
                 if 'action' in message:
                     action = message['action']
-                    user = message['user']
-                    if user == Pong_LocalConsumer.players[self.room_name][0]:
+                    self.user = message['user']
+                    if self.user == Pong_LocalConsumer.players[self.room_name][0]:
                         if action == 'move_up':
                             self.state['up_player_paddle_y'] = 1
                         elif action == 'move_down':

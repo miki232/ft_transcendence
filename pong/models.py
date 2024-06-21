@@ -73,3 +73,23 @@ class TournamentPlaceHolder(models.Model):
 
 class TournamentPartecipants(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+
+
+class LocalTournament_Match(models.Model):
+    room_name = models.CharField(max_length=254, default="None")
+    user1 = models.CharField(max_length=254, default="None")
+    user2 = models.CharField(max_length=254, default="None")
+    score_user1 = models.PositiveIntegerField(default=0)
+    score_user2 = models.PositiveIntegerField(default=0)
+    winner = models.CharField(max_length=254, default="None")
+    date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Match between {self.user1} and {self.user2} on {self.date}'
+
+
+class LocalTournament(models.Model):
+    name = models.CharField(max_length=255, unique=True, null=True)
+    matches = models.ManyToManyField(LocalTournament_Match)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    winner = models.CharField(max_length=254, default="None")

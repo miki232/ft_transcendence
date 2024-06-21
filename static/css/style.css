@@ -1757,3 +1757,60 @@ canvas {
     align-items: center;
     flex-direction: column;
 }
+
+.tournament-container {
+    display: flex;
+    justify-content: space-around; /* changed from space-between for equal spacing */
+    width: 80%; /* increased from 60% for a bit more room */
+    margin: auto;
+    padding-top: 20px;
+}
+
+.bracket {
+    list-style: none;
+    padding: 0 10px; /* added horizontal padding inside each bracket */
+    width: 30%; /* Equally space brackets, adjust this if they still look too close */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers items vertically if there's extra space */
+    margin: 0 20px; /* Added margin for separation between columns */
+}
+
+.match {
+    background-color: #f4f4f4;
+    padding: 15px; /* Increased padding for better appearance */
+    border: 1px solid #ccc;
+    position: relative;
+    margin-bottom: 20px; /* Adjusted space between matches */
+}
+
+/* Remove additional margin for the last match of each bracket */
+.bracket .match:last-child {
+    margin-bottom: 0;
+}
+
+/* Lines between matches */
+.match::after {
+    content: '';
+    position: absolute;
+    width: 100%; /* Increased width for better line visibility */
+    height: 2px;
+    background-color: #333;
+    top: 50%;
+    left: 100%; /* Adjusted to start right from the edge */
+    z-index: -1;
+}
+
+/* No line after the winner */
+.winner .match::after {
+    display: none;
+}
+
+/* Ensure the final and winner brackets look aligned vertically */
+.finals, .winner {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

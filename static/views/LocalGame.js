@@ -70,38 +70,73 @@ export default class LocalGame extends AbstractView {
 		const tournamentBtn = document.getElementById("l-tournament");
 		const two_playerBtn = document.getElementById("vs-player");
 		const cpu_playerBtn = document.getElementById("vs-cpu");
+		const localtournament = document.getElementById("l-tournament");
 		tournamentBtn.addEventListener("click", e => {
-			e.preventDefault();
-			this.isStartLocal = false;
-			cpu_playerBtn.style.display = "none";
-			two_playerBtn.style.display = "none";
-			tournamentBtn.setAttribute("disabled", "true");
-			tournamentBtn.classList.remove("submit-btn");
-			tournamentBtn.classList.add("local-game-btn");
-			const tournamentHTML = `
-				<div class="input-box change" style="margin: 10px 0px;">
-					<input type="text" data-translate="secondpusername" placeholder="1P Username">
-					<ion-icon name="person-outline"></ion-icon>
-				</div>
-				<div class="input-box change" style="margin: 10px 0px";>
-					<input type="text" data-translate="secondpusername" placeholder="2P Username">
-					<ion-icon name="person-outline"></ion-icon>
-				</div>
-				<div class="input-box change" style="margin: 10px 0px;">
-					<input type="text" data-translate="secondpusername" placeholder="3P Username">
-					<ion-icon name="person-outline"></ion-icon>
-				</div>
-				<div class="input-box change" style="margin: 10px 0px;">
-					<input type="text" data-translate="secondpusername" placeholder="4P Username">
-					<ion-icon name="person-outline"></ion-icon>
-				</div>
-				<div class="change-btn change">
-					<button type="button" id="play-local" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
-				</div>
-			`;
-			tournamentBtn.insertAdjacentHTML("afterend", tournamentHTML);
-			changeLanguage(this.lang);
-		})
+				e.preventDefault();
+				this.isStartLocal = false;
+				cpu_playerBtn.style.display = "none";
+				two_playerBtn.style.display = "none";
+				tournamentBtn.setAttribute("disabled", "true");
+				tournamentBtn.classList.remove("submit-btn");
+				tournamentBtn.classList.add("local-game-btn");
+				const tournamentHTML = `
+					<div class="input-box change" style="margin: 10px 0px;">
+						<input type="text" data-translate="secondpusername" placeholder="1P Username">
+						<ion-icon name="person-outline"></ion-icon>
+					</div>
+					<div class="input-box change" style="margin: 10px 0px";>
+						<input type="text" data-translate="secondpusername" placeholder="2P Username">
+						<ion-icon name="person-outline"></ion-icon>
+					</div>
+					<div class="input-box change" style="margin: 10px 0px;">
+						<input type="text" data-translate="secondpusername" placeholder="3P Username">
+						<ion-icon name="person-outline"></ion-icon>
+					</div>
+					<div class="input-box change" style="margin: 10px 0px;">
+						<input type="text" data-translate="secondpusername" placeholder="4P Username">
+						<ion-icon name="person-outline"></ion-icon>
+					</div>
+					<div class="change-btn change">
+						<button type="button" id="play-local" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+					</div>
+				`;
+				tournamentBtn.insertAdjacentHTML("afterend", tournamentHTML);
+				const playbtn = document.querySelector(".confirm-btn");
+				playbtn.addEventListener("click", async e => {
+					e.preventDefault();
+					const input1 = document.querySelectorAll(".input-box input")[0].value;
+					const input2 = document.querySelectorAll(".input-box input")[1].value;
+					const input3 = document.querySelectorAll(".input-box input")[2].value;
+					const input4 = document.querySelectorAll(".input-box input")[3].value;
+					let data = {
+						"user1" : input1,
+						"user2" : input2,
+						"user3" : input3,
+						"user4" : input4
+					};
+					const response = await fetch('/createlocal_tournament/', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': await this.getCSRFToken(),
+						},
+						body: JSON.stringify(data),
+					});
+				
+					if (response.ok) {
+						const data = await response.json();
+						console.log(data);
+						this.user.tournament_local_room.pk_tournament = data.pk;
+						console.log(this.user.tournament_local_room.pk_tournament);
+						navigateTo("/tournament_local");
+					} else {
+						console.error('Error:', response.statusText);
+					}
+					
+				});
+				changeLanguage(this.lang);
+				
+			});
 		two_playerBtn.addEventListener("click", e => {
 			this.isStartLocal = false;
 			this.ws_local = new WebSocket('wss://'

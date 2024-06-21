@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views import View
+from django.utils import timezone
+
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -9,11 +11,11 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match, Tournament
+from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match, Tournament, LocalTournament, LocalTournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer, TournamentSerializer
+from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer, TournamentSerializer, LocalTournamentMatchSerializer, LocalTournamentSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
@@ -238,6 +240,121 @@ class Search_TournamentMatchView(APIView):
             return Response(serializer.data)
         else:
             return Response({"detail": "Username query parameter is required."}, status=400)
+
+
+class GetLocalTournament_MatchView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        id = request.query_params.get('id')
+        matches = LocalTournament_Match.objects.get(pk=id)
+        serializer = LocalTournamentMatchSerializer(matches)
+        return Response(serializer.data)
+
+class GetLocalTournamentView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        id = request.query_params.get('id')
+        Tournament = LocalTournament.objects.get(pk=id)
+        serializer = LocalTournamentSerializer(Tournament)
+        return Response(serializer.data)
+    
+class LocalTournamentSetWinner(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        tournament_id = request.data.get("tournament_id")
+        match_id = request.data.get("match_id")
+        winner = request.data.get("winner")
+
+        # Get the tournament by id
+        tournament = LocalTournament.objects.get(pk=tournament_id)
+
+        # Get the match by id
+        match = tournament.matches.get(pk=match_id)
+
+        # Update the match
+        match.winner = winner
+        match.save()
+
+        serializer = LocalTournamentMatchSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class LocalTournamentMatch_OneView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        mathc = LocalTournament_Match.objects.create(
+            room_name=createtournamentname(),
+            user1=request.data.get("user1"),
+            date=timezone.now()
+        )
+        tournament = LocalTournament.objects.get(pk=request.data.get("id"))
+        tournament.matches.add(mathc)
+        serilizer = LocalTournamentMatchSerializer(mathc)
+        return Response(serilizer.data, status=status.HTTP_200_OK)
+
+class LocalTournamentMatch_updateView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        tournament_id = request.data.get("tournament_id")
+        match_id = request.data.get("match_id")
+        user2 = request.data.get("user2")
+
+        # Get the tournament by id
+        tournament = LocalTournament.objects.get(pk=tournament_id)
+
+        # Get the match by id
+        match = tournament.matches.get(pk=match_id)
+
+        # Update the match
+        match.user2 = user2
+        match.save()
+
+        serializer = LocalTournamentMatchSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class LocalTournamentView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    
+    def post(self, request, format=None):
+        users = request.data
+        for username in users.values():
+            if username == "":
+                return Response({"error": "Username cannot be blank"}, status=status.HTTP_400_BAD_REQUEST)
+        Tname = createtournamentname()
+        tournament = LocalTournament.objects.create(name=Tname)  # Add your tournament name
+        
+        for i in range(0, len(users), 2):
+            match = LocalTournament_Match.objects.create(
+                room_name=createtournamentname(),
+                user1=users[f'user{i+1}'],
+                user2=users[f'user{i+2}'],
+                date=timezone.now()
+            )
+            tournament.matches.add(match)
+
+        tournament.save()
+
+        serializer = LocalTournamentSerializer(tournament)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+import random
+
+def createtournamentname():
+    name = ""
+    alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for i in range(10):
+        name += alphanum[random.randint(0, len(alphanum) - 1)]
+    return name
 
 # Create your views here.
 @login_required
