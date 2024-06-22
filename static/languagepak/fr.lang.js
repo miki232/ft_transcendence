@@ -8,7 +8,7 @@ const translations = {
     noaccount: "Vous n'avez pas de compte? ",
     register: "S'enregistrer",
     login: "Se connecter",
-    login42: "Connectez-vous avec votre compte intra 42",
+    login42: "Connectez-vous avec votre ",
     contact: "Contacts",
     signupuser: "Nom d'utilisateur",
     signuppass: "Mot de passe",

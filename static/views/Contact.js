@@ -49,9 +49,9 @@ export default class extends AbstractView {
 						Language
 					  </a>
 					  <ul class="dropdown-menu select-menu">
-						<li class="dropdown-item lang-selector" data-translate="eng" value="en">English</li>
-						<li class="dropdown-item lang-selector" data-translate="fr" value="fr">Français</li>
-						<li class="dropdown-item lang-selector" data-translate="it" value="it">Italiano</li>
+						<li class="dropdown-item lang-selector" value="en">English</li>
+						<li class="dropdown-item lang-selector" value="fr">Français</li>
+						<li class="dropdown-item lang-selector" value="it">Italiano</li>
 					  </ul>
 					</li>
 				  </ul>

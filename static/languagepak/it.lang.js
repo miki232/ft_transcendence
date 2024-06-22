@@ -6,7 +6,7 @@ const translations = {
     noaccount: "Non hai un account? ",
     register: "Registrati",
     login: "Accedi",
-    login42: "Accedi con l'account intra 42",
+    login42: "Accedi con l'account ",
     contact: "Contatti",
     signupuser: "Nome utente",
     signuppass: "Password",

@@ -146,9 +146,9 @@ export default class extends AbstractView {
 						Language
 					  </a>
 					  <ul class="dropdown-menu select-menu">
-						<li class="dropdown-item lang-selector" data-translate="eng" value="en">English</li>
-						<li class="dropdown-item lang-selector" data-translate="fr" value="fr">Français</li>
-						<li class="dropdown-item lang-selector" data-translate="it" value="it">Italiano</li>
+						<li class="dropdown-item lang-selector" value="en">English</li>
+						<li class="dropdown-item lang-selector" value="fr">Français</li>
+						<li class="dropdown-item lang-selector" value="it">Italiano</li>
 					  </ul>
 					</li>
 				  </ul>
@@ -185,10 +185,10 @@ export default class extends AbstractView {
 					</div>
 					<button type="submit" data-translate="login" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon">Login</button>
 					<div class="login-register">
-						<p data-translate="noaccount" >Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
+						<p data-translate="noaccount">Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
 					</div>
 					<div class="hr" style="width: 80%; margin: 25px 0 30px 0;"></div>
-					<a href="accounts/authorize/" id="school-login">Login with <img src="/static/img/42_logo_white.svg" id="school-logo"/> account</a>
+					<p id="school-login" data-translate="login42">Login with <a href="accounts/authorize/"><img src="/static/img/42_logo_white.svg" id="school-logo"/></a></p>
 				</form>
 				<form class="register-form">
 					<h1 data-translate="registration">Registration</h1>
