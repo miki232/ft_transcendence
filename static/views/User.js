@@ -151,6 +151,8 @@ export default class User extends AbstractView {
 				this.setPaddleColor(data.paddle_color);
 				this.setPongColor(data.pong_color);
 				this.setLanguage(data.language);
+				this.setPaddleColor(data.paddle_color);
+				this.setPongColor(data.pong_color);
 				// localStorage.setItem('language', data.language);
 				console.log("User data loaded", this.language);
 				// this.setPassword(data.password);
@@ -160,6 +162,13 @@ export default class User extends AbstractView {
 			})
 	}
 
+	setPongColor(data_color) {
+		this.pong_color = data_color;
+	}
+
+	setPaddleColor(data_color) {
+		this.paddle_color = data_color;
+	}
 
 	setLanguage(data_lang) {
 		this.language = data_lang;
