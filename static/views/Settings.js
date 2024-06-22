@@ -379,13 +379,32 @@ export default class Settings extends AbstractView {
 		});
 	}
 
+	async pongColor (color) {
+		const csrf = await getCSRFToken();
+		await fetch('/accounts/user_info/', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrf
+			},
+			body: JSON.stringify({
+				pong_color : color,
+			})
+		});
+	}
+
 	activeBtn() {
 		const colorPicker = document.getElementById("paddle_color");
 		const customize = document.querySelector(".customize-paddle-color");
-		colorPicker.addEventListener("input", () => {
-			this.paddleColor(colorPicker.value);
+		colorPicker.addEventListener("input", async () => {
+			await this.paddleColor(colorPicker.value);
 		});
+		const pongColorPicker = document.getElementById("pong_color");
+		const customizePong = document.querySelector(".customize-pong-style");
 		const lang_selector = document.querySelectorAll(".lang-selector");
+		pongColorPicker.addEventListener("input", async () => {
+			await this.pongColor(pongColorPicker.value);
+		});
 		lang_selector.forEach(e => {
 			e.addEventListener("click", async () => {
 				const language = e.getAttribute("value");
@@ -491,6 +510,10 @@ export default class Settings extends AbstractView {
 						<button type="button" data-translate="changeavatar" class="submit-btn dashboard-btn" id="change-pic"><ion-icon name="image-outline"></ion-icon>Change Avatar</button>
 						<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
 						<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
+						<div class="customize-pong-style">
+							<p data-translate="customizePaddle">Customize Pong Color:</p>
+							<input type="color" id="pong_color" value="${this.user.pong_color}">
+						</div>
 						<div class="customize-paddle-color">
 							<p data-translate="customizePaddle">Customize Paddle Color:</p>
 							<input type="color" id="paddle_color" value="${this.user.paddle_color}">

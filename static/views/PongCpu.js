@@ -18,9 +18,10 @@ export default class PongCpu extends AbstractView {
         this.playerPaddleY = 600 / 2 - this.paddle_height / 2;
         this.opponentPaddleY = 600 / 2 - this.paddle_height / 2;
         this.arrowUpPressed = false;
-        this.user_paddle_color = user.paddle_color;
-        this.arrowDownPressed = false;
         this.users = user;
+        this.user_paddle_color = user.paddle_color;
+        this.pong_color = user.pong_color;
+        this.arrowDownPressed = false;
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
@@ -28,6 +29,7 @@ export default class PongCpu extends AbstractView {
     }
 
     async initialize() {
+        console.log("Pong Color: ", this.pong_color);
         document.querySelector('header').style.display = 'none';
         document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
@@ -232,7 +234,7 @@ export default class PongCpu extends AbstractView {
                 <div id="player2-score" class="score-info"></div>
             </div>
             <div id="countdown" data-translate="commands" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
-            <canvas id="pongCanvas" width="800" height="600"></canvas>
+            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
         `;
         return cpuHTML;
     }

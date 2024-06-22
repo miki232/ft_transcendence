@@ -23,6 +23,7 @@ export default class LocalPong extends AbstractView{
         this.arrowDownPressed = false;
         this.users = user;
         this.user_paddle_color = user.paddle_color;
+        this.pong_color = user.pong_color;
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
@@ -276,7 +277,7 @@ export default class LocalPong extends AbstractView{
                     <div id="player2-score" class="score-info"></div>
             </div>
             <div id="countdown" data-translate="commands" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
-            <canvas id="pongCanvas" width="800" height="600"></canvas>
+            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
         `;
     }
 }

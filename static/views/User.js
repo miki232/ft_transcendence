@@ -13,7 +13,8 @@ export default class User extends AbstractView {
 		this.logged = false;
 		this.level;
 		this.exp;
-		this.paddle_color = "#00FF99";
+		this.paddle_color = "#00FF99"
+		this.pong_color = "#ffffff";
 		this.online_room;
 		this.online_opponent = {
 			username: "null",
@@ -148,6 +149,7 @@ export default class User extends AbstractView {
 				this.setLevel(data.level);
 				this.setExp(data.exp);
 				this.setPaddleColor(data.paddle_color);
+				this.setPongColor(data.pong_color);
 				localStorage.setItem('language', data.language);
 				console.log("User data loaded", data.language);
 				// this.setPassword(data.password);
@@ -171,6 +173,10 @@ export default class User extends AbstractView {
 
 	setPaddleColor(data_color) {
 		this.paddle_color = data_color;
+	}
+
+	setPongColor(data_color) {
+		this.pong_color = data_color;
 	}
 
 	// setPassword(data_password) {

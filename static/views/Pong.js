@@ -6,6 +6,7 @@ export default class Pong {
         this.user = user;
         this.user_paddle_color1;
         this.user_paddle_color2;
+        this.pong_color = user.pong_color;
         this.tempcolor;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
@@ -261,7 +262,7 @@ export default class Pong {
                 <div id="the-match"><h1>THE MATCH</h1></div>
                 <div id="player2-score" class="score-info"></div>
             </div>
-            <canvas id="pongCanvas" width="800" height="600"></canvas>
+            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
         `;
         return pongHTML;
     }
