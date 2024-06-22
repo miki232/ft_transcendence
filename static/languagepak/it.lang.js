@@ -88,7 +88,12 @@ const translations = {
     wrongUserPass: "Nome utente o password errati",
     exiting: "Utente già esistente",
     customizePaddle: "Personalizza Colore Paddle:",
+    customizePong : "Colore sfondo Pong:",
     commands: "Comandi: Premere ⬆ e ⬇ per muovere il Paddle. Premere Enter per iniziare la partita.",
+    first : "1° nome utente",
+    second : "2° nome utente",
+    third : "3° nome utente",
+    fourth : "4° nome utente",
     // Add more translations here...
 };
 
