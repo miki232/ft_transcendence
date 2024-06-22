@@ -931,7 +931,6 @@ div .rooms-list {
 }
 
 #pongCanvas {
-	background: linear-gradient(45deg, #141414, #1b1b1b);
 	border: 4px solid #E4080A;
 	box-shadow: 0 0 20px #E4080A, inset 0 0 20px #E4080A;
 }
