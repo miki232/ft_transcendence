@@ -63,7 +63,7 @@ def callback(request):
     data = {
         'grant_type': 'authorization_code',
         'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'client_secret': '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',
+        'client_secret': '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',
         'code': code,
         'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
     }
@@ -211,6 +211,9 @@ class UserInfoView(APIView):
             if os.path.isfile(current_pic_path):
                 os.remove(current_pic_path)
             request.user.pro_pic = url
+            request.user.save()
+        elif 'pong_color' in request.data:
+            request.user.pong_color = request.data['pong_color']
             request.user.save()
         elif 'paddle_color' in request.data:
             print("Paddle Color", request.data['paddle_color'])

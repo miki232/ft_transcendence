@@ -102,6 +102,8 @@ export default class PongCpu extends AbstractView {
 
     update(canvas, context) {
         this.updatePaddlePosition();
+        context.fillStyle = '#e10088';
+
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.drawNet(context, canvas, "#FFFFFF");
         this.drawRect(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color);

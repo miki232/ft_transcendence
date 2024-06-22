@@ -179,7 +179,6 @@ export default class Pong {
         this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color2);
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
-        // context.fillStyle = '#FFFFFF';
         // context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
 
         // Draw opponent paddle
