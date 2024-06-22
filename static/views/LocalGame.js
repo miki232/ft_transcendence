@@ -258,7 +258,9 @@ export default class LocalGame extends AbstractView {
 		const navHTML = `
 			<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			  <div class="container-fluid">
-				<a href="/dashboard" id="logo" class="nav-link" aria-current="page" data-link>The Match</a>
+				<a href="/dashboard" id="logo" class="nav-brand" aria-current="page" data-link>
+					<img src="/static/img/Logo.png" alt="Logo" class="logo"/>
+				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
 				</button>
