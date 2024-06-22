@@ -244,6 +244,8 @@ header {
 }
 
 .form-box form,
+.about,
+.contact,
 .profile-card,
 .friends-card,
 .friend-info,
@@ -463,6 +465,27 @@ form .submit-btn ion-icon {
 #school-login {
 	color:white;
 	font-size: 18px;
+}
+
+/***************** ABOUT *****************/
+
+.about {
+	width: 100%;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.about h1 {
+	margin: 30px 0 20px 0;
+	font-size: 40px;
+}
+
+.about p {
+	width: 80%;
+	font-size: 20px;
+	margin: 20px 0;
 }
 	
 /***************** DASHBOARD *****************/

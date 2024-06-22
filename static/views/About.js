@@ -1,20 +1,5 @@
 import AbstractView from "./AbstractView.js";
 
-const aboutHTML = `
-	<h1 data-translate="about"> About</h1>
-	<p data-translate="aboutmsg"> This is a simple web application.</p>
-`;
-
-// const navHTML = `
-// 	<div class="nav">
-// 		<button type="button" class="nav-toggle"><ion-icon class="nav-toggle" name="menu-outline"></ion-icon></button>
-// 		<div class="nav-links">
-// 			<a href="/" name="index" data-link>Home</a>
-// 			<a href="/about" name="about" data-link>About</a>
-// 			<a href="/contact" name="contact" data-link>Contact</a>
-// 		</div>
-// 	</div>
-// `;
 
 export default class extends AbstractView {
 	constructor() {
@@ -64,6 +49,16 @@ export default class extends AbstractView {
 	}
 
 	getContent() {
+		const aboutHTML = `
+			<div class="dashboard">
+				<div class="about">
+					<h1>About</h1>
+					<p>
+						Welcome to The Match, the best place to find your perfect match. We are a team of professionals who have been working in the dating industry for years. Our goal is to help you find your soulmate, and we are here to make your journey as easy and enjoyable as possible. Whether you are looking for a long-term relationship or just a casual date, we have everything you need to find the perfect match. So why wait? Sign up today and start your journey to finding true love.
+					</p>
+				</div>
+			</div>
+		`;
 		return aboutHTML;
 	}
 }
