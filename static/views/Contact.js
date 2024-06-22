@@ -1,14 +1,22 @@
 import AbstractView from "./AbstractView.js";
 
-const contactHTML = `
-<h1 data-translate="contacts">Contact</h1>
-<p data-translate="madeby">Made by 800A.</p>
-`;
 
 export default class extends AbstractView {
 	constructor() {
 		super();
 		this.setTitle("Contact");
+		this.arecce_pic = "https://avatars.githubusercontent.com/u/77490508?v=4";
+		this.arecce_level = null;
+		this.arecce_github = "https://github.com/Sepherd";
+		this.arecce_linkedin = "https://www.linkedin.com/in/andrearecce/";
+		this.lbusi_pic = "https://avatars.githubusercontent.com/u/77490508?v=4";
+		this.lbusi_level = null;
+		this.lbusi_github = "";
+		this.lbusi_linkedin = "";
+		this.mtoia_pic = "https://avatars.githubusercontent.com/u/77490508?v=4";
+		this.mtoia_level = null;
+		this.mtoia_github = "";
+		this.mtoia_linkedin = "";
 		this.content = document.querySelector("#content");
 		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
@@ -55,6 +63,54 @@ export default class extends AbstractView {
 	}
 
 	getContent() {
+		const contactHTML = `
+			<div class="dashboard">
+				<div class="contact">
+					<h1>Contact</h1>
+					<div class="contact-list">
+						<div class="user-dashboard">
+							<img src=${this.arecce_pic} alt="arecce picture" />
+							<div class="user-info">
+								<h3>Arecce</h3>
+								<div class="user-level">
+									<p>Level: <span>${this.arecce_level}</span></p>
+								</div>
+							</div>
+							<div class="user-contact">
+								<a href=${this.arecce_github} target="_blank"><ion-icon name="logo-github"></ion-icon></a>
+								<a href=${this.arecce_linkedin} target="_blank"><ion-icon name="logo-linkedin"></ion-icon></a>
+							</div>
+						</div>
+						<div class="user-dashboard">
+							<img src=${this.lbusi_pic} alt="lbusi picture" />
+							<div class="user-info">
+								<h3>Lbusi</h3>
+								<div class="user-level">
+									<p>Level: <span>${this.lbusi_level}</span></p>
+								</div>
+							</div>
+							<div class="user-contact">
+								<a href=${this.lbusi_github} target="_blank"><ion-icon name="logo-github"></ion-icon></a>
+								<a href=${this.lbusi_linkedin} target="_blank"><ion-icon name="logo-linkedin"></ion-icon></a>
+							</div>
+						</div>
+						<div class="user-dashboard">
+							<img src=${this.mtoia_pic} alt="mtoia picture" />
+							<div class="user-info">
+								<h3>Mtoia</h3>
+								<div class="user-level">
+									<p>Level: <span>${this.mtoia_level}</span></p>
+								</div>
+							</div>
+							<div class="user-contact">
+								<a href=${this.mtoia_github} target="_blank"><ion-icon name="logo-github"></ion-icon></a>
+								<a href=${this.mtoia_linkedin} target="_blank"><ion-icon name="logo-linkedin"></ion-icon></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
 		return contactHTML;
 	}
 }
