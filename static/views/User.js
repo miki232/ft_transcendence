@@ -7,6 +7,7 @@ export default class User extends AbstractView {
 		super();
 		this.username;
 		this.email;
+		this.language = "en";
         this.round = [];
 		// this.password;
 		this.pro_pic;
@@ -96,7 +97,6 @@ export default class User extends AbstractView {
 				username: username,
 				password: password,
 				remember_me : rememberme,
-				language: localStorage.getItem('language')
 			}),
 		}).then(response => {
 			response.json();
@@ -142,7 +142,7 @@ export default class User extends AbstractView {
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				console.log(" iasdlnasd", data);
 				this.setUser(data.username);
 				this.setEmail(data.email);
 				this.setPic(data.pro_pic);
@@ -150,8 +150,9 @@ export default class User extends AbstractView {
 				this.setExp(data.exp);
 				this.setPaddleColor(data.paddle_color);
 				this.setPongColor(data.pong_color);
-				localStorage.setItem('language', data.language);
-				console.log("User data loaded", data.language);
+				this.setLanguage(data.language);
+				// localStorage.setItem('language', data.language);
+				console.log("User data loaded", this.language);
 				// this.setPassword(data.password);
 			})
 			.catch((error) => {
@@ -159,6 +160,11 @@ export default class User extends AbstractView {
 			})
 	}
 
+
+	setLanguage(data_lang) {
+		this.language = data_lang;
+	}
+	
 	setPic(data_pic) {
 		this.pro_pic = data_pic;
 	}

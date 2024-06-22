@@ -179,9 +179,7 @@ export async function changeLanguage(language) {
 }
 
 
-	
-const userLang = localStorage.getItem('language') || 'en';
-changeLanguage(userLang);
+// changeLanguage(user.language);
 // document.getElementById('languageSwitcher').value = userLang;
 	// const is_loggedin = async () => {
 		//     var csrftoken = getCookie('csrftoken');
@@ -226,7 +224,7 @@ function wsConnection() {
 const router = async () => {
 	console.log(user.lastURL);
 	user.loadUserData();
-	const userLang = localStorage.getItem('language') || 'en';
+	console.log(user, user.language);
 
 	if (location.pathname.includes("/user_info")) {
 		let count = location.pathname.split("/").length - 1;
@@ -478,7 +476,12 @@ const router = async () => {
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
-	await changeLanguage(userLang);
+	console.log(localStorage.getItem('language'));
+	if (user.language == undefined) {
+		await changeLanguage(localStorage.getItem('language'));
+	}
+	else
+		await changeLanguage(user.language);
 
 };
 

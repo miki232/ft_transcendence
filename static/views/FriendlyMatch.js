@@ -145,8 +145,7 @@ export default class FriendlyMatch extends AbstractView {
                     navigateTo("/friendly_match");
                 });
             });
-            const lang = localStorage.getItem('language') || 'en';
-            changeLanguage(lang);
+            changeLanguage(this.user.language);
         } catch (error) {
             console.error('Failed to fetch rooms list:', error);
         }
