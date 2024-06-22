@@ -30,8 +30,8 @@ export default class Settings extends AbstractView {
 		const changePasswordBtn = document.getElementById("change-password");
 		const deleteAccountBtn = document.getElementById("delete-account");
 		const changeLang = document.querySelector(".change-language");
-		changeLang.style.display = "none";
 		const changeUsernameBtn = document.getElementById("change-username");
+		changeLang.style.display = "none";
 		changePasswordBtn.style.display = "none";
 		deleteAccountBtn.style.display = "none";
 		changeUsernameBtn.style.display = "none";
@@ -131,6 +131,10 @@ export default class Settings extends AbstractView {
 		const changeUsernameHTML = `
 			<div class="input-box change">
 				<input type="text" data-translate="newusername" placeholder="New Username">
+				<ion-icon name="person-outline"></ion-icon>
+			</div>
+			<div class="input-box change">
+				<input type="text" placeholder="New Alias">
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
@@ -441,21 +445,25 @@ export default class Settings extends AbstractView {
 		const changeUsernameBtn = document.getElementById("change-username");
 		changeUsernameBtn.addEventListener("click", () => {
 			customize.setAttribute("style", "display: none;");
+			customizePong.setAttribute("style", "display: none;");
 			this.changeUsername();
 		});
 		const changePasswordBtn = document.getElementById("change-password");
 		changePasswordBtn.addEventListener("click", () => {
 			customize.setAttribute("style", "display: none;");
+			customizePong.setAttribute("style", "display: none;");
 			this.changePassword();
 		});
 		const deleteAccountBtn = document.getElementById("delete-account");
 		deleteAccountBtn.addEventListener("click", () => {
 			customize.setAttribute("style", "display: none;");
+			customizePong.setAttribute("style", "display: none;");
 			this.deleteAccount();
 		});
 		const changePicBtn = document.getElementById("change-pic");
 		changePicBtn.addEventListener("click", () => {
 			customize.setAttribute("style", "display: none;");
+			customizePong.setAttribute("style", "display: none;");
 			this.changeAvatar();
 		});
 	}
