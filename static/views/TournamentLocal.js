@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
 import LocalTpong from "./LocalTpong.js";
+import { navigateTo } from "../index.js";
 
 export default class TournamentLocal extends AbstractView {
     constructor(user, ws) {
@@ -11,7 +12,7 @@ export default class TournamentLocal extends AbstractView {
 		this.init();
         this.activeBtn();
 		this.token = null;
-		this.matchindex = 0;
+		this.matches = [];
         // this.nav.innerHTML = this.getNav();
         // this.user.expProgress();
         // this.roomName = null;
@@ -37,17 +38,18 @@ export default class TournamentLocal extends AbstractView {
 		fetch(`/getlocal_tournament/?id=${this.user.tournament_local_room.pk_tournament}`)
 			.then(response => response.json())
 			.then(data => {
-				this.updateContentWithMatches(data.matches);
+				this.matches = data.matches;
+				this.updateContentWithMatches();
 			})
 			.catch(error => console.error('Error:', error));
 	}
-	
-	updateContentWithMatches(matches) {
-		const semifinal1 = matches[0] ? `${matches[0].user1} vs ${matches[0].user2}` : '- vs -';
-		const semifinal2 = matches[1] ? `${matches[1].user1} vs ${matches[1].user2}` : '- vs -';
-		const final = matches[2] ? `${matches[2].user1} vs ${matches[2].user2}` : '- vs -';
-		const winner = matches[2] ? `${matches[2].winner}` : 'Winner';
-	
+
+	updateContentWithMatches() {
+		const semifinal1 = this.matches[0] ? `${this.matches[0].user1} vs ${this.matches[0].user2}` : '- vs -';
+		const semifinal2 = this.matches[1] ? `${this.matches[1].user1} vs ${this.matches[1].user2}` : '- vs -';
+		const final = this.matches[2] ? `${this.matches[2].user1} vs ${this.matches[2].user2}` : '- vs -';
+		const winner = this.matches[2] ? `${this.matches[2].winner}` : 'Winner';
+
 		this.content.innerHTML = `
 			<div class="tournament-container" id="tournamentBracket" style="display: flex">
 				<ul class="bracket semifinals">
@@ -63,38 +65,51 @@ export default class TournamentLocal extends AbstractView {
 				<button id="playMatch" class="btn btn-primary m-2">Play match</button>
 			</div>
 		`;
-	
+
 		const playMatchButton = document.querySelector("#playMatch");
-		playMatchButton.addEventListener('click', () => {
-			if (matches[this.matchindex]) {
-				this.connectToWsLocalPong(matches[this.matchindex].room_name, matches[this.matchindex].user1, matches[this.matchindex].user2);
-			} else {
-				console.log('No matches available');
-			}
-		});
+		playMatchButton.addEventListener('click', this.handlePlayMatchClick.bind(this));
+		if (this.user.tournament_local_room.matchindex > 2) {
+			playMatchButton.removeEventListener('click', this.handlePlayMatchClick.bind(this));
+			playMatchButton.addEventListener('click', this.handleEndMatchClick.bind(this));
+			playMatchButton.textContent = 'End tournament';
+		}
+	}
+
+	handleEndMatchClick(){
+		// End tournament
+		this.user.tournament_local_room.matchindex = 0;
+		navigateTo('/local_game');
+	}
+
+	handlePlayMatchClick() {
+		if (this.matches[this.user.tournament_local_room.matchindex]) {
+			this.connectToWsLocalPong(this.matches[this.user.tournament_local_room.matchindex].room_name, this.matches[this.user.tournament_local_room.matchindex].user1, this.matches[this.user.tournament_local_room.matchindex].user2);
+		} else {
+			console.log('No matches available');
+		}
 	}
 
 	onLocalTpongLoopFinish() {
 		// This function will be called when the loop function in LocalTpong finishes
-		if (this.matchindex < 1) {
+		if (this.user.tournament_local_room.matchindex < 1) {
 			const url = '/local_tournament_one_update/';
 			const data = {
 				"id": this.user.tournament_local_room.pk_tournament,
 				"user1": this.user.tournament_local_room.winner,
 			};
-		
+
 			fetch(url, {
-				method: 'POST', 
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'X-CSRFToken': this.token,
 				},
-				body: JSON.stringify(data), 
+				body: JSON.stringify(data),
 			})
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				this.matchindex++;
+				this.user.tournament_local_room.matchindex++;
 				this.user.tournament_local_room.pk_match = data.pk;
 				this.load_match();
 			})
@@ -102,7 +117,7 @@ export default class TournamentLocal extends AbstractView {
 				console.error('Error:', error);
 			});
 		}
-		else if (this.matchindex > 1) {
+		else if (this.user.tournament_local_room.matchindex > 1) {
 			console.log('Tournament finished');
 			const url = '/local_tournament_set_winner/';
 			const data = {
@@ -110,19 +125,19 @@ export default class TournamentLocal extends AbstractView {
 				"match_id": this.user.tournament_local_room.pk_match,
 				"winner": this.user.tournament_local_room.winner,
 			};
-		
+
 			fetch(url, {
-				method: 'POST', 
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'X-CSRFToken': this.token,
 				},
-				body: JSON.stringify(data), 
+				body: JSON.stringify(data),
 			})
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				this.matchindex++;
+				this.user.tournament_local_room.matchindex++;
 				this.user.tournament_local_room.pk_match = data.pk;
 				this.load_match();
 			})
@@ -138,19 +153,19 @@ export default class TournamentLocal extends AbstractView {
 				"user2": this.user.tournament_local_room.winner,
 				"match_id": this.user.tournament_local_room.pk_match,
 			};
-		
+
 			fetch(url, {
-				method: 'POST', 
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'X-CSRFToken': this.token,
 				},
-				body: JSON.stringify(data), 
+				body: JSON.stringify(data),
 			})
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				this.matchindex++;
+				this.user.tournament_local_room.matchindex++;
 				this.load_match();
 			})
 			.catch((error) => {
@@ -159,7 +174,7 @@ export default class TournamentLocal extends AbstractView {
 		}
 
 	}
-	
+
 	connectToWsLocalPong(roomName, user1, user2) {
 		// Connect to ws_localpong with the given roomName
 		// This is a placeholder, replace with your actual implementation
@@ -169,7 +184,7 @@ export default class TournamentLocal extends AbstractView {
 	}
 
 	activeBtn() {
-		
+
 	}
 
 	getContent() {

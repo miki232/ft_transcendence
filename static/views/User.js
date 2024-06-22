@@ -29,6 +29,7 @@ export default class User extends AbstractView {
 			pk_tournament: "null",
 			pk_match: "null",
 			winner : "null",
+			matchindex : 0,
 		};
 		this.disconnected = true;
 		this.game_ws = null;

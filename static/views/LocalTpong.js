@@ -42,6 +42,7 @@ export default class LocalTpong extends AbstractView{
 			+ this.room_name
 			+ '/'
 		);
+		this.users.local_ws = this.game_ws;
         document.querySelector('header').style.display = 'none';
         document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
