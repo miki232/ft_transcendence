@@ -137,6 +137,12 @@ header {
 	flex-wrap: nowrap
 }
 
+.logo {
+	border-radius: 0px;
+	width: 200px;
+	height: auto;
+}
+
 .bg-body-tertiary {
 	--bs-bg-opacity: 0;
 	color: white;
