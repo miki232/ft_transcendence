@@ -299,11 +299,11 @@ export default class Friends extends AbstractView {
 		const friendsSearch = document.querySelector(".friends-list");
 		const friendInput = document.querySelector("#friendNameInput");
 		const searchBtn = document.querySelector("#search-btn");
-		friendInput.addEventListener("input", async e => {
-			if (friendInput.value === "") {
-				await this.getFriendList();
-			}
-		});
+		// friendInput.addEventListener("input", async e => {
+		// 	if (friendInput.value === "") {
+		// 		await this.getFriendList();
+		// 	}
+		// });
 		searchBtn.addEventListener("click", async e => {
 			var inputText = friendInput.value; // Create a function to sanitize input BACKEND
 			fetch(`/accounts/search/?q=${inputText}`)
@@ -345,6 +345,7 @@ export default class Friends extends AbstractView {
 					} else {
 						createNotification("User not found", "usernotfound");
 						friendInput.value = "";
+						friendsSearch.innerHTML = "";
 					}
 				})
 				.catch(error => console.error('Error:', error));

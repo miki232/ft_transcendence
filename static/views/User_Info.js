@@ -62,13 +62,15 @@ export default class UserInfo extends AbstractView {
 						${is_friend ? "<h5> <span data-translate=\"level2\" Level></span>" + data.user.level + "</h5>" : ""}
 					</div>
 				</div>
-				<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
-				<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline"></ion-icon>History</a>
-				${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
-					!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
-					senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
-					receiverObj ? `<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
-				${is_friend ? `<button type="button" data-translate="remove" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
+				<div class="btns-container">
+					<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
+					<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline"></ion-icon>History</a>
+					${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
+						!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
+						senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
+						receiverObj ? `<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
+					${is_friend ? `<button type="button" data-translate="remove" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
+				</div>
 				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 				<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 			`;
