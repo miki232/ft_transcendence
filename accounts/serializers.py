@@ -80,7 +80,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp', 'paddle_color', 'language')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp', 'paddle_color', 'pong_color', 'language')
     
     def validate_username(self, value):
         if len(value) > 15:  # Change this number to the maximum length you want
