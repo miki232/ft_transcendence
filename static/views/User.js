@@ -15,7 +15,7 @@ export default class User extends AbstractView {
 		this.level;
 		this.exp;
 		this.paddle_color = "#00FF99"
-		this.pong_color = "#ffffff";
+		this.pong_color = "#141414";
 		this.online_room;
 		this.online_opponent = {
 			username: "null",

@@ -125,12 +125,13 @@ export default class PongCpu extends AbstractView {
             const content = document.getElementById('content');
             const resultHTML = `
                 <div class="result" style="display: flex; justify-content: center; width: 800px; height: 400px;">
-                    <img ${data.victory === this.users.getUser() ? 'src="static/img/win.jpg"' : 'src="static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
+                    <img ${data.victory === this.users.getUser() ? 'src="/static/img/win.jpg"' : 'src="/static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
                 </div>
             `;
             content.innerHTML = resultHTML;
             setTimeout(() => {
                 this.users.disconnected = false;
+                content.innerHTML = '';
                 navigateTo('/local_game');
             }, 3000);
         }

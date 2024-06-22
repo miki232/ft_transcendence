@@ -16,7 +16,7 @@ class CustomUser(AbstractUser): # new
     Ai = models.BooleanField(default=False)
     Occupied = models.BooleanField(default=False)
     language = models.CharField(max_length=254, default="en")
-    paddle_color = models.CharField(max_length=254, default="white")
+    paddle_color = models.CharField(max_length=254, default="#CC0505")
     pong_color = models.CharField(max_length=254, default="#141414")
     OAuth = models.BooleanField(default=False)
     # wins= models.PositiveIntegerField(default=0)
