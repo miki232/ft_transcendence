@@ -263,7 +263,7 @@ const router = async () => {
 		{ path: "/online/friendly_match", view: () => import('./views/FriendlyMatch.js')},
 		{ path: "/local_game/1P-vs-CPU/" + user.local_room, view: () => import('./views/PongCpu.js')},
 		{ path: "/local_game/1P-vs-2P/" + user.local_room, view: () => import('./views/Localpong.js')},
-		{ path: "/tournament_local", view: () => import('./views/TournamentLocal.js')},
+		{ path: "/local_game/tournament", view: () => import('./views/TournamentLocal.js')},
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 
@@ -461,9 +461,8 @@ const router = async () => {
 			// console.log("OSU", room_name);
 			// if (room_name !== null) navigateTo("/pong_tournament");
 			break;
-		case "/tournament_local":
+		case "/local_game/tournament":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
-
 			const TournamentLocalClass = await match.route.view();
 			view = new TournamentLocalClass.default(user, user.local_ws);
 			break;

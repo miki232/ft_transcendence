@@ -97,7 +97,7 @@ export default class LocalGame extends AbstractView {
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="change-btn change">
-						<button type="button" id="play-local" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+						<button type="button" id="play-local" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Create Tournament</button>
 					</div>
 				`;
 				tournamentBtn.insertAdjacentHTML("afterend", tournamentHTML);
@@ -128,7 +128,7 @@ export default class LocalGame extends AbstractView {
 						console.log(data);
 						this.user.tournament_local_room.pk_tournament = data.pk;
 						console.log(this.user.tournament_local_room.pk_tournament);
-						navigateTo("/tournament_local");
+						navigateTo("/local_game/tournament");
 					} else {
 						console.error('Error:', response.statusText);
 					}

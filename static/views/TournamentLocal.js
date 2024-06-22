@@ -44,14 +44,8 @@ export default class TournamentLocal extends AbstractView {
 			.catch(error => console.error('Error:', error));
 	}
 
-	updateContentWithMatches() {
-		const semifinal1 = this.matches[0] ? `${this.matches[0].user1} vs ${this.matches[0].user2}` : '- vs -';
-		const semifinal2 = this.matches[1] ? `${this.matches[1].user1} vs ${this.matches[1].user2}` : '- vs -';
-		const final = this.matches[2] ? `${this.matches[2].user1} vs ${this.matches[2].user2}` : '- vs -';
-		const winner = this.matches[2] ? `${this.matches[2].winner}` : 'Winner';
-
-		this.content.innerHTML = `
-			<div class="tournament-container" id="tournamentBracket" style="display: flex">
+	/*
+	<div class="tournament-container" id="tournamentBracket" style="display: flex">
 				<ul class="bracket semifinals">
 					<li class="match" id="semifinal1">${semifinal1}</li>
 					<li class="match" id="semifinal2">${semifinal2}</li>
@@ -63,6 +57,39 @@ export default class TournamentLocal extends AbstractView {
 					<li class="match" id="champion">${winner}</li>
 				</ul>
 				<button id="playMatch" class="btn btn-primary m-2">Play match</button>
+	</div>
+	*/
+
+	updateContentWithMatches() {
+		const semifinal1 = this.matches[0] ? `<p>${this.matches[0].user1}</p><span> VS </span><p>${this.matches[0].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';
+		const semifinal2 = this.matches[1] ? `<p>${this.matches[1].user1}</p><span> VS </span><p>${this.matches[1].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';;
+		const final = this.matches[2] ? `<p>${this.matches[2].user1}</p><span> VS </span><p>${this.matches[2].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';
+		const winner = this.matches[2] ? `<p>${this.matches[2].winner}</p>` : '<p>Winner</p>';
+
+		this.content.innerHTML = `
+			<div class="dashboard">
+				<div class="tournament">
+					<h1>Local Tournament</h1>
+					<div class="match-tab">
+						<h3>Semifinals 1</h3>
+						<div class="match-line">
+							${semifinal1}
+						</div>
+						<h3>Semifinals 2</h3>
+						<div class="match-line">
+							${semifinal2}
+						</div>
+						<h3>Final</h3>
+						<div class="match-line">
+							${final}
+						</div>
+						<h3>Winner</h3>
+						<div class="match-line">
+							${winner}
+						</div>
+						<button type="button" id="playMatch" data-translate="play" class="submit-btn confirm-btn" style="width: 100%;"><ion-icon name="game-controller-outline"></ion-icon>Play Match</button>
+					</div>
+				</div>
 			</div>
 		`;
 
