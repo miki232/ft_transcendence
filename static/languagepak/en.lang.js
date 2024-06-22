@@ -91,6 +91,11 @@ const translations = {
     exiting: "User with this email and username already exists",
     customizePaddle: "Customize Paddle Color:",
     commands: "Commands: Press ⬆ and ⬇ to move the Paddle. Press Enter to start the Game.",
+    first : "1° Username",
+    second : "2° Username",
+    third : "3° Username",
+    fourth : "4° Username",
+    customizePong: "Customize Pong Color:",
     // Add more translations here
 };
 

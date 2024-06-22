@@ -89,8 +89,13 @@ const translations = {
     logoutSuccess: "Déconnexion réussie avec succès",
     wrongUserPass: "Nom d'utilisateur ou mot de passe incorrect",
     exiting: "L'utilisateur avec cet email et nom d'utilisateur existe déjà",
-    customizePaddle: "Personnaliser Couleur Paddle:",
-    commands: "Commandes: Appuyez sur ⬆ et ⬇ pour déplacer le Paddle. Appuyez sur Entrée pour commencer le match."
+    customizePaddle: "Couleur Paddle:",
+    commands: "Commandes: Appuyez sur ⬆ et ⬇ pour déplacer le Paddle. Appuyez sur Entrée pour commencer le match.",
+    first : "1° nom d'utilisateur",
+    second : "2° nom d'utilisateur",
+    third : "3° nom d'utilisateur",
+    fourth : "4° nom d'utilisateur",
+    customizePong : "Couleur de fond Pong",
     // Add more translations here...
 };
 

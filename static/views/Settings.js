@@ -513,7 +513,7 @@ export default class Settings extends AbstractView {
 						<button type="button" data-translate="changeuser" class="submit-btn dashboard-btn" id="change-username"><ion-icon name="person-outline"></ion-icon>Change Username</button>
 						<button type="button" data-translate="changepass" class="submit-btn dashboard-btn" id="change-password"><ion-icon name="key-outline"></ion-icon>Change Password</button>
 						<div class="customize-pong-style">
-							<p data-translate="customizePaddle">Customize Pong Color:</p>
+							<p data-translate="customizePong">Customize Pong Color:</p>
 							<input type="color" id="pong_color" value="${this.user.pong_color}">
 						</div>
 						<div class="customize-paddle-color">

@@ -81,19 +81,19 @@ export default class LocalGame extends AbstractView {
 				tournamentBtn.classList.add("local-game-btn");
 				const tournamentHTML = `
 					<div class="input-box change" style="margin: 10px 0px;">
-						<input type="text" data-translate="secondpusername" placeholder="1P Username">
+						<input type="text" data-translate="first" placeholder="1P Username">
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="input-box change" style="margin: 10px 0px";>
-						<input type="text" data-translate="secondpusername" placeholder="2P Username">
+						<input type="text" data-translate="second" placeholder="2P Username">
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="input-box change" style="margin: 10px 0px;">
-						<input type="text" data-translate="secondpusername" placeholder="3P Username">
+						<input type="text" data-translate="third" placeholder="3P Username">
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="input-box change" style="margin: 10px 0px;">
-						<input type="text" data-translate="secondpusername" placeholder="4P Username">
+						<input type="text" data-translate="fourth" placeholder="4P Username">
 						<ion-icon name="person-outline"></ion-icon>
 					</div>
 					<div class="change-btn change">
