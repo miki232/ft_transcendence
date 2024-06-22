@@ -188,7 +188,7 @@ export default class extends AbstractView {
 						<p data-translate="noaccount" >Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
 					</div>
 					<div class="hr" style="width: 80%; margin: 25px 0 30px 0;"></div>
-					<a href="accounts/authorize/" id="school-login" data-translate="login42">Login with 42 intra account</a>
+					<a href="accounts/authorize/" id="school-login">Login with <img src="/static/img/42_logo_white.svg" id="school-logo"/> account</a>
 				</form>
 				<form class="register-form">
 					<h1 data-translate="registration">Registration</h1>

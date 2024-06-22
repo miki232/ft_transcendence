@@ -245,6 +245,12 @@ header {
 	padding-top: 30px;
 } */
 
+#school-logo {
+	width: 32px;
+	height: auto;
+	border-radius: 0;
+}
+
 .form-box form {
 	justify-content: center;
 }
