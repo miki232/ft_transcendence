@@ -7,6 +7,7 @@ export default class User extends AbstractView {
 		super();
 		this.username;
 		this.email;
+		this.alias;
 		this.language = "en";
         this.round = [];
 		// this.password;
@@ -153,6 +154,7 @@ export default class User extends AbstractView {
 				this.setLanguage(data.language);
 				this.setPaddleColor(data.paddle_color);
 				this.setPongColor(data.pong_color);
+				this.setAlias(data.alias);
 				// localStorage.setItem('language', data.language);
 				console.log("User data loaded", this.language);
 				// this.setPassword(data.password);
@@ -160,6 +162,10 @@ export default class User extends AbstractView {
 			.catch((error) => {
 				console.error('Error:', error);
 			})
+	}
+
+	setAlias(data_alias) {
+		this.alias = data_alias;
 	}
 
 	setPongColor(data_color) {
@@ -208,6 +214,10 @@ export default class User extends AbstractView {
 
 	getUser() {
 		return this.username;
+	}
+
+	getAlias() {
+		return this.alias;
 	}
 
 	getEmail() {
