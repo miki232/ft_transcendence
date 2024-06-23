@@ -134,7 +134,7 @@ export default class Settings extends AbstractView {
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="input-box change">
-				<input type="text" placeholder="New Alias">
+				<input type="text" data-translate="confnewusername" placeholder="New Alias">
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">

@@ -414,8 +414,8 @@ export default class Online extends AbstractView {
 						</div>
 					<div class="tb">
 						<div class="tournament-buttons">
-						<button type="button" data-translate="p-tournament4" class="submit-btn dashboard-btn" id="p-tournament-4"><ion-icon name="send-outline"></ion-icon>Tournament 4 </span></button>
-						<button type="button" data-translate="p-tournament8" class="submit-btn dashboard-btn" id="p-tournament-8"><ion-icon name="send-outline"></ion-icon>Tournament 8 </span></button>
+						<button type="button" data-translate="tournament4p" class="submit-btn dashboard-btn" id="p-tournament-4"><ion-icon name="send-outline"></ion-icon>Tournament 4 </span></button>
+						<button type="button" data-translate="tournament8p" class="submit-btn dashboard-btn" id="p-tournament-8"><ion-icon name="send-outline"></ion-icon>Tournament 8 </span></button>
 						</div>
 					</div>
 					<div class="back-btn-container">

@@ -69,7 +69,7 @@ export default class TournamentLocal extends AbstractView {
 		this.content.innerHTML = `
 			<div class="dashboard">
 				<div class="tournament">
-					<h1>Local Tournament</h1>
+					<h1 data-translate="localtournament">Local Tournament</h1>
 					<div class="match-tab">
 						<h3>Semifinals 1</h3>
 						<div class="match-line">
