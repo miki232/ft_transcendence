@@ -12,6 +12,7 @@ class CustomUser(AbstractUser): # new
     #https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
     pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
     status_login = models.BooleanField(default=False)
+    alias = models.CharField(max_length=254, default="None")
     email = models.EmailField(unique=True)
     Ai = models.BooleanField(default=False)
     Occupied = models.BooleanField(default=False)

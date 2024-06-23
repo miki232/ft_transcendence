@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
+from .models import WaitingUser,TournamentRoomName, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
 from chat.notifier import send_save_notification_async
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -1075,6 +1075,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         print("MatchMaking 839", numberofplayers.playerNumber)
         # self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": len(waiting_users), "numberofplayers-to-reach": numberofplayers}))
         if len(waiting_users) == numberofplayers.playerNumber:
+            alias1 = Nonealias2 = None
             waiting_users.order_by('level')
             TournamentPlaceHolder.objects.update(status=False)
             print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
@@ -1082,17 +1083,18 @@ class MatchMaking(AsyncWebsocketConsumer):
             for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                 print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                 room_name = str(uuid.uuid4()).replace('-', '')
-                match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                match = TournamentRoomName.objects.create(name=room_name, created_by=user1.user, alias1=user1.user.alias, opponent=user2.user, alias2=user2.user.alias, tournament=True)
                 tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
-                print("MatchMaking 1061", "Room Name", room_name, "Opponent", user2.user.username)
+                print("MatchMaking 1061", "Room Name", room_name, "Opponent", user2.user.username, user2.user.alias)
+
                 tournament.matches.add(tmatch)
                 print("MatchMaking 1063", "Room Name", room_name, "Opponent", user2.user.username)
                 user1.delete()
                 user2.delete()
             matching_dict = {}
-            for match in RoomName.objects.filter(tournament=True):
-                matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]    
-            lenround = len(RoomName.objects.filter(tournament=True))
+            for match in TournamentRoomName.objects.filter(tournament=True):
+                matching_dict[f'{match.name}'] = [match.created_by.username, match.alias1, match.opponent.username, match.alias2]
+            lenround = len(TournamentRoomName.objects.filter(tournament=True))
             if lenround >= 4:
                 lenround -= 1
             TournamentPlaceHolder.objects.update(round=lenround)
@@ -1111,18 +1113,19 @@ class MatchMaking(AsyncWebsocketConsumer):
             print("MatchMaking 839", numberofplayers_nextmatch)
             if len(waiting_users) == numberofplayers_nextmatch:
                 waiting_users_list = list(waiting_users)
+                
                 for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                     print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                     room_name = str(uuid.uuid4()).replace('-', '')
-                    match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                    match = TournamentRoomName.objects.create(name=room_name, created_by=user1.user, alias1=user1.user.alias, opponent=user2.user, alias2=user2.user.alias, tournament=True)
                     tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
                     tournament.matches.add(tmatch)
                     user1.delete()
                     user2.delete()
                 matching_dict = {}
-                for match in RoomName.objects.filter(tournament=True):
-                    matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]
-                lenround = len(RoomName.objects.filter(tournament=True))
+                for match in TournamentRoomName.objects.filter(tournament=True):
+                    matching_dict[f'{match.name}'] = [match.created_by.username, match.alias1, match.opponent.username, match.alias2]
+                lenround = len(TournamentRoomName.objects.filter(tournament=True))
                 if lenround >= 4:
                     lenround -= 1
                 TournamentPlaceHolder.objects.update(round=lenround)

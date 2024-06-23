@@ -24,6 +24,7 @@ export default class User extends AbstractView {
 			level: "null",
 		};
 		this.tournament_opp = {
+			alias: "null",
 			username: "null",
 			pro_pic: "null",
 			level: "null",

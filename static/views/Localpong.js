@@ -142,7 +142,7 @@ export default class LocalPong extends AbstractView{
 
     updatePaddlePosition() {
         if (this.keysPressed['ArrowUp']) {
-            console.log('sending move_up');
+            // console.log('sending move_up');
             this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.opponent}));
         }
         if (this.keysPressed['ArrowDown']) {

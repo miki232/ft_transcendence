@@ -87,6 +87,8 @@ export default class Tournament extends AbstractView {
     }
 
     async getRoomcallbackmatch() {
+        this.user.tournament_opp.alias = null;
+        this.user.tournament_opp.username = null;
         await this.getWaitingPlayers();
         return new Promise((resolve, reject) => {
             // this.matchmaking_ws.onopen = () => {
@@ -99,17 +101,23 @@ export default class Tournament extends AbstractView {
                     const data = JSON.parse(event.data);
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
-                    console.log(data.status)
+                    console.log(data.status);
                     if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
+                        this.user.tournament_opp.alias = null;
+                        this.user.tournament_opp.username = null;
                         const response = await fetch('/tournament_match/');
                         const matchData = await response.json();
-                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
-                        if (this.user.username === matchData.created_by){
-                            this.user.tournament_opp.username = matchData.opponent;
+                        console.log(`${matchData.created_by.username} Vs ${matchData.opponent.username}`, `${matchData.created_by.alias} Vs ${matchData.opponent.alias}`);
+                        if (this.user.username === matchData.created_by.username){
+                            if (matchData.opponent.alias !== "None")
+                                this.user.tournament_opp.alias = matchData.opponent.alias;
+                            this.user.tournament_opp.username = matchData.opponent.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_opponent;
                         }
                         else{
-                            this.user.tournament_opp.username = matchData.created_by;
+                            if (matchData.created_by.alias !== "None")
+                                this.user.tournament_opp.alias = matchData.created_by.alias;
+                            this.user.tournament_opp.username = matchData.created_by.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
                         }
                         // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
@@ -118,8 +126,11 @@ export default class Tournament extends AbstractView {
                         let round = [];
                         for (const matchId in data.dict) {
                             if (data.dict.hasOwnProperty(matchId)) {
-                                const match = `${data.dict[matchId][0]} Vs ${data.dict[matchId][1]}`;
-                                console.log(match);
+                                console.log("sadsadasdsdasdasda", data.dict[matchId]);
+                                const player1 = data.dict[matchId][1] !== 'None' ? data.dict[matchId][1] : data.dict[matchId][0];
+                                const player2 = data.dict[matchId][3] !== 'None' ? data.dict[matchId][3] : data.dict[matchId][2];
+                                const match = `${player1} Vs ${player2}`;
+                                console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
                                 // createNotification(match);
@@ -146,6 +157,12 @@ export default class Tournament extends AbstractView {
                         // Store the room name
                         console.log("MATCH DATA", matchData);
                         this.roomName = matchData.name;
+                        // Update the content to show the match
+                        if (this.user.alias === matchData.created_by.alias)
+                            this.user.tournament_opp.alias = matchData.opponent.alias;
+                        else
+                            this.user.tournament_opp.alias = matchData.created_by.alias;
+                        
                         // Update the content to show the match
                         // let conente_opponent = document.getElementById("opponent")
                         // let img_opponet = document.getElementById("opponent_img")
@@ -215,25 +232,46 @@ export default class Tournament extends AbstractView {
                     console.log('Parsed data:', data);
                     console.log(data.status)
                     if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
+                        this.user.tournament_opp.alias = null;
+                        this.user.tournament_opp.username = null;
                         const response = await fetch('/tournament_match/');
                         const matchData = await response.json();
-                        console.log(`${matchData.created_by} Vs ${matchData.opponent}`)
-                        if (this.user.username === matchData.created_by){
-                            this.user.tournament_opp.username = matchData.opponent;
+                        console.log(matchData);
+                        console.log(`${matchData.created_by.username} Vs ${matchData.opponent.username}`, `${matchData.created_by.alias} Vs ${matchData.opponent.alias}`)
+                        if (this.user.username === matchData.created_by.username){
+                            if (matchData.opponent.alias !== "None")
+                                this.user.tournament_opp.alias = matchData.opponent.alias;
+                            this.user.tournament_opp.username = matchData.opponent.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_opponent;
                         }
                         else{
-                            this.user.tournament_opp.username = matchData.created_by;
+                            if (matchData.created_by.alias !== "None")
+                                this.user.tournament_opp.alias = matchData.created_by.alias;
+                            this.user.tournament_opp.username = matchData.created_by.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
                         }
                         // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
                         // this.displayTournamentChart(this.torunament_chart);
                         // createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
+                        // let round = [];
+                        // for (const matchId in data.dict) {
+                        //     if (data.dict.hasOwnProperty(matchId)) {
+                        //         console.log("sadsadasdsdasdasda", data.dict[matchId]);
+                        //         const match = `${data.dict[matchId][0]} Vs ${data.dict[matchId][1]}`;
+                        //         console.log("AMMAMMA", match);
+                        //         round.push(match);
+                        //         this.torunament_chart.push(match);
+                        //         // createNotification(match);
+                        //     }
+                        // }
                         let round = [];
                         for (const matchId in data.dict) {
                             if (data.dict.hasOwnProperty(matchId)) {
-                                const match = `${data.dict[matchId][0]} Vs ${data.dict[matchId][1]}`;
-                                console.log(match);
+                                console.log("sadsadasdsdasdasda", data.dict[matchId]);
+                                const player1 = data.dict[matchId][1] !== 'None' ? data.dict[matchId][1] : data.dict[matchId][0];
+                                const player2 = data.dict[matchId][3] !== 'None' ? data.dict[matchId][3] : data.dict[matchId][2];
+                                const match = `${player1} Vs ${player2}`;
+                                console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
                                 // createNotification(match);
@@ -265,7 +303,7 @@ export default class Tournament extends AbstractView {
                         // let img_opponet = document.getElementById("opponent_img")
                         // img_opponet.src = this.opponent_pic;
                         this.content.innerHTML = `<h1>TOURNAMENT STARTED</h1>`;
-                        this.content.innerHTML += `${matchData.created_by} vs ${matchData.opponent}`;
+                        this.content.innerHTML += `${matchData.created_by.username} vs ${matchData.opponent.username}`;
                         console.log("ROOM NAME", this.roomName);
                         let isMessageProcessed = false;
                         resolve(this.roomName);
@@ -350,8 +388,11 @@ export default class Tournament extends AbstractView {
     
         this.players.forEach(player => {
             const playerItem = document.createElement('li');
-            playerItem.textContent = player.username;
-            // Adjust the height based on the number of players and limit the maximum height to 100px
+            if (player.alias !== "None")
+                playerItem.textContent = player.alias;
+            else
+                playerItem.textContent = player.username;
+                // Adjust the height based on the number of players and limit the maximum height to 100px
             const playerItemHeight = Math.min(window.innerHeight / this.players.length, 100);
             playerItem.style.height = `${playerItemHeight}px`;
             playerList.appendChild(playerItem);
