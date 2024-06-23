@@ -76,7 +76,7 @@ const translations = {
     changelang: "Change Language:",
     changepic: "Profile picture changed successfully!",
     newusername: "New Username",
-    confnewusername: "Confirm New Username",
+    alias: "Tournament Alias",
     newpass: "New Password",
     confirmpass: "Confirm New Password",
     noHistory: "No history found.",
@@ -113,6 +113,7 @@ const translations = {
     semifinals2: "Semifinals 2",
     finale: "Final",
     winner: "Winner",
+    dashboard: "Dashboard",
     // Add more translations here
 };
 
