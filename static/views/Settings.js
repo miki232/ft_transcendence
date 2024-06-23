@@ -504,7 +504,7 @@ export default class Settings extends AbstractView {
 					<div class="user-data">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<h3>${this.user.getUser()}</h3>
-						<h4>${this.user.getAlias()}</h4>
+						${this.user.getAlias() != "None" ? `<h4>${this.user.getAlias()}</h4>` : ""}
 					</div>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
