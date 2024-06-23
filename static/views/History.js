@@ -278,11 +278,11 @@ export default class History extends AbstractView {
 		const historyHTML = `
 			<div class="dashboard">
 				<div class="history">
-					<h2>Match History</h2>
+					<h2 data-translate="history">Match History</h2>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
-						<button type="button" class="submit-btn dashboard-btn" id="tournament-list"><ion-icon name="trophy-outline"></ion-icon>Tournaments</button>
-						<button type="button" class="submit-btn dashboard-btn" id="match-list"><ion-icon name="globe-outline"></ion-icon>Matches</button>
+						<button type="button" class="submit-btn dashboard-btn" data-translate="tournaments" id="tournament-list"><ion-icon name="trophy-outline"></ion-icon>Tournaments</button>
+						<button type="button" class="submit-btn dashboard-btn" data-translate="matches"id="match-list"><ion-icon name="globe-outline"></ion-icon>Matches</button>
 					</div>
 					<div class="back-btn-container">
 						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>

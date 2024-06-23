@@ -191,7 +191,7 @@ export default class extends AbstractView {
 					<p id="school-login" data-translate="login42">Login with <a href="accounts/authorize/"><img src="/static/img/42_logo_white.svg" id="school-logo"/></a></p>
 				</form>
 				<form class="register-form">
-					<h1 data-translate="registration">Registration</h1>
+					<h1 data-translate="makeregister">Registration</h1>
 					<div class="input-box">
 						<input type="text" id="signup-user" required>
 						<label data-translate="signupuser">Username</label>

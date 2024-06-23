@@ -1,3 +1,4 @@
+import { changeLanguage } from "../index.js";
 import AbstractView from "./AbstractView.js";
 
 
@@ -66,14 +67,14 @@ export default class extends AbstractView {
 		const contactHTML = `
 			<div class="dashboard">
 				<div class="contact">
-					<h1>Contact</h1>
+					<h1 data-translate="contact">Contact</h1>
 					<div class="contact-list">
 						<div class="user-dashboard">
 							<img src=${this.arecce_pic} alt="arecce picture" />
 							<div class="user-info">
 								<h3>Arecce</h3>
 								<div class="user-level">
-									<p>Level: <span>${this.arecce_level}</span></p>
+									<p data-translate="level3">Level: <span>${this.arecce_level}</span></p>
 								</div>
 							</div>
 							<div class="user-contact">
@@ -86,7 +87,7 @@ export default class extends AbstractView {
 							<div class="user-info">
 								<h3>Lbusi</h3>
 								<div class="user-level">
-									<p>Level: <span>${this.lbusi_level}</span></p>
+									<p data-translate="level3">>Level: <span>${this.lbusi_level}</span></p>
 								</div>
 							</div>
 							<div class="user-contact">
@@ -99,7 +100,7 @@ export default class extends AbstractView {
 							<div class="user-info">
 								<h3>Mtoia</h3>
 								<div class="user-level">
-									<p>Level: <span>${this.mtoia_level}</span></p>
+									<p data-translate="level3">>Level: <span>${this.mtoia_level}</span></p>
 								</div>
 							</div>
 							<div class="user-contact">
@@ -111,6 +112,16 @@ export default class extends AbstractView {
 				</div>
 			</div>
 		`;
+		var langSelectors = document.querySelectorAll('.lang-selector');
+	langSelectors.forEach(function(selector) {
+		selector.addEventListener('click', function(event) {
+			this.lang = this.getAttribute('value');
+			changeLanguage(this.lang);
+			
+			// Do something with the selected language
+			console.log('Selected language: ' + this.lang);
+		});
+	});
 		return contactHTML;
 	}
 }
