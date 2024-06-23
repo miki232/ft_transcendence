@@ -223,7 +223,7 @@ export default class Online extends AbstractView {
 				await this.getTournament();
 				tournamentBtn.removeAttribute("disabled");
 				await this.tournamentInfo();
-				createNotification("Tournament proposed successfully", "successTournament");
+				createNotification("Tournament room created!", "successTournament");
 				
 			} else {
 				createNotification("There can be only one Tournament ", "failedTournament");
@@ -254,7 +254,7 @@ export default class Online extends AbstractView {
 				await this.getTournament();
 				tournamentBtn.removeAttribute("disabled");
 				await this.tournamentInfo();
-				createNotification("Tournament proposed successfully", "successTournament");
+				createNotification("Tournament room created", "successTournament");
 				
 			} else {
 				createNotification("There can be only one Tournament ", "failedTournament");

@@ -72,7 +72,7 @@ export default class FriendlyMatch extends AbstractView {
     
             const roomsElement = document.querySelector(".friendlymatch");
             const rommsHTML = `
-                <h2>Friendly Match</h2>
+                <h2 data-translate="friendly">Friendly Match</h2>
                 <div class="rooms-list"></div>
                 <div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 			    <button type="button" class="submit-btn dashboard-btn" data-translate="back" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
@@ -87,6 +87,7 @@ export default class FriendlyMatch extends AbstractView {
             const noEntries = document.createElement("span");
 		    noEntries.className = "no-entries";
 		    noEntries.textContent = "No invites";
+            noEntries.setAttribute("data-translate", "noInvites");
             roomsList.appendChild(noEntries);
             rooms.forEach(room => {
                 console.log(room);
@@ -103,8 +104,8 @@ export default class FriendlyMatch extends AbstractView {
                             <p class="info" data-username2="${room.opponent}">${room.opponent}</p>
                         </div>
                         <div class="room-btns">
-                            <button type="button" class="submit-btn accept-request" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
-                            <button type="button" class="submit-btn red-btn cancel-request" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>${room.created_by === this.user.username ? "Cancel" : "Decline"}</button>
+                            <button type="button" class="submit-btn accept-request" data-translate="play" data-room-name="${room.name}" data-username="${room.created_by}" data-username2="${room.opponent}"><ion-icon name="checkmark-outline"></ion-icon>Join</button>
+                            <button type="button" class="submit-btn red-btn cancel-request" data-translate="decline" data-room-name="${room.name}"><ion-icon name="close-outline"></ion-icon>${room.created_by === this.user.username ? "Cancel" : "Decline"}</button>
                         </div>
                     </div>
                 `;

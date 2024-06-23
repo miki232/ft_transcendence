@@ -1,12 +1,13 @@
 import AbstractView from "./AbstractView.js";
 import Pong from "./Pong.js";
-import {navigateTo} from "../index.js";
+import {navigateTo, changeLanguage} from "../index.js";
 import { createNotification } from "./Notifications.js";
 
 export default class MatchMaking extends AbstractView {
     constructor(user) {
         super();
         this.user = user;
+        this.lang = localStorage.getItem('language') || 'en';
         this.selfuser = "undefined";
         this.errro = false;
         this.opponent = "undefined";
@@ -212,7 +213,7 @@ export default class MatchMaking extends AbstractView {
                     if (data.status === 6){
                         createNotification("Your opponent has disconnected!", "opponentdisconnect");
                         const reset = document.querySelectorAll(".user-dashboard");
-                        reset[1].innerHTML = `<h4>Waiting for opponent...</h3>
+                        reset[1].innerHTML = `<h4 data-translate="waitingOpponent">Waiting for opponent...</h3>
                         <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                         `;
                         reset[1].classList.remove('user-dashboard');
@@ -343,7 +344,7 @@ export default class MatchMaking extends AbstractView {
                     </div>
                     <span id="vs">VS</span>
                     <div class="opponent">
-                        <h4>Waiting for opponent...</h3>
+                        <h4 data-translate="waitingOpponent">Waiting for opponent...</h3>
                         <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
