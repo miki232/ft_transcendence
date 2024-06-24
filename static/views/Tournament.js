@@ -88,7 +88,7 @@ export default class Tournament extends AbstractView {
 
     async getRoomcallbackmatch() {
         this.user.tournament_opp.alias = null;
-        this.user.tournament_opp.username = null;
+        // this.user.tournament_opp.username = null;
         await this.getWaitingPlayers();
         return new Promise((resolve, reject) => {
             // this.matchmaking_ws.onopen = () => {
@@ -133,7 +133,7 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                // createNotification(match);
+                                createNotification(match);
                             }
                         }
                         // Check if the round already exists in the user's rounds
@@ -159,9 +159,20 @@ export default class Tournament extends AbstractView {
                         this.roomName = matchData.name;
                         // Update the content to show the match
                         if (this.user.alias === matchData.created_by.alias)
-                            this.user.tournament_opp.alias = matchData.opponent.alias;
+                        {
+                            if (matchData.opponent.alias !== "None")
+                            {
+                                this.user.tournament_opp.alias = matchData.opponent.alias;
+                            }
+                        }
                         else
-                            this.user.tournament_opp.alias = matchData.created_by.alias;
+                        {
+                            if (matchData.created_by.alias !== "None")
+                            {
+                                this.user.tournament_opp.alias = matchData.created_by.alias;
+                                console.log("ALIAS", this.user.tournament_opp.alias);
+                            }
+                        }
                         
                         // Update the content to show the match
                         // let conente_opponent = document.getElementById("opponent")
@@ -274,7 +285,7 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                // createNotification(match);
+                                createNotification(match);
                             }
                         }
                         // Check if the round already exists in the user's rounds
