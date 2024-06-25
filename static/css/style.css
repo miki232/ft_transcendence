@@ -2092,3 +2092,11 @@ canvas {
 #chat-message-submit:hover {
     background-color: #0056b3;
 }
+
+.message-right {
+    text-align: right;
+}
+
+.message-left {
+    text-align: left;
+}

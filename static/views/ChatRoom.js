@@ -37,28 +37,28 @@ export default class ChatRoom extends AbstractView {
         );
 
         chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const message_element = document.createElement('div');
-            const user_id = data['user'];
-            const logged_user_id = user.username;
-            message_element.innerText = data['message'];
-            if (user_id === logged_user_id)
-            {
-                message_element.classList.add('message');
-            }
-            else
-            {
-                message_element.classList.add('message');
-            }
-            
-            document.querySelector('#chat-log').appendChild(message_element);
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        this.chatSocket = chatSocket;
+          const data = JSON.parse(e.data);
+          const message_element = document.createElement('div');
+          const user_id = data['user_id']; // Ensure this matches the JSON property name
+          const logged_user_id = this.userObj.username; // Assuming this.userObj.username exists and is accessible
+      
+          message_element.innerText = data['message'];
+      
+          // Add 'message-right' class if the user_id matches logged_user_id, else 'message-left'
+          if (user_id === logged_user_id) {
+              message_element.classList.add('message', 'message-right');
+          } else {
+              message_element.classList.add('message', 'message-left');
+          }
+      
+          document.querySelector('#chat-log').appendChild(message_element);
+      }.bind(this); // Use .bind(this) to ensure 'this' inside the function refers to the outer 'this'
+      
+      chatSocket.onclose = function(e) {
+          console.error('Chat socket closed unexpectedly');
+      };
+      
+      this.chatSocket = chatSocket;
     }
 
     setupChatInput() {
