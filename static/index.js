@@ -226,6 +226,8 @@ const router = async () => {
 		{ path: "/", view: () => import('./views/Login.js') },
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
+		{ path: "/chat", view: () => import('./views/Chat.js') },
+		{ path: "/chat/" + room_name, view: () => import('./views/ChatRoom.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
         { path: "/dashboard/settings", view: () => import('./views/Settings.js') },
@@ -419,6 +421,11 @@ const router = async () => {
 			room_name = await view.getRoom_Match();
 			console.log("OSU", room_name);
 			if (room_name !== null) navigateTo("/pong_tournament");
+			break;
+		case "/chat":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatClass = await match.route.view();
+			view = new ChatClass.default(user);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();

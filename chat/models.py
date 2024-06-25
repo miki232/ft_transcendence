@@ -7,3 +7,14 @@ class Notifications(models.Model):
     content = models.TextField()
     read = models.BooleanField(default=False)
 
+# class Chat(models.Model):
+#     id
+#     users = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+#     messages = 
+#     read = models.BooleanField(default=False)
+
+# class Message(models.Model):
+#     content
+#     user
+#     timestamp
+#     chat
