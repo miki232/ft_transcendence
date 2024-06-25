@@ -142,9 +142,9 @@ export default class extends AbstractView {
 				<div class="request-line">
 					<img src="${requestType ? request.sender.pro_pic : request.receiver.pro_pic}"/>
 					<span class="info" data-username="${requestType ? senderUsername : receiverUsername}">${requestType ? senderUsername : receiverUsername}</span>
-					${requestType ? `<button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
-					<button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button>` :
-					`<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>`}
+					${requestType ? `<button type="button" data-translate="accept" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button>
+					<button type="button" data-translate="decline" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button>` :
+					`<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>`}
 				</div>
 			`;
 			requestsListElement.innerHTML += requestView;

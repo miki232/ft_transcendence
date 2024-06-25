@@ -1,3 +1,4 @@
+import { changeLanguage } from "../index.js";
 import AbstractView from "./AbstractView.js";
 
 
@@ -54,13 +55,23 @@ export default class extends AbstractView {
 		const aboutHTML = `
 			<div class="dashboard">
 				<div class="about">
-					<h1>About</h1>
-					<p>
+					<h1 data-translate="about">About</h1>
+					<p data-translate="aboutmsg">
 						Welcome to The Match, the best place to find your perfect match. We are a team of professionals who have been working in the dating industry for years. Our goal is to help you find your soulmate, and we are here to make your journey as easy and enjoyable as possible. Whether you are looking for a long-term relationship or just a casual date, we have everything you need to find the perfect match. So why wait? Sign up today and start your journey to finding true love.
 					</p>
 				</div>
 			</div>
 		`;
+	var langSelectors = document.querySelectorAll('.lang-selector');
+	langSelectors.forEach(function(selector) {
+		selector.addEventListener('click', function(event) {
+			this.lang = this.getAttribute('value');
+			changeLanguage(this.lang);
+			
+			// Do something with the selected language
+			console.log('Selected language: ' + this.lang);
+		});
+	});
 		return aboutHTML;
 	}
 }

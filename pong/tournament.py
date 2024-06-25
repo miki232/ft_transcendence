@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder
+from .models import WaitingUser, TournamentRoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -146,7 +146,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     def get_room_istance_delete(self, roomname):
         try:
             print("-----------TRY TO DELETE THE ROOM ISTANCE ------")
-            room_istance = RoomName.objects.get(name=roomname)
+            room_istance = TournamentRoomName.objects.get(name=roomname)
             print("ROOM ISTANCE ", room_istance.id)
             room_istance.delete()
             print("-----------ISTANCE DELTED SUCCESS ------")

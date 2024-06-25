@@ -12,6 +12,23 @@ class RoomNameSerializer(serializers.ModelSerializer):
         model = RoomName
         fields = ['name', 'created_by', 'opponent', 'friendly', 'level', 'pro_pic_created_by', 'pro_pic_opponent']
 
+
+class UserAliasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['alias', 'username']
+
+class tournamentRoomSerializer(serializers.ModelSerializer):
+    created_by = UserAliasSerializer(read_only=True)
+    opponent =  UserAliasSerializer(read_only=True)
+    pro_pic_created_by = serializers.URLField(source='created_by.pro_pic', read_only=True)
+    pro_pic_opponent = serializers.URLField(source='opponent.pro_pic', read_only=True)
+
+    class Meta:
+        model = RoomName
+        fields = ['name', 'created_by', 'opponent', 'friendly', 'level', 'pro_pic_created_by', 'pro_pic_opponent']
+
+
 class TournamentPlaceHolderSerializer(serializers.ModelSerializer): 
     class Meta:
         model = TournamentPlaceHolder

@@ -3,6 +3,19 @@ from accounts.models import CustomUser
 from django.utils import timezone
 from chat.notifier import send_save_notification
 
+class TournamentRoomName(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    alias1 = models.CharField(max_length=255, default="None")
+    alias2 = models.CharField(max_length=255, default="None")
+    created_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    friendly = models.BooleanField(default=False)
+    opponent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='roomtournament', null=True)
+    level = models.FloatField(max_length=2, default=0)
+    tournament = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 # Create your models here.
 class RoomName(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -47,16 +60,6 @@ class Tournament(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
 
-class TournamentRoomName(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    user1 =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, related_name='user1')
-    user2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True , related_name='user2')
-    level = models.FloatField(max_length=2, default=0)
-    tournament = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
     
 class TournamentPlaceHolder(models.Model):
     playerNumber = models.IntegerField(default=0)

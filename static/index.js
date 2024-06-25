@@ -511,6 +511,7 @@ window.addEventListener("popstate", async () => {
 ///*/
 
 document.addEventListener("DOMContentLoaded", () => {
+	
 	document.body.addEventListener("click", async (e) => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");

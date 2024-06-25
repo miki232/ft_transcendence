@@ -551,7 +551,7 @@ form .submit-btn ion-icon {
 	color: white;
 }
 
-.user-dashboard:not(:last-child) {
+.contact-list .user-dashboard:not(:last-child) {
 	margin-bottom: 15px;
 	border-bottom: 2px solid white;
 }
@@ -647,15 +647,21 @@ form .submit-btn ion-icon {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
+	padding-bottom: 10px;
 }
 
- .user-data h3 {
+ .user-data h3,
+ .user-data h4 {
 	margin: 0;
  }
 
+ .user-data h4 {
+	font-size: 1.2rem;
+ }
+
 .user-data img {
-	height: 100px;
-	width: 100px;
+	height: 80px;
+	width: 80px;
 }
 
 .settings .input-box {

@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { changeLanguage } from "../index.js";
 import { createNotification } from "./Notifications.js";
 import LocalTpong from "./LocalTpong.js";
 import { navigateTo } from "../index.js";
@@ -7,6 +8,7 @@ export default class TournamentLocal extends AbstractView {
     constructor(user, ws) {
         super();
         this.user = user;
+		this.lang = localStorage.getItem('language') || 'en';
         this.content = document.querySelector("#content");
         this.nav = document.querySelector("nav");
 		this.init();
@@ -40,6 +42,7 @@ export default class TournamentLocal extends AbstractView {
 			.then(data => {
 				this.matches = data.matches;
 				this.updateContentWithMatches();
+				changeLanguage(this.lang);
 			})
 			.catch(error => console.error('Error:', error));
 	}
@@ -64,26 +67,26 @@ export default class TournamentLocal extends AbstractView {
 		const semifinal1 = this.matches[0] ? `<p>${this.matches[0].user1}</p><span> VS </span><p>${this.matches[0].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';
 		const semifinal2 = this.matches[1] ? `<p>${this.matches[1].user1}</p><span> VS </span><p>${this.matches[1].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';;
 		const final = this.matches[2] ? `<p>${this.matches[2].user1}</p><span> VS </span><p>${this.matches[2].user2}</p>` : '<p>-</p> <span> VS </span><p>-</p>';
-		const winner = this.matches[2] ? `<p>${this.matches[2].winner}</p>` : '<p>Winner</p>';
+		const winner = this.matches[2] ? `<p>${this.matches[2].winner}</p>` : '<p data-translate="winner">Winner</p>';
 
 		this.content.innerHTML = `
 			<div class="dashboard">
 				<div class="tournament">
-					<h1>Local Tournament</h1>
+					<h1 data-translate="localtournament">Local Tournament</h1>
 					<div class="match-tab">
-						<h3>Semifinals 1</h3>
+						<h3 data-translate="semifinals1">Semifinals 1</h3>
 						<div class="match-line">
 							${semifinal1}
 						</div>
-						<h3>Semifinals 2</h3>
+						<h3 data-translate="semifinals2">Semifinals 2</h3>
 						<div class="match-line">
 							${semifinal2}
 						</div>
-						<h3>Final</h3>
+						<h3 data-translate="final">Final</h3>
 						<div class="match-line">
 							${final}
 						</div>
-						<h3>Winner</h3>
+						<h3 data-translate="winner">Winner</h3>
 						<div class="match-line">
 							${winner}
 						</div>

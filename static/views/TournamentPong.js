@@ -33,6 +33,7 @@ export default class Pong extends AbstractView{
     }
 
     async initialize() {
+        
         document.querySelector('header').style.display = 'none';
         document.querySelector('body').classList.add('game-bg');
 
@@ -142,15 +143,32 @@ export default class Pong extends AbstractView{
     }
 
     scoreTabMaker(data) {
-        console.log(data, this.user.getUser(), this.user.tournament_opp.username);
-        if (data.player === this.user.getUser()) {
-            this.player1 = this.user.getUser();
-            this.player2 = this.user.tournament_opp.username;
+        console.log(data, this.user.username, this.user.tournament_opp.username);
+        if (data.player === this.user.username) {
+            if (this.user.alias !== "None"){
+                this.player1 = this.user.alias;
+            }
+            else
+                this.player1 = this.user.username;
+            if (this.user.tournament_opp.alias !== null){
+                this.player2 = this.user.tournament_opp.alias;
+            }
+            else
+                this.player2 = this.user.tournament_opp.username;
+            
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.tournament_opp.pro_pic;
         } else {
-            this.player1 = this.user.tournament_opp.username;
-            this.player2 = this.user.getUser();
+            if (this.user.tournament_opp.alias !== null){
+                this.player1 = this.user.tournament_opp.alias;
+            }
+            else
+                this.player1 = this.user.tournament_opp.username;
+            if (this.user.alias !== "None"){
+                this.player2 = this.user.alias;
+            }
+            else
+                this.player2 = this.user.username;
             this.player1_pic = this.user.tournament_opp.pro_pic;
             this.player2_pic = this.user.getPic();
         }
@@ -170,7 +188,7 @@ export default class Pong extends AbstractView{
 
     updatePaddlePosition() {
         if (this.arrowUpPressed) {
-            console.log('sending move_up');
+            // console.log('sending move_up');
             this.game_ws.send(JSON.stringify({'action': 'move_up', 'user': this.users}));
         }
         if (this.arrowDownPressed) {
@@ -185,7 +203,7 @@ export default class Pong extends AbstractView{
             console.log('keydown', event.key);
             if (event.key === 'ArrowUp') {
                 this.arrowUpPressed = true;
-                console.log('sending move_up', this.arrowUpPressed);
+                // console.log('sending move_up', this.arrowUpPressed);
             } else if (event.key === 'ArrowDown') {
                 this.arrowDownPressed = true;
             }

@@ -11,11 +11,11 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
-from .models import RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match, Tournament, LocalTournament, LocalTournament_Match
+from .models import TournamentRoomName, RoomName, WaitingUser, TournamentPlaceHolder, Tournament_Waitin, Tournament_Match, Tournament, LocalTournament, LocalTournament_Match
 from accounts.models import CustomUser
 from friends.models import FriendList
 from chat.notifier import get_db, update_db_notifications, send_save_notification
-from .serializers import RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer, TournamentSerializer, LocalTournamentMatchSerializer, LocalTournamentSerializer
+from .serializers import tournamentRoomSerializer, RoomNameSerializer, TournamentPlaceHolderSerializer, TournametMatchSerializer, TournamentSerializer, LocalTournamentMatchSerializer, LocalTournamentSerializer
 import uuid
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.models import Match
@@ -182,8 +182,8 @@ class TournamentMatchView(APIView):
 
     def get(self, request):
         user = CustomUser.objects.get(username=request.user)
-        match = RoomName.objects.get(Q(created_by=user) | Q(opponent=user))
-        serializer = RoomNameSerializer(match)
+        match = TournamentRoomName.objects.get(Q(created_by=user) | Q(opponent=user))
+        serializer = tournamentRoomSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

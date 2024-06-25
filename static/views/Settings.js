@@ -130,11 +130,11 @@ export default class Settings extends AbstractView {
 		changeUsernameBtn.classList.add("settings-btn");
 		const changeUsernameHTML = `
 			<div class="input-box change">
-				<input type="text" data-translate="newusername" placeholder="New Username">
+				<input type="text" id="new-username" data-translate="newusername" placeholder="New Username">
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="input-box change">
-				<input type="text" placeholder="New Alias">
+				<input type="text" id="new-alias" data-translate="alias" placeholder="New Alias">
 				<ion-icon name="person-outline"></ion-icon>
 			</div>
 			<div class="change-btn change">
@@ -146,19 +146,8 @@ export default class Settings extends AbstractView {
 		const confirmBtn = document.querySelector(".confirm-btn");
 		confirmBtn.addEventListener("click", async e => {
 			e.preventDefault();
-			const input = document.querySelector(".input-box input"); /// Al massimo metto qua un Api sanitize 
-			const newUsername = input.value;
-			//Cancellato controllo username su frontend
-			// cosi' da poterlo fare direttamente sul backend
-			// if (newUsername === "") {
-			// 	createNotification("Username cannot be empty!", "usercannotempty");
-			// 	return;
-			// }
-			// if (newUsername === this.user.getUser()) {
-			// 	createNotification("Username can't be the same as the old one!", "usercannotsame");
-			// 	input.value = "";
-			// 	return;
-			// }
+			const newUsername = document.querySelector("#new-username").value;
+			const newAlias = document.querySelector("#new-alias").value;
 			try {
 				const csrf = await getCSRFToken();
 				const response = await fetch('/accounts/user_info/', {
@@ -169,6 +158,7 @@ export default class Settings extends AbstractView {
 					},
 					body: JSON.stringify({
 						username : newUsername,
+						alias : newAlias
 					})
 				});
 				if (!response.ok) {
@@ -514,6 +504,7 @@ export default class Settings extends AbstractView {
 					<div class="user-data">
 						<img alt="Profile picture" src="${this.user.getPic()}"/>
 						<h3>${this.user.getUser()}</h3>
+						${this.user.getAlias() != "None" ? `<h4>${this.user.getAlias()}</h4>` : ""}
 					</div>
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>

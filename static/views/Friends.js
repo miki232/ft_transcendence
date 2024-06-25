@@ -101,6 +101,8 @@ export default class Friends extends AbstractView {
 		noEntries.setAttribute("data-translate", "noFriends");
 		element.appendChild(noEntries);
 		element.style.textAlign = "center";
+		changeLanguage(this.lang);
+
 	}
 
 	async getFriendList() {
