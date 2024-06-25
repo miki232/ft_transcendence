@@ -13,23 +13,24 @@
 *,
 :after,
 :before {
-		margin: 0;
-		padding: 0;
-		box-sizing: border-box;
-		font-family: Arial, Helvetica, sans-serif;
-		/* font-size: 16px; */
-		text-decoration: none;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	/* font-family: Arial, Helvetica, sans-serif; */
+	/* font-size: 16px; */
+	text-decoration: none;
 }
 
 html, body {
-		/* color: var(--quaternary-color); */
-		/* line-height: 1.6; */
-		height: 100vh;
-		width: 100vw;
-		overflow-wrap: anywhere;
+	/* color: var(--quaternary-color); */
+	/* line-height: 1.6; */
+	height: 100vh;
+	width: 100vw;
+	overflow-wrap: anywhere;
 }
 
 body {
+	font-family: "Righteous", "Arial", sans-serif;
 	background-image: url(../img/bg7.jpeg);
 	background-size:cover;
 	background-color: rgb(1, 1, 5);
@@ -47,13 +48,19 @@ img {
 	border-radius: 50%;
 }
 
-h1 {
+a {
+	text-decoration: none;
+}
+
+.container-fluid #logo {
 	font-size: 48px;
 	margin: 30px 0;
 }
 
-/***************** HEADER *****************/
 
+
+/***************** HEADER *****************/
+/*
 header {
 	position: fixed;
 	top: 0;
@@ -88,21 +95,21 @@ header nav a:not(.profile-pic)::before {
 	height: 2.5px;
 	transition: width .3s;
 	/* transform: scaleX(0); */
-	/* transform-origin: left; */
+	/* transform-origin: left; *//*
 }
 
 header nav a:hover::before {
 	/* transform: scaleX(1); */
-	width: 100%;
+	/*width: 100%;
 }
 
 header h1 {
 	/* text-align: center; */
-	font-size: 30px;
+	/*font-size: 30px;
 	margin: 10px 0;
 }
 
-header a img {
+header img {
 	height: 42px;
 	width: 42px;
 	vertical-align: middle;
@@ -116,6 +123,88 @@ header a img {
 	font-size: 48px;
 	cursor: pointer;
 }
+*/
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	padding: 0 50px;
+	vertical-align: middle;
+}
+
+.navbar .container-fluid {
+	flex-wrap: nowrap
+}
+
+.logo {
+	border-radius: 0px;
+	width: 200px;
+	height: auto;
+}
+
+.bg-body-tertiary {
+	--bs-bg-opacity: 0;
+	color: white;
+}
+
+.select-menu {
+	background-color: transparent;
+	text-align: end;
+}
+
+.dropdown-item {
+	color: white;
+	font-size: 18px;
+}
+
+.dropdown-item:hover {
+	background-color: transparent;
+	color: white;
+	cursor: pointer;
+}
+
+#navbarNavDropdown {
+	justify-content: end;
+}
+
+.show-navbar {
+	padding: 10px 20px;
+	backdrop-filter: blur(20px);
+	border: 2px solid white;
+	border-radius: 10px;
+	z-index: 100;
+}
+	
+.navbar-nav {
+	text-align: end;
+}
+
+.nav-item a {
+	font-size: 24px;
+	color: white;
+}
+
+.nav-item a:hover,
+.nav-item a:focus {
+	color: white;
+}
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+	color: white;
+}
+
+.navbar-toggler {
+	color: transparent;
+}
+
+.navbar-toggler-icon {
+	background-image: none;
+}
+
+.navbar-toggler-icon ion-icon {
+	color: white;
+	font-size: 1.5em;
+}
 
 /***************** MAIN *****************/
 
@@ -124,20 +213,46 @@ header a img {
 		/* padding-top: 60px; */
 /* } */
 
+/**************** H1 ****************/
+
+.online-game h1,
+.local-game h1,
+.friends.-card h1 {
+	margin: 0;
+}
+
 /***************** CONTENT *****************/
+
+#container {
+	margin-top: 60px;
+}
 
 .form-box,
 .dashboard {
 	position: relative;
-	width: 430px;
-	height: 550px;
+	width: 550px; /*430px;*/
+	height: 700px; /*550px;*/
 	backdrop-filter: blur(20px);
 	color: white;
-	font-size: 20px;
-	border: 2px solid white;
+	font-size: 28px;
+	border: 3px solid white;
 	border-radius: 20px;
 	overflow: hidden;
 	transition: transform 0.5s ease, height 0.3s ease-in-out;
+}
+
+/* .dashboard {
+	padding-top: 30px;
+} */
+
+#school-logo {
+	width: 32px;
+	height: auto;
+	border-radius: 0;
+}
+
+.form-box form {
+	justify-content: center;
 }
 
 .form-box form,
@@ -150,15 +265,33 @@ header a img {
 .local-game,
 .online-game,
 .matchmaking,
-.friendlymatch {
+.friendlymatch,
+.tournament {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
+	position: absolute;
+	transition: transform 0.3s ease;
+}
+
+.form-box form {
+	justify-content: center;
+}
+
+.btns-container,
+.back-btn-container {
+	width: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	transition: transform 0.3s ease;
+}
+
+.back-btn-container {
+	padding-bottom: 15px;
 }
 
 .form-box .register-form {
@@ -167,14 +300,22 @@ header a img {
 }
 
 .form-box form h1 {
-	font-size: 35px;
+	font-size: 40px;
+}
+
+.register-form .input-box {
+	margin: 30px 0;
+}
+
+.register-form h1 {
+	margin-bottom: 30px;
 }
 
 .input-box,
 .friend,
 .user,
 .request-line {
-	width: 75%;
+	width: 80%;
 	display: flex;
 	justify-content: space-between;
 	position: relative;
@@ -184,7 +325,7 @@ header a img {
 }
 
 .input-box:first-of-type {
-	margin-top: 32px;
+	margin-top: 48px;
 }
 
 .register-form .input-box {
@@ -201,9 +342,13 @@ header a img {
 	outline: none;
 }
 
+.input-box input::placeholder {
+	color: white;
+}
+
 .input-box label {
 	transition: .4s;
-	font-size: 17px;
+	font-size: 18px;
 	pointer-events: none;
 }
 
@@ -217,10 +362,16 @@ header a img {
 }
 
 .checkbox {
-	width: 76%;
+	width: 80%;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+.checkbox div {
+	display: flex;
+	align-items: center;
+	margin: 15px 0;
 }
 
 .register-form .checkbox {
@@ -231,6 +382,7 @@ header a img {
 	font-size: 14px;
 	font-weight: 100;
 	cursor: pointer;
+	margin: 0;
 }
 
 .checkbox label {
@@ -245,50 +397,65 @@ header a img {
 	margin-right: 3px;
 }
 
-.checkbox span {
-	display: flex;
-}
-
 .submit-btn,
 .settings-btn,
 .local-game-btn {
-	width: 76%;
-	height: 38px;
+	width: 80%;
+	height: 45px;
 	cursor: pointer;
 	background-color: white;
 	color: black;
-	border-radius: 6px;
-	margin: 15px 0 22px 0;
+	border-radius: 8px;
+	margin: 20px 0 20px 0;
 	border: none;
-	font-size: 16px;
+	font-size: 22px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
+.btns-container .submit-btn:not(:last-child) {
+	margin-top: 0;
+	margin-bottom: 25px;
+}
+
+#settings-btn {
+	margin: 0;
+}
+
+.settings .btns-container .submit-btn:not(:last-child) {
+	margin-top: 0;
+	margin-bottom: 15px
+}
+
 .submit-btn:active {
 	border: 2px solid black;
-	font-size: 14px;
+	font-size: 20px;
 }
 
 .login-register p {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: 500;
-	cursor: pointer;
 }
 
 .login-register a {
 	color: white;
 	font-weight: 600;
 	font-size: 16px;
+	cursor: pointer;
 }
 
 .login-register a:hover {
 	text-decoration: underline;
 }
 
-.change-form {
+/* .change-form {
 	height: 580px;
+} */
+
+form .submit-btn ion-icon {
+	margin-left: 8px;
+	font-size: 18px;
 }
 
 .change-form .login-form {
@@ -303,14 +470,90 @@ header a img {
 
 .hr {
 	height: 2px;
-	width: 60%;
-	margin: 10px 0 15px 0;
 	background: white;
 }
 
 #school-login {
 	color:white;
-	font-size: 16px;
+	font-size: 18px;
+	margin: 0;
+}
+
+/***************** ABOUT/CONTACT *****************/
+
+.about,
+.contact {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.about h1 {
+	margin: 30px 0 20px 0;
+	font-size: 40px;
+}
+
+.about p {
+	width: 80%;
+	font-size: 20px;
+	margin: 20px 0;
+}
+
+.contact img {
+	height: 80px;
+	width: 80px;
+}
+
+.contact-list {
+	width: 80%;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.contact h1 {
+	margin: 30px 0 20px 0;
+	font-size: 40px;
+}
+
+.contact-list .user-dashboard {
+	width: 80%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.user-level p,
+.user-level span {
+	margin: 0;
+	font-size: 22px;
+}
+
+.user-contact {
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	font-size: 44px;
+	margin-top: 15px;
+}
+
+.user-contact a {
+	color: white;
+}
+
+.user-contact a:hover {
+	color: white;
+}
+
+.contact-list .user-dashboard:not(:last-child) {
+	margin-bottom: 15px;
+	border-bottom: 2px solid white;
 }
 	
 /***************** DASHBOARD *****************/
@@ -325,11 +568,12 @@ header a img {
 }
 
 .user-dashboard {
-	width: 76%;
+	width: 80%;
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	margin-bottom: 45px;
+	/* margin-top: 20px;
+	margin-bottom: 45px; */
 }
 
 .user-info {
@@ -388,31 +632,36 @@ header a img {
 
 .red-btn:active {
 	border: 2px solid darkred;
-	font-size: 14px;
+	font-size: 20px;
 }
 
 .delete-room {
-		color: var(--logout-color);
-		font-size: smaller;
-		cursor: pointer;
-		margin-left: 5px;
+	color: var(--logout-color);
+	font-size: smaller;
+	cursor: pointer;
+	margin-left: 5px;
 }
 
 .user-data {
-	width: 76%;
+	width: 80%;
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	margin-bottom: 10px;
+	padding-bottom: 10px;
 }
 
-.user-data h1 {
-	margin: 10px 0;
-}
+ .user-data h3,
+ .user-data h4 {
+	margin: 0;
+ }
+
+ .user-data h4 {
+	font-size: 1.2rem;
+ }
 
 .user-data img {
-	height: 100px;
-	width: 100px;
+	height: 80px;
+	width: 80px;
 }
 
 .settings .input-box {
@@ -431,15 +680,19 @@ header a img {
 }
 
 .change-btn {
-	width: 76%;
+	width: 80%;
 	margin: 10px 0;
 	display: flex;
 	gap: 15px;
 }
 
 .change-btn button {
-	height: 35px;
+	height: 45px;
 	margin: 0;
+}
+
+.settings input::placeholder {
+	color: white;
 }
 
 .delete-box {
@@ -473,15 +726,21 @@ div .rooms-list {
 }
 
 .request-line .accept-request,
-.friend-info .accept-request {
-	margin-right: 12px;
+.friend-info .accept-request,
+.room-btns .accept-request {
+	/* margin-right: 12px; */
 	color: white;
 	background-color: green;
 }
 
+.request-line .decline-request {
+	margin-left: 8px;
+}
+
 .request-line .accept-request:active,
 .settings .confirm-btn:active,
-.local-game .confirm-btn:active {
+.local-game .confirm-btn:active,
+.room-btns .accept-request:active {
 	border: 2px solid rgb(0, 66, 0);
 }
 
@@ -505,18 +764,73 @@ div .rooms-list {
 .no-entries {
 	position: relative;
 	top: 25%;
-	font-size: 16px;
+	font-size: 22px;
+}
+
+.change-language,
+.customize-paddle-color,
+.customize-pong-style {
+	width: 80%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.customize-paddle-color input,
+.customize-pong-style input {
+	margin-right: 60px;
+}
+
+.change-language p,
+.customize-paddle-color p,
+.customize-pong-style p {
+	margin: 0;
+	font-size: 24px;
+}
+
+.change-language .flags {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1.5;
+	gap: 35px;
+}
+
+.change-language .lang-selector{
+	border-radius: 0;
+	height: 28px;
+	width: auto;
+	cursor: pointer;
 }
 
 /**************** HISTORY ****************/
 
-.match-list {
-	width: 85%;
-	height: 75%;
-	margin-top: 40px;
-	padding-right: 10px;
+.history .btns-container {
+	max-height: 60%;
+}
+
+.history .btns-container .submit-btn {
+	margin-bottom: 15px;
+	min-height: 45px;
+}
+
+.match-list,
+.friends-list {
+	width: 80%;
+	max-height: 280px;
+	min-height: 140px;
+	/* padding-right: 10px; */
 	overflow-y: auto;
-	font-size: 20px;
+	font-size: 22px;
+}
+
+.date {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
 }
 
 .match-list::-webkit-scrollbar {
@@ -577,22 +891,93 @@ div .rooms-list {
 	gap: 15px;
 }
 
+.user1-info p,
+.user2-info p {
+	margin: 0;
+}
+
 .user1-info img,
-.user2-info img {
+.user2-info img,
+.room-info img {
 	height: 40px;
 	width: 40px;
 }
 
+.tournament-line {
+	width: 100%;
+}
+
+.tournament-line:not(:first-child) {
+	margin-top: 15px;
+}
+
+.tournament-line:hover {
+	cursor: pointer;
+}
+
+.tournament-drop {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#t-matches {
+	background-color: transparent;
+	border-color: transparent;
+	width: 100%;
+	color: white;
+}
+
+#t-matches.show {
+	position: relative !important;
+	transform: translate(0px, 0px) !important;
+}
+
 /***************** LOCAL GAME **************/
 
-.local-game,
+/* .local-game,
 .online-game,
 .matchmaking {
 	justify-content: start;
+} */
+
+#vs-player {
+	margin: 0;
 }
 
-#vs-cpu {
-	margin-top: 28px;
+.tournament h1 {
+	margin: 30px 0px;
+}
+
+.match-tab {
+	width: 80%;
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+}
+
+.match-tab .match-line {
+	padding: 10px 0;
+}
+
+#playMatch {
+	margin: 0;
+}
+
+.match-tab .match-line p {
+	margin: 0;
+	font-size: 20px;
+}
+
+.match-tab .match-line {
+	justify-content: center;
+	gap: 20px;
+}
+
+.tournament {
+	justify-content: start;
 }
 
 
@@ -603,12 +988,13 @@ div .rooms-list {
 	width: 100px;
 }
 
-.matchmaking h1 {
+/* .matchmaking h1 {
 	margin-bottom: 45px;
-}
+} */
 
 .matchmaking h4 {
-	font-size: 24px;
+	font-size: 28px;
+	margin: 0;
 }
 
 .opponent {
@@ -616,7 +1002,7 @@ div .rooms-list {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	margin-top: 45px;
+	gap: 20px;
 }
 
 #scores {
@@ -647,7 +1033,6 @@ div .rooms-list {
 }
 
 #pongCanvas {
-	background: linear-gradient(45deg, #141414, #1b1b1b);
 	border: 4px solid #E4080A;
 	box-shadow: 0 0 20px #E4080A, inset 0 0 20px #E4080A;
 }
@@ -668,12 +1053,11 @@ div .rooms-list {
 	margin: 20px 0 10px 0;
 }
 
-.friends-list,
 .requests-list,
 .rooms-list {
-	width: 75%;
-	height: 50%;
-	margin-bottom: 40px;
+	width: 80%;
+	/* height: 50%; */
+	margin-bottom: 20px;
 	text-align: center;
 	overflow-y: auto;
 }
@@ -692,6 +1076,30 @@ div .rooms-list {
 .rooms-list::-webkit-scrollbar-thumb {
 	background: white;
 	border-radius: 10px;
+}
+
+.match-line:first-child {
+	margin-top: 20px;
+}
+
+.room-info,
+.room-btns {
+	flex-grow: 2;
+}
+
+
+.room-btns {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: end;
+	gap: 8px;
+	padding-bottom: 10px;
+}
+
+.room-btns button {
+	margin: 0;
+	height: 30px;
 }
 
 .friend,
@@ -726,9 +1134,10 @@ div .rooms-list {
 }
 
 .friends-list {
-	height: 40%;
-}
-
+	max-height: 280px;
+	margin-bottom: 0;
+}	
+	
 .friend a,
 .user a {
 	color: white;
@@ -988,7 +1397,7 @@ canvas {
 
 /************* LOADING SPINNER *************/
 
-
+/* 
 .lds-spinner,
 .lds-spinner div,
 .lds-spinner div:after {
@@ -1072,14 +1481,20 @@ canvas {
   100% {
     opacity: 0;
   }
-}
+} */
 
 
 /************ MEDIA QUERIES ************/
 
+@media screen and (max-width: 1080px) {
+	header {
+		padding: 0 10px;
+	}
+}
+
 @media screen and (max-width: 860px) {
 
-	header {
+	/* header {
 		padding: 15px 30px;
 	}
 
@@ -1109,7 +1524,7 @@ canvas {
 		border: 2px solid white;
 		border-radius: 20px;
 	}
-	
+	 */
 	.form-box,
 	.dashboard {
 		width: 350px;
@@ -1228,4 +1643,319 @@ canvas {
 		margin: 25px;
 	}
 
+}
+
+/* TOURNAMENT CHART */
+/* .tournament-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px;
+    position: relative;
+}
+
+.match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    position: relative;
+}
+
+.player {
+    font-size: 14px;
+    color: var(--quaternary-color);
+    width: 60px;
+    text-align: center;
+}
+
+.vs {
+    font-size: 12px;
+    color: var(--tertiary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.match:before, .match:after {
+    content: '';
+    position: absolute;
+    border-top: 2px solid var(--primary-color);
+    width: 50%;
+    top: 50%;
+}
+
+.match:before {
+    left: -50%;
+}
+
+.match:after {
+    right: -50%;
+}
+
+.round:first-child .match:before, 
+.round:last-child .match:after {
+    border: none;
+}
+
+.tournament-wrapper .round:not(:first-child) .match:before {
+    border-top: none;
+    border-left: 2px solid var(--primary-color);
+    height: 50%;
+    top: 0;
+    left: -2px;
+}
+
+.tournament-wrapper .round:not(:last-child) .match:after {
+    border-top: none;
+    border-right: 2px solid var(--primary-color);
+    height: 50%;
+    bottom: 0;
+    right: -2px;
+} */
+
+/* .tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 5px 0;
+}
+
+.connector {
+    width: 2px;
+    height: 40px;
+    background-color: #ccc;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .tournament-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .round {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .match {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .player {
+        width: 80%;
+    }
+} */
+
+.tournament-container {
+    padding: 10px;
+}
+
+.waiting-wrapper {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.waiting-players {
+    list-style-type: none;
+    padding: 0;
+}
+
+.waiting-players li {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px 0;
+    padding: 10px;
+}
+
+.tournament-wrapper {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 5px 0;
+}
+
+.connector {
+    width: 2px;
+    height: 40px;
+    background-color: #ccc;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .tournament-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .round {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .match {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .player {
+        width: 80%;
+    }
+}
+
+
+.tournament-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px; /* Add space between buttons */
+	width: 85%;
+}
+
+.tb {
+	margin-top: 0;
+	width: 100%;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tournament-container {
+    display: flex;
+    justify-content: space-around; /* changed from space-between for equal spacing */
+    width: 80%; /* increased from 60% for a bit more room */
+    margin: auto;
+    padding-top: 20px;
+}
+
+.bracket {
+    list-style: none;
+    padding: 0 10px; /* added horizontal padding inside each bracket */
+    width: 30%; /* Equally space brackets, adjust this if they still look too close */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers items vertically if there's extra space */
+    margin: 0 20px; /* Added margin for separation between columns */
+}
+
+.match {
+    background-color: #f4f4f4;
+    padding: 15px; /* Increased padding for better appearance */
+    border: 1px solid #ccc;
+    position: relative;
+    margin-bottom: 20px; /* Adjusted space between matches */
+}
+
+/* Remove additional margin for the last match of each bracket */
+.bracket .match:last-child {
+    margin-bottom: 0;
+}
+
+/* Lines between matches */
+.match::after {
+    content: '';
+    position: absolute;
+    width: 100%; /* Increased width for better line visibility */
+    height: 2px;
+    background-color: #333;
+    top: 50%;
+    left: 100%; /* Adjusted to start right from the edge */
+    z-index: -1;
+}
+
+/* No line after the winner */
+.winner .match::after {
+    display: none;
+}
+
+/* Ensure the final and winner brackets look aligned vertically */
+.finals, .winner {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

@@ -12,7 +12,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned
 from django.utils.html import escape
+from django.contrib import messages
 
 import requests
 import re
@@ -46,7 +48,8 @@ def redirect_to_42(request):
         'scope': 'public',
     }
     url = 'https://api.intra.42.fr/oauth/authorize?' + urllib.parse.urlencode(params)
-    return redirect(url)
+    # return redirect(url)
+    return JsonResponse({'url': url})
 
 def callback(request):
     code = request.GET.get('code')
@@ -60,7 +63,7 @@ def callback(request):
     data = {
         'grant_type': 'authorization_code',
         'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'client_secret': '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',
+        'client_secret': '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',
         'code': code,
         'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
     }
@@ -74,18 +77,32 @@ def callback(request):
     response.raise_for_status()
     user_info = response.json()
 
+
+    try:
+        user = CustomUser.objects.get(username=user_info['login'], email=user_info.get('email', ''))
+    except ObjectDoesNotExist:
     # Check if the user already exists in your database
-    user, created = CustomUser.objects.get_or_create(
-        username=user_info['login'],
-        pro_pic=user_info['image']['link'],
-        defaults={'email': user_info.get('email', '')}
-    )
-
+        user = CustomUser.objects.create(
+            username=user_info['login'],
+            pro_pic=user_info['image']['link'], 
+            email=user_info.get('email', ''),
+            OAuth=True
+        )
+    except MultipleObjectsReturned:
+        return HttpResponse('Multiple users with the same username', status=400)
     # Log the user in
-    login(request, user)
+    if user.OAuth:
+        login(request, user)
+        if (user.is_active):
+            user.status_login = True
+            user.save()
+            return render(request, 'close_tab.html')
+            # return JsonResponse({'status': 'success', 'message': 'User logged in successfully'})
+        else:
+            return render(request, 'close_tab.html', {'error': 'User is not active'})
+    else:
+        return render(request, 'close_tab.html', {'error': 'User with this email and username already exists'})
 
-    # Redirect the user to a success page or any other appropriate page
-    return redirect('/')
 
 class UserSignupView(APIView):
     def post(self, request, format=None):
@@ -112,6 +129,12 @@ class UserLoginView(APIView):
             else:
                 # If "remember_me" is true, set the session to expire in 2 weeks (1209600 seconds)
                 request.session.set_expiry(1209600)
+            # if not request.data.get('language', False):
+            #     user.language = 'en'
+            #     user.save()
+            # else:
+            #     user.language = request.data['language']
+            #     user.save()
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -125,6 +148,17 @@ class UserdeleteView(APIView):
             request.user.delete()
             return Response({'value' : 'User deleted'}, status=status.HTTP_200_OK)
         return Response({'value' : 'User not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
+def is_valid_image_url(url):
+    try:
+        response = requests.get(url, stream=True)
+        if 'image' in response.headers['Content-Type']:
+            return True
+        else:
+            return False
+    except requests.exceptions.RequestException as e:
+        # This means something went wrong (like a 404 error, etc.)
+        return False
 
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
@@ -150,6 +184,8 @@ class UserInfoView(APIView):
             image_url = request.POST['url']
             if re.search('<.*?>', image_url):
                 return JsonResponse({'error': 'Invalid input'}, status=400)
+            if not is_valid_image_url(image_url):
+                return JsonResponse({'error': 'Invalid URL'}, status=400)
             validate = URLValidator()
             try:
                 validate(image_url)
@@ -176,9 +212,19 @@ class UserInfoView(APIView):
                 os.remove(current_pic_path)
             request.user.pro_pic = url
             request.user.save()
+        elif 'pong_color' in request.data:
+            request.user.pong_color = request.data['pong_color']
+            request.user.save()
+        elif 'paddle_color' in request.data:
+            print("Paddle Color", request.data['paddle_color'])
+            request.user.paddle_color = request.data['paddle_color']
+            request.user.save()
+        elif 'language' in request.data:
+            request.user.language = request.data['language']
+            request.user.save()
         else:
             return Response({'Error' : "Qualcosa e' andato storto!"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'pro_pic': url}, status=status.HTTP_200_OK)
+        return Response({'pro_pic': url, 'paddle_color' : request.user.paddle_color}, status=status.HTTP_200_OK)
 
 class UserMatchHistoryView(generics.ListAPIView):
     serializer_class = UserMatchHistorySerializer

@@ -19,7 +19,7 @@ export default class UserInfo extends AbstractView {
 		super();
 		this.user = user;
 		this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
+		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		this.initialize(userID);
@@ -62,13 +62,15 @@ export default class UserInfo extends AbstractView {
 						${is_friend ? "<h5> <span data-translate=\"level2\" Level></span>" + data.user.level + "</h5>" : ""}
 					</div>
 				</div>
-				<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
-				<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline"></ion-icon>History</a>
-				${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
-					!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
-					senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
-					receiverObj ? `<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
-				${is_friend ? `<button type="button" data-translate="remove" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
+				<div class="btns-container">
+					<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
+					<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline"></ion-icon>History</a>
+					${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
+						!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
+						senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
+						receiverObj ? `<button type="button" data-translate="cancel" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
+					${is_friend ? `<button type="button" data-translate="remove" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
+				</div>
 				<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
 				<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
 			`;
@@ -90,7 +92,7 @@ export default class UserInfo extends AbstractView {
 				sendRequestBtn.addEventListener("click", async e => {
 					e.preventDefault();
 					await sendFriendRequest(data.user.username);
-					createNotification("Friend request sent!");
+					createNotification("Friend request sent!", "friendReqSent");
 					friendInfoElement.innerHTML = "";
 					await this.getUserInfo(data.user.username);
 				});
@@ -116,25 +118,51 @@ export default class UserInfo extends AbstractView {
 					e.preventDefault();
 					cancelRequest(data.user.username);
 					friendInfoElement.innerHTML = "";
-					createNotification("Friend request cancelled!");
+					createNotification("Friend request cancelled!", "friendReqCancelled");
 					await this.getUserInfo(data.user.username);
 				});
 			}
 		})
 		.catch((error) => {
-			createNotification("No user found!");
+			createNotification("No user found", "noUserFound");
 			console.error('Error:', error);
 		});
 	}
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
-			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+			  <div class="container-fluid">
+				<a href="/dashboard" id="logo" class="nav-brand" aria-current="page" data-link>
+					<img src="/static/img/Logo.png" alt="Logo" class="logo"/>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				  <ul class="navbar-nav">
+					<li class="nav-item">
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/online" data-link>Online Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/friends" data-link>Friends</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/chat" data-link>Chat</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/dashboard" data-link>Dashboard</a>
+					</li>
+				  </ul>
+				</div>
+			  </div>
+			</nav>
 		`;
 		return navHTML;
 	}

@@ -4,14 +4,18 @@ import { navigateTo } from "../index.js";
 export default class Pong {
     constructor(user){
         this.user = user;
+        this.user_paddle_color1;
+        this.user_paddle_color2;
+        this.pong_color = user.pong_color;
+        this.tempcolor;
         this.opponent = this.user.online_opponent;
         this.room_name = this.user.online_room;
         this.player1 = undefined;
         this.player2 = undefined;
         this.player1_pic = undefined;
         this.player2_pic = undefined;
-        this.score1;
-        this.score2;
+        this.score1 = 0;
+        this.score2 = 0;
         this.ball_size = 20;
         this.ballX = 800 / 2 - this.ball_size / 2;
         this.ballY = 600 / 2 - this.ball_size / 2;
@@ -44,9 +48,9 @@ export default class Pong {
 		return csrftoken;
 	}
 
-    async loadUserData() {
+    async loadOpponentPaddle(userID) {
 		var csrftoken = await this.getCSRFToken()
-		await fetch('/accounts/user_info/', {
+		await fetch('/accounts/guser_info/?username=' + userID, {
 			method: 'GET',
 			headers: {
 				'Content-Type' : 'application/json',
@@ -56,7 +60,8 @@ export default class Pong {
 			.then(response => response.json())
 			.then(data => {
 				console.log(data);
-				this.setUser(data.username);
+                console.log(data.user.paddle_color);
+                this.tempcolor = data.user.paddle_color;
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -89,18 +94,27 @@ export default class Pong {
         }
     }
 
-    scoreTabMaker(data) {
-        console.log(data, this.user.getUser(), this.user.online_opponent.username);
-        if (data.player === this.user.getUser()) {
-            this.player1 = this.user.getUser();
+    async scoreTabMaker(data) {
+        console.log("data.player", data.player);
+        if (data.player === this.user.username) {
+            this.player1 = this.user.username;
             this.player2 = this.user.online_opponent.username;
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.online_opponent.pro_pic;
+            console.log("player1", this.player1, "player2", this.user.online_opponent.username);
+            await this.loadOpponentPaddle(this.user.online_opponent.username);
+            console.log("this.tempcolor", this.tempcolor)
+            this.user_paddle_color1 = this.user.paddle_color;
+            this.user_paddle_color2 = this.tempcolor
         } else {
             this.player1 = this.user.online_opponent.username;
-            this.player2 = this.user.getUser();
+            this.player2 = this.user.username;
             this.player1_pic = this.user.online_opponent.pro_pic;
             this.player2_pic = this.user.getPic();
+            console.log("ON ELSE player1", this.player1, "player2", this.user.online_opponent.username);
+            await this.loadOpponentPaddle(this.user.online_opponent.username);
+            this.user_paddle_color1 = this.tempcolor
+            this.user_paddle_color2 = this.user.paddle_color;
         }
         const playerOneTab = document.getElementById('player1-score');
         const playerTwoTab = document.getElementById('player2-score');
@@ -121,12 +135,13 @@ export default class Pong {
             const content = document.getElementById('content');
             const resultHTML = `
                 <div class="result" style="display: flex; justify-content: center; width: 800px; height: 400px;">
-                    <img ${data.victory === this.user.getUser() ? 'src="static/img/win.jpg"' : 'src="static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
+                    <img ${data.victory === this.user.getUser() ? 'src="/static/img/win.jpg"' : 'src="/static/img/lose.jpg"'} alt="result" style="width: auto; border-radius: 0px">
                 </div>
             `;
             content.innerHTML = resultHTML;
             setTimeout(() => {
                 this.user.disconnected = false;
+                content.innerHTML = '';
                 navigateTo('/online');
             }, 3000);
         }   
@@ -161,11 +176,10 @@ export default class Pong {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         this.drawNet(context, canvas);
-        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
-        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color1);
+        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color2);
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
-        // context.fillStyle = '#FFFFFF';
         // context.fillRect(0,  this.playerPaddleY, this.paddle_width, this.paddle_height);
 
         // Draw opponent paddle
@@ -248,7 +262,7 @@ export default class Pong {
                 <div id="the-match"><h1>THE MATCH</h1></div>
                 <div id="player2-score" class="score-info"></div>
             </div>
-            <canvas id="pongCanvas" width="800" height="600"></canvas>
+            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
         `;
         return pongHTML;
     }

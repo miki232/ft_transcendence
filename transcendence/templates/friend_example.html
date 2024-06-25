@@ -1,195 +1,89 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
-    <title>Friend Example</title>
-    <script>
-        // Function to send a friend request
-        var CurrentUsername;
-        function getCSRFToken() {
-            const cookieValue = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            .split('=')[1];
-            return cookieValue;
-        }
-
-        async function loadUserData() {
-            var csrftoken = getCSRFToken()
-            await fetch('/accounts/user_info/', {
-                method: 'GET',
-                headers: {
-                    'Content-Type' : 'application/json',
-                    'X-CSRFToken': csrftoken
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    CurrentUsername = data.username;
-                    // this.setUser(data.username);
-                    // this.setEmail(data.email);
-                    // this.setPic(data.pro_pic); //new
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                })
-        }
-
-        function sendFriendRequest() {
-            // Get the username from the input field
-            var username = document.getElementById("username").value;
-
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-
-            // Set the request URL
-            var url = "request/send/";
-
-            // Set the request method to POST
-            xhr.open("POST", url, true);
-
-            // Set the request headers
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-
-            // Set the request body
-            var data = JSON.stringify({
-                "receiver_user_id": username
-            });
-
-            // Send the request
-            xhr.send(data);
-        }
-
-        
-        // Function to accept a friend request
-        function acceptFriendRequest(userId) {
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-            
-            // Set the request URL
-            var url = "accept/" + userId + "/";
-            
-            // Set the request method to GET
-            xhr.open("GET", url, true);
-            
-            // Send the request
-            xhr.send();
-        }
-        
-        
-        async function getFriendList() {
-            var response = await fetch("list/");
-            var data = await response.json();
-            var friendListElement = document.getElementById("friend-list");
-            friendListElement.innerHTML = "";
-            
-            for (var i = 0; i < data.length; i++) {
-                var friendList = data[i];
-                var userUsername = friendList.user.username;
-                
-                for (var j = 0; j < friendList.friends.length; j++) {
-                    var friendUsername = friendList.friends[j].username;
-                    var friendElement = document.createElement("div");
-                    var remove = document.createElement("button");
-                    remove.innerHTML = "remove";
-                    remove.onclick = function() {
-                        removeFriend(friendUsername);
-                            };
-                            friendElement.appendChild(remove);
-
-                    // friendElement.innerHTML = "User: " + userUsername + ", Friend: " + friendUsername;
-                    var textNode = document.createTextNode("User: " + userUsername + ", Friend: " + friendUsername);
-                    friendElement.appendChild(textNode);
-                    friendListElement.appendChild(friendElement);
-                }
-            }
-        }
-        
-        async function removeFriend(){
-            // Get the username from the list of friend
-            var friendElement = document.getElementById("friend-list").firstChild;
-            var text = friendElement.textContent;
-            var parts = text.split(", ");
-            var friendUsername = parts[1].split(": ")[1];
-            console.log(friendUsername);
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-
-            // Set the request URL
-            var url = "remove/";
-
-            // Set the request method to POST
-            xhr.open("POST", url, true);
-
-            // Set the request headers
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-
-            // Set the request body
-            var data = JSON.stringify({
-                "receiver_user_id": friendUsername
-            });
-
-            // Send the request
-            xhr.send(data);
-        }
-        // Function to get the list of pending requests
-        async function getPendingRequests() {
-            var response = await fetch("request/list/");
-            var data = await response.json();
-            var pendingRequestsElement = document.getElementById("pending-requests");
-            pendingRequestsElement.innerHTML = "";
-            
-            for (var i = 0; i < data.length; i++) {
-                var request = data[i];
-                var senderUsername = request.sender.username;
-                var receiverUsername = request.receiver.username;
-                
-                var requestElement = document.createElement("div");
-                if (receiverUsername == CurrentUsername)
-                requestElement.innerHTML = senderUsername;
-            else
-            requestElement.innerHTML = receiverUsername;
-        
-        // Create a button to accept the request
-        if (senderUsername !== CurrentUsername){
-            var acceptButton = document.createElement("button");
-            acceptButton.innerHTML = "Accept";
-            acceptButton.onclick = function() {
-                acceptFriendRequest(senderUsername);
-                    };
-                    
-                    requestElement.appendChild(acceptButton);
-                }
-                pendingRequestsElement.appendChild(requestElement);
-            }
-        }
-
-
-        // Function to get the friend list
-        </script>
+    <title>Color Form</title>
 </head>
 <body>
-    <h1>Friend Example</h1>
-
-    <h2>Send Friend Request</h2>
-    <form>
-        <input type="text" id="username" placeholder="Enter username">
-        <button type="button" onclick="sendFriendRequest()">Send Request</button>
+    <h1>Color Form</h1>
+    <form id="colorForm">
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="paddle_color" required>
+        <br>
+        <input type="submit" value="Submit">
     </form>
 
-    <h2>Pending Requests</h2>
-    <div id="pending-requests"></div>
-
-    <h2>Friend List</h2>
-    <div id="friend-list"></div>
-
     <script>
-        // Call the functions to get the pending requests and friend list
-        loadUserData();
-        getPendingRequests();
-        getFriendList();
+        async function getCSRFToken() {
+            let response = await fetch("/csrf-token");
+            let data = await response.json();
+            return data.csrfToken;
+        };
+
+        document.getElementById("colorForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent form submission
+            const csrftoken = await getCSRFToken();
+            var colorInput = document.getElementById("color").value;
+
+            fetch("/accounts/user_info/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify({ "paddle_color": colorInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle response data
+                console.log(data);
+            })
+            .catch(error => {
+                // Handle error
+                console.error(error);
+            });
+        });
     </script>
 </body>
-</html>
+</html> {% endcomment %}
+
+
+<form id="sanityForm">
+    <label for="input">Input:</label>
+    <input type="text" id="input" name="input" required>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+<p id="response"></p>
+<script>
+    async function getCSRFToken() {
+        let response = await fetch("/csrf-token");
+        let data = await response.json();
+        return data.csrfToken;
+    };
+
+    document.getElementById("sanityForm").addEventListener("submit", async function(event) {
+        event.preventDefault(); // Prevent form submission
+        const csrftoken = await getCSRFToken();
+        var input = document.getElementById("input").value;
+
+        fetch("/sanity/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ "input": input })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle response data
+            console.log(data);
+            // Print the response
+            document.getElementById("response").innerText = JSON.stringify(data.sanitized_input);
+        })
+        .catch(error => {
+            // Handle error
+            console.error(error);
+        });
+    });
+</script>

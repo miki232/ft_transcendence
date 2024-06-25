@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from pong.views import ListRoomView, DeleteRoomView, CreateRoomView, MatchmakingView, TournamentView, WaitingForTournameView, TournamentMatchView, RoundTorunament, TournamentCreateView
+from pong.views import ListRoomView, DeleteRoomView, CreateRoomView, MatchmakingView, TournamentView, WaitingForTournameView, TournamentMatchView, RoundTorunament, TournamentCreateView, TournamentHistoryView, Search_TournamentMatchView, LocalTournamentView, GetLocalTournament_MatchView, GetLocalTournamentView, LocalTournamentMatch_OneView, LocalTournamentMatch_updateView, LocalTournamentSetWinner
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -19,6 +19,15 @@ urlpatterns = [
     path('round/', RoundTorunament.as_view(), name='round_tournament'),
     path('tournament_create/', TournamentCreateView.as_view(), name='tournament_create'),
     path('delete_room/', DeleteRoomView.as_view(), name='delete_room'),
+    path('tournament_history/', TournamentHistoryView.as_view(), name='tournament_history'),
+    path('user_tournament/', Search_TournamentMatchView.as_view(), name='search_tournament_match'),
+	path('sanity/', views.SanitizeView.as_view(), name='sanitize'),
+	path('createlocal_tournament/', LocalTournamentView.as_view(), name='local_tournament'),
+	path('getlocal_tournament_match/', GetLocalTournament_MatchView.as_view(), name='getlocal_tournament_match'),
+	path('getlocal_tournament/', GetLocalTournamentView.as_view(), name='getlocal_tournament'),
+	path('local_tournament_one_update/', LocalTournamentMatch_OneView.as_view(), name='local_tournament_match_one'),
+	path('local_tournament_update/', LocalTournamentMatch_updateView.as_view(), name='local_tournament_match_update'),
+	path('local_tournament_set_winner/', LocalTournamentSetWinner.as_view(), name='local_tournament_set_winner'),
     # path('rooms/create/', CreateRoomView.as_view(), name='create_room'), #spostato in pong/urls.py
     path("test/", views.test, name="test"),
 ]

@@ -1,28 +1,49 @@
 import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
-import { getCookie, sanitizeInput } from "../utilities.js";
+import { getCookie } from "../utilities.js";
 
 export default class User extends AbstractView {
 	constructor() {
 		super();
 		this.username;
 		this.email;
+		this.alias = "null";
+		this.language = "en";
+        this.round = [];
 		// this.password;
 		this.pro_pic;
 		this.logged = false;
 		this.level;
 		this.exp;
+		this.paddle_color = "#00FF99"
+		this.pong_color = "#141414";
 		this.online_room;
 		this.online_opponent = {
 			username: "null",
 			pro_pic: "null",
 			level: "null",
 		};
+		this.tournament_opp = {
+			alias: "null",
+			username: "null",
+			pro_pic: "null",
+			level: "null",
+		}
+		this.tournament_local_room = {
+			pk_tournament: "null",
+			pk_match: "null",
+			winner : "null",
+			matchindex : 0,
+		};
 		this.disconnected = true;
 		this.game_ws = null;
 		this.matchmaking_ws = null;
 		this.lastURL = null;
 		this.room_nextround = null;
+		//localPong
+		this.local_opponent = null;
+		this.local_room = null;
+		this.local_ws = null;
 	}
 
 	async logout(){
@@ -49,7 +70,7 @@ export default class User extends AbstractView {
 		.then(data => {
 			console.log("Logged out");
 			console.log(data);
-			createNotification("Successfully logged out");
+			createNotification("Successfully logged out", "logoutSuccess");
 			this.logged = false;
 		})
 		.catch((error) => {
@@ -77,7 +98,7 @@ export default class User extends AbstractView {
 			body: JSON.stringify({
 				username: username,
 				password: password,
-				remember_me : rememberme
+				remember_me : rememberme,
 			}),
 		}).then(response => {
 			response.json();
@@ -85,13 +106,19 @@ export default class User extends AbstractView {
 			if (response.status === 200) {
 				this.logged = true;
 			} else {
-				createNotification("Wrong username or password");
+				createNotification("Wrong username or password", "wrongUserPass");
 				this.logged = false;
 			}
 		}).then(data => console.log(data))
 		.catch((error) => {
 			console.error('Error: ', error);
 		})
+	}
+
+	setLocalGame(opponent, room, ws) {
+		this.local_opponent = opponent;
+		this.local_room = room;
+		this.local_ws = ws;
 	}
 
 	async isLogged() {
@@ -117,12 +144,20 @@ export default class User extends AbstractView {
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				console.log(" iasdlnasd", data);
 				this.setUser(data.username);
 				this.setEmail(data.email);
 				this.setPic(data.pro_pic);
 				this.setLevel(data.level);
 				this.setExp(data.exp);
+				this.setPaddleColor(data.paddle_color);
+				this.setPongColor(data.pong_color);
+				this.setLanguage(data.language);
+				this.setPaddleColor(data.paddle_color);
+				this.setPongColor(data.pong_color);
+				this.setAlias(data.alias);
+				// localStorage.setItem('language', data.language);
+				console.log("User data loaded", this.language);
 				// this.setPassword(data.password);
 			})
 			.catch((error) => {
@@ -130,6 +165,22 @@ export default class User extends AbstractView {
 			})
 	}
 
+	setAlias(data_alias) {
+		this.alias = data_alias;
+	}
+
+	setPongColor(data_color) {
+		this.pong_color = data_color;
+	}
+
+	setPaddleColor(data_color) {
+		this.paddle_color = data_color;
+	}
+
+	setLanguage(data_lang) {
+		this.language = data_lang;
+	}
+	
 	setPic(data_pic) {
 		this.pro_pic = data_pic;
 	}
@@ -140,6 +191,14 @@ export default class User extends AbstractView {
 	
 	setEmail (data_email) {
 		this.email = data_email;
+	}
+
+	setPaddleColor(data_color) {
+		this.paddle_color = data_color;
+	}
+
+	setPongColor(data_color) {
+		this.pong_color = data_color;
 	}
 
 	// setPassword(data_password) {
@@ -156,6 +215,10 @@ export default class User extends AbstractView {
 
 	getUser() {
 		return this.username;
+	}
+
+	getAlias() {
+		return this.alias;
 	}
 
 	getEmail() {

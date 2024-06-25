@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import { getCSRFToken } from "./Info.js";
 import { sanitizeInput } from "../utilities.js";
 import { createNotification } from "./Notifications.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 import { getRequests, sendFriendRequest } from "./Requests.js";
 
 // export async function getCSRFToken() {
@@ -45,20 +45,34 @@ export default class Friends extends AbstractView {
 		super();
 		this.userObj = userOBJ;
 		this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
+		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
-		this.initialize();
+		this.activeBtns();
 		this.CurrentUsername;
-		// this.userObjto;
-		// // this.userObj;
-		// this.email;
-		// this.pro_pic;
+		this.isStartFriends = true;
+		this.lang = localStorage.getItem('language') || 'en';
 	}
 
-	async initialize() {
-		await this.getFriendList();
-		await this.searchUser();
+	activeBtns () {
+		const backBtn = document.getElementById("back");
+		backBtn.addEventListener("click", e => {
+			e.preventDefault();
+			if (this.isStartFriends) {
+				navigateTo("/dashboard");
+			} else {
+				this.isStartFriends = true;
+				navigateTo("/friends");
+			}
+		});
+		const friendsListBtn = document.getElementById("friends-list");
+		friendsListBtn.addEventListener("click", async e => {
+			await this.getFriendList();
+		});
+		const searchUserBtn = document.getElementById("search-user");
+		searchUserBtn.addEventListener("click", async e => {
+			this.searchUser();
+		});
 	}
 
 	async loadData() {
@@ -80,162 +94,40 @@ export default class Friends extends AbstractView {
 			})
 	}
 
-/* 	sendFriendRequest() { // anche questa standalone possiamo anche levarla
-		// Get the username from the input field
-		var username = document.getElementById("username").value;
-
-		// Create a new XMLHttpRequest object
-		var xhr = new XMLHttpRequest();
-
-		// Set the request URL
-		var url = "/friend/request/send/";
-
-		// Set the request method to POST
-		xhr.open("POST", url, true);
-
-		// Set the request headers
-		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
-
-		// Set the request body
-		var data = JSON.stringify({
-			"receiver_user_id": username
-		});
-
-		// Send the request
-		xhr.send(data);
-	} */
-
-	/* acceptFriendRequest(userId) {
-		// Create a new XMLHttpRequest object
-		var xhr = new XMLHttpRequest();
-		console.log(userId);
-		// Set the request URL
-		var url = "accept/" + userId + "/";
-		
-		// Set the request method to GET
-		xhr.open("GET", url, true);
-		
-		// Send the request
-		xhr.send();
-	} */
-
-	// acceptFriendRequest(userId) {
-    // 	// Create a new XMLHttpRequest object
-    // 	var xhr = new XMLHttpRequest();
-    
-    // 	// Set the request URL
-    // 	var url = "friend/accept/" + userId + "/";
-    
-    // 	// Set the request method to GET
-    // 	xhr.open("GET", url, true);
-    
-    // 	// Send the request
-    // 	xhr.send()
-    // }
-
-	// async getFriendInfo(user) {
-	// 	var csrf = await getCSRFToken();
-	// 	await fetch('/accounts/guser_info/?username=' + user, {
-	// 		method: 'GET',
-	// 		headers: {
-	// 			'Content-Type' : 'application/json',
-	// 			'X-CSRFToken': csrf
-	// 		}
-	// 	})
-	// 	.then(response => response.json())
-	// 	.then(async data => {
-	// 		const requestList = await getRequests();
-	// 		var friendInfoElement = document.querySelector(".friend-info");
-	// 		var is_friend = data.is_mutual_friend;
-	// 		var senderObj = requestList.find(req => req.sender.username == data.user.username);
-	// 		var receiverObj = requestList.find(req => req.receiver.username == data.user.username);
-	// 		var pendingReq = senderObj || receiverObj ? true : false;
-	// 		var friendInfo = `
-	// 			<img src="${data.user.pro_pic}" alt="User pic">
-	// 			<h3 id="Username">${data.user.username}</h3>
-	// 			<h4>${data.user.status_login}</h4>
-	// 			<button type="button" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</button>
-	// 			<button type="button" class="submit-btn	dashboard-btn"><ion-icon name="bar-chart-outline"></ion-icon>History</button>
-	// 			${is_friend ? `<button type="button" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
-	// 				!pendingReq ? `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
-	// 				senderObj ? `<div class="info-request"><button type="button" class="submit-btn accept-request"><ion-icon name="checkmark-outline"></ion-icon>Accept</button><button type="button" class="submit-btn red-btn decline-request"><ion-icon name="close-outline"></ion-icon>Decline</button></div>` :
-	// 				receiverObj ? `<button type="button" class="submit-btn red-btn cancel-request"><ion-icon name="trash-outline"></ion-icon>Cancel</button>` : ''}
-	// 			${is_friend ? `<button type="button" class="submit-btn dashboard-btn red-btn" id="remove"><ion-icon name="trash-outline"></ion-icon>Remove</button>` : '' }
-	// 			<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-	// 			<button type="button" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
-	// 		`;
-	// 		friendInfoElement.innerHTML = friendInfo;
-	// 		if (is_friend) {
-	// 			const removeFriendBtn = document.getElementById("remove");
-	// 			removeFriendBtn.addEventListener("click", async e => {
-	// 				e.preventDefault();
-	// 				await removeFriend(data.user.username);
-	// 				const toRemove = document.querySelector("[data-username='" + data.user.username + "']");
-	// 				toRemove.parentElement.remove();
-	// 				if (document.querySelector(".friends-list").childElementCount == 0) {
-	// 					var noEntries = document.createElement("span");
-	// 					noEntries.textContent = "No friends";
-	// 					document.querySelector(".friends-list").appendChild(noEntries);
-	// 				}
-	// 			});
-	// 		} else if (!pendingReq){
-	// 			const sendRequestBtn = document.getElementById("friend-request");
-	// 			sendRequestBtn.addEventListener("click", async e => {
-	// 				e.preventDefault();
-	// 				await sendFriendRequest(data.user.username);
-	// 				createNotification("Friend request sent!");
-	// 				friendInfoElement.innerHTML = "";
-	// 				await this.getFriendInfo(data.user.username);
-	// 			});
-	// 		}
-	// 		if (senderObj) {
-	// 			const acceptRequestBtn = document.querySelector(".accept-request");
-	// 			const declineRequestBtn = document.querySelector(".decline-request");
-	// 			acceptRequestBtn.addEventListener("click", async e => {
-	// 				e.preventDefault();
-	// 				acceptFriendRequest(data.user.username);
-	// 				friendInfoElement.innerHTML = "";
-	// 				await this.getFriendInfo(data.user.username);
-	// 			});
-	// 			declineRequestBtn.addEventListener("click", async e => {
-	// 				e.preventDefault();
-	// 				declineFriendRequest(data.user.username);
-	// 				friendInfoElement.innerHTML = "";
-	// 				await this.getFriendInfo(data.user.username);
-	// 			});
-	// 		} else if (receiverObj) {
-	// 			const cancelRequestBtn = document.querySelector(".cancel-request");
-	// 			cancelRequestBtn.addEventListener("click", async e => {
-	// 				e.preventDefault();
-	// 				cancelRequest(data.user.username);
-	// 				friendInfoElement.innerHTML = "";
-	// 				await this.getFriendInfo(data.user.username);
-	// 			});
-	// 		}
-	// 	})
-	// 	.catch((error) => {
-	// 		alert("No user found!");
-	// 		console.error('Error:', error);
-	// 	})
-	// }
-
-	async getFriendList() {
-		var response = await fetch("friend/list/");
-		var data = await response.json();
-		var friendListElement = document.querySelector(".friends-list");
-		// friendListElement.innerHTML = "";
-		// friendListElement.className = "content";
-		var noEntries = document.createElement("span");
+	noFriends (element) {
+		var noEntries = document.createElement("p");
 		noEntries.className = "no-entries";
 		noEntries.textContent = "You don't have any friends yet.";
 		noEntries.setAttribute("data-translate", "noFriends");
-		friendListElement.appendChild(noEntries);
+		element.appendChild(noEntries);
+		element.style.textAlign = "center";
+		changeLanguage(this.lang);
+
+	}
+
+	async getFriendList() {
+		this.isStartFriends = false;
+		const searchUserBtn = document.getElementById("search-user");
+		searchUserBtn.style.display = "none"; // Hide the search-user button
+		const friendsListBtn = document.getElementById("friends-list");
+		friendsListBtn.style.display = "none"; // Hide the friends-list button
+	
+		const friendsListHTML = '<h4 data-translate="friendlist" >Friends List</h4><div class="friends-list"></div>';
+		friendsListBtn.insertAdjacentHTML("afterend", friendsListHTML);
+	
+		var response = await fetch("friend/list/");
+		var data = await response.json();
+		var friendListElement = document.querySelector(".friends-list");
+	
+		if (data.length === 0) {
+			this.noFriends(friendListElement);
+			return;
+		}
+	
 		for (var i = 0; i < data.length; i++) {
 			var friendList = data[i];
-			var userUsername = friendList.user.username;            
+			var userUsername = friendList.user.username;
 			for (let j = 0; j < friendList.friends.length; j++) {
-				noEntries.remove();
 				const friendUsername = friendList.friends[j].username;
 				const friendStatus = friendList.friends[j].status_login;
 				const friendPic = friendList.friends[j].pro_pic;
@@ -254,6 +146,7 @@ export default class Friends extends AbstractView {
 					friendIcon.classList.add("friend-offline");
 			}
 		}
+	
 		var infoElements = document.querySelectorAll(".info");
 		infoElements.forEach(element => {
 			element.addEventListener("click", async e =>{
@@ -261,31 +154,169 @@ export default class Friends extends AbstractView {
 				navigateTo(e.target.href);
 			});
 		});
+	
+		changeLanguage(this.lang);
 	}
+	
 
+	// async getFriendList() {
+	// 	this.isStartFriends = false;
+	// 	const searchUserBtn = document.getElementById("search-user");
+	// 	searchUserBtn.style.display = "none";
+	// 	const friendsListBtn = document.getElementById("friends-list");
+	// 	friendsListBtn.setAttribute("disabled", "true");
+	// 	const friendsListHTML = '<div class="friends-list"></div>';
+	// 	friendsListBtn.insertAdjacentHTML("afterend", friendsListHTML);
+	// 	var response = await fetch("friend/list/");
+	// 	var data = await response.json();
+	// 	var friendListElement = document.querySelector(".friends-list");
+	// 	// friendListElement.innerHTML = "";
+	// 	// friendListElement.className = "content";
+	// 	if (data.length === 0) {
+	// 		this.noFriends(friendListElement);
+	// 		return;
+	// 	}
+	// 	for (var i = 0; i < data.length; i++) {
+	// 		var friendList = data[i];
+	// 		var userUsername = friendList.user.username;         
+	// 		for (let j = 0; j < friendList.friends.length; j++) {
+	// 			const friendUsername = friendList.friends[j].username;
+	// 			const friendStatus = friendList.friends[j].status_login;
+	// 			const friendPic = friendList.friends[j].pro_pic;
+	// 			const friendElement = `
+	// 				<div class="friend">
+	// 					<img src="${friendPic}" alt="User pic">
+	// 					<a href="/friends/user_info_${friendUsername}" class="info" data-link">${friendUsername}</a>
+	// 					<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+	// 				</div>
+	// 			`;
+	// 			friendListElement.innerHTML += friendElement;
+	// 			var friendIcon = document.querySelectorAll(".friend-icon")[j];
+	// 			if (friendStatus)
+	// 				friendIcon.classList.add("friend-online");
+	// 			else
+	// 				friendIcon.classList.add("friend-offline");
+	// 		}
+	// 	}
+	// 	var infoElements = document.querySelectorAll(".info");
+	// 	infoElements.forEach(element => {
+	// 		element.addEventListener("click", async e =>{
+	// 			e.preventDefault();
+	// 			navigateTo(e.target.href);
+	// 		});
+	// 	});
+	// 	changeLanguage(this.lang);
+	// }
+
+	// async searchUser() {
+	// 	this.isStartFriends = false;
+	// 	const friendsListBtn = document.getElementById("friends-list");
+	// 	friendsListBtn.style.display = "none";
+	// 	const searchUserBtn = document.getElementById("search-user");
+	// 	searchUserBtn.setAttribute("disabled", "true");
+	// 	const friendsListHTML = `
+	// 		<div class="input-box add-friend">
+	// 			<input type="text" id="friendNameInput" required>
+	// 			<label data-translate="finduser">Find User</label>
+	// 			<ion-icon name="search-outline"></ion-icon>
+	// 		</div>
+	// 		<button type="submit" data-translate="search" class="submit-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
+	// 		<div class="friends-list"></div>
+	// 	`;
+	// 	searchUserBtn.insertAdjacentHTML("afterend", friendsListHTML);
+	// 	changeLanguage(this.lang);
+	// 	const friendsSearch = document.querySelector(".friends-list");
+	// 	const friendInput = document.querySelector("#friendNameInput");
+	// 	const searchBtn = document.querySelector("#search-btn");
+	// 	friendInput.addEventListener("input", async e => {
+	// 		if (friendInput.value === "") {
+	// 			await this.getFriendList();
+	// 		}
+	// 	});
+	// 	searchBtn.addEventListener("click", async e => {
+	// 		var inputText = sanitizeInput(friendInput.value);
+	// 		fetch(`/accounts/search/?q=${inputText}`)
+    // 		    .then(response => response.json())
+    // 		    .then(data => {
+	// 				console.log(data[0]);
+	// 				const notFound = "User not Found"
+	// 				if (data[0] != notFound && data.some(user => user.username != this.userObj.getUser())) {
+	// 					friendsSearch.innerHTML = "";
+	// 					var k = 0;
+    // 		        	data.forEach(user => {
+	// 						var userElement = `
+	// 							<div class="user">
+	// 								<img src="${user.pro_pic}" alt="User pic">
+	// 								<a href="/friends/user_info_${user.username}" class="info" data-link">${user.username}</a>
+	// 								<ion-icon class="friend-icon" name="person-sharp"></ion-icon>
+	// 							</div>
+	// 						`;
+	// 						if (user.username && user.username != this.userObj.getUser()) {
+	// 							friendsSearch.innerHTML += userElement;
+	// 							var friendIcon = document.querySelectorAll(".friend-icon")[k++];
+	// 							if (user.status_login !== undefined) {
+	// 								if (user.status_login) {
+	// 									friendIcon.classList.add("friend-online");
+	// 								} else {
+	// 									friendIcon.classList.add("friend-offline");
+	// 								}
+	// 							}
+	// 						}
+    // 		        	});					
+	// 					friendInput.value = "";
+	// 					const infoElements = document.querySelectorAll(".info");
+	// 					infoElements.forEach(element => {
+	// 						element.addEventListener("click", async e =>{
+	// 							e.preventDefault();
+	// 							navigateTo(e.target.href);
+	// 						});
+	// 					});
+	// 				} else {
+	// 					createNotification("User not found", "usernotfound");
+	// 					friendInput.value = "";
+	// 				}
+    // 		    })
+    // 		    .catch(error => console.error('Error:', error));
+	// 	});
+	// }
 	async searchUser() {
+		this.isStartFriends = false;
+		const friendsListBtn = document.getElementById("friends-list");
+		friendsListBtn.style.display = "none"; // Hide the friends-list button
+		const searchUserBtn = document.getElementById("search-user");
+		searchUserBtn.style.display = "none"; // Hide the search-user button
+	
+		const friendsListHTML = `
+			<h4 data-translate="searchfriends">Search friends</h4>
+			<div class="input-box add-friend">
+				<input type="text" id="friendNameInput" required>
+				<label data-translate="finduser">Find User</label>
+				<ion-icon name="search-outline"></ion-icon>
+			</div>
+			<button type="submit" data-translate="search" class="submit-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
+			<div class="friends-list"></div>
+		`;
+		searchUserBtn.insertAdjacentHTML("afterend", friendsListHTML);
+		changeLanguage(this.lang);
 		const friendsSearch = document.querySelector(".friends-list");
 		const friendInput = document.querySelector("#friendNameInput");
 		const searchBtn = document.querySelector("#search-btn");
-		const friendTitle = document.querySelector("#friend-title");
-		friendInput.addEventListener("input", async e => {
-			if (friendInput.value === "") {
-				friendTitle.textContent = "Friends List";
-				friendsSearch.innerHTML = "";
-				await this.getFriendList();
-			}
-		});
+		// friendInput.addEventListener("input", async e => {
+		// 	if (friendInput.value === "") {
+		// 		await this.getFriendList();
+		// 	}
+		// });
 		searchBtn.addEventListener("click", async e => {
-			var inputText = sanitizeInput(friendInput.value);
+			var inputText = friendInput.value; // Create a function to sanitize input BACKEND
 			fetch(`/accounts/search/?q=${inputText}`)
-    		    .then(response => response.json())
-    		    .then(data => {
+				.then(response => response.json())
+				.then(data => {
 					console.log(data[0]);
 					const notFound = "User not Found"
 					if (data[0] != notFound && data.some(user => user.username != this.userObj.getUser())) {
 						friendsSearch.innerHTML = "";
 						var k = 0;
-    		        	data.forEach(user => {
+						data.forEach(user => {
 							var userElement = `
 								<div class="user">
 									<img src="${user.pro_pic}" alt="User pic">
@@ -294,7 +325,6 @@ export default class Friends extends AbstractView {
 								</div>
 							`;
 							if (user.username && user.username != this.userObj.getUser()) {
-								friendTitle.textContent = "Search Results";
 								friendsSearch.innerHTML += userElement;
 								var friendIcon = document.querySelectorAll(".friend-icon")[k++];
 								if (user.status_login !== undefined) {
@@ -305,16 +335,8 @@ export default class Friends extends AbstractView {
 									}
 								}
 							}
-    		        	});					
+						});                    
 						friendInput.value = "";
-						friendsSearch.innerHTML += `<span id="close-search"><ion-icon name="close-circle-outline"></ion-icon></span>`;
-						const closeBtn = document.getElementById("close-search");
-						closeBtn.addEventListener("click", async e => {
-							e.preventDefault();
-							friendTitle.textContent = "Friends List";
-							friendsSearch.innerHTML = "";
-							await this.getFriendList();
-						});
 						const infoElements = document.querySelectorAll(".info");
 						infoElements.forEach(element => {
 							element.addEventListener("click", async e =>{
@@ -322,118 +344,16 @@ export default class Friends extends AbstractView {
 								navigateTo(e.target.href);
 							});
 						});
-						// var infoElements = document.querySelectorAll(".info");
-						// const searchBox = document.querySelector(".dashboard");
-						// infoElements.forEach(element => {
-						// 	element.addEventListener("click", async e =>{
-						// 		e.preventDefault();
-						// 		var userInfo = e.target.getAttribute("data-username");
-						// 		searchBox.classList.add("change-view");
-						// 		await this.getFriendInfo(userInfo);
-						// 	});
-						// });
 					} else {
-						createNotification("User not found");
+						createNotification("User not found", "usernotfound");
 						friendInput.value = "";
+						friendsSearch.innerHTML = "";
 					}
-    		    })
-    		    .catch(error => console.error('Error:', error));
+				})
+				.catch(error => console.error('Error:', error));
 		});
 	}
-
-	// async removeFriend(){
-	// 	// Get the username from the list of friend
-	// 	var friendElement = document.getElementById("friend-list").firstChild;
-	// 	var text = friendElement.textContent;
-	// 	var parts = text.split(", ");
-	// 	var friendUsername = parts[1].split(": ")[1];
-	// 	console.log(friendUsername);
-	// 	// Create a new XMLHttpRequest object
-	// 	var xhr = new XMLHttpRequest();
-
-	// 	// Set the request URL
-	// 	var url = "remove/";
-
-	// 	// Set the request method to POST
-	// 	xhr.open("POST", url, true);
-
-	// 	// Set the request headers
-	// 	xhr.setRequestHeader("Content-Type", "application/json");
-	// 	xhr.setRequestHeader("X-CSRFToken", this.getCSRFToken());
-
-	// 	// Set the request body
-	// 	var data = JSON.stringify({
-	// 		"receiver_user_id": friendUsername
-	// 	});
-
-	// 	// Send the request
-	// 	xhr.send(data);
-	// }
-
-	// async getPendingRequests() {
-	// 	var response = await fetch("friend/request/list/");
-	// 	var data = await response.json();
-	// 	var pendingRequestsElement = document.querySelector(".pending-requests");
-	// 	// pendingRequestsElement.innerHTML = "";
-		
-	// 	for (var i = 0; i < data.length; i++) {
-	// 		var request = data[i];
-	// 		var senderUsername = request.sender.username;
-	// 		var receiverUsername = request.receiver.username;
-			
-	// 		var requestElement = document.createElement("a");
-	// 		requestElement.href = '/user_info';
-	// 		if (receiverUsername == this.CurrentUsername){
-
-	// 			requestElement.setAttribute('data-username', senderUsername);
-	// 			requestElement.textContent = senderUsername;
-	// 		}
-	// 		else{
-	// 			requestElement.setAttribute('data-username', receiverUsername);
-	// 			requestElement.textContent = receiverUsername;
-	// 		}
-				
-	// 		 // Create a button to accept the request
-	// 		if (senderUsername !== this.CurrentUsername){
-	// 			var acceptButton = document.createElement("button");
-	// 			var declineButton = document.createElement("button");
-	// 			declineButton.innerHTML = "Decline";
-	// 			declineButton.id = "decline-request";
-	// 			declineButton.onclick = (function(senderUsername) {
-	// 				return function(){
-	// 					declineFriendRequest(senderUsername);
-	// 				};
-	// 			})(senderUsername);
-						
-	// 			requestElement.appendChild(declineButton);
-	// 			acceptButton.innerHTML = "Accept";
-	// 			acceptButton.id = "Accept-request";
-	// 			acceptButton.onclick = (function(senderUsername) {
-	// 				return function(){
-	// 					acceptFriendRequest(senderUsername);
-	// 				};
-	// 			})(senderUsername);
-						
-	// 			requestElement.appendChild(acceptButton);
-	// 		}
-	// 		else
-	// 		{
-	// 			var cancelButton = document.createElement("button");
-	// 			cancelButton.innerHTML = "Cancel";
-	// 			cancelButton.id = "cancel-request";
-	// 			cancelButton.onclick = (function(receiverUsername) {
-	// 				return function(){
-	// 					cancelRequest(receiverUsername);
-	// 				};
-	// 			})(receiverUsername);
-	// 			console.log(receiverUsername);
-	// 			requestElement.appendChild(cancelButton);
-				
-
-	// 		}
-	// 		pendingRequestsElement.appendChild(requestElement);
-	// 	}
-	// }
+	
 
 	getCookie(name) {
 		let cookieValue = null;
@@ -450,59 +370,41 @@ export default class Friends extends AbstractView {
 		return cookieValue;
 	}
 
-	// async loadUserData() {
-	// 	var csrftoken = this.getCookie('csrftoken')
-	// 	await fetch('/accounts/user_info/', {
-	// 		method: 'GET',
-	// 		headers: {
-	// 			'Content-Type' : 'application/json',
-	// 			'X-CSRFToken': csrftoken
-	// 		}
-	// 	})
-	// 		.then(response => response.json())
-	// 		.then(data => {
-	// 			console.log(data);
-	// 			this.setUser(data.username);
-	// 			this.setEmail(data.email);
-	// 			this.setPic(data.pro_pic); //new
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error('Error:', error);
-	// 		})
-	// }
-
-	// async setPic(data_pic){ //new
-	// 	this.pro_pic = data_pic;
-	// }
-
-	// async setUser(data_user) {
-	// 	this.userObj = data_user;
-	// }
-	
-	// async setEmail (data_email) {
-	// 	this.email = data_email;
-	// }
-
-	// async getUser() {
-	// 	return this.userObj;
-	// }
-
-	// async getEmail() {
-	// 	return this.email;
-	// }
-	
-	// async getPic(){ //new
-	// 	return this.pro_pic;
-	// }
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-link>Ranking</a>
-			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
-			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.userObj.getPic()}"/></a>
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+			  <div class="container-fluid">
+				<a href="/dashboard" id="logo" class="nav-brand" aria-current="page" data-link>
+					<img src="/static/img/Logo.png" alt="Logo" class="logo"/>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				  <ul class="navbar-nav">
+					<li class="nav-item">
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/chat" data-link>Chat</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/dashboard" data-link>Dashboard</a>
+					</li>
+				  </ul>
+				</div>
+			  </div>
+			</nav>
 		`;
 		return navHTML;
 	}
@@ -512,22 +414,34 @@ export default class Friends extends AbstractView {
 			<div class="dashboard">
 				<div class="friends-card">
 					<h1 data-translate="friends">Friends</h1>
-					<h4 data-translate="searchfriends">Search friends</h4>
-					<div class="input-box add-friend">
-						<input type="text" id="friendNameInput" required>
-						<label data-translate="finduser">Find User</label>
-						<ion-icon name="search-outline"></ion-icon>
+					<div class="btns-container">
+						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<button type="button" class="submit-btn" data-translate="friendlist" id="friends-list"><ion-icon name="people-outline"></ion-icon>Friends List</button>
+						<button type="button" class="submit-btn" data-translate="finduser" id="search-user"><ion-icon name="search-outline"></ion-icon>Search User</button>
 					</div>
-					<button type="submit" data-translate="search" class="submit-btn dashboard-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
-					<div class="hr" style="width: 75%; margin: 10px 0 10px 0;"></div>
-					<h4 id="friend-title" data-translate="friendlist">Friends List</h4>
-					<div class="friends-list"></div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 15px;"></div>
+						<button type="button" data-translate="back" class="submit-btn dashboard-btn" id="back"><ion-icon name="chevron-back-outline"></ion-icon>Back</button>
+					</div>
 				</div>
 			</div>
 		`;
 		return friendHTML;
 	}
 }
+
+/*
+<h4 data-translate="searchfriends">Search friends</h4>
+<div class="input-box add-friend">
+	<input type="text" id="friendNameInput" required>
+	<label data-translate="finduser">Find User</label>
+	<ion-icon name="search-outline"></ion-icon>
+</div>
+<button type="submit" data-translate="search" class="submit-btn dashboard-btn" id="search-btn"><ion-icon name="search-outline"></ion-icon>Search</button>
+<div class="hr" style="width: 75%; margin: 10px 0 10px 0;"></div>
+<h4 id="friend-title" data-translate="friendlist">Friends List</h4>
+<div class="friends-list"></div>
+*/
 
 //OLD FRIEND CARD
 /*

@@ -20,6 +20,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
+    
+    def validate_username(self, value):
+        if len(value) > 15:  # Change this number to the maximum length you want
+            raise serializers.ValidationError("The username is too long.")
+        return value
+    
     def validate_email(self, value):
         if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with that email already exists.")
@@ -66,6 +72,8 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class UserInfoSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(allow_blank=True, required=False)
+    alias = serializers.CharField(allow_blank=True, required=False)
     newpassword = serializers.CharField(write_only=True, required=False)
     confirmpassword = serializers.CharField(write_only=True, required=False)
     level = serializers.SerializerMethodField()
@@ -74,7 +82,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp', 'paddle_color', 'pong_color', 'alias', 'language')
+    
+    def validate_username(self, value):
+        if len(value) > 15:  # Change this number to the maximum length you want
+            raise serializers.ValidationError("The username is too long.")
+        return value
     
     def get_exp(self, obj):
         return obj.calculate_exp()
@@ -127,10 +140,24 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
+        print("Update 131", validated_data, validated_data['username'].strip(), ('username' in validated_data and len(validated_data['username']) > 0))  # Debugging
+        if 'username' in validated_data and validated_data['username'].strip():
+            print("Update 144", "Username")  # Debugging
+            instance.username = validated_data['username']
+        else:
+            validated_data.pop('username', None)
         if 'newpassword' in validated_data:
             if ('confirmpassword' not in validated_data) or (validated_data['newpassword'] != validated_data['confirmpassword']):
                 raise serializers.ValidationError("Passwords do not match.")
             instance.password = make_password(validated_data.pop('newpassword'))
+        if 'alias' in validated_data  and validated_data['alias'].strip():
+            print("Update 147", len(validated_data['alias']), "Alias")  # Debugging
+            if len(validated_data['alias']) > 15:
+                raise serializers.ValidationError("The alias is too long.")
+            else:
+                instance.alias = validated_data['alias']
+        else:
+            validated_data.pop('alias', None)
         if (request and 'pro_pic' in request.data and request.data['pro_pic'] == instance._meta.get_field('pro_pic').get_default()
             and instance.pro_pic != instance._meta.get_field('pro_pic').get_default()):
             print("Update 136", "Default Pic")

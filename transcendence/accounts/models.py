@@ -12,10 +12,14 @@ class CustomUser(AbstractUser): # new
     #https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
     pro_pic = models.URLField(default="https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf")
     status_login = models.BooleanField(default=False)
+    alias = models.CharField(max_length=254, default="None")
     email = models.EmailField(unique=True)
     Ai = models.BooleanField(default=False)
     Occupied = models.BooleanField(default=False)
     language = models.CharField(max_length=254, default="en")
+    paddle_color = models.CharField(max_length=254, default="#00FF99")
+    pong_color = models.CharField(max_length=254, default="#141414")
+    OAuth = models.BooleanField(default=False)
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):
@@ -58,8 +62,8 @@ class CustomUser(AbstractUser): # new
             987: 15,
         }
         total_exp = self.calculate_exp()
-        if total_exp > 610:
-            total_exp = 610
+        if total_exp > 987:
+            total_exp = 987
         if total_exp < 0:
             total_exp = 0 
         # Set level equal to total exp in exp list
@@ -77,8 +81,8 @@ class CustomUser(AbstractUser): # new
         if self.status_login == False:
             return False
         current_time = int(time.time())
-        return (current_time - last_seen_timestamp) <= 300  # 300 seconds = 5 minutes
-
+        return (current_time - last_seen_timestamp) <= 300 # 30 seconds 
+    
     def __str__(self):
         return self.username
 

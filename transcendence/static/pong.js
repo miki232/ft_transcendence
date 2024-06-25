@@ -140,7 +140,7 @@ document.addEventListener('keyup', function(event) {
         // Function to update paddle position
 function updatePaddlePosition() {
     if (arrowUpPressed) {
-        console.log('sending move_up');
+        // console.log('sending move_up');
         ws.send(JSON.stringify({'action': 'move_up', 'user': users}));
     }
     if (arrowDownPressed) {

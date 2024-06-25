@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from accounts.models import Match, CustomUser
 from frontend.models import roomLocal
-from .models import WaitingUser, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
+from .models import WaitingUser,TournamentRoomName, RoomName, Tournament_Waitin, Tournament_Match, Tournament, TournamentPlaceHolder, TournamentPartecipants
 from chat.notifier import send_save_notification_async
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -167,6 +167,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.opponent, friendly = await self.get_opponent_from_room(self.room_name)
                 print("Pong Consumer 168", self.opponent)
                 if friendly:
+                    await self.send(text_data=json.dumps({'status' : "waiting", 'message': 'Waiting for the opponent to join...', 'player': self.user.username}))
                     await send_save_notification_async(self.opponent, f"{self.user.username} is waiting for you in the room {self.room_name}")
             
             print("Pong Consumer 149", len(PongConsumer.players[self.room_name]))
@@ -174,7 +175,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             print("Pong Consumer 151", self.user.Ai)
             # This is the second user, inherit the state from the first user
             self.state = PongConsumer.shared_state
-            await self.start_game()
+            if self.user.username == PongConsumer.players[self.room_name][0] and not (ai.Ai):
+                await asyncio.sleep(0.01)
+            else:    
+                await self.start_game()
             print("Pong Consumer 155", self.user1, self.user2)
             if (ai.Ai):
                 if (self.user1 == None):
@@ -477,10 +481,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.state['ball_x'] - (BALL_SIZE / 2) <= 20 + PADDLE_WIDTH and self.state['ball_x'] >= 20:
             if self.state['paddle1_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle1_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle1_y'], 20, self.state['ball_x'], self.state['ball_y'])
-        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 20) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
+        if self.state['ball_x'] + (BALL_SIZE / 2) >= SCREEN_WIDTH - (PADDLE_WIDTH + 25) and self.state['ball_x'] <= SCREEN_WIDTH - (PADDLE_WIDTH + 20):
             if self.state['paddle2_y'] - (BALL_SIZE / 2) <= self.state['ball_y'] <= self.state['paddle2_y'] + PADDLE_HEIGHT + (BALL_SIZE / 2):
                 self.state['ball_speed_x'], self.state['ball_speed_y'] = calculate_reflection(self.state['paddle2_y'], SCREEN_WIDTH - (PADDLE_WIDTH + 20), self.state['ball_x'], self.state['ball_y'])
-    
+
 
     def simulate_input(self, paddle, player, new_paddle_pos):
             if self.state[paddle] < new_paddle_pos - PADDLE_SPEED:
@@ -492,8 +496,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         last_ai_update_time = time.time()
+        print("Pong Consumer 399", "GAME LOOP", PongConsumer.players[self.room_name][1])
         while (PongConsumer.status[self.room_name]) == False:
             current_time = time.time()
+            if self.user.username == PongConsumer.players[self.room_name][0] and not (self.user1.Ai or self.user2.Ai):
+                await asyncio.sleep(0.01)
+                continue
             """Find who is the AI and move the paddle accordingly"""
             if (self.user1.Ai or self.user2.Ai):
                 if current_time - last_ai_update_time >= 1:
@@ -601,7 +609,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             )
         if self.room_name in PongConsumer.status and PongConsumer.status[self.room_name]:
-            print("Pong Consumer 444","THE winner is", self.match.winner)
+            print("Pong Consumer 444","THE winner is", type(self.match.winner.username), self.match.winner.username, self.user.username)
             await self.FreeAi()
             self.state['victory'] = self.match.winner.username
             await self.channel_layer.group_send(
@@ -721,6 +729,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     print("THE GAME CAN START NOW")
                     await self.send(text_data=json.dumps("THE GAME CAN START NOW"))
                     if message["status"] == "ready":
+                        Pong_LocalConsumer.players[self.room_name][0] = message['username']
                         Pong_LocalConsumer.status[self.room_name] = False
                         self.loop_task = asyncio.create_task(self.game_loop())
                     else :
@@ -728,8 +737,8 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             case "ingame":
                 if 'action' in message:
                     action = message['action']
-                    user = message['user']
-                    if user == Pong_LocalConsumer.players[self.room_name][0]:
+                    self.user = message['user']
+                    if self.user == Pong_LocalConsumer.players[self.room_name][0]:
                         if action == 'move_up':
                             self.state['up_player_paddle_y'] = 1
                         elif action == 'move_down':
@@ -919,7 +928,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
                 await self.reset()
-                if self.state['score1'] < POINTS_TO_WIN:
+                if self.state['score2'] < POINTS_TO_WIN:
                     await self.countdown()
 
             elif self.state['ball_x'] >= 795:
@@ -932,7 +941,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = -3
                 await self.reset()
-                if self.state['score2'] < POINTS_TO_WIN:
+                if self.state['score1'] < POINTS_TO_WIN:
                     await self.countdown()
 
 
@@ -1066,6 +1075,7 @@ class MatchMaking(AsyncWebsocketConsumer):
         print("MatchMaking 839", numberofplayers.playerNumber)
         # self.send(json.dumps({"status": "Waiting for players", "numberofplayers_reached": len(waiting_users), "numberofplayers-to-reach": numberofplayers}))
         if len(waiting_users) == numberofplayers.playerNumber:
+            alias1 = Nonealias2 = None
             waiting_users.order_by('level')
             TournamentPlaceHolder.objects.update(status=False)
             print("MatchMaking 814", len(waiting_users), self.user, self.time_passed)
@@ -1073,17 +1083,18 @@ class MatchMaking(AsyncWebsocketConsumer):
             for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                 print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                 room_name = str(uuid.uuid4()).replace('-', '')
-                match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                match = TournamentRoomName.objects.create(name=room_name, created_by=user1.user, alias1=user1.user.alias, opponent=user2.user, alias2=user2.user.alias, tournament=True)
                 tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
-                print("MatchMaking 1061", "Room Name", room_name, "Opponent", user2.user.username)
+                print("MatchMaking 1061", "Room Name", room_name, "Opponent", user2.user.username, user2.user.alias)
+
                 tournament.matches.add(tmatch)
                 print("MatchMaking 1063", "Room Name", room_name, "Opponent", user2.user.username)
                 user1.delete()
                 user2.delete()
             matching_dict = {}
-            for match in RoomName.objects.filter(tournament=True):
-                matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]    
-            lenround = len(RoomName.objects.filter(tournament=True))
+            for match in TournamentRoomName.objects.filter(tournament=True):
+                matching_dict[f'{match.name}'] = [match.created_by.username, match.alias1, match.opponent.username, match.alias2]
+            lenround = len(TournamentRoomName.objects.filter(tournament=True))
             if lenround >= 4:
                 lenround -= 1
             TournamentPlaceHolder.objects.update(round=lenround)
@@ -1102,18 +1113,19 @@ class MatchMaking(AsyncWebsocketConsumer):
             print("MatchMaking 839", numberofplayers_nextmatch)
             if len(waiting_users) == numberofplayers_nextmatch:
                 waiting_users_list = list(waiting_users)
+                
                 for user1, user2 in zip(waiting_users_list[::2], waiting_users_list[1::2]):
                     print("user ", user1.user.username, user2.user.username, user1.level, user2.level)
                     room_name = str(uuid.uuid4()).replace('-', '')
-                    match = RoomName.objects.create(name=room_name, created_by=user1.user, opponent=user2.user, tournament=True)
+                    match = TournamentRoomName.objects.create(name=room_name, created_by=user1.user, alias1=user1.user.alias, opponent=user2.user, alias2=user2.user.alias, tournament=True)
                     tmatch = Tournament_Match.objects.create(room_name=room_name, user1=user1.user, user2=user2.user)
                     tournament.matches.add(tmatch)
                     user1.delete()
                     user2.delete()
                 matching_dict = {}
-                for match in RoomName.objects.filter(tournament=True):
-                    matching_dict[f'{match.name}'] = [match.created_by.username, match.opponent.username]
-                lenround = len(RoomName.objects.filter(tournament=True))
+                for match in TournamentRoomName.objects.filter(tournament=True):
+                    matching_dict[f'{match.name}'] = [match.created_by.username, match.alias1, match.opponent.username, match.alias2]
+                lenround = len(TournamentRoomName.objects.filter(tournament=True))
                 if lenround >= 4:
                     lenround -= 1
                 TournamentPlaceHolder.objects.update(round=lenround)
@@ -1160,7 +1172,7 @@ class MatchMaking(AsyncWebsocketConsumer):
                     "type": "chat.message",
                     "text": json.dumps({"status" : "6", "dict" : matching_dict})
                 })
-                await asyncio.sleep(5)
+                await asyncio.sleep(6)
                 # await self.channel_layer.group_add(result["group_name"], self.channel_name)
                 # Send the result to the group
                 await self.channel_layer.group_send("waitingroom", {
@@ -1252,6 +1264,11 @@ class MatchMaking(AsyncWebsocketConsumer):
     async def sendAdvisor(self, result):
         print("MatchMaking Sending ADVISOR")
         if result['status'] == 2 or result['status'] == 3 or result['status'] == 4:
+            if result['status'] == 4:
+                result['status'] = 5
+                await self.send(text_data=json.dumps(result))
+                await asyncio.sleep(5)
+                return
             result['status'] = 5
             await self.channel_layer.group_send(result["group_name"], {
                     "type": "chat.message",

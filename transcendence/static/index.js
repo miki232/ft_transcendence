@@ -48,7 +48,7 @@ setLanguage(userLanguage);
 */
 
 const container = document.querySelector("#container");
-const nav = document.querySelector("nav");
+const nav = document.querySelector("header");
 const content = document.querySelector("#content");
 var user = new User();
 let view = null;
@@ -73,16 +73,62 @@ export const navigateTo = async url => {
 	await router();
 };
 
-document.getElementById('languageSwitcher').addEventListener('change', (event) => {
-    changeLanguage(event.target.value);
-});
+// document.getElementById('languageSwitcher').addEventListener('change', (event) => {
+//     changeLanguage(event.target.value);
+// });
 
 // Set initial language based on user preference or default
+
+// export async function changeLanguage(language) {
+//     localStorage.setItem('language', language);
+//     console.log(language);
+//     try {
+//         const module = await import(`./languagepak/${language}.lang.js`);
+//         const translations = module.default;
+
+//         document.querySelectorAll('[data-translate]').forEach(element => {
+//             const key = element.getAttribute('data-translate');
+//             let translation = translations[key];
+
+//             if (translation) {
+//                 // Replace placeholders in the translation with dynamic content if any
+//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
+//                     try {
+//                         return eval(expression);
+//                     } catch (error) {
+//                         console.error(`Error evaluating expression: ${expression}`, error);
+//                         return '';
+//                     }
+//                 });
+
+//                 // Replace only text nodes while preserving the order of other nodes
+//                 let childNodes = Array.from(element.childNodes);
+//                 let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+//                 let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+//                 // Update text nodes
+//                 if (textNodes.length > 0) {
+//                     textNodes.forEach(textNode => {
+//                         textNode.nodeValue = translation;
+//                     });
+//                 } else {
+//                     const textNode = document.createTextNode(translation);
+//                     if (nonTextNodes.length > 0) {
+//                         element.insertBefore(textNode, nonTextNodes[0]);
+//                     } else {
+//                         element.appendChild(textNode);
+//                     }
+//                 }
+//             }
+//         });
+//     } catch (error) {
+//         console.error(`Error loading language pack: ${error}`);
+//     }
+// }
 
 export async function changeLanguage(language) {
     localStorage.setItem('language', language);
     console.log(language);
-
     try {
         const module = await import(`./languagepak/${language}.lang.js`);
         const translations = module.default;
@@ -102,22 +148,27 @@ export async function changeLanguage(language) {
                     }
                 });
 
-                // Replace only text nodes while preserving the order of other nodes
-                let childNodes = Array.from(element.childNodes);
-                let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
-                let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
-
-                // Update text nodes
-                if (textNodes.length > 0) {
-                    textNodes.forEach(textNode => {
-                        textNode.nodeValue = translation;
-                    });
+                // If the element is an input and has a placeholder, translate the placeholder
+                if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                    element.setAttribute('placeholder', translation);
                 } else {
-                    const textNode = document.createTextNode(translation);
-                    if (nonTextNodes.length > 0) {
-                        element.insertBefore(textNode, nonTextNodes[0]);
+                    // Replace only text nodes while preserving the order of other nodes
+                    let childNodes = Array.from(element.childNodes);
+                    let textNodes = childNodes.filter(child => child.nodeType === Node.TEXT_NODE);
+                    let nonTextNodes = childNodes.filter(child => child.nodeType !== Node.TEXT_NODE);
+
+                    // Update text nodes
+                    if (textNodes.length > 0) {
+                        textNodes.forEach(textNode => {
+                            textNode.nodeValue = translation;
+                        });
                     } else {
-                        element.appendChild(textNode);
+                        const textNode = document.createTextNode(translation);
+                        if (nonTextNodes.length > 0) {
+                            element.insertBefore(textNode, nonTextNodes[0]);
+                        } else {
+                            element.appendChild(textNode);
+                        }
                     }
                 }
             }
@@ -128,46 +179,8 @@ export async function changeLanguage(language) {
 }
 
 
-// async function changeLanguage(language) {
-//     localStorage.setItem('language', language);
-//     console.log(language);
-
-//     try {
-//         const module = await import(`./languagepak/${language}.lang.js`);
-//         const translations = module.default;
-
-//         document.querySelectorAll('[data-translate]').forEach(element => {
-//             const key = element.getAttribute('data-translate');
-//             let translation = translations[key];
-
-//             if (translation) {
-//                 // Replace placeholders in the translation with dynamic content if any
-//                 translation = translation.replace(/\$\{(.*?)\}/g, (_, expression) => {
-                    // try {
-                    //     return eval(expression);
-                    // } catch (error) {
-                    //     console.error(`Error evaluating expression: ${expression}`, error);
-                    //     return '';
-                    // }
-//                 });
-
-//                 // Update only text nodes, preserve other elements (e.g., icons)
-//                 element.childNodes.forEach(child => {
-//                     if (child.nodeType === Node.TEXT_NODE) {
-//                         child.nodeValue = translation;
-//                     }
-//                 });
-//             }
-//         });
-//     } catch (error) {
-//         console.error(`Error loading language pack: ${error}`);
-//     }
-// }
-
-	
-const userLang = localStorage.getItem('language') || 'en';
-changeLanguage(userLang);
-document.getElementById('languageSwitcher').value = userLang;
+// changeLanguage(user.language);
+// document.getElementById('languageSwitcher').value = userLang;
 	// const is_loggedin = async () => {
 		//     var csrftoken = getCookie('csrftoken');
 		
@@ -209,8 +222,9 @@ function wsConnection() {
 }
 
 const router = async () => {
+	console.log(user.lastURL);
 	user.loadUserData();
-	const userLang = localStorage.getItem('language') || 'en';
+	console.log(user, user.language);
 
 	if (location.pathname.includes("/user_info")) {
 		let count = location.pathname.split("/").length - 1;
@@ -219,6 +233,14 @@ const router = async () => {
 		} else if (count === 3) {
 			var userID = location.pathname.split("_")[2].split("/")[0];
 		}
+	}
+
+	if (!location.pathname.includes(user.local_room) && user.local_ws) {
+        document.querySelector('header').style.display = 'block';
+		document.querySelector('body').classList.remove('game-bg');
+		user.local_room = null;
+		await user.local_ws.close();
+		// user.lastURL = null;
 	}
 
 	const routes = [
@@ -235,10 +257,13 @@ const router = async () => {
         { path: "/friends/user_info_" + userID, view: () => import('./views/User_Info.js') },
         { path: "/friends/user_info_" + userID + "/history", view: () => import('./views/History.js') },
         { path: "/online", view: () => import('./views/Online.js') },
-		{ path: "/matchmaking", view: () => import('./views/MatchMaking.js')},
+		{ path: "/online/matchmaking", view: () => import('./views/MatchMaking.js')},
 		{ path: "/tournament", view: () => import('./views/Tournament.js')},
 		{ path: "/pong_tournament", view: () => import('./views/TournamentPong.js')},
-		{ path: "/friendly_match", view: () => import('./views/FriendlyMatch.js')},
+		{ path: "/online/friendly_match", view: () => import('./views/FriendlyMatch.js')},
+		{ path: "/local_game/1P-vs-CPU/" + user.local_room, view: () => import('./views/PongCpu.js')},
+		{ path: "/local_game/1P-vs-2P/" + user.local_room, view: () => import('./views/Localpong.js')},
+		{ path: "/local_game/tournament", view: () => import('./views/TournamentLocal.js')},
 		// { path: "/game", view: () => import('./views/Localpong.js')}
 	];
 
@@ -258,9 +283,9 @@ const router = async () => {
 	// 	// 	navigateTo("/online");
 	// 	// }
 	// }
-	if (view instanceof LocalGame) {
-			await view.closeWebSocket();
-	}
+	// if (view instanceof LocalGame) {
+	// 		await view.closeWebSocket();
+	// }
 
 	const potentialMatches = routes.map(route => {
 		return {
@@ -289,19 +314,27 @@ const router = async () => {
 	// 	history.back();
 	// 	// previousUrl = match.route.path;
 	// }
+	// else if (user.lastURL === "/1P-vs-CPU") {
+	// 	match = {
+	// 		route: routes[7],
+	// 		isMatch: true
+	// 	};
+	// 	console.log(match.route.path);
+	// 	user.lastURL = null;
+	// }
 	if (user.lastURL === "/1P-vs-2P") {
 		match = {
 			route: routes[7],
 			isMatch: true
 		};
-		createNotification("You have been disconnected from the game", "error");
 		user.lastURL = null;
-	} else if (user.lastURL === "/pong") {
+	}
+	else if (user.lastURL === "/pong") {
 		match = {
 			route: routes[3],
 			isMatch: true
 		};
-		document.querySelector('header').style.display = 'flex';
+		document.querySelector('header').style.display = 'block';
 		document.querySelector('body').classList.remove('game-bg');
 		user.disconnected === true ? createNotification("You have been disconnected from the game", "error") : user.disconnected = true;
 		user.lastURL = null;
@@ -312,6 +345,7 @@ const router = async () => {
 			isMatch: true
 		};
 	}
+	console.log(match.route.path);
 
 	switch (match.route.path) {
 		case "/":
@@ -323,15 +357,11 @@ const router = async () => {
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
 			const AboutClass = await match.route.view();
 			view = new AboutClass.default();
-			nav.innerHTML = await view.getNav();
-			content.innerHTML = await view.getContent();
 			break;
 		case "/contact":
 			await user.isLogged() === true ? navigateTo("/dashboard") : null;
 			const ContactClass = await match.route.view();
 			view = new ContactClass.default();
-			nav.innerHTML = view.getNav();
-			content.innerHTML = view.getContent();
 			break;
 		case "/dashboard":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
@@ -340,57 +370,68 @@ const router = async () => {
 			view = new DashboardClass.default(user);
 			break;
 		case "/dashboard/history":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const HistoryClass = await match.route.view();
 			view = new HistoryClass.default(user, user);
 			break;
 		case "/dashboard/settings":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const SettingsClass = await match.route.view();
 			view = new SettingsClass.default(user);
 			break;
 		case "/dashboard/requests":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const RequestsClass = await match.route.view();
 			view = new RequestsClass.default(user);
 			break;
 		case "/local_game":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const LocalClass = await match.route.view();
 			view = new LocalClass.default(user);
 			break;
 		case "/friends":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const FriendsClass = await match.route.view();
 			view = new FriendsClass.default(user);
 			break;
 		case `/friends/user_info_${userID}`:
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const InfoClass = await match.route.view();
 			view = new InfoClass.default(userID, user);
 			break;
 		case `/friends/user_info_${userID}/history`:
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			console.log(userID);
 			const UserInfoHistoryClass = await match.route.view();
 			view = new UserInfoHistoryClass.default(userID, user);
 			break;
 		case "/online":
-			await user.isLogged() === false ? navigateTo("/") : null;
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const OnlineClass = await match.route.view();
-			view = new OnlineClass.default(user);
+			view = new OnlineClass.default(user, ws);
 			break;
-		case "/matchmaking":
-			await user.isLogged() === false ? navigateTo("/") : null;
+		case "/online/matchmaking":
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			// if (previousUrl === "/pong")
 			// 	break;
 			const MatchMakingClass = await match.route.view();
 			view = new MatchMakingClass.default(user);
 			// console.log("OSU", room_name);
 			break;
-		case "/friendly_match":
-			await user.isLogged() === false ? navigateTo("/") : null;
+		case "/online/friendly_match":
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const FriendlyMatchClass = await match.route.view();
 			view = new FriendlyMatchClass.default(user);
+			break;
+		case "/local_game/1P-vs-CPU/" + user.local_room:
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			const PongCpuClass = await match.route.view();
+			view = new PongCpuClass.default(user, user.local_opponent, user.local_room, user.local_ws);
+			break;
+		case "/local_game/1P-vs-2P/" + user.local_room:
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			const LocalPongClass = await match.route.view();
+			view = new LocalPongClass.default(user, user.local_opponent, user.local_room, user.local_ws);
 			break;
 		// case "/pong":
 		// 	const PongClass = await match.route.view();
@@ -398,27 +439,32 @@ const router = async () => {
 		// 	content.innerHTML = await view.getContent();
 		// 	await view.loop();
 		// 	break;
-		case "/pong_tournament":
-			///** DA rivisitare */
-			// document.body.classList.remove("body");
-			// document.body.classList.add("bodypong");
-			// document.getElementById("container").classList.add("containerpong");
-			// document.getElementById("container").removeAttribute("id");
-			//***sdassdad */
-			console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
-			const Pong_tournamentClass = await match.route.view();
-			view = new Pong_tournamentClass.default(user, room_name);
-			content.innerHTML = await view.getContent();
-			await view.loop();
-			break;
+		// case "/pong_tournament":
+		// 	///** DA rivisitare */
+		// 	// document.body.classList.remove("body");
+		// 	// document.body.classList.add("bodypong");
+		// 	// document.getElementById("container").classList.add("containerpong");
+		// 	// document.getElementById("container").removeAttribute("id");
+		// 	//***sdassdad */
+		// 	console.log("SUCASD", match.route.view(), match.route.path, user, room_name);
+		// 	const Pong_tournamentClass = await match.route.view();
+		// 	view = new Pong_tournamentClass.default(user, room_name);
+		// 	content.innerHTML = await view.getContent();
+		// 	await view.loop();
+		// 	break;
 		case "/tournament":
 			const TournamentClass = await match.route.view();
 			console.log(user.matchmaking_ws);
 			view = new TournamentClass.default(user, user.matchmaking_ws);
 			content.innerHTML = await view.getContent();
 			room_name = await view.getRoom_Match();
-			console.log("OSU", room_name);
-			if (room_name !== null) navigateTo("/pong_tournament");
+			// console.log("OSU", room_name);
+			// if (room_name !== null) navigateTo("/pong_tournament");
+			break;
+		case "/local_game/tournament":
+			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
+			const TournamentLocalClass = await match.route.view();
+			view = new TournamentLocalClass.default(user, user.local_ws);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();
@@ -429,11 +475,18 @@ const router = async () => {
 		default:
 			user.isLogged() === true ? navigateTo("/dashboard") : navigateTo("/");
 	}
-	await changeLanguage(userLang);
+	console.log(localStorage.getItem('language'));
+	if (user.language == undefined) {
+		await changeLanguage(localStorage.getItem('language'));
+	}
+	else
+		await changeLanguage(user.language);
 
 };
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", async () => {
+	await router();
+});
 //** API per le History Dei Match*/
 // https://127.0.0.1:8001/accounts/match_history/?username=<USERNAME>
 // URL per vedere la history dei match,
@@ -441,15 +494,29 @@ window.addEventListener("popstate", router);
 ///*/
 
 document.addEventListener("DOMContentLoaded", () => {
-	document.body.addEventListener("click", async e => {
+	
+	document.body.addEventListener("click", async (e) => {
 		const form_box = document.querySelector(".form-box");
 		const dashboard = document.querySelector(".dashboard");
-		console.log(e.target);
-		if (e.target.matches("#play-local")) {
-			localGame_Cache["ws_connection"] = await view.getWebSocket();
-			localGame_Cache["user"] = view.getUser();
-			localGame_Cache["opponent"] = view.getOpponent();
+		
+		if (e.target.matches(".toggler-icon")) {
+			const navbarCollaspe = document.querySelector("#navbarNavDropdown");
+			const spanToggler = document.querySelector(".navbar-toggler-icon");
+			if (navbarCollaspe.classList.contains("show-navbar")) {
+				setTimeout(() => {
+					spanToggler.innerHTML = '<ion-icon name="menu-outline" class="toggler-icon"></ion-icon>';
+					navbarCollaspe.classList.remove("show-navbar");
+				}, 400);
+			} else {
+				spanToggler.innerHTML = '<ion-icon name="close-outline" class="toggler-icon"></ion-icon>';
+				navbarCollaspe.classList.add("show-navbar");
+			}
 		}
+		// if (e.target.matches("#play-local")) {
+		// 	localGame_Cache["ws_connection"] = await view.getWebSocket();
+		// 	localGame_Cache["user"] = view.getUser();
+		// 	localGame_Cache["opponent"] = view.getOpponent();
+		// }
 		if (e.target.matches("#Tournament")) {
 			Tournament_Cache["ws"] = await view.getWebSocket();
 			console.log(Tournament_Cache["ws"]);

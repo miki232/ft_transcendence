@@ -23,21 +23,48 @@ export async function getCookie() {
 		return csrftoken;
 	}
 
-export function sanitizeInput(input) {
+async function getCSRFToken() {
+        let csrftoken = await fetch("/csrf-token")
+            .then(response => response.json())
+            .then(data => data.csrfToken);
+            // console.log(csrftoken);
+        return csrftoken;
+    }
+
+export async function sanitizeInput(input) {
 	// Rimuovi markup HTML pericoloso
-	var sanitizedInput = input.replace(/<[^>]*>/g, '');
-	// Escape caratteri speciali per prevenire XSS
-	sanitizedInput = sanitizedInput.replace(/[&<>"']/g, function(match) {
-		return {
-			'&': '&amp;',
-			'<': '&lt;',
-			'>': '&gt;',
-			'"': '&quot;',
-			"'": '&#x27;',
-			"`": '&#x60;'
-		}[match];
-	});
-	return sanitizedInput;
+	// var sanitizedInput = input.replace(/<[^>]*>/g, '');
+	// // Escape caratteri speciali per prevenire XSS
+	// sanitizedInput = sanitizedInput.replace(/[&<>"']/g, function(match) {
+	// 	return {
+	// 		'&': '&amp;',
+	// 		'<': '&lt;',
+	// 		'>': '&gt;',
+	// 		'"': '&quot;',
+	// 		"'": '&#x27;',
+	// 		"`": '&#x60;'
+	// 	}[match];
+	// });
+	// return sanitizedInput;
+    return await fetch("/sanity/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": await getCSRFToken()
+        },
+        body: JSON.stringify({ "input": input })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle response data
+        console.log(data);
+        // Print the response
+        return data.sanitized_input;
+    })
+    .catch(error => {
+        // Handle error
+        console.error(error);
+    });
 }
 
 export async function register() {
@@ -45,15 +72,15 @@ export async function register() {
     const passwordInput = document.getElementById('signup-pass');
     const emailInput = document.getElementById('email');
 
-    const username = sanitizeInput(usernameInput.value);
-    const password = sanitizeInput(passwordInput.value);
-    const email = sanitizeInput(emailInput.value);
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    const email = emailInput.value;
     const csrftoken = getCookieRegister('csrftoken');
 
-    if (!username || !password || !email) {
-        createNotification('Please fill in all fields');
-        return;
-    }
+    // if (!username || !password || !email) {
+    //     createNotification('Please fill in all fields', "fillfields");
+    //     return;
+    // }
 
     try {
         const response = await fetch('accounts/register/', {
@@ -87,7 +114,7 @@ export async function register() {
             const data = await response.json();
             console.log(data);
             console.log("Register");
-            createNotification("Account created successfully");
+            createNotification("Account created successfully!", "acccreated");
             usernameInput.value = '';
             passwordInput.value = '';
             emailInput.value = '';

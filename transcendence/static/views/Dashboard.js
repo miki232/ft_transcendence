@@ -7,11 +7,7 @@ export default class extends AbstractView {
 	constructor(user) {
 		super();
 		this.user = user;
-		this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
-		this.nav.innerHTML = this.getNav();
-		this.content.innerHTML = this.getContent();
-		this.user.expProgress();
+		this.initialize();
 		// this.isValid = false;
 		// this.user;
 		// this.email;
@@ -19,6 +15,14 @@ export default class extends AbstractView {
 		// this.pro_pic;
 		// this.validateLogin();
 		// this.setTitle("Dashboard");
+	}
+
+	initialize() {
+		this.content = document.querySelector("#content");
+		this.nav = document.querySelector("header");
+		this.nav.innerHTML = this.getNav();
+		this.content.innerHTML = this.getContent();
+		this.user.expProgress();
 	}
 
 	// async loadUserData() {
@@ -104,35 +108,68 @@ export default class extends AbstractView {
 
 	getNav() {
 		const navHTML = `
-			<a href="/local_game" data-translate="local" name="local" class="dashboard-nav" data-link>Local Game</a>
-			<a href="/online" data-translate="online" name="online" class="dashboard-nav" data-link>Online Game</a>
-			<a href="/ranking" data-translate="ranking" name="ranking" class="dashboard-nav" data-linkdata-translate="ranking">Ranking</a>
-			<a href="/friends" data-translate="friends" name="friends" class="dashboard-nav" data-link>Friends</a>
-			<a href="/chat" name="chat" class="dashboard-nav" data-link>Chat</a>
-			<a href="/dashboard" name="dashboard" class="profile-pic dashboard-nav" data-link><img alt="Profile picture" src="${this.user.getPic()}"/></a>
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+			  <div class="container-fluid">
+				<a href="/dashboard" id="logo" class="nav-brand" aria-current="page" data-link>
+					<img src="/static/img/Logo.png" alt="Logo" class="logo"/>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				  <ul class="navbar-nav">
+					<li class="nav-item">
+					  <a class="nav-link" href="/local_game" data-translate="local" data-link>Local Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/chat" data-link>Chat</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="/dashboard" data-link>Dashboard</a>
+					</li>
+				  </ul>
+				</div>
+			  </div>
+			</nav>
 		`;
 		return navHTML;
 	}
 
 	getContent() {
-		let dashboardHTML = `
-			<div class="dashboard">
-				<div class="profile-card">
-					<div class="user-dashboard">
-						<img alt="Profile picture" src="${this.user.getPic()}"/>
-						<div class="user-info">
-							<h3>${this.user.getUser()}</h3>
-							<h5 data-translate="level">Level${this.user.getLevel()}</h5>
-							<div class="exp-bar"><div class="progress-bar"></div></div>
-						</div>
+		const dashboardHTML = `
+		<div class="dashboard">
+			<div class="profile-card">
+				<h1>Dashboard</h1>
+				<div class="user-dashboard">
+					<img alt="Profile picture" src="${this.user.getPic()}"/>
+					<div class="user-info">
+						<h3>${this.user.getUser()}</h3>
+						<h5 data-translate="level">Level${this.user.getLevel()}</h5>
+						<div class="exp-bar"><div class="progress-bar"></div></div>
 					</div>
-					<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
-					<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
-					<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
-					<div class="hr" style="width: 75%; margin: 15px 0 20px 0;"></div>
-					<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+				</div>
+				<div class="btns-container">
+					<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
+						<a href="/dashboard/history" data-translate="history" id="history-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline" ></ion-icon>History</a>
+						<a href="/dashboard/requests" data-translate="requests" id="requests-btn" class="submit-btn dashboard-btn" data-link><ion-icon name="notifications-outline"></ion-icon>Requests</a>
+						<a href="/dashboard/settings" data-translate="settings" id="settings-btn" class="submit-btn" data-link><ion-icon name="settings-outline"></ion-icon>Settings</a>
+					</div>
+					<div class="back-btn-container">
+						<div class="hr" style="width: 80%; margin-bottom: 20px;"></div>
+						<button type="button" data-translate="logout" id="logout-btn" class="submit-btn red-btn"><ion-icon name="exit-outline"></ion-icon>Logout</button>
+					</div>
 				</div>
 			</div>
+		</div>
 		`;
 		// dashboardHTML += await this.room.getContent();
 		return dashboardHTML;

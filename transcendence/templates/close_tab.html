@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Close Tab</title>
+</head>
+<body>
+    <script type="text/javascript">
+        window.onload = function() {
+            var error = "{{ error }}";
+            if (error) {
+                localStorage.setItem('error42', error);
+            }
+            window.close();
+        }
+    </script>
+</body>
+</html>

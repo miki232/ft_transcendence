@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
-import { navigateTo } from "../index.js";
+import { changeLanguage, navigateTo } from "../index.js";
 import { register } from "../utilities.js";
+import { createNotification } from "./Notifications.js";
 // import validateLogin from './Dashboard.js';
 
 export default class extends AbstractView {
@@ -10,9 +11,10 @@ export default class extends AbstractView {
         this.setTitle("ft_The Match");
 		this.is_loggedin = false;
 		this.content = document.querySelector("#content");
-		this.nav = document.querySelector("nav");
+		this.nav = document.querySelector("header");
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
+		this.lang = localStorage.getItem('language') || 'en';
 		this.activeBtn();
     }
 
@@ -51,7 +53,17 @@ export default class extends AbstractView {
 		const registerSwap = document.querySelector(".register-btn");
 		const login_username = document.querySelector("#login-user");
 		const login_pass = document.querySelector("#login-pass");
+		const schoolLoginBtn = document.getElementById("school-login");
+		var langSelectors = document.querySelectorAll('.lang-selector');
 
+		langSelectors.forEach(function(selector) {
+			selector.addEventListener('click', function(event) {
+				this.lang = this.getAttribute('value');
+				changeLanguage(this.lang);
+				// Do something with the selected language
+				console.log('Selected language: ' + this.lang);
+			});
+		});
 		loginSwap.addEventListener("click", e => {
 			e.preventDefault();
 			form_box.classList.remove("change-form");
@@ -75,13 +87,74 @@ export default class extends AbstractView {
 			const registered = await register();
 			registered === true ? form_box.classList.remove("change-form") : null;
 		});
+		schoolLoginBtn.addEventListener('click', async e => {
+			e.preventDefault();
+			const response = await fetch('accounts/authorize/', {
+				method: 'GET',
+				headers: {
+					'Content-Type' : 'application/json',
+					'X-CSRFToken': this.getCookie('csrftoken')
+				}
+			});
+			if (response.ok) {
+				const data = await response.json();
+				const newWindow = window.open(data.url, '_blank');
+
+				const checkWindowClosed = setInterval(function() {
+					if (newWindow.closed) {
+						clearInterval(checkWindowClosed);
+						let exiting = localStorage.getItem('error42');
+						if (exiting === null) {
+							console.log('The tab has been closed');
+							navigateTo("/dashboard");
+						}
+						console.log('The tab has been closed with error:', exiting);
+						createNotification(exiting, "exiting");
+						navigateTo("/dashboard");
+						// Perform any other actions needed after the tab is closed
+					}
+				}, 1000); // Check every second
+			} else {
+				console.error('Error:', response.status);
+			}
+    });
 	}
 
 	getNav() {
 		const navHTML = `
-			<a href="/" name="index" data-link>Home</a>
-			<a href="/about" name="about" data-link>About Us</a>
-			<a href="/contact" name="contact" data-link data-translate="contact">Contact</a>
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+			  <div class="container-fluid">
+				<a href="/" id="logo" class="nav-brand" aria-current="page" data-link>
+					<img src="/static/img/Logo.png" alt="Logo" class="logo"/>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"><ion-icon name="menu-outline" class="toggler-icon"></ion-icon></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				  <ul class="navbar-nav">
+					<li class="nav-item">
+					  <a class="nav-link" aria-current="page" href="/" data-link>Home</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" data-translate="aboutus" href="/about" data-link>About Us</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" data-translate="contacts" href="/contact" data-link>Contact</a>
+					</li>
+					<li class="nav-item dropdown">
+					  <a class="nav-link dropdown-toggle" data-translate="language" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Language
+					  </a>
+					  <ul class="dropdown-menu select-menu">
+						<li class="dropdown-item lang-selector" value="en">English</li>
+						<li class="dropdown-item lang-selector" value="fr">Français</li>
+						<li class="dropdown-item lang-selector" value="it">Italiano</li>
+					  </ul>
+					</li>
+				  </ul>
+				</div>
+			  </div>
+			</nav>
 		`;
 		return navHTML;
 	}
@@ -102,21 +175,23 @@ export default class extends AbstractView {
 						<ion-icon name="lock-closed-outline"></ion-icon>
 					</div>
 					<div class="checkbox">
-						<span>
+						<div>
 							<input type="checkbox" id="login-checkbox">
 							<label data-translate="rememberme" for="login-checkbox">Remember me</label>
-						</span>
-						<h5 data-translate="forgotpass" >Forgot password?</h5>
+						</div>
+						<div>
+							<h5 data-translate="forgotpass">Forgot password?</h5>
+						</div>
 					</div>
 					<button type="submit" data-translate="login" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon">Login</button>
 					<div class="login-register">
-						<p data-translate="noaccount" >Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
+						<p data-translate="noaccount">Don't have an account? <a href="#" data-translate="register" class="register-btn">Register</a></p>
 					</div>
-					<div class="hr" style="width: 75%; margin: 25px 0 30px 0;"></div>
-					<a href="accounts/authorize/" id="school-login" data-translate="login42">Login with 42 intra account</a>
+					<div class="hr" style="width: 80%; margin: 25px 0 30px 0;"></div>
+					<p id="school-login" data-translate="login42">Login with <a href="accounts/authorize/"><img src="/static/img/42_logo_white.svg" id="school-logo"/></a></p>
 				</form>
 				<form class="register-form">
-					<h1 data-translate="registration">Registration</h1>
+					<h1 data-translate="makeregister">Registration</h1>
 					<div class="input-box">
 						<input type="text" id="signup-user" required>
 						<label data-translate="signupuser">Username</label>
@@ -136,7 +211,7 @@ export default class extends AbstractView {
 						<input type="checkbox" id="register-checkbox">
 						<label for="register-checkbox">I agree to the terms & conditions</label>
 					</div>
-					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register</button>
+					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register<ion-icon name="save-outline"></ion-icon></button>
 					<div class="login-register">
 						<p data-translate="alreadyacc">Already have an account? <a href="#" class="login-btn" data-translate="fromregtologin">Login</a></p>
 					</div>

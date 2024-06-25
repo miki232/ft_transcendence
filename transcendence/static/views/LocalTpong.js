@@ -5,11 +5,12 @@ import Room from "./Room.js";
 import { createNotification } from "./Notifications.js";
 
 
-export default class LocalPong extends AbstractView{
-    constructor(user, opponent, room_name, ws){
+export default class LocalTpong extends AbstractView{
+    constructor(user, user1, opponent, room_name, onLoopFinish){
         super();
         this.room_name = room_name;
-        this.game_ws = ws;
+		this.user1 = user1;
+        this.game_ws = null;
         this.ball_size = 20;
         this.ballX = 800 / 2;
         this.ballY = 600 / 2 - this.ball_size / 2;
@@ -23,15 +24,25 @@ export default class LocalPong extends AbstractView{
         this.arrowDownPressed = false;
         this.users = user;
         this.user_paddle_color = user.paddle_color;
-        this.pong_color = user.pong_color;
         this.keysPressed = {};
         this.opponent = opponent;
         this.gamestarted = false;
         this.lang = localStorage.getItem('language') || 'en';
+		this.onLoopFinish = onLoopFinish;
+		this.traces = 0;
         this.initialize();
     }
 
     async initialize() {
+		this.game_ws = new WebSocket(
+			'wss://'
+			+ window.location.hostname
+			+ ':8000'
+			+ '/ws/local/'
+			+ this.room_name
+			+ '/'
+		);
+		this.users.local_ws = this.game_ws;
         document.querySelector('header').style.display = 'none';
         document.querySelector('body').classList.add('game-bg');
         const content = document.getElementById('content');
@@ -149,10 +160,10 @@ export default class LocalPong extends AbstractView{
             this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.opponent}));
         }
         if (this.keysPressed['w']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.users.username}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_up', 'user': this.user1}));
         }
         if (this.keysPressed['s']) {
-            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.users.username}));
+            this.game_ws.send(JSON.stringify({'Handling' : 'ingame', 'action': 'move_down', 'user': this.user1}));
         }
     }
 
@@ -162,7 +173,7 @@ export default class LocalPong extends AbstractView{
             const context = canvas.getContext('2d');
             context.font = '48px serif';
             context.fillStyle = 'red';
-            if (data.victory === this.users.getUser()) {
+            if (data.victory === this.user1) {
                 console.log('You Win!');
                 context.fillStyle = 'green';
                 context.fillText('You Win!', canvas.width / 5, canvas.height / 2);
@@ -176,10 +187,14 @@ export default class LocalPong extends AbstractView{
                 context.fillText('You Win!', (canvas.width / 5) * 3, canvas.height / 2);
             }
             setTimeout(() => {
-                this.users.disconnected = false;
+				this.users.disconnected = false;
+				this.users.tournament_local_room.winner = data.victory;
                 this.closeWebSocket();
-                navigateTo('/local_game');
-            }, 3000);
+				this.traces++;
+				if (this.traces < 2) {
+					this.onLoopFinish();
+				}
+			}, 3000);
         }   
     }
     
@@ -206,7 +221,7 @@ export default class LocalPong extends AbstractView{
             // }
             if (event.key === 'Enter' && !this.gamestarted) {
                 this.gamestarted = true;
-                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.users.username, 'opponent':  this.opponent}));
+                this.game_ws.send(JSON.stringify({'Handling' : 'lobby', 'status': 'ready', 'username': this.user1, 'opponent':  this.opponent}));
             }
             
         });
@@ -245,19 +260,12 @@ export default class LocalPong extends AbstractView{
             if (data.paddle2_y !== undefined) {
                 this.opponentPaddleY = data.paddle2_y;
             }
-            if (data.score1 !==  this.users.username) {
-                document.getElementById("player1-score").innerHTML = this.users.username + ": " + data.score1;
+            if (data.score1 !==  this.user1) {
+                document.getElementById("player1-score").innerHTML = this.user1 + ": " + data.score1;
             }
             if (data.score2 !==  this.opponent) {
                 document.getElementById("player2-score").innerHTML = this.opponent + ": " + data.score2;
             }
-            // if (data.victory != "none"){
-            //     console.log(data.victory);
-            //     if (users === data.victory)
-            //         alert("YOU WIN!" + users)
-            //     else
-            //         alert("AHAHAH hai PERSO")
-            // }
             this.update(canvas, context);
             this.winner_checker(data);
         }
@@ -277,7 +285,7 @@ export default class LocalPong extends AbstractView{
                     <div id="player2-score" class="score-info"></div>
             </div>
             <div id="countdown" data-translate="commands" class="countdown"> Command "W/S", ArrowUp and ArrowDown, Press Enter to Start the Game</div>
-            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
+            <canvas id="pongCanvas" width="800" height="600"></canvas>
         `;
     }
 }
