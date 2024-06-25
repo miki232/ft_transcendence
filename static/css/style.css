@@ -1325,10 +1325,22 @@ canvas {
 
 /************ CHAT ROOM ************/
 
+.message {
+	width: 25%;
+	padding: 10px;
+	font-size: 16px;
+	border-radius: 2em;
+	margin: 15px 0px;
+	color: var(--primary-color);
+	border: none;
+	background-color: white;
+	outline: none;
+	resize: none;
+}
 
 .chat-room {
-    width: 600px;
-    height: 650px;
+    width: 430px;
+    height: 550px;
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(20px);
@@ -1342,10 +1354,14 @@ canvas {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin: auto;
+    position: relative;
+    top: 0; bottom: 0; left: 0; right: 0;
 }
 
+
 #chat-log {
-    width: calc(100% - 20px);
+    width: 300px;
     height: 400px;
     padding: 10px;
     font-size: 16px;
@@ -1359,7 +1375,7 @@ canvas {
 }
 
 #chat-message-input {
-    width: calc(100% - 20px);
+    width: 300px;
     padding: 10px;
     font-size: 16px;
     color: white;

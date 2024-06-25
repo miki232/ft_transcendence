@@ -40,7 +40,7 @@ export default class Chat extends AbstractView {
             const roomname = document.querySelector('#room-name-input').value;
             console.log("Entering chat room", roomname);
             this.userObj.room_chat = roomname;
-            navigateTo(`/chatroom/`);
+            navigateTo(`/chat/` + roomname);
         });
         // document.querySelector('#room-name-submit').onclick = (e) => {
         //     e.preventDefault();

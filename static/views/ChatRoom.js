@@ -12,30 +12,46 @@ export default class ChatRoom extends AbstractView {
         this.initialize();
     }
 
-    async initialize() {
-        this.setupWebSocket();
+    initialize() {
+        console.log(this.userObj);
+        console.log(this.roomName);
+        this.setupWebSocket(this.userObj);
         this.setupChatInput();
     }
 
     getContent() {
         return `
+            <h1 style="color: white; text-align:center;">Chat Room: ${this.roomName} </h1>
             <div class="chat-room">
-                <h1 style="color:red;">Chat Room: ${this.roomName} </h1>
-                <textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
-                <input id="chat-message-input" type="text" size="100"><br>
+                <div id="chat-log">
+                </div>
+                <input id="chat-message-input" type="text" size="100">
                 <input id="chat-message-submit" type="button" value="Send">
             </div>
         `;
     }
 
-    setupWebSocket() {
+    setupWebSocket(user) {
         const chatSocket = new WebSocket(
             'wss://' + window.location.hostname + ':8000' + '/ws/chat/' + this.roomName + '/'
         );
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            const message_element = document.createElement('div');
+            const user_id = data['user'];
+            const logged_user_id = user.username;
+            message_element.innerText = data['message'];
+            if (user_id === logged_user_id)
+            {
+                message_element.classList.add('message');
+            }
+            else
+            {
+                message_element.classList.add('message');
+            }
+            
+            document.querySelector('#chat-log').appendChild(message_element);
         };
 
         chatSocket.onclose = function(e) {

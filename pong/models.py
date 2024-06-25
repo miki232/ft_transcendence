@@ -71,5 +71,5 @@ class TournamentPlaceHolder(models.Model):
             send_save_notification("all", "The Tournament system has created a Tournament")
             cls.objects.create(playerNumber=4, status=True, round=0, name="Tournament")
 
-class TournamentPartecipants(models.Model):
+class TournamentPartecipants(models.Model): 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)

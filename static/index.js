@@ -221,13 +221,18 @@ const router = async () => {
 		}
 	}
 
+	if (location.pathname.includes("/chat")) {
+		var room_name = location.pathname.split("/")[2];
+		console.log(room_name);
+	}
+
 	const routes = [
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
 		{ path: "/chat", view: () => import('./views/Chat.js') },
-		{ path: "/chatroom/", view: () => import('./views/ChatRoom.js') },
+		{ path: "/chat/" + room_name, view: () => import('./views/ChatRoom.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
         { path: "/dashboard/settings", view: () => import('./views/Settings.js') },
@@ -427,10 +432,10 @@ const router = async () => {
 			const ChatClass = await match.route.view();
 			view = new ChatClass.default(user);
 			break;
-		case "/chatroom/":
+		case "/chat/" + room_name:
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const ChatRoomClass = await match.route.view();
-			view = new ChatRoomClass.default(user, user.room_chat);
+			view = new ChatRoomClass.default(user, room_name);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();
