@@ -139,6 +139,10 @@ export default class LocalGame extends AbstractView {
 			});
 		two_playerBtn.addEventListener("click", e => {
 			this.isStartLocal = false;
+			try {
+				this.ws_local.close();
+			} catch (error) {
+			}
 			this.ws_local = new WebSocket('wss://'
 			        + window.location.hostname
 			        + ':8000'
@@ -212,6 +216,10 @@ export default class LocalGame extends AbstractView {
 		})
 		cpu_playerBtn.addEventListener("click", e => {
 			e.preventDefault();
+			try {
+				this.ws_local.close();
+			} catch (error) {
+			}
 			this.ws_local = new WebSocket('wss://'
 			        + window.location.hostname
 			        + ':8000'

@@ -140,7 +140,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        print("Update 131", validated_data, validated_data['username'].strip(), ('username' in validated_data and len(validated_data['username']) > 0))  # Debugging
+        # print("Update 131", validated_data, validated_data['username'].strip(), ('username' in validated_data and len(validated_data['username']) > 0))  # Debugging
         if 'username' in validated_data and validated_data['username'].strip():
             print("Update 144", "Username")  # Debugging
             instance.username = validated_data['username']
