@@ -1953,3 +1953,136 @@ canvas {
     flex-direction: column;
     justify-content: center;
 }
+
+/************ CHAT ************/
+	
+.chat-room-form {
+    width: 430px;
+    height: 550px;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    color: white;
+    font-size: 24px;
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#room-name-input {
+    width: calc(100% - 20px);
+	margin-top: 20px;
+	margin-bottom: 20px;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+#room-name-input::placeholder {
+    color: white;
+    position: absolute;
+    transition: top 0.5s, font-size 0.5s;
+}
+
+#room-name-input:focus::placeholder {
+    top: -10px;
+}
+
+/************ CHAT ROOM ************/
+
+.message {
+	width: 25%;
+	padding: 10px;
+	font-size: 16px;
+	border-radius: 2em;
+	margin: 15px 0px;
+	color: var(--primary-color);
+	border: none;
+	background-color: white;
+	outline: none;
+	resize: none;
+}
+
+.chat-room {
+    width: 430px;
+    height: 550px;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    color: white;
+    font-size: 24px;
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: auto;
+    position: relative;
+    top: 0; bottom: 0; left: 0; right: 0;
+}
+
+
+#chat-log {
+    width: 300px;
+    height: 400px;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    outline: none;
+    margin-bottom: 10px;
+    resize: none;
+}
+
+#chat-message-input {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+#chat-message-input::placeholder {
+    color: white;
+    position: absolute;
+    transition: top 0.5s, font-size 0.5s;
+}
+
+#chat-message-input:focus::placeholder {
+    top: -10px;
+}
+
+#chat-message-submit {
+    width: calc(100% - 20px);
+    padding: 12px;
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#chat-message-submit:hover {
+    background-color: #0056b3;
+}

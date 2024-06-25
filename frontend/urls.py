@@ -1,12 +1,14 @@
 from django.urls import path
 from . import views
 from pong.views import ListRoomView, DeleteRoomView, CreateRoomView, MatchmakingView, TournamentView, WaitingForTournameView, TournamentMatchView, RoundTorunament, TournamentCreateView, TournamentHistoryView, Search_TournamentMatchView, LocalTournamentView, GetLocalTournament_MatchView, GetLocalTournamentView, LocalTournamentMatch_OneView, LocalTournamentMatch_updateView, LocalTournamentSetWinner
+from chat.views import ChatCreateView
 
 urlpatterns = [
     path("", views.index, name="index"),
     path('csrf-token', views.csrf, name='csrf'),
     path('about/', views.about, name="about"),
     path('contact/', views.contact, name='contact'),
+    path('chat_create/', ChatCreateView.as_view(), name='chat'),
     path('login/', views.login, name='login'),
     path('room/', views.room, name="room"),
     path('rooms_list/', ListRoomView.as_view(), name='rooms_list'),

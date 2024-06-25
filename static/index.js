@@ -235,6 +235,11 @@ const router = async () => {
 		}
 	}
 
+	if (location.pathname.includes("/chat")) {
+		var room_name = location.pathname.split("/")[2];
+		console.log(room_name);
+	}
+
 	if (!location.pathname.includes(user.local_room) && user.local_ws) {
         document.querySelector('header').style.display = 'block';
 		document.querySelector('body').classList.remove('game-bg');
@@ -247,6 +252,8 @@ const router = async () => {
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
         { path: "/about", view: () => import('./views/About.js') },
+		{ path: "/chat", view: () => import('./views/Chat.js') },
+		{ path: "/chat/" + room_name, view: () => import('./views/ChatRoom.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
@@ -465,6 +472,16 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const TournamentLocalClass = await match.route.view();
 			view = new TournamentLocalClass.default(user, user.local_ws);
+			break;
+		case "/chat":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatClass = await match.route.view();
+			view = new ChatClass.default(user);
+			break;
+		case "/chat/" + room_name:
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatRoomClass = await match.route.view();
+			view = new ChatRoomClass.default(user, room_name);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();

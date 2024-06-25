@@ -19,6 +19,7 @@ class CustomUser(AbstractUser): # new
     paddle_color = models.CharField(max_length=254, default="#00FF99")
     pong_color = models.CharField(max_length=254, default="#141414")
     OAuth = models.BooleanField(default=False)
+    
     # wins= models.PositiveIntegerField(default=0)
     # losses= models.PositiveIntegerField(default=0)
     def get_match_history(self):
