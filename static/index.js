@@ -227,7 +227,7 @@ const router = async () => {
         { path: "/about", view: () => import('./views/About.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
 		{ path: "/chat", view: () => import('./views/Chat.js') },
-		{ path: "/chat/" + room_name, view: () => import('./views/ChatRoom.js') },
+		{ path: "/chatroom/", view: () => import('./views/ChatRoom.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
         { path: "/dashboard/settings", view: () => import('./views/Settings.js') },
@@ -426,6 +426,11 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : null;
 			const ChatClass = await match.route.view();
 			view = new ChatClass.default(user);
+			break;
+		case "/chatroom/":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatRoomClass = await match.route.view();
+			view = new ChatRoomClass.default(user, user.room_chat);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();

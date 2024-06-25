@@ -20,7 +20,7 @@ export default class ChatRoom extends AbstractView {
     getContent() {
         return `
             <div class="chat-room">
-                <h1>Chat Room: ${this.roomName} style="color:red;"</h1>
+                <h1 style="color:red;">Chat Room: ${this.roomName} </h1>
                 <textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
                 <input id="chat-message-input" type="text" size="100"><br>
                 <input id="chat-message-submit" type="button" value="Send">
@@ -30,7 +30,7 @@ export default class ChatRoom extends AbstractView {
 
     setupWebSocket() {
         const chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/' + this.roomName + '/'
+            'wss://' + window.location.hostname + ':8000' + '/ws/chat/' + this.roomName + '/'
         );
 
         chatSocket.onmessage = function(e) {

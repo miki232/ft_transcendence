@@ -1,8 +1,10 @@
+import { navigateTo } from "../index.js";
 import AbstractView from "./AbstractView.js";
 
 export default class Chat extends AbstractView {
     constructor(userOBJ) {
         super();
+        this.setupChatRoomInput = this.setupChatRoomInput.bind(this);
         this.userObj = userOBJ;
         this.content = document.querySelector("#content");
         this.nav = document.querySelector("nav");
@@ -32,16 +34,20 @@ export default class Chat extends AbstractView {
 
     setupChatRoomInput() {
         document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.key === 'Enter') {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
-
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
+        const btn = document.querySelector('#room-name-submit');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const roomname = document.querySelector('#room-name-input').value;
+            console.log("Entering chat room", roomname);
+            this.userObj.room_chat = roomname;
+            navigateTo(`/chatroom/`);
+        });
+        // document.querySelector('#room-name-submit').onclick = (e) => {
+        //     e.preventDefault();
+        //     console.log("Entering chat room", document.querySelector('#room-name-input').value);
+        //     this.userOBJ.room_chat = document.querySelector('#room-name-input').value;
+        //     navigateTo(`/chatroom/}`);
+        // };
     }
 
     getNav() {
