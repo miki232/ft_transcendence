@@ -7,7 +7,7 @@ export default class User extends AbstractView {
 		super();
 		this.username;
 		this.email;
-		this.alias;
+		this.alias = "null";
 		this.language = "en";
         this.round = [];
 		// this.password;

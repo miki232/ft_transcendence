@@ -88,7 +88,7 @@ export default class Tournament extends AbstractView {
 
     async getRoomcallbackmatch() {
         this.user.tournament_opp.alias = null;
-        // this.user.tournament_opp.username = null;
+        this.user.tournament_opp.username = null;
         await this.getWaitingPlayers();
         return new Promise((resolve, reject) => {
             // this.matchmaking_ws.onopen = () => {
@@ -120,6 +120,9 @@ export default class Tournament extends AbstractView {
                             this.user.tournament_opp.username = matchData.created_by.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
                         }
+                        console.log(" DATAAAAAAAAAAAAAAAAAAAAAaa", matchData);
+                        console.log("DATAAAAA this.user.tournament_opp.username a", this.user.tournament_opp.username);
+                        console.log("DATAA this.user.username", this.user.username);
                         // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
                         // this.displayTournamentChart(this.torunament_chart);
                         // createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
@@ -148,7 +151,7 @@ export default class Tournament extends AbstractView {
                         console.log("ROUND", this.user.round);
                     }
                     else if (data.status === "Tournament start") {
-                        this.displayTournamentChart();
+                        await this.displayTournamentChart();
                         setTimeout(() => {}, 1000);
                         this.user.matchmaking_ws.close(); // Close the WebSocket
                         // Fetch the match data from the API
@@ -158,21 +161,61 @@ export default class Tournament extends AbstractView {
                         console.log("MATCH DATA", matchData);
                         this.roomName = matchData.name;
                         // Update the content to show the match
-                        if (this.user.alias === matchData.created_by.alias)
-                        {
+
+                        if (this.user.username === matchData.created_by.username){
                             if (matchData.opponent.alias !== "None")
-                            {
                                 this.user.tournament_opp.alias = matchData.opponent.alias;
-                            }
+                            this.user.tournament_opp.username = matchData.opponent.username;
+                            this.user.tournament_opp.pro_pic = matchData.pro_pic_opponent;
                         }
-                        else
-                        {
+                        else{
                             if (matchData.created_by.alias !== "None")
-                            {
                                 this.user.tournament_opp.alias = matchData.created_by.alias;
-                                console.log("ALIAS", this.user.tournament_opp.alias);
+                            this.user.tournament_opp.username = matchData.created_by.username;
+                            this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
+                        }
+                        let round = [];
+                        for (const matchId in data.dict) {
+                            if (data.dict.hasOwnProperty(matchId)) {
+                                console.log("sadsadasdsdasdasda", data.dict[matchId]);
+                                const player1 = data.dict[matchId][1] !== 'None' ? data.dict[matchId][1] : data.dict[matchId][0];
+                                const player2 = data.dict[matchId][3] !== 'None' ? data.dict[matchId][3] : data.dict[matchId][2];
+                                const match = `${player1} Vs ${player2}`;
+                                console.log("AMMAMMA", match);
+                                round.push(match);
+                                this.torunament_chart.push(match);
+                                createNotification(match);
                             }
                         }
+                        // Check if the round already exists in the user's rounds
+                        const roundExists = this.user.round.some(existingRound => {
+                            return existingRound.every((value, index) => value === round[index]);
+                        });
+                        // If the round does not exist, add it
+                        if (!roundExists) {
+                            this.user.round.push(round);
+                        }
+                        this.displayTournamentChart();
+                        console.log("ROUND", this.user.round);
+                        // if (matchData.opponent.alias !== "None")
+                        // {
+                        //     if (this.user.alias === matchData.created_by.alias)
+                        //     {
+                        //         this.user.tournament_opp.alias = matchData.opponent.alias;
+                        //     }
+                        //     this.user.tournament_opp.username = matchData.opponent.username;
+                        // }
+                        // else
+                        // {
+                        //     if (matchData.created_by.alias !== "None")
+                        //     {
+                        //         this.user.tournament_opp.alias = matchData.created_by.alias;
+                        //         console.log("ALIAS", this.user.tournament_opp.alias);
+                        //     }
+                        //     this.user.tournament_opp.username = matchData.created_by.username;
+                        // }
+                        console.log("DATAAAAA this.user.tournament_opp.username a", this.user.tournament_opp.username);
+                        console.log("DATAA this.user.username", this.user.username);
                         
                         // Update the content to show the match
                         // let conente_opponent = document.getElementById("opponent")
@@ -496,7 +539,7 @@ export default class Tournament extends AbstractView {
     //     container.appendChild(tournamentWrapper);
     // }
 
-    displayTournamentChart() {
+    async displayTournamentChart() {
         const container = document.querySelector('.tournament-container');
         container.innerHTML = ''; // Clear any existing content
     
