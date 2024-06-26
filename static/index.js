@@ -6,6 +6,7 @@ import MatchMaking from "./views/MatchMaking.js";
 import Pong from "./views/Pong.js";
 import LocalGame from "./views/LocalGame.js";
 import Online from "./views/Online.js";
+import ChatRoom from "./views/ChatRoom.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -307,6 +308,11 @@ const router = async () => {
 			{
 				view.closeWebSocket();
 				console.log("DISCONNESIONE DALLA WEBSOCKET");
+			}
+		if (view instanceof ChatRoom && match.route.path !== "/chat/")
+			{
+				view.closeWebSocket();
+				console.log("DISCONNESIONE DALLA WEBSOCKET DEllA CHAT");
 			}
 		if (user.matchmaking_ws && match.route.path !== "/tournament"){
 			console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
