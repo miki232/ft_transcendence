@@ -29,6 +29,7 @@ from django.db.models import Q
 from .serializers import ChatSerializer
 from .models import Chat_RoomName
 from accounts.models import CustomUser
+from accounts.serializers import  UserInfoSerializer
 
 def index(request):
     return render(request, "chat/index.html")
@@ -39,18 +40,23 @@ class ChatCreateView(APIView):
 
     def post(self, request, *args, **kwargs):
         room_name = request.data.get("name")
-        user1 = request.data.get("user1")
-        user2 = request.data.get("user2")
-        print("Create Room View 31", user1, user2)
+        user1_username = request.data.get("user1")
+        user2_username = request.data.get("user2")
 
         try:
-            room_name = str(uuid.uuid1()).replace('-', '')
-            user1 = CustomUser.objects.get(username=user1)
-            user2 = CustomUser.objects.get(username=user2)
-            print("Create Room View 32", user1)
-            exist_room = Chat_RoomName.objects.filter(user1=user2, user2=user1)
+            user1 = CustomUser.objects.get(username=user1_username)
+            user2 = CustomUser.objects.get(username=user2_username)
+
+            # Check if user1 is blocked by user2 or user2 is blocked by user1
+            if user1 in user2.blocked_users.all() or user2 in user1.blocked_users.all():
+                return Response({"status": "Cannot create room. One of the users is blocked."}, status=status.HTTP_403_FORBIDDEN)
+
+            exist_room = Chat_RoomName.objects.filter(
+                            Q(user1=user1, user2=user2) | Q(user1=user2, user2=user1)
+                        ).first()
             if exist_room:
                 return Response({"status": "Room already exists", "name" : exist_room.name}, status=status.HTTP_306_RESERVED)
+            room_name = str(uuid.uuid1()).replace('-', '')
             serializer = ChatSerializer(data={
             'user1': user1,
             'user2': user2,
@@ -75,6 +81,21 @@ class ChatListView(APIView):
         rooms = Chat_RoomName.objects.filter(Q(user1=user) | Q(user2=user))
         serializer = ChatSerializer(rooms, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class Room_users_list(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        room_name = request.data.get("name")
+        try:
+            room = Chat_RoomName.objects.get(name=room_name)
+            user1 = UserInfoSerializer(room.user1)
+            user2 = UserInfoSerializer(room.user2)
+            return Response({"user1": user1.data, "user2": user2.data}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({"error": "Room not found"}, status=status.HTTP_404_NOT_FOUND)
 
 @login_required
 def room(request, room_name):

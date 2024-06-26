@@ -6,6 +6,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 from chat.models import Notifications
 from channels.db import database_sync_to_async
 from accounts.models import CustomUser
+from django.utils.translation import gettext as _, activate
 
 def get_all_users_ids():
     return CustomUser.objects.values_list('id', flat=True)

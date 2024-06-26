@@ -55,6 +55,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chat = Message.objects.create(sender=user, name=room, content=message)
         chat.save()
 
+    @database_sync_to_async
+    def get_user_blocked(self, user):
+        return list(user.blocked_users.all())
+
+    @database_sync_to_async
+    def block_check(self, room, user):
+        other_user = room.user1 if room.user2 == user else room.user2
+        print("Block Check 74", other_user.blocked_users)
+        print("Block Check 75", list(user.blocked_users.all()))
+        print("Block Check 76", user, other_user)
+        if user in other_user.blocked_users.all() or other_user in user.blocked_users.all():
+            return True
+        # if user or room.user2 in other_user.blocked_users.all():
+        #     return True
+        return False
+            
+
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -62,7 +79,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Cerca la Room
         room = await self.get_room(self.room_name)
-
+        # Cerca gli utenti bloccati
+        # block = await self.get_user_blocked(self.user)
+        # Cerca se l'utente è bloccato
+        if await self.block_check(room, self.user):
+            print("You are blocked")
+            await self.send(text_data=json.dumps({"message": "You are blocked"}))
+            return
         # Salva il messaggio
         await self.create_n_save_message(self.user, self.room_name, message)
         # Send message to room group

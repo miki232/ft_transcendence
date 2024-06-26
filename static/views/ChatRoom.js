@@ -17,8 +17,66 @@ export default class ChatRoom extends AbstractView {
     initialize() {
         console.log(this.userObj);
         console.log(this.roomName);
+        this.getRoomUsers();
         this.setupChatInput();
     }
+
+    // Api call to get the user in room
+    async getRoomUsers() {
+        const csrftoken = await this.getCSRFToken();
+
+        await fetch('/room_users_list/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'name': this.roomName,
+            }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Ritorno API
+  //   {
+  //     "user1": {
+  //         "username": "admin",
+  //         "email": "admin@asd.it",
+  //         "first_name": "",
+  //         "last_name": "",
+  //         "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+  //         "status_login": true,
+  //         "is_active": true,
+  //         "level": 0,
+  //         "exp": 0,
+  //         "paddle_color": "#00FF99",
+  //         "pong_color": "#141414",
+  //         "alias": "None",
+  //         "language": "en"
+  //     },
+  //     "user2": {
+  //         "username": "suca",
+  //         "email": "duca@sad.it",
+  //         "first_name": "",
+  //         "last_name": "",
+  //         "pro_pic": "https://api.dicebear.com/8.x/thumbs/svg?seed=Nala&scale=90&radius=50&backgroundColor=ffdfbf",
+  //         "status_login": false,
+  //         "is_active": true,
+  //         "level": 0,
+  //         "exp": 0,
+  //         "paddle_color": "#00FF99",
+  //         "pong_color": "#141414",
+  //         "alias": "None",
+  //         "language": "en"
+  //     }
+  // }
 
 
     closeWebSocket() {

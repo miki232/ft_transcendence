@@ -25,6 +25,8 @@ import uuid
 
 from .forms import CustomUserCreationForm
 from .models import CustomUser
+from django.db.models import Q
+from chat.models import Chat_RoomName, Message
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
@@ -138,6 +140,42 @@ class UserLoginView(APIView):
             return Response({"status": "Login successful"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class BlockUser(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    def post(self, request):
+        username = request.data.get("username")
+        user_to_block = CustomUser.objects.get(username=username)
+
+        # Add user_to_block to the list of users blocked by the current user
+        request.user.blocked_users.add(user_to_block)
+
+        # Find the chat room between the current user and user_to_block
+        chat_room = Chat_RoomName.objects.filter(
+            Q(user1=request.user, user2=user_to_block) | Q(user1=user_to_block, user2=request.user)
+        ).first()
+
+        if chat_room:
+            # Delete the messages in the chat room
+            Message.objects.filter(name=chat_room).delete()
+
+        return JsonResponse({"message": "User blocked and chat room deleted successfully."})
+    
+class UnblockUser(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    def post(self, request):
+        username = request.data.get("username")
+        user_to_unblock = CustomUser.objects.get(username=username)
+        request.user.blocked_users.remove(user_to_unblock)
+        return JsonResponse({"message": "User unblocked successfully."})
+
+class UserBlockListView(APIView):   
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+    def get(self, request):
+        blocked_users = request.user.blocked_users.all()
+        return JsonResponse({"blocked_users": [user.username for user in blocked_users]})
 
 class UserdeleteView(APIView):
     permission_classes = [IsAuthenticated]
