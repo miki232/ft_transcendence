@@ -21,8 +21,14 @@ export default class ChatRoom extends AbstractView {
         this.content.innerHTML = this.getContent();
         this.setupChatInput();
         this.chatSocket = await this.initializeWebSocket();
+        // this.activebutton();
         changeLanguage(this.userObj.language)
     }
+
+    // activebutton() {
+    //   document.getElementById("game").addEventListener("click", () => {
+
+    //   });
 
     // Api call to get the user in room
     async getRoomUsers() {
@@ -173,8 +179,9 @@ export default class ChatRoom extends AbstractView {
         return `
             <div class="chat-room">
             <div class="user-profile">
-              <a href="/friends/user_info_${this.otherUser['username']}" class="profile-link">${this.otherUser['username']}</a>
               <img src="${this.otherUser['pro_pic']}" alt="Profile Picture" class="profile-pic">
+              <a href="/friends/user_info_${this.otherUser['username']}" class="profile-link">${this.otherUser['username']}</a>
+              <button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
             </div>
                 <div id="chat-log">
                 </div>

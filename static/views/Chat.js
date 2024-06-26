@@ -1,5 +1,6 @@
 import { navigateTo } from "../index.js";
 import AbstractView from "./AbstractView.js";
+import { createNotification } from "./Notifications.js";
 
 export default class Chat extends AbstractView {
     constructor(userOBJ) {
@@ -15,18 +16,92 @@ export default class Chat extends AbstractView {
 
     async initialize() {
 		await this.fetchChatList(); // Fetch and display chat list
+		// this.activebutton();
         // this.setupChatRoomInput();
     }
+
+	// async activebutton() {
+	// 	const blockUserBtns = document.querySelectorAll('.block-user-btn');
+	// 	console.log(blockUserBtns);
+	// 	blockUserBtns.forEach(btn => {
+	// 		console.log(btn.getAttribute('id'));
+	// 		const isBlocked = btn.getAttribute('id') === 'unblockuser';
+	// 		if (isBlocked) {
+	// 			btn.addEventListener('click', async (e) => {
+	// 				const usertounlock = e.target.getAttribute('data-user');
+	// 				console.log("Blocking user", usertounlock);
+	// 				const csrftoken = await this.getCSRFToken();
+	// 				await fetch('/unblock_user/', {
+	// 					method: 'POST',
+	// 					headers: {
+	// 						'Content-Type': 'application/json',
+	// 						'X-CSRFToken': csrftoken,
+	// 					},
+	// 					body: JSON.stringify({
+	// 						'username': usertounlock,
+	// 					}),
+	// 				})
+	// 				.then((response) => response.json())
+	// 				.then((data) => {
+	// 					console.log(data);
+	// 					btn.innerHTML = 'Block User';
+	// 					btn.setAttribute('id', 'blockuser');
+	// 					createNotification(data.message);
+	// 				})
+	// 				.catch((error) => {
+	// 					console.error('Error:', error);
+	// 				});
+	// 			});
+	// 		}
+	// 		else {
+	// 			btn.addEventListener('click', async (e) => {
+	// 				const userToBlock = e.target.getAttribute('data-user');
+	// 				console.log("Blocking user", userToBlock);
+	// 				const csrftoken = await this.getCSRFToken();
+	// 				await fetch('/block_user/', {
+	// 					method: 'POST',
+	// 					headers: {
+	// 						'Content-Type': 'application/json',
+	// 						'X-CSRFToken': csrftoken,
+	// 					},
+	// 					body: JSON.stringify({
+	// 						'username': userToBlock,
+	// 					}),
+	// 				})
+	// 				.then((response) => response.json())
+	// 				.then((data) => {
+	// 					console.log(data);
+	// 					createNotification(data.message);
+	// 					btn.innerHTML = 'Unblock User';
+	// 					btn.setAttribute('id', 'unblockuser');
+	// 				})
+	// 				.catch((error) => {
+	// 					console.error('Error:', error);
+	// 				});
+	// 			});
+	// 		}
+	// 	});
+	// }
+
 
     async fetchChatList() {
 		try {
 			const response = await fetch('/chat_list/');
 			const chatList = await response.json();
 			console.log(chatList);
+			// Fetch the blocked users list
+			const blockResponse = await fetch('/user_block_list/');
+			const { blocked_users } = await blockResponse.json();
+	
 			const chatListContainer = document.querySelector('#chat-list');
-			chatListContainer.innerHTML = chatList.map(chat => 
-				`<li><button class="chatroom" room-name="${chat.name}">${chat.user1 === this.userObj.username ? chat.user2 : chat.user1}</button></li>`
-			).join('');
+			chatListContainer.innerHTML = chatList.map(chat => {
+				const otherUser = chat.user1 === this.userObj.username ? chat.user2 : chat.user1;
+				const isBlocked = blocked_users.includes(otherUser);
+				return `<li>
+							<button class="chatroom" room-name="${chat.name}">${otherUser}</button> 
+							<button class="block-user-btn" data-user="${otherUser}" id="${isBlocked ? 'unblockuser' : 'blockuser'}">${isBlocked ? 'Unblock User' : 'Block User'}</button>
+						</li>`;
+			}).join('');
 	
 			// Attach event listeners to all chatroom buttons
 			document.querySelectorAll('.chatroom').forEach(btn => {
@@ -35,6 +110,36 @@ export default class Chat extends AbstractView {
 					console.log("Entering chat room", roomName);
 					navigateTo(`/chat/` + roomName);
 				});
+			});
+	
+			// Event delegation for block/unblock user buttons
+			chatListContainer.addEventListener('click', async (e) => {
+				if (e.target.classList.contains('block-user-btn')) {
+					const userToToggle = e.target.getAttribute('data-user');
+					const action = e.target.getAttribute('id') === 'blockuser' ? 'block_user' : 'unblock_user';
+					console.log(`${action === 'block_user' ? 'Blocking' : 'Unblocking'} user`, userToToggle);
+					const csrftoken = await this.getCSRFToken();
+					await fetch(`/${action}/`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': csrftoken,
+						},
+						body: JSON.stringify({
+							'username': userToToggle,
+						}),
+					})
+					.then((response) => response.json())
+					.then((data) => {
+						console.log(data);
+						createNotification(data.message);
+						e.target.innerHTML = action === 'block_user' ? 'Unblock User' : 'Block User';
+						e.target.setAttribute('id', action === 'block_user' ? 'unblockuser' : 'blockuser');
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+				}
 			});
 		} catch (error) {
 			console.error('Failed to fetch chat list:', error);

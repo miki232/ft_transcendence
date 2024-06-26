@@ -645,7 +645,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		///////////////////////////////////////////////////////
 		if (e.target.matches('#game'))
 		{
-			let Friend_username = document.querySelector(".user-info h3").innerHTML;
+			try {
+				var Friend_username = document.querySelector(".user-info h3").innerHTML;
+			}
+			catch {
+				var Friend_username = document.querySelector(".profile-link").textContent;
+			}
+
 			console.log(Friend_username);
 			let selfuser = await getusename() // Per ora lascio Admin, ma è solo per provare, è da sostituire con l'username reale di chi sta cliccand PLAY
 			console.log(selfuser);

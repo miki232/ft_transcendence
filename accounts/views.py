@@ -148,18 +148,21 @@ class BlockUser(APIView):
         user_to_block = CustomUser.objects.get(username=username)
 
         # Add user_to_block to the list of users blocked by the current user
-        request.user.blocked_users.add(user_to_block)
+        if user_to_block not in request.user.blocked_users.all():
+            request.user.blocked_users.add(user_to_block)
+        else:
+            return JsonResponse({"message": "User already blocked."})
 
         # Find the chat room between the current user and user_to_block
         chat_room = Chat_RoomName.objects.filter(
             Q(user1=request.user, user2=user_to_block) | Q(user1=user_to_block, user2=request.user)
         ).first()
 
-        if chat_room:
-            # Delete the messages in the chat room
-            Message.objects.filter(name=chat_room).delete()
+        # if chat_room:
+        #     # Delete the messages in the chat room
+        #     Message.objects.filter(name=chat_room).delete()
 
-        return JsonResponse({"message": "User blocked and chat room deleted successfully."})
+        return JsonResponse({"message": "User blocked successfully."})
     
 class UnblockUser(APIView):
     permission_classes = [IsAuthenticated]
