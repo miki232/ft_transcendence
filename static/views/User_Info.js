@@ -41,14 +41,14 @@ export default class UserInfo extends AbstractView {
 	async activateButtons() {
 		const chatBtn = document.getElementById("chat");
 		const csr = await getCSRFToken();
-		chatBtn.addEventListener("click", e => {
+		chatBtn.addEventListener("click", async e => {
 			e.preventDefault();
 			const payload = {
 				user1: this.user.username,
 				user2: this.friendUsername
 			};
 		
-			fetch('/chat_create/', {
+			await fetch('/chat_create/', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export default class UserInfo extends AbstractView {
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				navigateTo("/chat/" + data.room_name);
+				navigateTo("/chat/" + data.name);
 				// Handle success response
 			})
 			.catch((error) => {

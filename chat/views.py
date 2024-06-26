@@ -48,9 +48,9 @@ class ChatCreateView(APIView):
             user1 = CustomUser.objects.get(username=user1)
             user2 = CustomUser.objects.get(username=user2)
             print("Create Room View 32", user1)
-            exist_room = Chat_RoomName.objects.filter(Q(user1=user2, user2=user1) | Q(user1=user1, user2=user2)).first()
+            exist_room = Chat_RoomName.objects.filter(user1=user2, user2=user1)
             if exist_room:
-                return Response({"status": "Room already exists", "room_name" : exist_room.name}, status=status.HTTP_306_RESERVED)
+                return Response({"status": "Room already exists", "name" : exist_room.name}, status=status.HTTP_306_RESERVED)
             serializer = ChatSerializer(data={
             'user1': user1,
             'user2': user2,
@@ -64,6 +64,17 @@ class ChatCreateView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class ChatListView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        rooms = Chat_RoomName.objects.filter(Q(user1=user) | Q(user2=user))
+        serializer = ChatSerializer(rooms, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 @login_required
 def room(request, room_name):
