@@ -4,21 +4,21 @@ export default class ChatRoom extends AbstractView {
     constructor(userOBJ, roomName) {
         super();
         this.userObj = userOBJ;
+        this.otherUser = null;
         this.roomName = roomName;
         this.content = document.querySelector("#content");
         this.nav = document.querySelector("header");
 		    this.nav.innerHTML = this.getNav();
-        this.content.innerHTML = this.getContent();
         // Initialize WebSocket as a field
-        this.chatSocket = this.initializeWebSocket();
+        this.chatSocket = null;
         this.initialize();
     }
 
-    initialize() {
-        console.log(this.userObj);
-        console.log(this.roomName);
-        this.getRoomUsers();
+    async initialize() {
+        await this.getRoomUsers();
+        this.content.innerHTML = this.getContent();
         this.setupChatInput();
+        this.chatSocket = await this.initializeWebSocket();
     }
 
     // Api call to get the user in room
@@ -37,7 +37,7 @@ export default class ChatRoom extends AbstractView {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
+            this.otherUser = data['user2']['username'] === this.userObj.username ? data['user1'] : data['user2'];
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -88,7 +88,7 @@ export default class ChatRoom extends AbstractView {
 
     }
 
-    initializeWebSocket() {
+    async initializeWebSocket() {
         const chatSocket = new WebSocket(
             'wss://' + window.location.hostname + ':8000' + '/ws/chat/' + this.roomName + '/'
         );
@@ -98,11 +98,16 @@ export default class ChatRoom extends AbstractView {
             const message_container = document.createElement('container');
             message_container.classList.add('message-container');
             const message_element = document.createElement('div');
+            const message_time = document.createElement('div');
+
             message_container.appendChild(message_element);
             const user_id = data['user_id']; // Ensure this matches the JSON property name
             const logged_user_id = this.userObj.username; // Assuming this.userObj.username exists and is accessible
 
             message_element.innerText = data['message'];
+            message_time.innerText = data['timestamp'];
+            message_container.appendChild(message_time);
+
 
             // Add 'message-right' class if the user_id matches logged_user_id, else 'message-left'
             if (user_id === logged_user_id) {
@@ -141,11 +146,14 @@ export default class ChatRoom extends AbstractView {
     }
 
     getContent() {
+      //const other_user = data['user_2'] === this.userObj.username ? data['user_1'] : data['user_2'];
+      console.log(this.otherUser);
+      console.log(this.message);
         return `
             <h1 style="color: white; text-align:center;">Chat Room: ${this.roomName} </h1>
             <div class="chat-room">
             <div class="user-profile">
-              <a href="/chat">Nome dell'utente</a>
+              <a href="/chat">${this.otherUser['username']}</a>
             </div>
                 <div id="chat-log">
                 </div>

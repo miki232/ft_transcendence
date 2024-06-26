@@ -30,7 +30,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_messages_n_user_for_chat(self, chat):
-        return chat.content, chat.sender
+        return chat.content, chat.sender, chat.timestamp
 
     # Cerca la Room
     async def send_message_from_database(self):
@@ -39,8 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Assuming 'messages' is a related name for accessing related objects,
             # you would iterate over them here. Adjust the following line according to your model's structure.
             # messages = await self.get_all_messages_for_chat(chat)
-            content, user = await self.get_messages_n_user_for_chat(chat)
-            await self.send(text_data=json.dumps({"message": content, "user_id": user.username}))
+            content, user, timestamp = await self.get_messages_n_user_for_chat(chat)
+            await self.send(text_data=json.dumps({"message": content, "user_id": user.username, "timestamp": str(timestamp)}))
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -54,6 +54,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def create_n_save_message(self, user, room, message):
         chat = Message.objects.create(sender=user, name=room, content=message)
         chat.save()
+        return chat.timestamp
 
     @database_sync_to_async
     def get_user_blocked(self, user):
@@ -87,19 +88,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"message": "You are blocked"}))
             return
         # Salva il messaggio
-        await self.create_n_save_message(self.user, self.room_name, message)
+        timestamp = await self.create_n_save_message(self.user, self.room_name, message)
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat.message", "message": message, "user_id": self.user.username}
+            self.room_group_name, {"type": "chat.message", "message": message, "user_id": self.user.username, "timestamp": str(timestamp)}
         )
 
     # Receive message from room group
     async def chat_message(self, event):
         message = event["message"]
         user_id = event["user_id"]
+        timestamp = event["timestamp"]
 
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({"message": message, "user_id": user_id}))
+        await self.send(text_data=json.dumps({"message": message, "user_id": user_id, "timestamp": timestamp}))
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
