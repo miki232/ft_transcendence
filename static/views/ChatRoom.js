@@ -88,6 +88,13 @@ export default class ChatRoom extends AbstractView {
 
     }
 
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const hours = String(date.getUTCHours()).padStart(2, '0');
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+  }
+
     async initializeWebSocket() {
         const chatSocket = new WebSocket(
             'wss://' + window.location.hostname + ':8000' + '/ws/chat/' + this.roomName + '/'
@@ -99,13 +106,18 @@ export default class ChatRoom extends AbstractView {
             message_container.classList.add('message-container');
             const message_element = document.createElement('div');
             const message_time = document.createElement('div');
+            message_element.classList.add('message-element');
+            message_time.classList.add('message-time');
 
             message_container.appendChild(message_element);
-            const user_id = data['user_id']; // Ensure this matches the JSON property name
-            const logged_user_id = this.userObj.username; // Assuming this.userObj.username exists and is accessible
+            const user_id = data['user_id'];
+            const logged_user_id = this.userObj.username;
+
+            //formatting the timestamp
+            const timestamp_formatted = this.formatDate(data['timestamp']);
 
             message_element.innerText = data['message'];
-            message_time.innerText = data['timestamp'];
+            message_time.innerText = timestamp_formatted;
             message_container.appendChild(message_time);
 
 
@@ -147,13 +159,12 @@ export default class ChatRoom extends AbstractView {
 
     getContent() {
       //const other_user = data['user_2'] === this.userObj.username ? data['user_1'] : data['user_2'];
-      console.log(this.otherUser);
-      console.log(this.message);
         return `
             <h1 style="color: white; text-align:center;">Chat Room: ${this.roomName} </h1>
             <div class="chat-room">
             <div class="user-profile">
-              <a href="/chat">${this.otherUser['username']}</a>
+              <a href="/friends/user_info_${this.otherUser['username']}" class="profile-link">${this.otherUser['username']}</a>
+              <img src="${this.otherUser['pro_pic']}" alt="Profile Picture" class="profile-pic">
             </div>
                 <div id="chat-log">
                 </div>

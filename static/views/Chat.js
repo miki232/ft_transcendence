@@ -44,13 +44,10 @@ export default class Chat extends AbstractView {
 	getContent() {
 		return `
 			<div class="chat-room-form">
-				<h1>Chat</h1>
+				<h1>Available Chats</h1>
 				<ul id="chat-list"></ul> <!-- Placeholder for chat list -->
 				<div style="flex: 1;"></div>
 				<div style="display: flex; flex-direction: column; gap: 10px;">
-					<label for="room-name-input">Which chat room would you like to enter?</label>
-					<input id="room-name-input" type="text" placeholder="Enter room name">
-					<input id="room-name-submit" type="button" value="Enter">
 				</div>
 				<div style="flex: 1;"></div>
 			</div>

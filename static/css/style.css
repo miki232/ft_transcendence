@@ -2004,9 +2004,29 @@ canvas {
     top: -10px;
 }
 
+.chatroom {
+	width: 300px;
+	background-color: white;
+	margin-bottom: 5%;
+	border-radius: 1em;
+	border: none;
+}
+
+.chatroom li{
+	list-style-type: none;
+}
+
+#chat-list {
+	list-style-type: none;
+	padding-left: 0px;
+}
+
 /************ CHAT ROOM ************/
 
 .message {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 	width: 70%;
 	padding: 10px;
 	font-size: 16px;
@@ -2141,7 +2161,28 @@ canvas {
 	width: 300px;
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
     border-bottom: 1px solid white;
+}
+
+.message-time {
+	font-size: 10px;
+	align-self: flex-end;
+}
+
+.profile-pic {
+	margin-left: 20%;
+	margin-bottom: 2%;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+
+.profile-link {
+	color: white;
+}
+
+.profile-link:hover {
+	color: var(--tertiary-color);
 }
