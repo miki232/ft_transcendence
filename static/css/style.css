@@ -2007,10 +2007,10 @@ canvas {
 /************ CHAT ROOM ************/
 
 .message {
-	width: 25%;
+	width: 70%;
 	padding: 10px;
 	font-size: 16px;
-	border-radius: 2em;
+	border-radius: 1em;
 	margin: 15px 0px;
 	color: var(--primary-color);
 	border: none;
@@ -2053,6 +2053,8 @@ canvas {
     outline: none;
     margin-bottom: 10px;
     resize: none;
+	overflow-y: scroll;
+	scrollbar-width: none;
 }
 
 #chat-message-input {
@@ -2060,11 +2062,21 @@ canvas {
     padding: 10px;
     font-size: 16px;
     color: white;
-    border: none;
-    border-bottom: 1px solid white;
-    background: transparent;
+    border: 1px solid grey;
+    background-color: #202A30;
     outline: none;
     margin-bottom: 10px;
+	border-radius: 6px;
+}
+
+#chat-message-input:hover{
+	border: 1px solid white;
+	background-color: --var(--secondary-color);
+}
+
+#chat-message-input:focus{
+	border: 1px solid white;
+	background-color: --var(--secondary-color);
 }
 
 #chat-message-input::placeholder {
@@ -2090,13 +2102,46 @@ canvas {
 }
 
 #chat-message-submit:hover {
-    background-color: #0056b3;
+    background-color: var(--secondary-color);
+	color: white;
+}
+
+.message-container {
+	display: flex;
+	width: 100%;
+	overflow-y: auto;
 }
 
 .message-right {
-    text-align: right;
+    align-items: right;
 }
 
 .message-left {
-    text-align: left;
+    align-items: left;
+	background-color: var(--tertiary-color);
+	color: white;
+}
+
+.message-container-left {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: start;
+}
+
+.message-container-right {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: end;
+}
+
+.user-profile
+{
+	width: 300px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+    border-bottom: 1px solid white;
 }

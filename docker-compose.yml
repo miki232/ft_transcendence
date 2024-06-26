@@ -51,7 +51,7 @@ services:
     networks:
       - webnet
     ports:
-          - 127.0.0.1:6379:6379
+          - 127.0.0.1:6378:6378
 
   # prometheus:
   #     image: prom/prometheus

@@ -37,7 +37,10 @@ export default class ChatRoom extends AbstractView {
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            const message_container = document.createElement('container');
+            message_container.classList.add('message-container');
             const message_element = document.createElement('div');
+            message_container.appendChild(message_element);
             const user_id = data['user_id']; // Ensure this matches the JSON property name
             const logged_user_id = this.userObj.username; // Assuming this.userObj.username exists and is accessible
 
@@ -46,11 +49,14 @@ export default class ChatRoom extends AbstractView {
             // Add 'message-right' class if the user_id matches logged_user_id, else 'message-left'
             if (user_id === logged_user_id) {
                 message_element.classList.add('message', 'message-right');
+                message_container.classList.add('message-container-right');
             } else {
                 message_element.classList.add('message', 'message-left');
+                message_container.classList.add('message-container-left');
             }
 
-            document.querySelector('#chat-log').appendChild(message_element);
+            document.querySelector('#chat-log').appendChild(message_container);
+            document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
         }.bind(this); // Use .bind(this) to ensure 'this' inside the function refers to the outer 'this'
 
         chatSocket.onclose = function(e) {
@@ -80,6 +86,9 @@ export default class ChatRoom extends AbstractView {
         return `
             <h1 style="color: white; text-align:center;">Chat Room: ${this.roomName} </h1>
             <div class="chat-room">
+            <div class="user-profile">
+              <a href="/chat">Nome dell'utente</a>
+            </div>
                 <div id="chat-log">
                 </div>
                 <input id="chat-message-input" type="text" size="100">
