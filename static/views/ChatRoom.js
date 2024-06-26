@@ -1,4 +1,6 @@
+import { changeLanguage } from "../index.js";
 import AbstractView from "./AbstractView.js";
+import { createNotification } from "./Notifications.js";
 
 export default class ChatRoom extends AbstractView {
     constructor(userOBJ, roomName) {
@@ -19,6 +21,7 @@ export default class ChatRoom extends AbstractView {
         this.content.innerHTML = this.getContent();
         this.setupChatInput();
         this.chatSocket = await this.initializeWebSocket();
+        changeLanguage(this.userObj.language)
     }
 
     // Api call to get the user in room
@@ -102,39 +105,47 @@ export default class ChatRoom extends AbstractView {
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            const message_container = document.createElement('container');
-            message_container.classList.add('message-container');
-            const message_element = document.createElement('div');
-            const message_time = document.createElement('div');
-            message_element.classList.add('message-element');
-            message_time.classList.add('message-time');
+            if (data['status'] === "1")
+              createNotification("Max Limit Reached");
+            else if (data['status'] === "2")
+              createNotification("User Blocked");
+            else
+            {
 
-            message_container.appendChild(message_element);
-            const user_id = data['user_id'];
-            const logged_user_id = this.userObj.username;
+              const message_container = document.createElement('container');
+              message_container.classList.add('message-container');
+              const message_element = document.createElement('div');
+              const message_time = document.createElement('div');
+              message_element.classList.add('message-element');
+              message_time.classList.add('message-time');
+              
+              message_container.appendChild(message_element);
+              const user_id = data['user_id'];
+              const logged_user_id = this.userObj.username;
+              
+              //formatting the timestamp
+              const timestamp_formatted = this.formatDate(data['timestamp']);
+              
+              message_element.innerText = data['message'];
+              message_time.innerText = timestamp_formatted;
+              message_container.appendChild(message_time);
 
-            //formatting the timestamp
-            const timestamp_formatted = this.formatDate(data['timestamp']);
-
-            message_element.innerText = data['message'];
-            message_time.innerText = timestamp_formatted;
-            message_container.appendChild(message_time);
-
-
-            // Add 'message-right' class if the user_id matches logged_user_id, else 'message-left'
-            if (user_id === logged_user_id) {
+              
+              // Add 'message-right' class if the user_id matches logged_user_id, else 'message-left'
+              if (user_id === logged_user_id) {
                 message_element.classList.add('message', 'message-right');
                 message_container.classList.add('message-container-right');
-            } else {
+              } else {
                 message_element.classList.add('message', 'message-left');
                 message_container.classList.add('message-container-left');
+              }
+              
+              document.querySelector('#chat-log').appendChild(message_container);
+              document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
             }
+            }.bind(this); // Use .bind(this) to ensure 'this' inside the function refers to the outer 'this'
 
-            document.querySelector('#chat-log').appendChild(message_container);
-            document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
-        }.bind(this); // Use .bind(this) to ensure 'this' inside the function refers to the outer 'this'
-
-        chatSocket.onclose = function(e) {
+            chatSocket.onclose = function(e) {
             console.log('Chat socket closed unexpectedly');
         };
 
@@ -160,7 +171,6 @@ export default class ChatRoom extends AbstractView {
     getContent() {
       //const other_user = data['user_2'] === this.userObj.username ? data['user_1'] : data['user_2'];
         return `
-            <h1 style="color: white; text-align:center;">Chat Room: ${this.roomName} </h1>
             <div class="chat-room">
             <div class="user-profile">
               <a href="/friends/user_info_${this.otherUser['username']}" class="profile-link">${this.otherUser['username']}</a>
@@ -169,7 +179,7 @@ export default class ChatRoom extends AbstractView {
                 <div id="chat-log">
                 </div>
                 <input id="chat-message-input" type="text" size="100">
-                <input id="chat-message-submit" type="button" value="Send">
+                <button id="chat-message-submit" type="button" class="submit-btn dashboard-btn"><ion-icon name="send-outline"></ion-icon></button>
             </div>
         `;
     }

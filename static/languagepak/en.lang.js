@@ -114,6 +114,7 @@ const translations = {
     finale: "Final",
     winner: "Winner",
     dashboard: "Dashboard",
+    send: "Send",
     // Add more translations here
 };
 

@@ -112,6 +112,7 @@ const translations = {
     final: "Finale",
     winner: "Vincitore",
     dashboard: "Profilo",
+    send: "Invia",
     // Add more translations here...
 };
 

@@ -85,9 +85,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Cerca se l'utente è bloccato
         if await self.block_check(room, self.user):
             print("You are blocked")
-            await self.send(text_data=json.dumps({"message": "You are blocked"}))
+            await self.send(text_data=json.dumps({"status": "2"})) # status : 2 per utente bloccato
             return
         # Salva il messaggio
+        if (len(message) > 125):
+            await self.send(text_data=json.dumps({"status": "1"})) # status : 1 per limite raggiunto
+            return
+
         timestamp = await self.create_n_save_message(self.user, self.room_name, message)
         # Send message to room group
         await self.channel_layer.group_send(
