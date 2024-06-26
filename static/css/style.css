@@ -2186,3 +2186,23 @@ canvas {
 .profile-link:hover {
 	color: var(--tertiary-color);
 }
+
+.chart {
+    display: flex;
+    height: 20px;
+    border: 1px solid #000;
+}
+
+.bar {
+    text-align: center;
+    line-height: 20px;
+    color: #fff;
+}
+
+.win {
+    background-color: #4caf50;
+}
+
+.loss {
+    background-color: #f44336;
+}

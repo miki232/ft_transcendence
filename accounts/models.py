@@ -41,7 +41,7 @@ class CustomUser(AbstractUser): # new
         total_wins = len([match for match in match_history if match['winner__username'] == self.username])
         total_loses = len([match for match in match_history if match['winner__username'] != self.username])
         total_exp = total_wins - total_loses
-        return total_exp
+        return total_exp , total_wins, total_loses
     
     def calculate_level(self):
         exp = {
@@ -62,7 +62,7 @@ class CustomUser(AbstractUser): # new
             610: 14,
             987: 15,
         }
-        total_exp = self.calculate_exp()
+        total_exp, total_win, total_loses = self.calculate_exp()
         if total_exp > 987:
             total_exp = 987
         if total_exp < 0:
@@ -75,6 +75,7 @@ class CustomUser(AbstractUser): # new
             level = 0
         return level
     
+
     def is_user_online(self, user_id):
         last_seen_timestamp = r.zscore('online_users', user_id)
         if last_seen_timestamp is None:

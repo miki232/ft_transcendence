@@ -344,7 +344,7 @@ const router = async () => {
 	}
 	else if (user.lastURL === "/pong") {
 		match = {
-			route: routes[3],
+			route: routes[13],
 			isMatch: true
 		};
 		document.querySelector('header').style.display = 'block';

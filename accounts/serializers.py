@@ -77,12 +77,14 @@ class UserInfoSerializer(serializers.ModelSerializer):
     newpassword = serializers.CharField(write_only=True, required=False)
     confirmpassword = serializers.CharField(write_only=True, required=False)
     level = serializers.SerializerMethodField()
+    wins = serializers.SerializerMethodField()
+    losses = serializers.SerializerMethodField()
     exp = serializers.SerializerMethodField()
     status_login = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level', 'exp', 'paddle_color', 'pong_color', 'alias', 'language')
+        fields = ('username', 'email', 'first_name', 'last_name', 'pro_pic', "status_login", 'is_active', 'newpassword', 'confirmpassword', 'level' , 'wins', 'losses', 'exp', 'paddle_color', 'pong_color', 'alias', 'language')
     
     def validate_username(self, value):
         if len(value) > 15:  # Change this number to the maximum length you want
@@ -90,7 +92,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
         return value
     
     def get_exp(self, obj):
-        return obj.calculate_exp()
+        return obj.calculate_exp()[0]
+    
+    def get_wins(self, obj):
+        return obj.calculate_exp()[1]
+    
+    def get_losses(self, obj):
+        return obj.calculate_exp()[2]
     
     def get_level(self, obj):
         return obj.calculate_level()
