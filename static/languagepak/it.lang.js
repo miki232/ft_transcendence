@@ -113,6 +113,7 @@ const translations = {
     winner: "Vincitore",
     dashboard: "Profilo",
     send: "Invia",
+    noChats: "Non hai nessuna chat al momento.",
     // Add more translations here...
 };
 

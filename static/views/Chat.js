@@ -1,4 +1,5 @@
 import { navigateTo } from "../index.js";
+import { changeLanguage } from "../index.js";
 import AbstractView from "./AbstractView.js";
 import { createNotification } from "./Notifications.js";
 
@@ -81,10 +82,10 @@ export default class Chat extends AbstractView {
 	// 			});
 	// 		}
 	// 	});
-	// }
+	// } 
 
 	noChats (element) {
-		var noEntries = document.createElement("p");
+		const noEntries = document.createElement("p");
 		noEntries.style.borderTop = "1px solid white";
 		noEntries.style.paddingTop = "10%";
 		noEntries.className = "no-entries";
@@ -92,7 +93,7 @@ export default class Chat extends AbstractView {
 		noEntries.setAttribute("data-translate", "noChats");
 		element.appendChild(noEntries);
 		element.style.textAlign = "center";
-		changeLanguage(this.lang);
+		changeLanguage(this.userObj.language);
 	}
 
 
@@ -165,7 +166,7 @@ export default class Chat extends AbstractView {
 	getContent() {
 		return `
 			<div class="chat-room-form">
-				<h1>Available Chats</h1>
+				<h1>Chat</h1>
 				<ul id="chat-list"></ul> <!-- Placeholder for chat list -->
 				<div style="flex: 1;"></div>
 				<div style="display: flex; flex-direction: column; gap: 10px;">

@@ -115,6 +115,7 @@ const translations = {
     winner: "Winner",
     dashboard: "Dashboard",
     send: "Send",
+    noChats: "You don't have any chats yet.",
     // Add more translations here
 };
 
