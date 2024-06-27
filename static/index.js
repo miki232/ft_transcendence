@@ -3,10 +3,11 @@ import User from "./views/User.js";
 import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
-import Pong from "./views/Pong.js";
+import Pong from "./views/TournamentPong.js"
 import LocalGame from "./views/LocalGame.js";
 import Online from "./views/Online.js";
 import ChatRoom from "./views/ChatRoom.js";
+import Tournament from "./views/Tournament.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -301,13 +302,25 @@ const router = async () => {
 			isMatch: location.pathname === route.path
 		};
 	});
-	
+	console.log("dsmdainstanceofskmdslkmsdmlkdslkmsa", user.lastURL);
+
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 	try {
 		if (view instanceof Online && match.route.path !== "/tournament")
 			{
 				view.closeWebSocket();
 				console.log("DISCONNESIONE DALLA WEBSOCKET");
+			}
+		console.log("dsmdainstanceofskmdslkmsdmlkdslkmsa", user.lastURL);
+
+		if (user.lastURL === "/tournament" && match.route.path !== "/tournament")
+			{
+				user.lastURL = null;
+				console.log(view);
+				user.ws_tournament.close();
+				document.querySelector("header").style.display = "block";
+                document.querySelector("body").classList.remove("game-bg");
+				console.log("DISCONNESIONE DALLA WEBSOCKET DEL TORNEO");
 			}
 		if (view instanceof ChatRoom && match.route.path !== "/chat/")
 			{

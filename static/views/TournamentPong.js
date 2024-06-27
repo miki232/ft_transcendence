@@ -103,6 +103,7 @@ export default class Pong extends AbstractView{
             + this.room_name
             + '/'
         );
+        this.user.ws_tournament = this.game_ws;
     }
 
     async closeWebSocket() {
@@ -290,7 +291,7 @@ export default class Pong extends AbstractView{
                     await this.closeWebSocket();
                     if (win){
                         this.user.round = [];
-                        content.innerHTML = `<h1>YOU WON</h1>`;                        
+                        content.innerHTML = `<h1 style="color: gold;">YOU WON</h1>`;                        
                         setTimeout(() => {
                             this.user.disconnected = false;
                             document.querySelector("header").style.display = "block";

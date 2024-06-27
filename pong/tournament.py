@@ -250,12 +250,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             winner = TournamentConsumer.players[self.room_name][0]
             print("WINNER: ", winner, self.match.id)
             await self.set_winner(self.match, winner)
-            self.state['victory'] = TournamentConsumer.players[self.room_name][0]
+            TournamentConsumer.shared_state[self.room_name]['victory'] = TournamentConsumer.players[self.room_name][0]
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': self.state
+                    'state': TournamentConsumer.shared_state[self.room_name]
                 }
             )
 

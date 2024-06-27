@@ -136,7 +136,9 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                createNotification(match);
+                                if (match.split(' Vs ')[0] === this.user.username || match.split(' Vs ')[1] === this.user.username){
+                                    createNotification(match);
+                                }
                             }
                         }
                         // Check if the round already exists in the user's rounds
@@ -183,9 +185,12 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                createNotification(match);
+                                if (match.split(' Vs ')[0] === this.user.username || match.split(' Vs ')[1] === this.user.username){
+                                    createNotification(match);
+                                }
                             }
                         }
+                        this.displayTournamentChart();
                         // Check if the round already exists in the user's rounds
                         const roundExists = this.user.round.some(existingRound => {
                             return existingRound.every((value, index) => value === round[index]);
@@ -194,7 +199,6 @@ export default class Tournament extends AbstractView {
                         if (!roundExists) {
                             this.user.round.push(round);
                         }
-                        this.displayTournamentChart();
                         console.log("ROUND", this.user.round);
                         // if (matchData.opponent.alias !== "None")
                         // {
@@ -327,7 +331,9 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                createNotification(match);
+                                if (match.split(' Vs ')[0] === this.user.username || match.split(' Vs ')[1] === this.user.username){
+                                    createNotification(match);
+                                }
                             }
                         }
                         // Check if the round already exists in the user's rounds
@@ -363,10 +369,13 @@ export default class Tournament extends AbstractView {
                                 console.log("AMMAMMA", match);
                                 round.push(match);
                                 this.torunament_chart.push(match);
-                                createNotification(match);
+                                if (match.split(' Vs ')[0] === this.user.username || match.split(' Vs ')[1] === this.user.username){
+                                    createNotification(match);
+                                }
                             }
                         }
                         // Check if the round already exists in the user's rounds
+                        this.displayTournamentChart();
                         const roundExists = this.user.round.some(existingRound => {
                             return existingRound.every((value, index) => value === round[index]);
                         });
@@ -374,7 +383,6 @@ export default class Tournament extends AbstractView {
                         if (!roundExists) {
                             this.user.round.push(round);
                         }
-                        this.displayTournamentChart();
                         // img_opponet.src = this.opponent_pic;
                         this.content.innerHTML = `<h1>TOURNAMENT STARTED</h1>`;
                         this.content.innerHTML += `${matchData.created_by.username} vs ${matchData.opponent.username}`;
@@ -420,6 +428,7 @@ export default class Tournament extends AbstractView {
                 const view = new Pong(this.user, room_name);
                 content.innerHTML = await view.getContent();
                 await view.loop();
+                this.user.lastURL = "/tournament";
             }
         })
         .catch(error => {
