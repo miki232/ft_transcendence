@@ -83,6 +83,18 @@ export default class Chat extends AbstractView {
 	// 	});
 	// }
 
+	noChats (element) {
+		var noEntries = document.createElement("p");
+		noEntries.style.borderTop = "1px solid white";
+		noEntries.style.paddingTop = "10%";
+		noEntries.className = "no-entries";
+		noEntries.textContent = "You don't have any chats yet.";
+		noEntries.setAttribute("data-translate", "noChats");
+		element.appendChild(noEntries);
+		element.style.textAlign = "center";
+		changeLanguage(this.lang);
+	}
+
 
     async fetchChatList() {
 		try {
@@ -94,6 +106,10 @@ export default class Chat extends AbstractView {
 			const { blocked_users } = await blockResponse.json();
 	
 			const chatListContainer = document.querySelector('#chat-list');
+			if (chatList.length === 0) {
+				this.noChats(chatListContainer);
+				return;
+			}
 			chatListContainer.innerHTML = chatList.map(chat => {
 				const otherUser = chat.user1 === this.userObj.username ? chat.user2 : chat.user1;
 				const isBlocked = blocked_users.includes(otherUser);

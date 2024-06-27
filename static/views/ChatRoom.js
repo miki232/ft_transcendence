@@ -1,5 +1,6 @@
 import { changeLanguage } from "../index.js";
 import AbstractView from "./AbstractView.js";
+import { sendFriendRequest } from "./Requests.js";
 import { createNotification } from "./Notifications.js";
 
 export default class ChatRoom extends AbstractView {
@@ -18,7 +19,16 @@ export default class ChatRoom extends AbstractView {
 
     async initialize() {
         await this.getRoomUsers();
-        this.content.innerHTML = this.getContent();
+        this.content.innerHTML = await this.getContent();
+        const sendRequestBtn = document.getElementById("friend-request") ? document.getElementById("friend-request") : document.getElementById("game");
+				sendRequestBtn.addEventListener("click", async e => {
+					e.preventDefault();
+          if (sendRequestBtn.id === "friend-request")
+          {
+            await sendFriendRequest(this.otherUser.username);
+            createNotification("Friend request sent!", "friendReqSent");
+          }
+				});
         this.setupChatInput();
         this.chatSocket = await this.initializeWebSocket();
         // this.activebutton();
@@ -111,6 +121,8 @@ export default class ChatRoom extends AbstractView {
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            if (data['message'].length < 1)
+              return;
             if (data['status'] === "1")
               createNotification("Max Limit Reached");
             else if (data['status'] === "2")
@@ -174,19 +186,45 @@ export default class ChatRoom extends AbstractView {
         };
     }
 
-    getContent() {
-      //const other_user = data['user_2'] === this.userObj.username ? data['user_1'] : data['user_2'];
+    async getContent() {
+
+        var response = await fetch("/friend/list/");
+        console.log(response); 
+        var data = await response.json();
+        var topButton = null;
+        console.log(data[0]['friends'][0] === (this.otherUser));
+        console.log(data[0]['friends'][0]);
+        console.log(this.otherUser);
+
+        for (var i = 0; i < data[0]['friends'].length; i++)
+        {
+          if (data[0]['friends'][i]['username'] === this.otherUser['username'])
+          {
+            topButton = `<button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>`;
+            break;
+          }
+          else {
+            topButton = `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
+          }
+        }
+        // if (Object.values(data[0]['friends']).includes(this.otherUser)) {
+        //   topButton = `<button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>`;
+        // }
+        // else {
+        //   topButton = `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
+        // }
+
         return `
             <div class="chat-room">
             <div class="user-profile">
               <img src="${this.otherUser['pro_pic']}" alt="Profile Picture" class="profile-pic">
               <a href="/friends/user_info_${this.otherUser['username']}" class="profile-link">${this.otherUser['username']}</a>
-              <button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>
+              ${topButton}
             </div>
                 <div id="chat-log">
                 </div>
                 <div style="width: 400px;display:flex;flex-direction:row;align-content:center;justify-content: space-around;flex-wrap: nowrap;">
-                  <input id="chat-message-input" type="text" size="100">
+                  <input id="chat-message-input" type="text" size="100" minlength="2">
                   <button id="chat-message-submit" type="button" class="submit-btn dashboard-btn"><ion-icon name="send-outline"></ion-icon></button>
                 </div>
             </div>

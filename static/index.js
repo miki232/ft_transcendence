@@ -688,6 +688,7 @@ async function send_game_request(receiver, selfuser)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
+		createNotification("Request sent to " + receiver);
 		return response.json();
 	})
 	.then(data => {
