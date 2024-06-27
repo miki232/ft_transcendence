@@ -116,10 +116,10 @@ export default class Chat extends AbstractView {
 				const isBlocked = blocked_users.includes(otherUser);
 				return `<li>
 							<button class="chatroom" room-name="${chat.name}">${otherUser}</button> 
-							<button class="block-user-btn" data-user="${otherUser}" id="${isBlocked ? 'unblockuser' : 'blockuser'}">${isBlocked ? 'Unblock User' : 'Block User'}</button>
+							<button class="block-user-btn" data-translate="${isBlocked ? 'UnblockUser' : 'BlockUser'}" data-user="${otherUser}" id="${isBlocked ? 'unblockuser' : 'blockuser'}">${isBlocked ? 'Unblock User' : 'Block User'}</button>
 						</li>`;
 			}).join('');
-	
+			changeLanguage(this.userObj.language);
 			// Attach event listeners to all chatroom buttons
 			document.querySelectorAll('.chatroom').forEach(btn => {
 				btn.addEventListener('click', (e) => {
@@ -152,6 +152,7 @@ export default class Chat extends AbstractView {
 						createNotification(data.message);
 						e.target.innerHTML = action === 'block_user' ? 'Unblock User' : 'Block User';
 						e.target.setAttribute('id', action === 'block_user' ? 'unblockuser' : 'blockuser');
+						e.target.setAttribute('data-translate', action === 'block_user' ? 'UnblockUser' : 'BlockUser');
 					})
 					.catch((error) => {
 						console.error('Error:', error);

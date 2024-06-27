@@ -164,9 +164,14 @@ export default class Settings extends AbstractView {
 				if (!response.ok) {
 					const data = await response.json();
 					console.log(data);
+					
 					if (data.username && data.username[0]) {
 						console.error(data.username[0]);
+						createNotification(data.username[0], "userchanged_fail");
 						throw new Error(data.username[0]);
+					}
+					else{
+						createNotification(data, "userchanged_fail_alias");
 					}
 				} else {
 					createNotification("Username changed successfully!", "userchanged");
