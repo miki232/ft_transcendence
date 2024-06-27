@@ -185,8 +185,10 @@ export default class ChatRoom extends AbstractView {
             </div>
                 <div id="chat-log">
                 </div>
-                <input id="chat-message-input" type="text" size="100">
-                <button id="chat-message-submit" type="button" class="submit-btn dashboard-btn"><ion-icon name="send-outline"></ion-icon></button>
+                <div style="width: 400px;display:flex;flex-direction:row;align-content:center;justify-content: space-around;flex-wrap: nowrap;">
+                  <input id="chat-message-input" type="text" size="100">
+                  <button id="chat-message-submit" type="button" class="submit-btn dashboard-btn"><ion-icon name="send-outline"></ion-icon></button>
+                </div>
             </div>
         `;
     }

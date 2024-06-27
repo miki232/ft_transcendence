@@ -2095,14 +2095,13 @@ canvas {
 }
 
 #chat-message-input {
-    width: 300px;
+    width: 70%;
     padding: 10px;
     font-size: 16px;
     color: white;
     border: 1px solid grey;
     background-color: #202A30;
     outline: none;
-    margin-bottom: 10px;
 	border-radius: 6px;
 }
 
@@ -2127,9 +2126,11 @@ canvas {
 }
 
 #chat-message-submit {
-    width: calc(100% - 20px);
-    padding: 12px;
+    width: 20%;
     background-color: white;
+	align-content: center;
+	justify-items: center;
+	margin-left: 5%;
     color: var(--primary-color);
     border: none;
     border-radius: 6px;
