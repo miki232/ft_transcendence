@@ -7,6 +7,10 @@ export default class Pong extends AbstractView{
     constructor(user, room_name){
         super();
         this.user =  user;
+        this.user_paddle_color1;
+        this.user_paddle_color2;
+        this.pong_color = user.pong_color;
+        this.tempcolor;
         this.room_name = room_name;
         this.opponent = this.user.tournament_opp.username;
         this.player1 = undefined;
@@ -38,6 +42,26 @@ export default class Pong extends AbstractView{
         document.querySelector('body').classList.add('game-bg');
 
     }
+
+    async loadOpponentPaddle(userID) {
+		var csrftoken = await this.getCSRFToken()
+		await fetch('/accounts/guser_info/?username=' + userID, {
+			method: 'GET',
+			headers: {
+				'Content-Type' : 'application/json',
+				'X-CSRFToken': csrftoken
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+                console.log(data.user.paddle_color);
+                this.tempcolor = data.user.paddle_color;
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			})
+	}
 
     async getCSRFToken() {
 		let csrftoken = await fetch("csrf-token")
@@ -120,8 +144,8 @@ export default class Pong extends AbstractView{
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         this.drawNet(context, canvas);
-        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, '#00FF99');
-        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, '#00CCFF');
+        this.drawPaddle(context, 20, this.playerPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color1);
+        this.drawPaddle(context, canvas.width - this.paddle_width -20, this.opponentPaddleY, this.paddle_width, this.paddle_height, this.user_paddle_color2);
         this.drawBall(context, this.ballX, this.ballY, this.ball_size / 2, '#FF0066');
         // Draw player paddle
         // this.updatePaddlePosition();
@@ -142,7 +166,7 @@ export default class Pong extends AbstractView{
         // context.closePath();
     }
 
-    scoreTabMaker(data) {
+    async scoreTabMaker(data) {
         console.log(data, this.user.username, this.user.tournament_opp.username);
         if (data.player === this.user.username) {
             if (this.user.alias !== "None"){
@@ -155,7 +179,10 @@ export default class Pong extends AbstractView{
             }
             else
                 this.player2 = this.user.tournament_opp.username;
-            
+            await this.loadOpponentPaddle(this.user.tournament_opp.username);
+            console.log("this.tempcolor", this.tempcolor)
+            this.user_paddle_color1 = this.user.paddle_color;
+            this.user_paddle_color2 = this.tempcolor
             this.player1_pic = this.user.getPic();
             this.player2_pic = this.user.tournament_opp.pro_pic;
         } else {
@@ -169,6 +196,9 @@ export default class Pong extends AbstractView{
             }
             else
                 this.player2 = this.user.username;
+            await this.loadOpponentPaddle(this.user.tournament_opp.username);
+            this.user_paddle_color1 = this.tempcolor
+            this.user_paddle_color2 = this.user.paddle_color;
             this.player1_pic = this.user.tournament_opp.pro_pic;
             this.player2_pic = this.user.getPic();
         }
@@ -348,13 +378,14 @@ export default class Pong extends AbstractView{
     async getContent() {
         await this.loadUserData();
         await this.connect_game();
+        console.log("Pong Color: ", this.pong_color);
         const pongHTML =  `
             <div id="scores">
                 <div id="player1-score" class="score-info"></div>
                 <div id="the-match"><h1>THE MATCH</h1></div>
                 <div id="player2-score" class="score-info"></div>
             </div>
-            <canvas id="pongCanvas" width="800" height="600"></canvas>
+            <canvas id="pongCanvas" width="800" height="600" style="background-color: ${this.pong_color};"></canvas>
         `;
         return pongHTML;
     }

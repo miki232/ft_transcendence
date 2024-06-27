@@ -99,6 +99,7 @@ export default class Tournament extends AbstractView {
             this.user.matchmaking_ws.onmessage = async event => {
                 try {
                     const data = JSON.parse(event.data);
+                    var round = [];
                     console.log('WebSocket message received:', event.data);
                     console.log('Parsed data:', data);
                     console.log(data.status);
@@ -126,7 +127,6 @@ export default class Tournament extends AbstractView {
                         // this.torunament_chart.push(`${matchData.created_by} Vs ${matchData.opponent}`);
                         // this.displayTournamentChart(this.torunament_chart);
                         // createNotification(`${matchData.created_by} Vs ${matchData.opponent}`)
-                        let round = [];
                         for (const matchId in data.dict) {
                             if (data.dict.hasOwnProperty(matchId)) {
                                 console.log("sadsadasdsdasdasda", data.dict[matchId]);
@@ -174,7 +174,6 @@ export default class Tournament extends AbstractView {
                             this.user.tournament_opp.username = matchData.created_by.username;
                             this.user.tournament_opp.pro_pic = matchData.pro_pic_created_by;
                         }
-                        let round = [];
                         for (const matchId in data.dict) {
                             if (data.dict.hasOwnProperty(matchId)) {
                                 console.log("sadsadasdsdasdasda", data.dict[matchId]);
@@ -283,6 +282,7 @@ export default class Tournament extends AbstractView {
                 try {
                     const data = JSON.parse(event.data);
                     console.log('WebSocket message received:', event.data);
+                    var round = [];
                     console.log('Parsed data:', data);
                     console.log(data.status)
                     if (data.status === "6"){ /// LO STATUS  6 è L'ADV, è più semplice prendere il match da API, ma si può anche fare da WS
@@ -318,7 +318,6 @@ export default class Tournament extends AbstractView {
                         //         // createNotification(match);
                         //     }
                         // }
-                        let round = [];
                         for (const matchId in data.dict) {
                             if (data.dict.hasOwnProperty(matchId)) {
                                 console.log("sadsadasdsdasdasda", data.dict[matchId]);
@@ -355,6 +354,27 @@ export default class Tournament extends AbstractView {
                         // Update the content to show the match
                         // let conente_opponent = document.getElementById("opponent")
                         // let img_opponet = document.getElementById("opponent_img")
+                        for (const matchId in data.dict) {
+                            if (data.dict.hasOwnProperty(matchId)) {
+                                console.log("sadsadasdsdasdasda", data.dict[matchId]);
+                                const player1 = data.dict[matchId][1] !== 'None' ? data.dict[matchId][1] : data.dict[matchId][0];
+                                const player2 = data.dict[matchId][3] !== 'None' ? data.dict[matchId][3] : data.dict[matchId][2];
+                                const match = `${player1} Vs ${player2}`;
+                                console.log("AMMAMMA", match);
+                                round.push(match);
+                                this.torunament_chart.push(match);
+                                createNotification(match);
+                            }
+                        }
+                        // Check if the round already exists in the user's rounds
+                        const roundExists = this.user.round.some(existingRound => {
+                            return existingRound.every((value, index) => value === round[index]);
+                        });
+                        // If the round does not exist, add it
+                        if (!roundExists) {
+                            this.user.round.push(round);
+                        }
+                        this.displayTournamentChart();
                         // img_opponet.src = this.opponent_pic;
                         this.content.innerHTML = `<h1>TOURNAMENT STARTED</h1>`;
                         this.content.innerHTML += `${matchData.created_by.username} vs ${matchData.opponent.username}`;
