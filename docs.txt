@@ -1,0 +1,47 @@
+# Installation and Usage Guide for Cli.py
+
+## Prerequisites
+
+- Python 3.6 or higher
+- xterm terminal
+- Virtual environment (recommended)
+
+## Installation
+
+1. Create a virtual environment:
+
+    'python3 -m venv .ven´
+
+	or
+
+	'pip install virtualenv'
+
+	then
+
+	'virtualenv .venv'
+
+
+2. Activate the virtual environment:
+
+    - On Linux or MacOS:
+
+        source .venv/bin/activate
+
+    - On Windows:
+
+        .\.venv\Scripts\activate
+
+
+3. Install the required packages:
+
+    pip install -r requirements.txt
+
+## Usage
+
+1. Ensure that the virtual environment is activated.
+
+2. Run the `Cli.py` script:
+
+    python Cli.py
+
+Please note that this program is recommended to be run in an xterm terminal for best compatibility.
