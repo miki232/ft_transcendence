@@ -191,28 +191,27 @@ export default class ChatRoom extends AbstractView {
         var response = await fetch("/friend/list/");
         console.log(response); 
         var data = await response.json();
-        var topButton = null;
-        console.log(data[0]['friends'][0] === (this.otherUser));
-        console.log(data[0]['friends'][0]);
-        console.log(this.otherUser);
+        if (data.length > 0 && data[0].hasOwnProperty('friends')) {
+          var topButton = null;
+          console.log(data[0]['friends'][0] === (this.otherUser));
+          console.log(data[0]['friends'][0]);
+          console.log(this.otherUser);
 
-        for (var i = 0; i < data[0]['friends'].length; i++)
-        {
-          if (data[0]['friends'][i]['username'] === this.otherUser['username'])
+          for (var i = 0; i < data[0]['friends'].length; i++)
           {
-            topButton = `<button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>`;
-            break;
-          }
-          else {
-            topButton = `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
+            if (data[0]['friends'][i]['username'] === this.otherUser['username'])
+            {
+              topButton = `<button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>`;
+              break;
+            }
+            else {
+              topButton = `<button type="button" class="playBtn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
+            }
           }
         }
-        // if (Object.values(data[0]['friends']).includes(this.otherUser)) {
-        //   topButton = `<button type="button" data-translate="invitePlay" class="playBtn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>`;
-        // }
-        // else {
-        //   topButton = `<button type="button" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
-        // }
+        else {
+          topButton = `<button type="button" class="playBtn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline" role="img" class="md hydrated"></ion-icon>Add Friend</button>`;
+        }
 
         return `
             <div class="chat-room">
@@ -250,7 +249,7 @@ export default class ChatRoom extends AbstractView {
                       <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
+                      <a class="nav-link" href="/static/cli/cli.zip">CLI</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>

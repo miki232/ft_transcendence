@@ -182,7 +182,7 @@ export default class UserInfo extends AbstractView {
 					  <a class="nav-link" href="/online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/static/cli/cli.zip">CLI</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/friends" data-link>Friends</a>

@@ -144,6 +144,7 @@ class GameEngine:
         """Display pre-game instructions and wait for user input."""
         # self.connect_notfications_websocket()
         state = 0
+        # exit = False
         self.room_name = None
         if state == 0:
             self.display_input(screen)
@@ -181,11 +182,11 @@ class GameEngine:
                         break
                 self.display_input(screen)
             elif invite:
-                state = self.invite_friend(screen)
+                state = self.invite_friend(screen, pressed_keys)
                 if state == 0:
                     self.display_input(screen)
             elif match_friendly:
-                state = self.friendlyMatch(screen)
+                state = self.friendlyMatch(screen, pressed_keys)
                 if state == 0:
                     self.display_input(screen)
             elif game:
@@ -214,7 +215,7 @@ class GameEngine:
         except requests.RequestException as e:
             print("An error occurred while fetching the room list:", e)
 
-    def friendlyMatch(self, screen):
+    def friendlyMatch(self, screen, pressed_keys):
         """"Display the option to play a friendly match."""
         rooms = self.get_list(screen)
         screen.clear()
@@ -226,11 +227,15 @@ class GameEngine:
         screen.refresh()
             
         while True:
-            key = screen.getch()
-            if key in (ord('q'), ord('Q')):
-                time.sleep(0.2)
+            exit = (
+                pressed_keys[KEY_BINDINGS["quit"]]
+                or pressed_keys[KEY_BINDINGS["quit2"]]
+            )
+            if exit:
+                time.sleep(0.1)
                 return 0
-            elif key in range(ord('1'), ord('1') + len(rooms)):
+            key = screen.getch()
+            if key in range(ord('1'), ord('1') + len(rooms)):
                 selected_room = rooms[key - ord('1')]
                 roomname, createby, opponent = selected_room
                 self.room_name = roomname
@@ -260,7 +265,7 @@ class GameEngine:
         except requests.RequestException as e:
             print("An error occurred while fetching the friend list:", e)
 
-    def invite_friend(self, screen):
+    def invite_friend(self, screen, pressed_keys):
         """Display friend list and handle friend invitation."""
         friends = self.friendList()
         screen.clear()
@@ -271,11 +276,15 @@ class GameEngine:
         screen.refresh()
             
         while True:
-            key = screen.getch()
-            if key in (ord('q'), ord('Q')):
-                time.sleep(0.2)
+            exit = (
+                pressed_keys[KEY_BINDINGS["quit"]]
+                or pressed_keys[KEY_BINDINGS["quit2"]]
+            )
+            if exit:
+                time.sleep(0.1)
                 return 0
-            elif key in range(ord('1'), ord('1') + len(friends)):
+            key = screen.getch()
+            if key in range(ord('1'), ord('1') + len(friends)):
                 selected_friend = friends[key - ord('1')]
                 self.send_invite(selected_friend, screen)
                 screen.clear()
