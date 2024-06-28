@@ -3,9 +3,11 @@ import User from "./views/User.js";
 import { createNotification } from "./views/Notifications.js";
 import Info, { getCSRFToken, getusename } from "./views/Info.js";
 import MatchMaking from "./views/MatchMaking.js";
-import Pong from "./views/Pong.js";
+import Pong from "./views/TournamentPong.js"
 import LocalGame from "./views/LocalGame.js";
 import Online from "./views/Online.js";
+import ChatRoom from "./views/ChatRoom.js";
+import Tournament from "./views/Tournament.js";
 // import Login from "./views/Login.js";
 // import About from "./views/About.js";
 // import Contact from "./views/Contact.js";
@@ -235,6 +237,11 @@ const router = async () => {
 		}
 	}
 
+	if (location.pathname.includes("/chat")) {
+		var room_name = location.pathname.split("/")[2];
+		console.log(room_name);
+	}
+
 	if (!location.pathname.includes(user.local_room) && user.local_ws) {
         document.querySelector('header').style.display = 'block';
 		document.querySelector('body').classList.remove('game-bg');
@@ -247,6 +254,8 @@ const router = async () => {
 		// { path: "/404", view: NotFound},
 		{ path: "/", view: () => import('./views/Login.js') },
         { path: "/about", view: () => import('./views/About.js') },
+		{ path: "/chat", view: () => import('./views/Chat.js') },
+		{ path: "/chat/" + room_name, view: () => import('./views/ChatRoom.js') },
         { path: "/contact", view: () => import('./views/Contact.js') },
         { path: "/dashboard", view: () => import('./views/Dashboard.js') },
 		{ path: "/dashboard/history", view: () => import('./views/History.js')},
@@ -293,13 +302,30 @@ const router = async () => {
 			isMatch: location.pathname === route.path
 		};
 	});
-	
+	console.log("dsmdainstanceofskmdslkmsdmlkdslkmsa", user.lastURL);
+
 	let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 	try {
 		if (view instanceof Online && match.route.path !== "/tournament")
 			{
 				view.closeWebSocket();
 				console.log("DISCONNESIONE DALLA WEBSOCKET");
+			}
+		console.log("dsmdainstanceofskmdslkmsdmlkdslkmsa", user.lastURL);
+
+		if (user.lastURL === "/tournament" && match.route.path !== "/tournament")
+			{
+				user.lastURL = null;
+				console.log(view);
+				user.ws_tournament.close();
+				document.querySelector("header").style.display = "block";
+                document.querySelector("body").classList.remove("game-bg");
+				console.log("DISCONNESIONE DALLA WEBSOCKET DEL TORNEO");
+			}
+		if (view instanceof ChatRoom && match.route.path !== "/chat/")
+			{
+				view.closeWebSocket();
+				console.log("DISCONNESIONE DALLA WEBSOCKET DEllA CHAT");
 			}
 		if (user.matchmaking_ws && match.route.path !== "/tournament"){
 			console.log("MATCHMAKING_WS EXIT:", user.matchmaking_ws);
@@ -331,7 +357,7 @@ const router = async () => {
 	}
 	else if (user.lastURL === "/pong") {
 		match = {
-			route: routes[3],
+			route: routes[13],
 			isMatch: true
 		};
 		document.querySelector('header').style.display = 'block';
@@ -465,6 +491,16 @@ const router = async () => {
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
 			const TournamentLocalClass = await match.route.view();
 			view = new TournamentLocalClass.default(user, user.local_ws);
+			break;
+		case "/chat":
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatClass = await match.route.view();
+			view = new ChatClass.default(user);
+			break;
+		case "/chat/" + room_name:
+			await user.isLogged() === false ? navigateTo("/") : null;
+			const ChatRoomClass = await match.route.view();
+			view = new ChatRoomClass.default(user, room_name);
 			break;
 		// case "/game":
 		// 	const LocalPongClass = await match.route.view();
@@ -622,7 +658,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		///////////////////////////////////////////////////////
 		if (e.target.matches('#game'))
 		{
-			let Friend_username = document.querySelector(".user-info h3").innerHTML;
+			try {
+				var Friend_username = document.querySelector(".user-info h3").innerHTML;
+			}
+			catch {
+				var Friend_username = document.querySelector(".profile-link").textContent;
+			}
+
 			console.log(Friend_username);
 			let selfuser = await getusename() // Per ora lascio Admin, ma è solo per provare, è da sostituire con l'username reale di chi sta cliccand PLAY
 			console.log(selfuser);
@@ -659,6 +701,7 @@ async function send_game_request(receiver, selfuser)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
+		createNotification("Request sent to " + receiver);
 		return response.json();
 	})
 	.then(data => {

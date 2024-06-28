@@ -114,6 +114,12 @@ const translations = {
     final: "Finale",
     winner: "Gagnant",
     dashboard: "Profil",
+    send: "Envoy",
+    noChats: "Tu n'as pas encore de chat.",
+    UnblockUser : "Débloquer l'utilisateur",
+    BlockUser : "Bloquer l'utilisateur",
+    userchanged_fail : "Nom d'utilisateur trop long",
+    userchanged_fail_alias : "Alias du Tournoi trop long",
     // Add more translations here...
 };
 

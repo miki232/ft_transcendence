@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://0.0.0.0:8443', 'https://localhost:8443', 'https://127.0.0.1:8443']
+CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443', 'https://127.0.0.1:8443', 'https://10.12.5.2:8443']
 SECRET_KEY = 'django-insecure-xo%h1)ejm%b&&7j-6f6scrl60$g@lblj1mv23-p@gm_b!)$i+^'
 
 # Use a secure cookie for the session cookie
@@ -52,7 +52,7 @@ SECURE_BROWSER_XSS_FILTER = True
 DEBUG = True
 
 # ALLOWED_HOSTS = ["192.168.1.4", "10.11.4.4", "127.0.0.1", '192.168.122.1', 'mtoiarecce.com', '172.18.0.1', '10.34.176.1', '192.168.43.203']
-ALLOWED_HOSTS = ["*", "e3r5p2.42roma.it"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

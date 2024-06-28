@@ -318,19 +318,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         message = json.loads(text_data)
-        print("Pong Consumer 284",f"Message from {message['user']}")
         if self.spectator:
             return
         if 'action' in message:
             action = message['action']
             if self.user.username == PongConsumer.players[self.room_name][0]:
-                print("Player 1 = ", PongConsumer.players[self.room_name][0])
                 if action == 'move_up':
                     self.state['up_player_paddle_y'] = 1
                 elif action == 'move_down':
                     self.state['down_player_paddle_y'] = 1
             else:
-                print("Player 2 = ", PongConsumer.players[self.room_name][1])
                 if action == 'move_up':
                     self.state['up_player2_paddle_y'] = 1
                 elif action == 'move_down':
@@ -338,7 +335,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def move_paddle_up(self, player):
         if player == PongConsumer.players[self.room_name][0]:
-            print("Pong Consumer 302","paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] > 0:
                 self.state['paddle1_y'] -= 10
         else:
@@ -347,7 +343,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def move_paddle_down(self, player):
         if player == PongConsumer.players[self.room_name][0]:
-            print("Pong Consumer 311","paddle1_y", self.state['paddle1_y'])
             if self.state['paddle1_y'] < 500:
                 self.state['paddle1_y'] += 10
         else:
@@ -356,7 +351,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def countdown(self):
         for i in range(3, 0, -1):
-            print("Pong Local Consumer 576", f"Game starts in {i}...")
             self.state['countdown'] = i
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -464,11 +458,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 new_speed_x = abs(new_speed_x)
             else:
                 new_speed_x = -abs(new_speed_x)
-            print("Pong Local Consumer 770", "BALL X", ball_x, "BALL Y", ball_y, "PADDLE X", paddle_x, "PADDLE Y", paddle_y)
             if ball_y <= paddle_y or ball_y >= paddle_y + PADDLE_HEIGHT:
                 speed_angle = self.speed_increase + abs(PADDLE_SPEED / 2) * 0.001
                 increaser = min(speed_angle * self.speed_increase, 1)
-                print("Pong Local Consumer 676", "SPEED ANGLE", speed_angle, "SPEED", increaser)
                 new_speed_x = speed * math.cos(reflection_angle) * increaser
                 new_speed_y = speed * math.sin(reflection_angle) * increaser
                 if ball_x < SCREEN_WIDTH / 2:
@@ -496,7 +488,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         last_ai_update_time = time.time()
-        print("Pong Consumer 399", "GAME LOOP", PongConsumer.players[self.room_name][1])
         while (PongConsumer.status[self.room_name]) == False:
             current_time = time.time()
             if self.user.username == PongConsumer.players[self.room_name][0] and not (self.user1.Ai or self.user2.Ai):
@@ -569,14 +560,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_y'] = 290
                 # self.state['ball_speed_x'] = +self.state['ball_speed_y'] #can be used to increase the speed of the ball
                 # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
-                print("Pong Consumer 410","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
                 self.state['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = 3
                 self.speed_increase = 1.10
                 if self.state['score2'] < POINTS_TO_WIN:
                     await self.countdown()
-                print("Pong Consumer 414","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
             elif self.state['ball_x'] >= 800:
                 self.state['score1'] += 1
@@ -585,13 +574,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.state['ball_y'] = 290
                 # self.state['ball_speed_x'] = +self.state['ball_speed_y']
                 # self.state['ball_speed_y'] = +self.state['ball_speed_y'] 
-                print("Pong Consumer 423","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
                 self.state['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 self.state['ball_speed_y'] = -3
                 self.speed_increase = 1.10
                 if self.state['score1'] < POINTS_TO_WIN:
                     await self.countdown()
-                print("Pong Consumer 426","ballspeed 1", self.state['ball_speed_x'], self.state['ball_speed_y'])
 
             if self.state['score1']  >= POINTS_TO_WIN or self.state['score2'] >= POINTS_TO_WIN:
                 if self.state['score1'] >= POINTS_TO_WIN:
@@ -724,9 +711,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                     if message['opponent'] not in Pong_LocalConsumer.players[self.room_name]:
                         Pong_LocalConsumer.players[self.room_name].append(message['opponent'])
                 await self.send(text_data=json.dumps("FUCK YOU"))
-                print("Pong Local Consumer 531", Pong_LocalConsumer.players[self.room_name][0], Pong_LocalConsumer.players[self.room_name][1])
                 if len(Pong_LocalConsumer.players[self.room_name]) == 2:
-                    print("THE GAME CAN START NOW")
                     await self.send(text_data=json.dumps("THE GAME CAN START NOW"))
                     if message["status"] == "ready":
                         Pong_LocalConsumer.players[self.room_name][0] = message['username']
@@ -773,7 +758,6 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
     
     async def countdown(self):
         for i in range(3, 0, -1):
-            print("Pong Local Consumer 576", f"Game starts in {i}...")
             await self.send(text_data=json.dumps({'countdown': i, 'score1': self.state['score1'], 'score2': self.state['score2']}))
             await asyncio.sleep(1)
         await self.send(text_data=json.dumps({'status': 1, 'Game': 'Start', 'score1': self.state['score1'], 'score2': self.state['score2']}))
@@ -835,11 +819,9 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
                 new_speed_x = abs(new_speed_x)
             else:
                 new_speed_x = -abs(new_speed_x)
-            print("Pong Local Consumer 770", "BALL X", ball_x, "BALL Y", ball_y, "PADDLE X", paddle_x, "PADDLE Y", paddle_y)
             if ball_y <= paddle_y or ball_y >= paddle_y + PADDLE_HEIGHT:
                 speed_angle = self.speed_increase + abs(PADDLE_SPEED / 2) * 0.001
                 increaser = min(speed_angle * self.speed_increase, 1)
-                print("Pong Local Consumer 676", "SPEED ANGLE", speed_angle, "SPEED", increaser)
                 new_speed_x = speed * math.cos(reflection_angle) * increaser
                 new_speed_y = speed * math.sin(reflection_angle) * increaser
                 if ball_x < SCREEN_WIDTH / 2:
@@ -887,7 +869,7 @@ class Pong_LocalConsumer(AsyncWebsocketConsumer):
             if (Pong_LocalConsumer.players[self.room_name].count("AI") > 0):
                 if current_time - last_ai_update_time >= 1:
                     self.ai_update([self.state['ball_x'], self.state['ball_y']], [self.state['ball_speed_x'], self.state['ball_speed_y']])
-                    print("Seconds since last AI update:", current_time - last_ai_update_time)  # Print the time elapsed since the last AI update 
+                    # print("Seconds since last AI update:", current_time - last_ai_update_time)  # Print the time elapsed since the last AI update 
                     last_ai_update_time = current_time
                 self.simulate_input(self.ai_target_pos)
 

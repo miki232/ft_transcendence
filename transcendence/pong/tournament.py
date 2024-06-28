@@ -171,7 +171,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def set_score(self, match, score, user):
-        print("Pong Consumer 209", score, user, self.match.user1)
         if (self.match.user1 == CustomUser.objects.get(username=user)):
             match.score_user1 = score
         else:
@@ -250,12 +249,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             winner = TournamentConsumer.players[self.room_name][0]
             print("WINNER: ", winner, self.match.id)
             await self.set_winner(self.match, winner)
-            self.state['victory'] = TournamentConsumer.players[self.room_name][0]
+            TournamentConsumer.shared_state[self.room_name]['victory'] = TournamentConsumer.players[self.room_name][0]
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': self.state
+                    'state': TournamentConsumer.shared_state[self.room_name]
                 }
             )
 
@@ -267,7 +266,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         message = json.loads(text_data)
-        print("Pong Consumer 284",f"Message from {message['user']}")
         if self.spectator:
             return
         if 'action' in message:
@@ -285,7 +283,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def move_paddle_up(self, player):
         if player == TournamentConsumer.players[self.room_name][0]:
-            print("Pong Consumer 302","paddle1_y", TournamentConsumer.shared_state[self.room_name]['paddle1_y'])
             if TournamentConsumer.shared_state[self.room_name]['paddle1_y'] > 0:
                 TournamentConsumer.shared_state[self.room_name]['paddle1_y'] -= 10
         else:
@@ -294,7 +291,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def move_paddle_down(self, player):
         if player == TournamentConsumer.players[self.room_name][0]:
-            print("Pong Consumer 311","paddle1_y", TournamentConsumer.shared_state[self.room_name]['paddle1_y'])
             if TournamentConsumer.shared_state[self.room_name]['paddle1_y'] < 500:
                 TournamentConsumer.shared_state[self.room_name]['paddle1_y'] += 10
         else:
@@ -339,11 +335,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 new_speed_x = abs(new_speed_x)
             else:
                 new_speed_x = -abs(new_speed_x)
-            print("Pong Local Consumer 770", "BALL X", ball_x, "BALL Y", ball_y, "PADDLE X", paddle_x, "PADDLE Y", paddle_y)
             if ball_y <= paddle_y or ball_y >= paddle_y + PADDLE_HEIGHT:
                 speed_angle = self.speed_increase + abs(PADDLE_SPEED / 2) * 0.001
                 increaser = min(speed_angle * self.speed_increase, 1)
-                print("Pong Local Consumer 676", "SPEED ANGLE", speed_angle, "SPEED", increaser)
                 new_speed_x = speed * math.cos(reflection_angle) * increaser
                 new_speed_y = speed * math.sin(reflection_angle) * increaser
                 if ball_x < SCREEN_WIDTH / 2:
@@ -363,7 +357,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         last_ai_update_time = time.time()
-        print(f"Room: {self.room_name}, State: {TournamentConsumer.shared_state[self.room_name]}")
         while (TournamentConsumer.status[self.room_name]) == False:
             current_time = time.time()
             await asyncio.sleep(0.01)
@@ -415,12 +408,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 TournamentConsumer.shared_state[self.room_name]['ball_y'] = 290
                 # TournamentConsumer.shared_state[self.room_name]['ball_speed_x'] = +TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] #can be used to increase the speed of the ball
                 # TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] = +TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] 
-                print("Pong Consumer 410","ballspeed 1", TournamentConsumer.shared_state[self.room_name]['ball_speed_x'], TournamentConsumer.shared_state[self.room_name]['ball_speed_y'])
 
                 TournamentConsumer.shared_state[self.room_name]['ball_speed_x'] = 3 #can be used to increase the speed of the ball
                 TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] = 3
                 self.speed_increase = 1.10
-                print("Pong Consumer 414","ballspeed 1", TournamentConsumer.shared_state[self.room_name]['ball_speed_x'], TournamentConsumer.shared_state[self.room_name]['ball_speed_y'])
 
             elif TournamentConsumer.shared_state[self.room_name]['ball_x'] >= 800:
                 TournamentConsumer.shared_state[self.room_name]['score1'] += 1
@@ -429,12 +420,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 TournamentConsumer.shared_state[self.room_name]['ball_y'] = 290
                 # TournamentConsumer.shared_state[self.room_name]['ball_speed_x'] = +TournamentConsumer.shared_state[self.room_name]['ball_speed_y']
                 # TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] = +TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] 
-                print("Pong Consumer 423","ballspeed 1", TournamentConsumer.shared_state[self.room_name]['ball_speed_x'], TournamentConsumer.shared_state[self.room_name]['ball_speed_y'])
                 TournamentConsumer.shared_state[self.room_name]['ball_speed_x'] = -3 #can be used to increase the speed of the ball
                 TournamentConsumer.shared_state[self.room_name]['ball_speed_y'] = -3
                 self.speed_increase = 1.10
                 
-                print("Pong Consumer 426","ballspeed 1", TournamentConsumer.shared_state[self.room_name]['ball_speed_x'], TournamentConsumer.shared_state[self.room_name]['ball_speed_y'])
 
             if TournamentConsumer.shared_state[self.room_name]['score1']  >= POINTS_TO_WIN or TournamentConsumer.shared_state[self.room_name]['score2'] >= POINTS_TO_WIN:
                 if TournamentConsumer.shared_state[self.room_name]['score1'] >= POINTS_TO_WIN:
@@ -452,7 +441,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 }
             )
         if self.room_name in TournamentConsumer.status and TournamentConsumer.status[self.room_name]:
-            print("Pong Consumer 444","THE winner is", self.match.winner)
             TournamentConsumer.shared_state[self.room_name]['victory'] = self.match.winner.username
             await self.channel_layer.group_send(
             self.room_group_name,

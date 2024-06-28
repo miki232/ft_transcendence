@@ -38,6 +38,7 @@ export default class User extends AbstractView {
 		this.disconnected = true;
 		this.game_ws = null;
 		this.matchmaking_ws = null;
+		this.ws_tournament = null;
 		this.lastURL = null;
 		this.room_nextround = null;
 		//localPong

@@ -171,7 +171,7 @@ export default class FriendlyMatch extends AbstractView {
 					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/static/cli/cli.zip">CLI</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>

@@ -36,6 +36,8 @@ export default class History extends AbstractView {
 		const nav = document.querySelector("header");
 		nav.innerHTML = this.getNav();
 		content.innerHTML = this.getContent();
+		await this.createBarChart(this.user.username);
+		console.log(chart)
 		const data = await getHistoryList(this.user.username);
 		const dataTournament = await getTournamentHistory(this.user.username);
 		console.log(dataTournament);
@@ -228,12 +230,41 @@ export default class History extends AbstractView {
 			const data = await response.json();
 			const user = {
 				username: data.user.username,
-				pro_pic: data.user.pro_pic
+				pro_pic: data.user.pro_pic,
 			};
 			return user;
 		} catch (error) {
 			console.error('Error:', error);
 		}
+	}
+
+	async createBarChart(username) {
+		// Calculate the total games played
+		let wins, losses = null;
+		try {
+			const response = await fetch('/accounts/guser_info/?username=' + username);
+			const data = await response.json();
+			wins = data.user.wins;
+			losses = data.user.losses;
+		} catch (error) {
+			console.error('Error:', error);
+		}
+		const total = wins + losses;
+	
+		// Calculate the percentage of wins and losses
+		const winPercentage = (wins / total) * 100;
+		const lossPercentage = (losses / total) * 100;
+	
+		// Create the bar chart
+		const chartHTML = `
+			<div class="chart">
+				<div class="bar win">Wins: ${wins}</div>
+				<div class="bar loss">Losses: ${losses}</div>
+			</div>
+		`;
+	
+		// Add the chart to the btn-container
+		document.getElementById('chart').innerHTML = chartHTML;
 	}
 
 	getNav() {
@@ -255,7 +286,7 @@ export default class History extends AbstractView {
 					  <a class="nav-link" href="/online" data-translate="online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-translate="ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/static/cli/cli.zip">CLI</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/friends" data-translate="friends" data-link>Friends</a>
@@ -278,7 +309,8 @@ export default class History extends AbstractView {
 		const historyHTML = `
 			<div class="dashboard">
 				<div class="history">
-					<h2 data-translate="history">Match History</h2>
+				<h2 data-translate="history">Match History</h2>
+				<div id="chart"></div> <!-- Placeholder for the chart -->
 					<div class="btns-container">
 						<div class="hr" style="width: 80%; margin-bottom: 25px;"></div>
 						<button type="button" class="submit-btn dashboard-btn" data-translate="tournaments" id="tournament-list"><ion-icon name="trophy-outline"></ion-icon>Tournaments</button>

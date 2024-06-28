@@ -8,5 +8,5 @@ if not User.objects.filter(username='admin').exists():
     User.objects.create_superuser('admin', 'admin@example.com', 'admin')
 " | python manage.py shell
 python manage.py createai 4
-python manage.py runserver e3r5p2.42roma.it:8001
+python manage.py runserver 0.0.0.0:8001
 # python manage.py runsslserver --certificate ./ssl/certcert.pem --key ./ssl/certkey.pem 0.0.0.0:8001

@@ -49,7 +49,7 @@ class CreateRoomView(APIView):
             exist_room = RoomName.objects.filter(Q(created_by=user, opponent=user_to_fight) | Q(created_by=user_to_fight, opponent=user)).first()
             if exist_room:
                 return Response({"status": "Room already exists"}, status=status.HTTP_306_RESERVED)
-            send_save_notification(user_to_fight, f"{username} Want to play with YOU!")
+            send_save_notification(user_to_fight, f"{username} wants to play with you!")
             serializer = RoomNameSerializer(data={
             'created_by': user,
             'opponent': user_to_fight,

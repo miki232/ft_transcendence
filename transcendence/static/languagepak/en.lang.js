@@ -114,6 +114,12 @@ const translations = {
     finale: "Final",
     winner: "Winner",
     dashboard: "Dashboard",
+    send: "Send",
+    noChats: "You don't have any chats yet.",
+    UnblockUser : "Unblock User",
+    BlockUser : "Block User",
+    userchanged_fail : "Username is too long",
+    userchanged_fail_alias : "Alias is too long",
     // Add more translations here
 };
 

@@ -23,6 +23,7 @@ export default class UserInfo extends AbstractView {
 		this.nav.innerHTML = this.getNav();
 		this.content.innerHTML = this.getContent();
 		this.initialize(userID);
+		this.friendUsername = null;
 		// this.Userto;
 		// // this.user;
 		// this.email;
@@ -32,9 +33,41 @@ export default class UserInfo extends AbstractView {
 	async initialize(userID) {
 		await this.getUserInfo(userID);
 		const lang = localStorage.getItem('language');
+		this.activateButtons();
 		await changeLanguage(lang);
 
 	};
+
+	async activateButtons() {
+		const chatBtn = document.getElementById("chat");
+		const csr = await getCSRFToken();
+		chatBtn.addEventListener("click", async e => {
+			e.preventDefault();
+			const payload = {
+				user1: this.user.username,
+				user2: this.friendUsername
+			};
+		
+			await fetch('/chat_create/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csr
+				},
+				body: JSON.stringify(payload)
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				navigateTo("/chat/" + data.name);
+				// Handle success response
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				// Handle errors here
+			});
+		});
+	}
 
 	async getUserInfo(userID) {
 		var csrf = await getCSRFToken();
@@ -53,6 +86,7 @@ export default class UserInfo extends AbstractView {
 			const senderObj = requestList.find(req => req.sender.username == data.user.username);
 			const receiverObj = requestList.find(req => req.receiver.username == data.user.username);
 			const pendingReq = senderObj || receiverObj ? true : false;
+			this.friendUsername = data.user.username;
 			const friendInfo = `
 				<div class="user-dashboard">
 					<img src="${data.user.pro_pic}" alt="User pic">
@@ -63,7 +97,7 @@ export default class UserInfo extends AbstractView {
 					</div>
 				</div>
 				<div class="btns-container">
-					<a href="/friends/user_info_${userID}/chat" data-translate="sendmsg" class="submit-btn dashboard-btn" id="chat"><ion-icon name="chatbubbles-outline"></ion-icon>Send Message</a>
+				<button class="submit-btn dashboard-btn" id="chat" ><ion-icon name="chatbubbles-outline"></ion-icon> Send Message </button>
 					<a href="/friends/user_info_${userID}/history" data-translate="history" class="submit-btn dashboard-btn" data-link><ion-icon name="bar-chart-outline"></ion-icon>History</a>
 					${is_friend ? `<button type="button" data-translate="invitePlay" class="submit-btn dashboard-btn" id="game"><ion-icon name="game-controller-outline"></ion-icon>Play</button>` : 
 						!pendingReq ? `<button type="button" data-translate="sendreq" class="submit-btn dashboard-btn" id="friend-request"><ion-icon name="person-add-outline"></ion-icon>Send Friend Request</button>` : 
@@ -148,7 +182,7 @@ export default class UserInfo extends AbstractView {
 					  <a class="nav-link" href="/online" data-link>Online Game</a>
 					</li>
 					<li class="nav-item">
-					  <a class="nav-link" href="/ranking" data-link>Ranking</a>
+					  <a class="nav-link" href="/static/cli/cli.zip">CLI</a>
 					</li>
 					<li class="nav-item">
 					  <a class="nav-link" href="/friends" data-link>Friends</a>
