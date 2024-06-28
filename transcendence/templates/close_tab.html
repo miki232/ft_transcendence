@@ -7,8 +7,10 @@
     <script type="text/javascript">
         window.onload = function() {
             var error = "{{ error }}";
-            if (error) {
+            console.log('Error: ' + error, error.length);
+            if (error.length > 0) {
                 localStorage.setItem('error42', error);
+                console.log('Error: ' + error);
             }
             window.close();
         }

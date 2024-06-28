@@ -120,6 +120,7 @@ const translations = {
     BlockUser : "Block User",
     userchanged_fail : "Username is too long",
     userchanged_fail_alias : "Alias is too long",
+    success : "logged in successfully",
     // Add more translations here
 };
 

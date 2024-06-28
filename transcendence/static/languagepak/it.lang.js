@@ -118,6 +118,7 @@ const translations = {
     BlockUser : "Blocca Utente",
     userchanged_fail : "Nome utente troppo lungo",
     userchanged_fail_alias : "Alias troppo lungo",
+    success : "Accesso effettuato",
     // Add more translations here...
 };
 

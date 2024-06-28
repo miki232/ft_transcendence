@@ -16,12 +16,14 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.utils.html import escape
 from django.contrib import messages
 
+import secrets
 import requests
 import re
 import imghdr
 import urllib
 import os
 import uuid
+import environ
 
 from .forms import CustomUserCreationForm
 from .models import CustomUser
@@ -35,19 +37,25 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSignupSerializer, LoginSerializer, UserInfoSerializer, UserMatchHistorySerializer
 from friends.models import FriendList
+env = environ.Env()
+environ.Env.read_env()
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
 
+# random_state_string = secrets.token_urlsafe(16)
+
 def redirect_to_42(request):
+    
+
     params = {
-        'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
+        'client_id': env('42_CLIENT_ID'),
+        'redirect_uri': ('https://10.12.5.2:8443/accounts/callback/'),
         'response_type': 'code',
-        'state': 'random_state_string',  # Should be a random string
-        'scope': 'public',
+        'state': "random_state_string",
+        'scope': env('42_SCOPE'),
     }
     url = 'https://api.intra.42.fr/oauth/authorize?' + urllib.parse.urlencode(params)
     # return redirect(url)
@@ -58,16 +66,16 @@ def callback(request):
     state = request.GET.get('state')
 
     # Check if the states match
-    if state != 'random_state_string':  # Should be the same random string you used in redirect_to_42
+    if state != "random_state_string":  # Should be the same random string you used in redirect_to_42
         return HttpResponse('Invalid state', status=400)
 
     # Exchange the authorization code for an access token
     data = {
         'grant_type': 'authorization_code',
-        'client_id': 'u-s4t2ud-d68d311ff703e880fe4e53fb5bd960c20e23a249ed0a9d234d3976e75bd70b33',
-        'client_secret': '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',
+        'client_id': env('42_CLIENT_ID'),
+        'client_secret': env('42_CLIENT_SECRET'),
         'code': code,
-        'redirect_uri': request.build_absolute_uri('/accounts/callback/'),
+        'redirect_uri': ('https://10.12.5.2:8443/accounts/callback/'),
     }
     response = requests.post('https://api.intra.42.fr/oauth/token', data=data)
     response.raise_for_status()
@@ -98,7 +106,7 @@ def callback(request):
         if (user.is_active):
             user.status_login = True
             user.save()
-            return render(request, 'close_tab.html')
+            return render(request, 'close_tab.html', {'error': 'logged in successfully'})
             # return JsonResponse({'status': 'success', 'message': 'User logged in successfully'})
         else:
             return render(request, 'close_tab.html', {'error': 'User is not active'})

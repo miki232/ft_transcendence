@@ -120,6 +120,7 @@ const translations = {
     BlockUser : "Bloquer l'utilisateur",
     userchanged_fail : "Nom d'utilisateur trop long",
     userchanged_fail_alias : "Alias du Tournoi trop long",
+    success : "Login réussi",
     // Add more translations here...
 };
 

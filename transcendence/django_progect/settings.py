@@ -9,20 +9,25 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import environ
+# Initialise environment variables
 from pathlib import Path
 import os
 
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# SECURITY WARNING: keep the secret key used in production secret!
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-CSRF_TRUSTED_ORIGINS = ['https://192.168.1.5', 'https://192.168.1.5:8443', 'https://127.0.0.1:8443', 'https://10.12.5.2:8443']
-SECRET_KEY = 'django-insecure-xo%h1)ejm%b&&7j-6f6scrl60$g@lblj1mv23-p@gm_b!)$i+^'
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+
+SECRET_KEY = env('SECRET_KEY')
 
 # Use a secure cookie for the session cookie
 CSRF_COOKIE_SAMESITE = None
@@ -139,24 +144,13 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'mypassword',
-        'HOST': 'my-postgres',
+        'NAME': env('POSTGRES_NAME'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),
         'PORT': '5432',
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'mypostgres',
-#         'USER': 'mtoiasql',
-#         'PASSWORD': '1235678',
-#         'HOST': 'postgresql',  # This is the name of the service in docker-compose
-#         'PORT': '5432',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -212,9 +206,3 @@ AUTH_USER_MODEL = "accounts.CustomUser" # new
 CRONJOBS = [
     ('*/5 * * * *', 'django_progect.crons.createtournament')
 ]
-
-# {
-#     "username": "Suca",
-#     "password": "12345678",
-#      "email" : "suca@gmia.com"
-# }

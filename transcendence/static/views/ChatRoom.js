@@ -118,18 +118,17 @@ export default class ChatRoom extends AbstractView {
         const chatSocket = new WebSocket(
             'wss://' + window.location.hostname + ':8000' + '/ws/chat/' + this.roomName + '/'
         );
-
+        
         chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            if (data['message'].length < 1)
-              return;
+          const data = JSON.parse(e.data);
             if (data['status'] === "1")
               createNotification("Max Limit Reached");
             else if (data['status'] === "2")
               createNotification("User Blocked");
             else
             {
-
+              if (data['message'].length < 1)
+                return;
               const message_container = document.createElement('container');
               message_container.classList.add('message-container');
               const message_element = document.createElement('div');

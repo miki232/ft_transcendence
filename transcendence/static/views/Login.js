@@ -93,7 +93,7 @@ export default class extends AbstractView {
 				method: 'GET',
 				headers: {
 					'Content-Type' : 'application/json',
-					'X-CSRFToken': this.getCookie('csrftoken')
+					'X-CSRFToken': this.getCSRFToken()
 				}
 			});
 			if (response.ok) {
@@ -104,12 +104,23 @@ export default class extends AbstractView {
 					if (newWindow.closed) {
 						clearInterval(checkWindowClosed);
 						let exiting = localStorage.getItem('error42');
+						console.log('setting storage:', exiting);
 						if (exiting === null) {
 							console.log('The tab has been closed');
 							navigateTo("/dashboard");
 						}
 						console.log('The tab has been closed with error:', exiting);
-						createNotification(exiting, "exiting");
+						var trans = null;
+						if (exiting === "User with this email and username already exists")
+						{
+							trans = "exiting";
+						}
+						else
+						{
+							trans = "success";
+						}
+						createNotification(exiting, trans);
+						localStorage.removeItem('error42');
 						navigateTo("/dashboard");
 						// Perform any other actions needed after the tab is closed
 					}

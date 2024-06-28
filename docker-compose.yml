@@ -40,6 +40,8 @@ services:
       - ./transcendence:/app/
       # - static_volume:/app/static
       - static_volume:/app/staticfiles
+    env_file:
+      - .env
     networks:
       - webnet
 
@@ -60,6 +62,8 @@ services:
     volumes:
       - ./transcendence/ssl/:/app/ssl
       - ./transcendence:/app/
+    env_file:
+      - .env
     networks:
       - webnet
 
