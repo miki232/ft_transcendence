@@ -216,7 +216,6 @@ function wsConnection() {
 		console.log(data.content);
 		if (data.read === false){
 			// alert(data.content);
-			console.log("SUCASDJNSADJNKSAKDNJASD");
 			createNotification(data.content);
 			ws.send(JSON.stringify({'action': "read"}));
 		}
@@ -227,6 +226,8 @@ const router = async () => {
 	console.log(user.lastURL);
 	user.loadUserData();
 	console.log(user, user.language);
+
+	wsConnection();
 
 	if (location.pathname.includes("/user_info")) {
 		let count = location.pathname.split("/").length - 1;
@@ -391,7 +392,6 @@ const router = async () => {
 			break;
 		case "/dashboard":
 			await user.isLogged() === false ? navigateTo("/") : await user.loadUserData();
-			wsConnection();
 			const DashboardClass = await match.route.view();
 			view = new DashboardClass.default(user);
 			break;

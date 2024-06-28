@@ -190,9 +190,6 @@ export default class extends AbstractView {
 							<input type="checkbox" id="login-checkbox">
 							<label data-translate="rememberme" for="login-checkbox">Remember me</label>
 						</div>
-						<div>
-							<h5 data-translate="forgotpass">Forgot password?</h5>
-						</div>
 					</div>
 					<button type="submit" data-translate="login" id="login-btn" class="submit-btn"><ion-icon name="log-in-outline"></ion-icon">Login</button>
 					<div class="login-register">
@@ -217,10 +214,6 @@ export default class extends AbstractView {
 						<input type="password" id="signup-pass" required>
 						<label data-translate="signuppass">Password</label>
 						<ion-icon name="lock-closed-outline"></ion-icon>
-					</div>
-					<div class="checkbox">
-						<input type="checkbox" id="register-checkbox">
-						<label for="register-checkbox">I agree to the terms & conditions</label>
 					</div>
 					<button type="submit" id="register-btn" class="submit-btn" data-translate="makeregister">Register<ion-icon name="save-outline"></ion-icon></button>
 					<div class="login-register">
