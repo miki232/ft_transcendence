@@ -31,7 +31,7 @@ The project must meet the following minimum technical requirements:
 - **Docker**: Single command line deployment (`docker-compose up --build`)
 
 ## Modules 11.5/10
-The project can be extended by implementing various modules. Each module has specific requirements and can replace or add to the basic functionality. The Module done in this project are, **11.5 modules done on 10 required**:
+The project can be extended by implementing various modules. Each module has specific requirements and can replace or add to the basic functionality. The Modules done in this project are, **11.5 modules done on 10 required**:
 - **Web**: Framework backend (Django), front-end framework (Bootstrap), database backend (PostgreSQL)
 - **User Management**: Standard user management, remote authentication (42 OAuth)
 - **Gameplay and User Experience**: Remote players, Game Customization Options, Live Chat
