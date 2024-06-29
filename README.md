@@ -9,10 +9,7 @@ Welcome to **ft_transcendence**, a project designed to challenge your skills and
 3. [Technical Requirements](#technical-requirements)
 4. [Modules](#modules)
 5. [Setup and Installation](#setup-and-installation)
-6. [Usage](#usage)
-7. [Security](#security)
-8. [Contributing](#contributing)
-9. [License](#license)
+6. [Contributing](#contributing)
 
 ## Project Description
 The ft_transcendence project is about creating a website where users can play Pong against each other. The goal is to provide an engaging and smooth user experience with real-time multiplayer capabilities. The project requires you to implement various technical aspects while adhering to specific constraints and guidelines.
@@ -59,3 +56,14 @@ The project can be extended by implementing various modules. Each module has spe
 	```sh
 	docker compose up
 	```
+
+## Contributing
+
+This project was collaboratively developed by a dedicated team, with each member focusing on specific aspects to bring the project to life:
+
+- **mtoia** - Backend development and architecture. [LinkedIn](https://www.linkedin.com/in/michele-toia-7328a9200/)
+- **Arecce** - Frontend development and design. <!--[LinkedIn](your-linkedin-url-for-arecce)-->
+- **Lbusi** - Frontend development and translations. <!--[LinkedIn](your-linkedin-url-for-lbusi)-->
+- **Gifulvi** - Backend development for the LiveChat feature. [LinkedIn](https://www.linkedin.com/in/giacomo-fulvi/)
+
+We welcome contributions from the community. If you're interested in helping improve Transcendence, please feel free to fork the repository, make your changes, and submit a pull request.
