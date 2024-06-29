@@ -1,24 +1,61 @@
-# README
+# ft_transcendence
 
-## Come lanciare il progetto
+## Overview
+Welcome to **ft_transcendence**, a project designed to challenge your skills and creativity by building a multiplayer Pong game with a modern web interface. This project encourages you to dive into new territories and make critical decisions in software development.
 
-1. Assicurati di avere tutti i prerequisiti elencati nel file `requirements.txt`. Puoi installarli utilizzando il comando `pip install -r requirements.txt`.
+## Table of Contents
+1. [Project Description](#project-description)
+2. [Features](#features)
+3. [Technical Requirements](#technical-requirements)
+4. [Modules](#modules)
+5. [Setup and Installation](#setup-and-installation)
+6. [Usage](#usage)
+7. [Security](#security)
+8. [Contributing](#contributing)
+9. [License](#license)
 
-2. Si consiglia di utilizzare un ambiente virtuale (venv) per isolare le dipendenze del progetto. Ecco come creare e attivare un ambiente virtuale con Python:
+## Project Description
+The ft_transcendence project is about creating a website where users can play Pong against each other. The goal is to provide an engaging and smooth user experience with real-time multiplayer capabilities. The project requires you to implement various technical aspects while adhering to specific constraints and guidelines.
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+## Features
+- Real-time Pong game with multiplayer support
+- User registration and matchmaking system
+- Tournament mode for multiple players
+- Secure and responsive web interface
 
-    Per disattivare l'ambiente virtuale, esegui il comando:
+## Technical Requirements
+The project must meet the following minimum technical requirements:
+- **Frontend**: Pure vanilla JavaScript (overridable by the FrontEnd module)
+- **Backend**: Pure Ruby if a backend is included (overridable by the Framework module)
+- **Single-Page Application**: Compatible with the latest stable version of Google Chrome
+- **Docker**: Single command line deployment (`docker-compose up --build`)
 
-    ```bash
-    deactivate
-    ```
+## Modules 11.5/10
+The project can be extended by implementing various modules. Each module has specific requirements and can replace or add to the basic functionality. The Module done in this project are, **11.5 modules done on 10 required**:
+- **Web**: Framework backend (Django), front-end framework (Bootstrap), database backend (PostgreSQL)
+- **User Management**: Standard user management, remote authentication (42 OAuth)
+- **Gameplay and User Experience**: Remote players, Game Customization Options, Live Chat
+- **AI-Algo**: AI opponent, user and game stats dashboards
+- **Cybersecurity**: GDPR compliance
+- **Accessibility**: Expanding Browser Compatibility, Multiple language supports
+- **Server-Side Pong**: Server-Side Pong, Pong Gameplay via CLI against Web Users
 
-3. Se è la prima volta che hai clonato il repository, esegui il comando `python manage.py migrate` per applicare le migrazioni al database.
 
-4. Per avviare il server, esegui il comando `python manage.py runserver`. Il server sarà accessibile all'indirizzo `127.0.0.1:8000`.
 
-5. Per creare un utente amministratore, utilizza il comando `python manage.py createsuperuser`. Con questo utente, potrai accedere all'area amministrativa all'indirizzo `127.0.0.1:8000/admin` e verificare se gli utenti registrati sono stati salvati correttamente nel database.
+## Setup and Installation
+1. Clone the repository:
+   ```sh
+   git clone git@github.com:miki232/ft_transcendence.git
+   cd ft_transcendence
+   ```
+
+2. Create SSL and .env file:
+	```sh
+	make ssl-certificate
+	make generate-env
+	```
+
+3. Launch Docker Compose:
+	```sh
+	docker compose up
+	```
