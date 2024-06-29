@@ -61,9 +61,9 @@ The project can be extended by implementing various modules. Each module has spe
 
 This project was collaboratively developed by a dedicated team, with each member focusing on specific aspects to bring the project to life:
 
-- **mtoia** - Backend development and architecture. [LinkedIn](https://www.linkedin.com/in/michele-toia-7328a9200/) [GitHub] (https://github.com/miki232)
-- **Arecce** - Frontend development and design. <!--[LinkedIn](your-linkedin-url-for-arecce)--> [GitHub] (https://github.com/Sepherd)
-- **Lbusi** - Frontend development and translations. <!--[LinkedIn](your-linkedin-url-for-lbusi)--> [GitHub] (https://github.com/FriiKz)
-- **Gifulvi** - Backend development for the LiveChat feature. [LinkedIn](https://www.linkedin.com/in/giacomo-fulvi/) [GitHub] (https://github.com/giacominho3)
+- **mtoia** - Backend development and architecture. [LinkedIn](https://www.linkedin.com/in/michele-toia-7328a9200/) [GitHub](https://github.com/miki232)
+- **Arecce** - Frontend development and design. <!--[LinkedIn](your-linkedin-url-for-arecce)--> [GitHub](https://github.com/Sepherd)
+- **Lbusi** - Frontend development and translations. <!--[LinkedIn](your-linkedin-url-for-lbusi)--> [GitHub](https://github.com/FriiKz)
+- **Gifulvi** - Backend development for the LiveChat feature. [LinkedIn](https://www.linkedin.com/in/giacomo-fulvi/) [GitHub](https://github.com/giacominho3)
 
 We welcome contributions from the community. If you're interested in helping improve Transcendence, please feel free to fork the repository, make your changes, and submit a pull request.
