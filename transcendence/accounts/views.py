@@ -48,13 +48,21 @@ class SignUpView(CreateView):
 # random_state_string = secrets.token_urlsafe(16)
 
 def redirect_to_42(request):
-    
+    # Get the host (domain)
+    host = env('HOST')
+
+    # Manually construct the absolute URI including the port
+    redirect_uri = f"{host}/accounts/callback/"
+    print(redirect_uri)
+    code = request.GET.get('code')
+    random_state_string = secrets.token_urlsafe()
+    request.session['oauth_state'] = random_state_string
 
     params = {
         'client_id': env('42_CLIENT_ID'),
-        'redirect_uri': ('https://10.12.5.2:8443/accounts/callback/'),
+        'redirect_uri': redirect_uri,
         'response_type': 'code',
-        'state': "random_state_string",
+        'state': random_state_string,
         'scope': env('42_SCOPE'),
     }
     url = 'https://api.intra.42.fr/oauth/authorize?' + urllib.parse.urlencode(params)
@@ -62,11 +70,18 @@ def redirect_to_42(request):
     return JsonResponse({'url': url})
 
 def callback(request):
+    host = env('HOST')
+
+    # Manually construct the absolute URI including the port
+    redirect_uri = f"{host}/accounts/callback/"
+    print(redirect_uri)
     code = request.GET.get('code')
     state = request.GET.get('state')
+    
+    stored_state = request.session.pop('oauth_state', None)
 
     # Check if the states match
-    if state != "random_state_string":  # Should be the same random string you used in redirect_to_42
+    if state != stored_state:  # Should be the same random string you used in redirect_to_42
         return HttpResponse('Invalid state', status=400)
 
     # Exchange the authorization code for an access token
@@ -75,7 +90,7 @@ def callback(request):
         'client_id': env('42_CLIENT_ID'),
         'client_secret': env('42_CLIENT_SECRET'),
         'code': code,
-        'redirect_uri': ('https://10.12.5.2:8443/accounts/callback/'),
+        'redirect_uri': redirect_uri,
     }
     response = requests.post('https://api.intra.42.fr/oauth/token', data=data)
     response.raise_for_status()

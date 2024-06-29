@@ -33,11 +33,13 @@ KEY_BINDINGS: dict[str, Key | KeyCode] = {
     "enter": Key.enter
 }
 
-SERVER_URL = 'https://10.12.5.2:8443'
-WSS_URL = 'https://10.12.5.2:8000'
+SERVER_URL = 'https://127.0.0.1:8443'
+WSS_URL = 'https://127.0.0.1:8000'
 
 parser = argparse.ArgumentParser(description='CLI for playing Pong.')
 parser.add_argument('--username', '-u', type=str, help='Your username')
+parser.add_argument('--host', type=str, help='Ip address of the server, if not setting the default is localhost')
+
 args = parser.parse_args()
 
 class GameEngine:
@@ -506,6 +508,10 @@ class GameEngine:
     
 if __name__ == "__main__":
     try:
+        if args.host:
+            SERVER_URL = f'https://{args.host}:8443'
+            WSS_URL = f'https://{args.host}:8000'
+        print('Connecting to server...\nAt :', SERVER_URL)
         if not args.username:
             args.username = input('Username: ')
         password = getpass.getpass('Password: ')
