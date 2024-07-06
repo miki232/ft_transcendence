@@ -1,4 +1,4 @@
-certifi==2024.6.2
+certifi==2024.7.4
 charset-normalizer==3.3.2
 evdev==1.7.1
 gevent==24.2.1
